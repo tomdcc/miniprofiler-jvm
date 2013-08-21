@@ -1,0 +1,11 @@
+language: java
+jdk:
+  - openjdk7
+  - oraclejdk7
+branches:
+  only:
+  - master
+before_install:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+script: ./gradew clean test
