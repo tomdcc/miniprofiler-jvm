@@ -19,5 +19,5 @@ package io.jdev.miniprofiler.json;
 import java.util.Map;
 
 public interface Jsonable {
-    Map<String,Object> toMap();
+	Map<String, Object> toMap();
 }

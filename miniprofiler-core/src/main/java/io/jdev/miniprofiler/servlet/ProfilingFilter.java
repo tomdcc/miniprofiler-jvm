@@ -49,7 +49,7 @@ public class ProfilingFilter implements Filter {
 		// handle serving up resources
 		String uri = request.getRequestURI();
 		String requestBasePath = request.getContextPath() + profilerPath;
-		if(resourceHelper.uriMatches(requestBasePath, uri)) {
+		if (resourceHelper.uriMatches(requestBasePath, uri)) {
 			serveResource(request, response, uri, requestBasePath);
 			return;
 		}
@@ -58,7 +58,7 @@ public class ProfilingFilter implements Filter {
 		try {
 			// add header, this is mostly for ajax
 			UUID id = profiler.getId();
-			if(id != null) {
+			if (id != null) {
 				response.addHeader("X-MiniProfiler-Ids", "[\"" + id.toString() + "\"]");
 			}
 			filterChain.doFilter(servletRequest, servletResponse);
@@ -68,13 +68,13 @@ public class ProfilingFilter implements Filter {
 	}
 
 	private void serveResource(HttpServletRequest request, HttpServletResponse response, String uri, String requestBasePath) throws IOException {
-		if(resourceHelper.stripBasePath(requestBasePath, uri).equals("results")) {
+		if (resourceHelper.stripBasePath(requestBasePath, uri).equals("results")) {
 			serveResults(request, response);
 			return;
 		}
 		// serve up stuff
 		ResourceHelper.Resource resource = resourceHelper.getResource(requestBasePath, uri);
-		if(resource != null) {
+		if (resource != null) {
 			response.setContentLength(resource.getContentLength());
 			response.setContentType(resource.getContentType());
 			OutputStream os = response.getOutputStream();
@@ -87,14 +87,14 @@ public class ProfilingFilter implements Filter {
 
 	private void serveResults(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String id = request.getParameter("id");
-		if(id == null || !id.matches("\\[[\\w\\-,]+\\]")) {
+		if (id == null || !id.matches("\\[[\\w\\-,]+\\]")) {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}
 		id = id.substring(1, id.length() - 1);
 		Storage storage = profilerProvider != null ? profilerProvider.getStorage() : MiniProfiler.getStorage();
 		Profiler profiler = storage.load(UUID.fromString(id));
-		if(profiler == null) {
+		if (profiler == null) {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}
@@ -107,7 +107,7 @@ public class ProfilingFilter implements Filter {
 
 	protected Profiler startProfiling(HttpServletRequest request) {
 		String uri = request.getRequestURI();
-		if(profilerProvider != null) {
+		if (profilerProvider != null) {
 			return profilerProvider.start(uri);
 		} else {
 			// use global one instead
@@ -116,7 +116,8 @@ public class ProfilingFilter implements Filter {
 	}
 
 	@Override
-	public void destroy() {	}
+	public void destroy() {
+	}
 
 	protected boolean doProfilingForRequest(ServletRequest request) {
 		return true;
@@ -125,6 +126,7 @@ public class ProfilingFilter implements Filter {
 	/**
 	 * Here so that DI frameworks can inject a profiler provider, rather than
 	 * relying on {@link MiniProfiler#start(String)}.
+	 *
 	 * @param profilerProvider
 	 */
 	public void setProfilerProvider(ProfilerProvider profilerProvider) {

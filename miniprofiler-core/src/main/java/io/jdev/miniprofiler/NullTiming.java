@@ -23,7 +23,8 @@ class NullTiming implements Timing {
 
 	static NullTiming INSTANCE = new NullTiming();
 
-	private NullTiming() { }
+	private NullTiming() {
+	}
 
 	@Override
 	public void close() {

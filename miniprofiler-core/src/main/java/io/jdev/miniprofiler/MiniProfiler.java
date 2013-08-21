@@ -38,7 +38,7 @@ public class MiniProfiler {
 	}
 
 	private static ProfilerProvider getOrCreateProfilerProvider() {
-		if(profilerProvider == null) {
+		if (profilerProvider == null) {
 			// default to something hopefully sane
 			profilerProvider = new DefaultProfilerProvider();
 		}

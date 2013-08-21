@@ -24,13 +24,21 @@ import java.util.UUID;
 
 public interface Profiler extends Serializable, Jsonable, Closeable {
 	public Timing step(String name);
+
 	public Timing step(String name, ProfileLevel level);
+
 	public void addQueryTiming(String query, long duration);
+
 	public void close();
+
 	public void stop();
+
 	public void stop(boolean discardResults);
+
 	public UUID getId();
+
 	public boolean hasTrivialTimings();
+
 	public boolean hasAllTrivialTimings();
 
 }

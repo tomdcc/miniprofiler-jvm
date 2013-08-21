@@ -23,7 +23,9 @@ import java.util.UUID;
 public class NullProfiler implements Profiler {
 
 	public static NullProfiler INSTANCE = new NullProfiler();
-	private NullProfiler() { }
+
+	private NullProfiler() {
+	}
 
 	@Override
 	public Timing step(String name) {
@@ -36,16 +38,20 @@ public class NullProfiler implements Profiler {
 	}
 
 	@Override
-	public void addQueryTiming(String query, long duration) { }
+	public void addQueryTiming(String query, long duration) {
+	}
 
 	@Override
-	public void close() { }
+	public void close() {
+	}
 
 	@Override
-	public void stop() { }
+	public void stop() {
+	}
 
 	@Override
-	public void stop(boolean discardResults) { }
+	public void stop(boolean discardResults) {
+	}
 
 	@Override
 	public Map<String, Object> toMap() {

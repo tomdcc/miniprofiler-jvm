@@ -19,7 +19,6 @@ package io.jdev.miniprofiler.json;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 public class ResourceHelper {
 	private static final String RESOURCE_BASE_PATH = "io/jdev/miniprofiler/ui/";
@@ -34,15 +33,15 @@ public class ResourceHelper {
 	public Resource getResource(String requestBasePath, String uri) throws IOException {
 		requestBasePath = requestBasePath.endsWith("/") ? requestBasePath : requestBasePath + "/";
 		InputStream stream = classLoader.getResourceAsStream(convertRequestPathToResourcePath(requestBasePath, uri));
-		if(stream == null) return null;
+		if (stream == null) return null;
 		byte[] bytes = readResource(stream);
 		return new Resource(bytes, guessContentType(uri));
 	}
 
 	private String guessContentType(String uri) {
-		if(uri.endsWith(".css")) {
+		if (uri.endsWith(".css")) {
 			return "text/css";
-		} else if(uri.endsWith("js")) {
+		} else if (uri.endsWith("js")) {
 			return "text/javascript";
 		} else {
 			return "text/html";
@@ -54,7 +53,7 @@ public class ResourceHelper {
 		try {
 			byte[] buffer = new byte[BUFFER_SIZE];
 			int read;
-			while((read = stream.read(buffer)) != -1) {
+			while ((read = stream.read(buffer)) != -1) {
 				os.write(buffer, 0, read);
 			}
 			return os.toByteArray();
@@ -73,7 +72,7 @@ public class ResourceHelper {
 	}
 
 	public String stripBasePath(String requestBasePath, String uri) {
-		if(!uriMatches(requestBasePath, uri)) {
+		if (!uriMatches(requestBasePath, uri)) {
 			throw new IllegalArgumentException("URI " + uri + " does not match request base path " + requestBasePath);
 		}
 		return uri.substring(requestBasePath.length());

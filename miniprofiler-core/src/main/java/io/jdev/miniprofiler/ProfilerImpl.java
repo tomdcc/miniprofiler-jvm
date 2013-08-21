@@ -19,176 +19,176 @@ package io.jdev.miniprofiler;
 import java.util.*;
 
 public class ProfilerImpl implements Profiler {
-    private static final long serialVersionUID = 1;
+	private static final long serialVersionUID = 1;
 
-    private final UUID id;
-    private final long started;
+	private final UUID id;
+	private final long started;
 	private String user;
-    private String machineName;
-    private final ProfileLevel level;
-    private final TimingImpl root;
-    private boolean hasQueryTimings = false;
-    private TimingImpl head;
+	private String machineName;
+	private final ProfileLevel level;
+	private final TimingImpl root;
+	private boolean hasQueryTimings = false;
+	private TimingImpl head;
 	private List<TimingImpl> flattenedTimings;
 	private boolean stopped = false;
 	private final ProfilerProvider profilerProvider;
 
-    public ProfilerImpl(String rootName, ProfileLevel level, ProfilerProvider profilerProvider) {
-        id = UUID.randomUUID();
+	public ProfilerImpl(String rootName, ProfileLevel level, ProfilerProvider profilerProvider) {
+		id = UUID.randomUUID();
 		this.profilerProvider = profilerProvider;
-        this.level = level;
-        started = System.currentTimeMillis();
-        root = new TimingImpl(this, null, rootName);
-        head = root;
-    }
+		this.level = level;
+		started = System.currentTimeMillis();
+		root = new TimingImpl(this, null, rootName);
+		head = root;
+	}
 
-    public long getDurationMilliseconds() {
-        Long milliseconds = root.getDurationMilliseconds();
-        return milliseconds != null ? milliseconds : System.currentTimeMillis() - started;
-    }
+	public long getDurationMilliseconds() {
+		Long milliseconds = root.getDurationMilliseconds();
+		return milliseconds != null ? milliseconds : System.currentTimeMillis() - started;
+	}
 
-    public boolean hasTrivialTimings() {
-		for(TimingImpl t : getTimingHierarchy()) {
-			if(t.isTrivial()) {
+	public boolean hasTrivialTimings() {
+		for (TimingImpl t : getTimingHierarchy()) {
+			if (t.isTrivial()) {
 				return true;
 			}
 		}
-        return false;
-    }
+		return false;
+	}
 
-    public boolean hasAllTrivialTimings() {
-		for(TimingImpl t : getTimingHierarchy()) {
-			if(!t.isTrivial()) {
+	public boolean hasAllTrivialTimings() {
+		for (TimingImpl t : getTimingHierarchy()) {
+			if (!t.isTrivial()) {
 				return false;
 			}
 		}
-        return true;
-    }
+		return true;
+	}
 
-    public int getTrivialDurationThresholdMilliseconds() {
-        // TODO: implement with some sort of config
-        return 2;
-    }
+	public int getTrivialDurationThresholdMilliseconds() {
+		// TODO: implement with some sort of config
+		return 2;
+	}
 
 	public void stop() {
 		stop(false);
 	}
 
-    public void stop(boolean discardResults) {
-		if(!stopped) {
+	public void stop(boolean discardResults) {
+		if (!stopped) {
 			stopped = true;
 			root.stop();
 			profilerProvider.stopSession(this, discardResults);
 		}
-    }
+	}
 
-    public Timing step(String name, ProfileLevel level) {
-        if (level.ordinal() > this.level.ordinal()) return NullTiming.INSTANCE;
-        return new TimingImpl(this, head, name);
-    }
+	public Timing step(String name, ProfileLevel level) {
+		if (level.ordinal() > this.level.ordinal()) return NullTiming.INSTANCE;
+		return new TimingImpl(this, head, name);
+	}
 
-    public Timing step(String name) {
-        return step(name, ProfileLevel.Info);
-    }
+	public Timing step(String name) {
+		return step(name, ProfileLevel.Info);
+	}
 
 	public void addQueryTiming(String query, long duration) {
 		addQueryTiming(new QueryTiming(query, duration));
 	}
 
-    public void addQueryTiming(QueryTiming sqlTiming) {
-        if (head == null) return;
+	public void addQueryTiming(QueryTiming sqlTiming) {
+		if (head == null) return;
 
-        // TODO: implement SQL duplicates
-        head.addQueryTiming(sqlTiming);
-    }
+		// TODO: implement SQL duplicates
+		head.addQueryTiming(sqlTiming);
+	}
 
-    public long getDurationMillisecondsInSql() {
-        long total = 0;
-        for(TimingImpl t : getTimingHierarchy()) {
-            if(t.hasQueryTimings()) {
-                for(QueryTiming sql : t.getQueryTimings()) {
-                    total += sql.getDurationMilliseconds();
-                }
-            }
-        }
-        return total;
-    }
+	public long getDurationMillisecondsInSql() {
+		long total = 0;
+		for (TimingImpl t : getTimingHierarchy()) {
+			if (t.hasQueryTimings()) {
+				for (QueryTiming sql : t.getQueryTimings()) {
+					total += sql.getDurationMilliseconds();
+				}
+			}
+		}
+		return total;
+	}
 
-    public List<TimingImpl> getTimingHierarchy() {
-		if(flattenedTimings != null) {
+	public List<TimingImpl> getTimingHierarchy() {
+		if (flattenedTimings != null) {
 			return flattenedTimings;
 		}
-        ArrayList<TimingImpl> result = new ArrayList<TimingImpl>();
-        Stack<TimingImpl> stack = new Stack<TimingImpl>();
-        stack.push(root);
+		ArrayList<TimingImpl> result = new ArrayList<TimingImpl>();
+		Stack<TimingImpl> stack = new Stack<TimingImpl>();
+		stack.push(root);
 
-        while (stack.size() > 0) {
-            TimingImpl timing = stack.pop();
-            result.add(timing);
-            if (timing.hasChildren()) {
-                stack.addAll(timing.getChildren());
-            }
-        }
+		while (stack.size() > 0) {
+			TimingImpl timing = stack.pop();
+			result.add(timing);
+			if (timing.hasChildren()) {
+				stack.addAll(timing.getChildren());
+			}
+		}
 
-		if(stopped) {
+		if (stopped) {
 			flattenedTimings = result;
 		}
-        return result;
-    }
+		return result;
+	}
 
-    public LinkedHashMap<String, Object> toMap() {
-        LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(11);
-        map.put("Id", id.toString());
-        map.put("DurationMilliseconds", getDurationMilliseconds());
-        map.put("HasTrivialTimings", hasTrivialTimings());
-        map.put("HasAllTrivialTimings", hasAllTrivialTimings());
-        map.put("HasSqlTimings", hasQueryTimings);
-        map.put("HasDuplicateSqlTimings", false);
-        map.put("MachineName", machineName);
-        map.put("User", user);
-        map.put("Started", "/Date(" + String.valueOf(started) + ")");
-        map.put("CustomTimingNames", new ArrayList<Object>());
-        map.put("Root", root.toMap());
-        map.put("ClientTimings", null);
-        map.put("DurationMillisecondsInSql", getDurationMillisecondsInSql());
-        return map;
-    }
+	public LinkedHashMap<String, Object> toMap() {
+		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(11);
+		map.put("Id", id.toString());
+		map.put("DurationMilliseconds", getDurationMilliseconds());
+		map.put("HasTrivialTimings", hasTrivialTimings());
+		map.put("HasAllTrivialTimings", hasAllTrivialTimings());
+		map.put("HasSqlTimings", hasQueryTimings);
+		map.put("HasDuplicateSqlTimings", false);
+		map.put("MachineName", machineName);
+		map.put("User", user);
+		map.put("Started", "/Date(" + String.valueOf(started) + ")");
+		map.put("CustomTimingNames", new ArrayList<Object>());
+		map.put("Root", root.toMap());
+		map.put("ClientTimings", null);
+		map.put("DurationMillisecondsInSql", getDurationMillisecondsInSql());
+		return map;
+	}
 
-    public UUID getId() {
-        return id;
-    }
+	public UUID getId() {
+		return id;
+	}
 
-    public String getMachineName() {
-        return machineName;
-    }
+	public String getMachineName() {
+		return machineName;
+	}
 
 	public void setMachineName(String machineName) {
 		this.machineName = machineName;
 	}
 
 	public ProfileLevel getLevel() {
-        return level;
-    }
+		return level;
+	}
 
-    public Timing getRoot() {
-        return root;
-    }
+	public Timing getRoot() {
+		return root;
+	}
 
-    public boolean hasQueryTimings() {
-        return hasQueryTimings;
-    }
+	public boolean hasQueryTimings() {
+		return hasQueryTimings;
+	}
 
-    public Timing getHead() {
-        return head;
-    }
+	public Timing getHead() {
+		return head;
+	}
 
-    public void setHead(TimingImpl head) {
-        this.head = head;
-    }
+	public void setHead(TimingImpl head) {
+		this.head = head;
+	}
 
-    public long getStarted() {
-        return started;
-    }
+	public long getStarted() {
+		return started;
+	}
 
 	public String getUser() {
 		return user;

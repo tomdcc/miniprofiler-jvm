@@ -20,29 +20,30 @@ import io.jdev.miniprofiler.storage.Storage;
 
 public interface ProfilerProvider {
 	Profiler start(String rootName);
-    Profiler start(String rootName, ProfileLevel level);
 
-    /**
-     * Ends the current profiling session, if one exists.
-     *
-     * @param discardResults When true, clears the miniprofiler for this request, allowing profiling to
-     *                       be prematurely stopped and discarded. Useful for when a specific route does not need to be profiled.
-     */
+	Profiler start(String rootName, ProfileLevel level);
+
+	/**
+	 * Ends the current profiling session, if one exists.
+	 *
+	 * @param discardResults When true, clears the miniprofiler for this request, allowing profiling to
+	 *                       be prematurely stopped and discarded. Useful for when a specific route does not need to be profiled.
+	 */
 	void stopCurrentSession(boolean discardResults);
 
 	/**
 	 * Marks the given profiling session as stopped.
 	 *
 	 * @param profilingSession the profiler to register as stopped
-	 * @param discardResults When true, clears the miniprofiler for this request, allowing profiling to
-	 *        be prematurely stopped and discarded. Useful for when a specific route does not need to be profiled.
+	 * @param discardResults   When true, clears the miniprofiler for this request, allowing profiling to
+	 *                         be prematurely stopped and discarded. Useful for when a specific route does not need to be profiled.
 	 */
 	void stopSession(ProfilerImpl profilingSession, boolean discardResults);
 
-    /**
-     * Returns the current MiniProfiler.
-     */
-    Profiler getCurrentProfiler();
+	/**
+	 * Returns the current MiniProfiler.
+	 */
+	Profiler getCurrentProfiler();
 
 	Storage getStorage();
 }

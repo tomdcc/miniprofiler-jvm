@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-
-
 package io.jdev.miniprofiler.servlet
 
 import io.jdev.miniprofiler.test.pages.MiniProfilerModule

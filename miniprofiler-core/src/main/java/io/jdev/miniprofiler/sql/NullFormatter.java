@@ -18,8 +18,8 @@ package io.jdev.miniprofiler.sql;
 
 public class NullFormatter implements SqlFormatter {
 
-    @Override
-    public String format(String sql) {
-        return sql;
-    }
+	@Override
+	public String format(String sql) {
+		return sql;
+	}
 }

@@ -53,7 +53,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 	protected abstract Profiler lookupCurrentProfiler();
 
 	/**
-	 *  Returns the current MiniProfiler.
+	 * Returns the current MiniProfiler.
 	 */
 	@Override
 	public final Profiler getCurrentProfiler() {
@@ -77,18 +77,17 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 	/**
 	 * Create a new profiling session.
 	 *
-	 *
 	 * @param rootName A name for the session. Thiis is used as the name
 	 *                 of the root timing node for the session, and could be
 	 *                 the currently rendering URL or background job name.
-	 * @param level The level of detail to use when profiling
+	 * @param level    The level of detail to use when profiling
 	 * @return the newly created profiler
 	 */
 	@Override
 	public Profiler start(String rootName, ProfileLevel level) {
 		ProfilerImpl profiler = new ProfilerImpl(rootName, level, this);
 		profiler.setMachineName(machineName);
-		if(userProvider != null) {
+		if (userProvider != null) {
 			profiler.setUser(userProvider.getUser());
 		}
 		profilerCreated(profiler);
@@ -99,12 +98,12 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 	 * Ends the current profiling session, if one exists.
 	 *
 	 * @param discardResults When true, clears the miniprofiler for this request, allowing profiling to
-	 *        be prematurely stopped and discarded. Useful for when a specific route does not need to be profiled.
+	 *                       be prematurely stopped and discarded. Useful for when a specific route does not need to be profiled.
 	 */
 	@Override
 	public void stopCurrentSession(boolean discardResults) {
 		Profiler currentProfiler = getCurrentProfiler();
-		if(currentProfiler != null) {
+		if (currentProfiler != null) {
 			currentProfiler.stop(discardResults);
 		}
 	}
@@ -113,14 +112,14 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 	 * Marks the given profiling session as stopped.
 	 *
 	 * @param profilingSession the profiler to register as stopped
-	 * @param discardResults When true, clears the miniprofiler for this request, allowing profiling to
-	 *        be prematurely stopped and discarded. Useful for when a specific route does not need to be profiled.
+	 * @param discardResults   When true, clears the miniprofiler for this request, allowing profiling to
+	 *                         be prematurely stopped and discarded. Useful for when a specific route does not need to be profiled.
 	 */
 	@Override
 	public void stopSession(ProfilerImpl profilingSession, boolean discardResults) {
 		profilingSession.stop();
 		String currentUser = userProvider != null ? userProvider.getUser() : null;
-		if(currentUser != null && profilingSession.getUser() == null) {
+		if (currentUser != null && profilingSession.getUser() == null) {
 			// user wasn't available at profile start, but is now
 			profilingSession.setUser(currentUser);
 		}
@@ -136,16 +135,16 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 
 	/**
 	 * Set the profiler storage to be used by this provider.
-	 *
+	 * <p/>
 	 * <p>The profiler storage is where profiler sessions are stored
 	 * to be retrieved later, either by an AJAX call immediately
 	 * after a page render, or for later debugging.</p>
-	 *
+	 * <p/>
 	 * <p> By default, the storage property is set to an in-memory
 	 * {@link MapStorage}.</p>
 	 *
-	 * @see {@link Storage}
 	 * @param storage
+	 * @see {@link Storage}
 	 */
 	public void setStorage(Storage storage) {
 		this.storage = storage;
@@ -158,6 +157,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 	/**
 	 * Sets the machine name for the current machine. In unset this defaults
 	 * to the local host name, as determined by {@link #getDefaultHostname()}.
+	 *
 	 * @param machineName
 	 */
 	public void setMachineName(String machineName) {
@@ -166,8 +166,9 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 
 	/**
 	 * Sets the user provider for this profiler provider.
-	 * @see {UserProvider}
+	 *
 	 * @param userProvider The user provider to use.
+	 * @see {UserProvider}
 	 */
 	public void setUserProvider(UserProvider userProvider) {
 		this.userProvider = userProvider;

@@ -18,7 +18,7 @@ package io.jdev.miniprofiler;
 
 public class DefaultProfilerProvider extends BaseProfilerProvider {
 
-    private static final ThreadLocal<Profiler> profilerHolder = new ThreadLocal<Profiler>();
+	private static final ThreadLocal<Profiler> profilerHolder = new ThreadLocal<Profiler>();
 
 	@Override
 	protected void profilerCreated(Profiler profiler) {
@@ -31,7 +31,7 @@ public class DefaultProfilerProvider extends BaseProfilerProvider {
 	}
 
 	/**
-	 *  Returns the current MiniProfiler.
+	 * Returns the current MiniProfiler.
 	 */
 	@Override
 	public Profiler lookupCurrentProfiler() {

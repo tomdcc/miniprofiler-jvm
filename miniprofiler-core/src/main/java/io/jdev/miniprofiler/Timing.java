@@ -24,5 +24,6 @@ import java.io.Serializable;
 public interface Timing extends Serializable, Jsonable, Closeable {
 
 	public void close();
+
 	public void stop();
 }

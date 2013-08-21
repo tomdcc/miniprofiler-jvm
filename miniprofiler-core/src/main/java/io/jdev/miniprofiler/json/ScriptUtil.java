@@ -18,7 +18,6 @@ package io.jdev.miniprofiler.json;
 
 import io.jdev.miniprofiler.NullProfiler;
 import io.jdev.miniprofiler.Profiler;
-import io.jdev.miniprofiler.ProfilerImpl;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +26,7 @@ import java.util.UUID;
 public class ScriptUtil {
 
 	public static String printScriptTag(Profiler profiler, String path) {
-		if(profiler == null || profiler == NullProfiler.INSTANCE) {
+		if (profiler == null || profiler == NullProfiler.INSTANCE) {
 			return "";
 		}
 		// TODO: un-hard-code all of this stuff
@@ -42,7 +41,7 @@ public class ScriptUtil {
 		boolean useExistingjQuery = false;
 		String version = "1";
 
-		if(!path.endsWith("/")) {
+		if (!path.endsWith("/")) {
 			path = path + "/";
 		}
 		StringBuilder sb = new StringBuilder();

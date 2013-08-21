@@ -17,5 +17,5 @@
 package io.jdev.miniprofiler;
 
 public enum ProfileLevel {
-    Info, Verbose
+	Info, Verbose
 }

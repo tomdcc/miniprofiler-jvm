@@ -57,16 +57,16 @@ public class ProfilingDataSource implements DataSource {
 			field.set(null, new ProfilingSpyLogDelegator(profilerProvider));
 		} catch (RuntimeException e) {
 			throw e;
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new UnsupportedOperationException("Unable to set log4jdbc logger - are you running under a security manager?");
 		}
 	}
 
 	@Override
-    public Connection getConnection() throws SQLException {
-        Connection conn = targetDataSource.getConnection();
-        return new ConnectionSpy(conn);
-    }
+	public Connection getConnection() throws SQLException {
+		Connection conn = targetDataSource.getConnection();
+		return new ConnectionSpy(conn);
+	}
 
 	@Override
 	public Connection getConnection(String username, String password) throws SQLException {
