@@ -1,0 +1,10 @@
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+dependencies {
+    testCompile 'junit:junit:4.11'
+}
+
+// don't install this anywhere
+install.enabled = false

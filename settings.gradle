@@ -1,0 +1,1 @@
+include "miniprofiler-core", "miniprofiler-test-support", "miniprofiler-test-java7", "miniprofiler-test-servlet"

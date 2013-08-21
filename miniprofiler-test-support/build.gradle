@@ -1,0 +1,9 @@
+dependencies {
+	compile "org.codehaus.groovy:groovy-all:$groovyVersion"
+
+	// If using Spock, need to depend on geb-spock
+	compile "org.gebish:geb-core:$gebVersion"
+	// these are really transitive dependencies of geb, not sure why they're not being picked up
+	compile "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
+	compile "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
+}

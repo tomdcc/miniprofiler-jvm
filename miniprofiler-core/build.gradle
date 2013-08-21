@@ -1,0 +1,25 @@
+
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+dependencies {
+    compile 'com.googlecode.log4jdbc:log4jdbc:1.2'
+
+	provided 'javax.servlet:servlet-api:2.3'
+
+    testCompile "org.codehaus.groovy:groovy-all:$groovyVersion"
+    testCompile "org.spockframework:spock-core:$spockVersion"
+}
+
+
+// include hibernate builder source, since it's LGPL and we don't want to add any
+// extra burden on people who might be bundling this library in
+jar {
+	from(sourceSets.main.allJava) { include 'io/jdev/miniprofiler/sql/hibernate/*' }
+}
+
+
+// as far as I'm concerned, this stuff never belongs in a published pom
+install.repositories.mavenInstaller.pom.whenConfigured { pom ->
+	pom.dependencies.removeAll { it.scope == "test" }
+}

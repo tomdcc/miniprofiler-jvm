@@ -1,0 +1,50 @@
+buildscript {
+	repositories {
+		maven { url 'http://repo.springsource.org/plugins-release' }
+	}
+	dependencies {
+		classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.4'
+	}
+}
+
+subprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'groovy'
+	apply plugin: 'propdeps'
+	apply plugin: 'maven'
+
+	// IDE support
+    apply plugin: 'idea'
+	apply plugin: 'eclipse'
+	apply plugin: 'propdeps-idea'
+	apply plugin: 'propdeps-eclipse'
+
+	group = 'io.jdev.miniprofiler'
+    version = '0.3-SNAPSHOT'
+
+	repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+	test {
+		systemProperties "geb.build.reportsDir": "$reporting.baseDir/geb"
+	}
+
+	ext {
+		groovyVersion = "2.1.6"
+		gebVersion = '0.9.1'
+		seleniumVersion = "2.35.0"
+		spockVersion = "0.7-groovy-2.0"
+	}
+}
+
+[':miniprofiler-test-java7', ':miniprofiler-test-servlet'].each {
+	project(it) {
+		dependencies {
+			compile project(':miniprofiler-core')
+			testCompile project(':miniprofiler-test-support')
+		}
+	}
+}
