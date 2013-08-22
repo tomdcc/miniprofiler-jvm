@@ -82,4 +82,15 @@ public class NullProfiler implements Profiler {
 	public Timing getHead() {
 		return NullTiming.INSTANCE;
 	}
+
+	@Override
+	public void setUser(String user) {
+	}
+
+	@Override
+	public String getUser() {
+		return null;
+	}
+
+
 }
