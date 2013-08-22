@@ -149,7 +149,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 	 * {@link MapStorage}.</p>
 	 *
 	 * @param storage
-	 * @see {@link Storage}
+	 * @see Storage
 	 */
 	public void setStorage(Storage storage) {
 		this.storage = storage;
@@ -185,7 +185,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 	 * Sets the user provider for this profiler provider.
 	 *
 	 * @param userProvider The user provider to use.
-	 * @see {UserProvider}
+	 * @see UserProvider
 	 */
 	public void setUserProvider(UserProvider userProvider) {
 		this.userProvider = userProvider;
