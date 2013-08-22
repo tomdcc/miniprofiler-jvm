@@ -1,6 +1,5 @@
 language: java
 jdk:
-  - openjdk7
   - oraclejdk7
 branches:
   only:
@@ -8,4 +7,8 @@ branches:
 before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
-script: ./gradlew clean test
+script: ./gradlew clean test uploadSnapshots
+env:
+  global:
+  - secure: "oAuW4pouqeljU/POQtmHHCPnRqsuZ6jGj4+jw9egUjXX7fLuiGzEfxTkXRmJkhkmXfM0PTnGwCu7ccwoJcd1CDT5ZomHgVxm/fr/tajaDABmEGzC3mb4onJLAb8+wltF9bY7m9rMZSjx+NaZFceZ1D+D0DwBjF0L4nJWo5uoftY="
+  - secure: "kpO+uJjqCe2ngn92Y7aDTkOzm8k/VFbeUk4Y23IaDzUUy29xnvxWuOziUxgSzvD4DZXB+DbMLQifMuQGgXfwdT5EalIRYKsXg/M+yAu2eb9mMGFG8V+RndKnQmEBGsmvGSx3f/4Nh8Ed+b/IjCmPtIcTMFEeXAR+Pvs1zVoIRBY="

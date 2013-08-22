@@ -72,7 +72,9 @@ subprojects {
 
 		uploadArchives { task ->
 			repositories.mavenDeployer {
-				beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+				if(!isSnapshot) {
+					beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+				}
 				uniqueVersion = false
 				gradle.taskGraph.whenReady { taskGraph ->
 					if (taskGraph.hasTask(task)) {
@@ -86,8 +88,20 @@ subprojects {
 				}
 			}
 		}
+
+		task uploadSnapshots << {
+			if(!isSnapshot) {
+				println "Not uploading snapshot as not a snapshot version"
+			}
+		}
+		if(isSnapshot) {
+			uploadSnapshots.dependsOn(uploadArchives)
+		}
+
 	}
 }
+
+
 
 [':miniprofiler-test-java7', ':miniprofiler-test-servlet'].each {
 	project(it) {
