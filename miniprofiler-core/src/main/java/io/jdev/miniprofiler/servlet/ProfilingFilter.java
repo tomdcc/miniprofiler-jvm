@@ -35,10 +35,19 @@ import java.util.regex.Pattern;
 
 /**
  * Filter to start and end profiling, and serve up results as JSON.
+ *
+ * <p>If a profiler provider is injected using
+ * {@link #setProfilerProvider(io.jdev.miniprofiler.ProfilerProvider)}, then
+ * it will be used to start new profiling sessions. Otherwise the filter will
+ * call {@link MiniProfiler#start(String)}, and it will be up to any setup
+ * code to set the profiler provider statically using
+ * {@link MiniProfiler#setProfilerProvider(io.jdev.miniprofiler.ProfilerProvider)}
+ * if the default profiler provider isn't enough.</p>
  */
 public class ProfilingFilter implements Filter {
 
 	protected ProfilerProvider profilerProvider;
+	// TODO: un-hardcode this
 	protected String profilerPath = "/miniprofiler/";
 	protected ResourceHelper resourceHelper = new ResourceHelper();
 	protected ServletContext servletContext;

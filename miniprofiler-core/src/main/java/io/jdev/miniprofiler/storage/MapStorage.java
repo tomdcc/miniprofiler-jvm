@@ -23,6 +23,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Storage implementation based on an LRU in-memory map.
+ */
 public class MapStorage extends BaseStorage {
 	private static final int DEFAULT_MAX_SIZE = 500;
 

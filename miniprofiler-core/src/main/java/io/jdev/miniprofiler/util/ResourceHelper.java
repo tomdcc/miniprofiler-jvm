@@ -20,6 +20,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Helper class for loading internal resources.
+ */
 public class ResourceHelper {
 	private static final String RESOURCE_BASE_PATH = "io/jdev/miniprofiler/ui/";
 	private static final int BUFFER_SIZE = 1024;

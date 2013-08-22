@@ -20,6 +20,21 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * A profiler implementation which does nothing. Mainly exists
+ * so that {@link io.jdev.miniprofiler.ProfilerProvider#getCurrentProfiler()}
+ * won't ever have to return null.
+ *
+ * <p>This makes it possible to call:</p>
+ * <p><blockquote><pre>
+ * try (Timing t = profilerProvider.getCurrentProfiler().step("do my thing")) {
+ *     // do stuff here
+ * }
+ * </pre></blockquote></p>
+ *
+ * <p>...without having to worry about whether there is a current profiler
+ * or not. A {@link NullProfiler} should be returned in those cases.</p>
+ */
 public class NullProfiler implements Profiler {
 
 	public static NullProfiler INSTANCE = new NullProfiler();
@@ -61,16 +76,6 @@ public class NullProfiler implements Profiler {
 	@Override
 	public UUID getId() {
 		return null;
-	}
-
-	@Override
-	public boolean hasTrivialTimings() {
-		return false;
-	}
-
-	@Override
-	public boolean hasAllTrivialTimings() {
-		return false;
 	}
 
 	@Override

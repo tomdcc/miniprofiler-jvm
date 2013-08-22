@@ -18,6 +18,22 @@ package io.jdev.miniprofiler;
 
 import java.util.*;
 
+/**
+ * Profiler implementation.
+ *
+ * <p>Generally users of the library will not need to
+ * interact directly with this class, instead getting references to the current
+ * profiler through {@link io.jdev.miniprofiler.MiniProfiler#start(String)},
+ * {@link io.jdev.miniprofiler.MiniProfiler#getCurrentProfiler()},
+ * {@link io.jdev.miniprofiler.ProfilerProvider#start(String)} and
+ * {@link io.jdev.miniprofiler.MiniProfiler#getCurrentProfiler()}, and then
+ * just treating it as a {@link Profiler}.</p>
+ *
+ * <p>However, writers of custom {@link ProfilerProvider} implementations may
+ * need to construct a new profiler by calling
+ * {@link #ProfilerImpl(String, ProfileLevel, ProfilerProvider)}.</p>
+ *
+ */
 public class ProfilerImpl implements Profiler {
 	private static final long serialVersionUID = 1;
 
@@ -33,6 +49,25 @@ public class ProfilerImpl implements Profiler {
 	private boolean stopped = false;
 	private final ProfilerProvider profilerProvider;
 
+	/**
+	 * Construct a new profiling session.
+	 *
+	 * <p>This will create an implicit root {@link Timing} step considered to have
+	 * started now, with the given root name.</p>
+	 *
+	 * <p>A new random UUID id is created for every profiler.</p>
+	 *
+	 * <p>Any profiling steps more verbose than the given level will be ignored.</p>
+	 *
+	 * <p>The profiler provider constructing the profiler is passed in so that
+	 * when {@link #stop()} is called, the profiler can notify the provider to store
+	 * the profiling info for later retrieval via
+	 * {@link ProfilerProvider#stopSession(ProfilerImpl, boolean)}.</p>
+	 *
+	 * @param rootName name of the root timing step to start
+	 * @param level the level of the profiler
+	 * @param profilerProvider the profiler provider constructing the
+	 */
 	public ProfilerImpl(String rootName, ProfileLevel level, ProfilerProvider profilerProvider) {
 		id = UUID.randomUUID();
 		this.profilerProvider = profilerProvider;
@@ -190,10 +225,12 @@ public class ProfilerImpl implements Profiler {
 		return started;
 	}
 
+	@Override
 	public String getUser() {
 		return user;
 	}
 
+	@Override
 	public void setUser(String user) {
 		this.user = user;
 	}

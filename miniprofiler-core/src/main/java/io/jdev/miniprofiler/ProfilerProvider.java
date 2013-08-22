@@ -18,13 +18,51 @@ package io.jdev.miniprofiler;
 
 import io.jdev.miniprofiler.storage.Storage;
 
+/**
+ * Primary interface for starting a profiling session and getting a
+ * handle on the current session.
+ *
+ * <p>If your system uses any form of dependency injection, the usual
+ * way to do things is to inject a ProfilerProvider instance into
+ * anything that need to be profiled, which can then call
+ * {@link #getCurrentProfiler()} to get a handle on the current
+ * provider and add timing steps.</p>
+ *
+ * <p>The profiler provider would also need to be injected into an
+ * entry point in the program - in a servlet environment this would
+ * usually be a servlet filter. An example is the provided
+ * {@link io.jdev.miniprofiler.servlet.ProfilingFilter}.</p>
+ *
+ * <p>If your system doesn't use dependency injection, then code starting
+ * a new session should call {@link MiniProfiler#start(String)} and
+ * {@link io.jdev.miniprofiler.MiniProfiler#getCurrentProfiler()},
+ * which defers to a static profiler provider instance. That
+ * instance can be set using
+ * {@link MiniProfiler#setProfilerProvider(ProfilerProvider)}.</p>
+ */
 public interface ProfilerProvider {
+
+	/**
+	 * Start a new profiling session with the default {@link ProfileLevel#Info} level.
+	 * @param rootName the name of the root timing step. This might often be the uri of the current request.
+	 * @return the new profiler
+	 */
 	Profiler start(String rootName);
 
+	/**
+	 * Start a new profiling session with the given level.
+	 * @param rootName the name of the root timing step. This might often be the uri of the current request.
+	 * @param level the level of the profiling session
+	 * @return the new profiler
+	 */
 	Profiler start(String rootName, ProfileLevel level);
 
 	/**
 	 * Ends the current profiling session, if one exists.
+	 *
+	 * <p>Generally it is preferrable to stop a profiling session by
+	 * calling {@link io.jdev.miniprofiler.Profiler#stop()}, but in some circumstances
+	 * it may be easier to call this method.</p>
 	 *
 	 * @param discardResults When true, clears the miniprofiler for this request, allowing profiling to
 	 *                       be prematurely stopped and discarded. Useful for when a specific route does not need to be profiled.
@@ -32,7 +70,10 @@ public interface ProfilerProvider {
 	void stopCurrentSession(boolean discardResults);
 
 	/**
-	 * Marks the given profiling session as stopped.
+	 * Marks the given profiling session as stopped. This is generally
+	 * called from inside the {@link io.jdev.miniprofiler.ProfilerImpl#stop()}
+	 * method. End users do not need to call it. Only public so that
+	 * custom ProfilerProviders can be developed.
 	 *
 	 * @param profilingSession the profiler to register as stopped
 	 * @param discardResults   When true, clears the miniprofiler for this request, allowing profiling to
@@ -42,8 +83,22 @@ public interface ProfilerProvider {
 
 	/**
 	 * Returns the current MiniProfiler.
+	 *
+	 * <p>This method should never return null. If there is no current profiling session,
+	 * a {@link NullProfiler} instance will be returned so that calling code does not
+	 * have to do null checks around every timing block.</p>
 	 */
 	Profiler getCurrentProfiler();
 
+	/**
+	 * Returns the {@link Storage} associated with this provider.
+	 * @return the provider's storage
+	 */
 	Storage getStorage();
+
+	/**
+	 * Sets the {@link Storage} for this provider to use.
+	 * @param storage the storage to use
+	 */
+	public void setStorage(Storage storage);
 }

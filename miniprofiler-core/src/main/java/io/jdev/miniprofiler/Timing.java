@@ -21,15 +21,63 @@ import io.jdev.miniprofiler.json.Jsonable;
 import java.io.Closeable;
 import java.io.Serializable;
 
+/**
+ * Represents a step to be timed / profiled.
+ *
+ * <p>These are normally created using {@link Profiler#step(String)}.
+ * Timing instances should always have {@link #stop()} called on
+ * them. If at all possible, this should be in a finally block just
+ * after the creation of the timing like so:
+ * </p>
+ * <p><blockquote><pre>
+ * Timing timing = profilerProvider.getCurrentProfiler().step("some thing");
+ * try {
+ *     // do stuff here
+ * } finally {
+ *     timing.stop();
+ * }
+ * </pre></blockquote></p>
+ *
+ * <p>or, since the timings implements {@link Closeable}, you can use
+ * Java 7 ARM blocks:</p>
+ *
+ * <p><blockquote><pre>
+ * try(Timing timing = profilerProvider.getCurrentProfiler().step("some thing")) {
+ *     // do stuff here
+ * }
+ * // automatically closed!
+ * </pre></blockquote></p>
+ */
 public interface Timing extends Serializable, Jsonable, Closeable {
 
-	public void close();
-
+	/**
+	 * Stops the timing step. This sets the end time for the timing
+	 * to the current time.
+	 */
 	public void stop();
 
-	public void setName(String name);
-
+	/**
+	 * Returns the name of the timing
+	 * @return the name
+	 */
 	public String getName();
 
+	/**
+	 * Allows changing the name of the timing step after creation. Sometimes
+	 * useful when you don't know the name a particular step until later on.
+	 * @param name
+	 */
+	public void setName(String name);
+
+
+	/**
+	 * Returns the parent timing of this one.
+	 * @return the timing's parent, nor null for the root timing for a profiler
+	 */
 	public Timing getParent();
+
+	/**
+	 * Same as calling {@link #stop()}. ere to satisfy {@link Closeable}.
+	 */
+	public void close();
 }

@@ -21,6 +21,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * Base class for storage interface - provides default implementations
+ * for a number of optional methods.
+ */
 public abstract class BaseStorage implements Storage {
 
 	/**

@@ -20,6 +20,9 @@ import io.jdev.miniprofiler.json.JsonUtil;
 
 import java.util.*;
 
+/**
+ * Concrete implementation of {@link Timing} interface.
+ */
 public class TimingImpl implements Timing {
 	private static final long serialVersionUID = 1;
 

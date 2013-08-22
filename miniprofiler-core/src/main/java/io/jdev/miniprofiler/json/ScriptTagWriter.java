@@ -24,8 +24,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Writes out a script tag in the format that the mini profiler front end
+ * javascript expects.
+ */
 public class ScriptTagWriter {
 
+	/**
+	 * Writes out a script tag in the format that the mini profiler front end
+	 * javascript expects.
+	 */
 	public String printScriptTag(Profiler profiler, String path) {
 		if (profiler == null || profiler == NullProfiler.INSTANCE) {
 			return "";

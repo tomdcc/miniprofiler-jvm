@@ -22,25 +22,125 @@ import java.io.Closeable;
 import java.io.Serializable;
 import java.util.UUID;
 
+/**
+ * Represents a single profiling session.
+ *
+ * <p>Typical usage involves starting a profiling session by calling
+ * {@link ProfilerProvider#start(String, ProfileLevel)} or
+ * {@link MiniProfiler#start(String, ProfileLevel)}. A profiling session
+ * should be stopped by calling {@link #stop()}. Typically this might be
+ * done in a finally block around some code:</p>
+ *
+ * <p><blockquote><pre>
+ * Profiler profiler = MiniProfiler.start("/my/uri", Info);
+ * try {
+ *     // do stuff here
+ * } finally {
+ *     profiler.stop();
+ * }
+ * </pre></blockquote></p>
+ *
+ * <p>or, since the interface implements {@link Closeable}, you can use
+ * Java 7 ARM blocks:</p>
+ *
+ * <p><blockquote><pre>
+ * try(Profiler profiler = profilerProvider.start("/my/uri", Info)) {
+ *     // do stuff here
+ * }
+ * </pre></blockquote></p>
+ *
+ * <p>Individual profiling steps can then be added by calling
+ * {@link #step(String, ProfileLevel)}. Usually it would be necessary
+ * to get a handle on the current profiler first, using either
+ * {@link io.jdev.miniprofiler.ProfilerProvider#getCurrentProfiler()}
+ * or {@link io.jdev.miniprofiler.MiniProfiler#getCurrentProfiler()}.
+ * </p>
+ * <p><blockquote><pre>
+ * try(Timing profiler = profilerProvider.getCurrentProfiler().step("Some complicated step", Info)) {
+ *     // do stuff here
+ * }
+ * </pre></blockquote></p>
+ *
+ * <p>Calls can be nested, and nested steps will be displayed indented in
+ * the UI.</p>
+ * <p><blockquote><pre>
+ * try(Timing profiler = profilerProvider.getCurrentProfiler().step("Some complicated step", Info)) {
+ *     // do stuff here
+ *     try(Timing profiler = profilerProvider.getCurrentProfiler().step("Another step inside that one!", Info)) {
+ *         // do stuff here
+ *     }
+ * }
+ * </pre></blockquote></p>
+ */
 public interface Profiler extends Serializable, Jsonable, Closeable {
+
+	/**
+	 * Start a new profiling step with the default {@link ProfileLevel#Info} level;
+	 *
+	 * @param name The name of the step.
+	 * @return a Timing instance to be stopped when the step is done
+	 */
 	public Timing step(String name);
 
+	/**
+	 * Start a new profiling step with the given level;
+	 *
+	 * @param name The name of the step.
+	 * @param level the profiling level for this step
+	 * @return a Timing instance to be stopped when the step is done
+	 */
 	public Timing step(String name, ProfileLevel level);
 
+	/**
+	 * Add a query timing inside the current timing step. This is usually
+	 * to log an SQL or other query.
+	 *
+	 * @param query the query to save
+	 * @param duration how long it took, in milliseconds
+	 */
 	public void addQueryTiming(String query, long duration);
 
-	public void close();
-
+	/**
+	 * Stop the current timing session.
+	 */
 	public void stop();
 
+	/**
+	 * Stop the current timing session. If passed true, the
+	 * current profiling session won't be saved for later viewing.
+	 * This is usually if the page has been cancelled for some reason.
+	 */
 	public void stop(boolean discardResults);
 
+	/**
+	 * Same as calling {@link #stop()}. Here to satisfy {@link Closeable} so
+	 * that the profiler can be auto-closed in a Java 7 try-with-resources
+	 * block.
+	 */
+	public void close();
+
+	/**
+	 * Returns a unique id for the profiling session.
+	 * @return the session's id
+	 */
 	public UUID getId();
 
-	public boolean hasTrivialTimings();
 
-	public boolean hasAllTrivialTimings();
-
+	/**
+	 * Returns the current live timing for this profiler.
+	 * @return the current timing
+	 */
 	public Timing getHead();
 
+	/**
+	 * Set the user name for the current profiling session
+	 * @param user the user
+	 */
+	public void setUser(String user);
+
+	/**
+	 * Returns the user name for the profile session.
+	 * @return the current user
+	 */
+	public String getUser();
 }

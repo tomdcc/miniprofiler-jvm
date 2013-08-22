@@ -19,6 +19,22 @@ package io.jdev.miniprofiler;
 import java.util.Collections;
 import java.util.Map;
 
+/**
+ * A timing implementation which does nothing. Mainly exists
+ * so that {@link io.jdev.miniprofiler.ProfilerProvider#getCurrentProfiler()}
+ * won't ever have to return null.
+ *
+ * <p>This makes it possible to call:</p>
+ * <p><blockquote><pre>
+ * try (Timing t = profilerProvider.getCurrentProfiler().step("do my thing")) {
+ *     // do stuff here
+ * }
+ * </pre></blockquote></p>
+ *
+ * <p>...without having to worry about whether there is a current profiler
+ * or not. A {@link NullTiming} should be returned by the {@link NullProfiler}
+ * that is returned in these cases.</p>
+ */
 class NullTiming implements Timing {
 
 	static NullTiming INSTANCE = new NullTiming();

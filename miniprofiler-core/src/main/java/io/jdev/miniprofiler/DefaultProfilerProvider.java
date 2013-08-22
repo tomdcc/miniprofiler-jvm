@@ -16,6 +16,11 @@
 
 package io.jdev.miniprofiler;
 
+/**
+ * A profiler provider which keeps track of the current profiling
+ * session in an internal {@link ThreadLocal} variable. This should work
+ * pretty well for most thread-as-worker based systems.
+ */
 public class DefaultProfilerProvider extends BaseProfilerProvider {
 
 	private static final ThreadLocal<Profiler> profilerHolder = new ThreadLocal<Profiler>();

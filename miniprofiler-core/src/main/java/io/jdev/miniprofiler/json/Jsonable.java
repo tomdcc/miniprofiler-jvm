@@ -18,6 +18,9 @@ package io.jdev.miniprofiler.json;
 
 import java.util.Map;
 
+/**
+ * Internal interface used by JSON serialization classes.
+ */
 public interface Jsonable {
 	Map<String, Object> toMap();
 }

@@ -21,6 +21,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Utility class used for JSON serialization.
+ */
 public class JsonUtil {
 	public static List<Map<String, Object>> mapList(List<? extends Jsonable> srcList) {
 		if (srcList == null) return null;

@@ -21,24 +21,48 @@ import io.jdev.miniprofiler.util.ResourceHelper;
 
 import java.io.IOException;
 
+/**
+ * Convenience class for static access to profiling functions.
+ *
+ * <p>If your code does not use dependency injection, use this class instead
+ * of a {@link ProfilerProvider} instance when you need to start a new
+ * profiling session or add a new step.</p>
+ *
+ * <p>By default, this class will internally create a {@link DefaultProfilerProvider}
+ * instance to forward calls to. If you wish to change the profiler provider used,
+ * call {@link #setProfilerProvider(ProfilerProvider)} with your preferred implementation.</p>
+ *
+ * <p>Even if you are using dependency injection, it's probably good practice to
+ * set it statically here using {@link #setProfilerProvider(ProfilerProvider)}
+ * so that any code that can't get injected can still make timing calls. An example
+ * might be instrumented code.</p>
+ */
 public class MiniProfiler {
 	private static ProfilerProvider profilerProvider;
 	private static String version;
 
+	/**
+	 * Return the current internal profiler provider.
+	 * @return the current internal profiler provider
+	 */
 	public static ProfilerProvider getProfilerProvider() {
 		return profilerProvider;
 	}
 
+	/**
+	 * Set the profiler provider instance to use for static calls
+	 * @param profilerProvider the instance to use
+	 */
 	public static void setProfilerProvider(ProfilerProvider profilerProvider) {
 		MiniProfiler.profilerProvider = profilerProvider;
 	}
 
+	/**
+	 * Returns the profiler object for the current profiling session.
+	 * @return the current profiler, or a NullProfiler instance if there isn't one
+	 */
 	public static Profiler getCurrentProfiler() {
 		return profilerProvider != null ? profilerProvider.getCurrentProfiler() : NullProfiler.INSTANCE;
-	}
-
-	public static Profiler start(String rootName) {
-		return start(rootName, ProfileLevel.Info);
 	}
 
 	private static ProfilerProvider getOrCreateProfilerProvider() {
@@ -49,14 +73,38 @@ public class MiniProfiler {
 		return profilerProvider;
 	}
 
+	/**
+	 * Start a new profiling session with the default {@link ProfileLevel#Info} level.
+	 * @param rootName the name of the root timing step to create. This would often be the URI of the current request.
+	 * @return the profiler object
+	 */
+	public static Profiler start(String rootName) {
+		return start(rootName, ProfileLevel.Info);
+	}
+
+	/**
+	 * Start a new profiling session with the given level.
+	 * @param rootName the name of the root timing step to create. This would often be the URI of the current request.
+	 * @param level the level of logging to do
+	 * @return the profiler object
+	 */
 	public static Profiler start(String rootName, ProfileLevel level) {
 		return getOrCreateProfilerProvider().start(rootName, level);
 	}
 
+	/**
+	 * Returns the storage associated with the current profiler provider. Useful
+	 * for implementing a servlet etc to serve up stored profiler info.
+	 * @return the current storage/
+	 */
 	public static Storage getStorage() {
 		return getOrCreateProfilerProvider().getStorage();
 	}
 
+	/**
+	 * Returns the current version of the MiniProfiler-JVM library
+	 * @return the current version of the MiniProfiler-JVM library
+	 */
 	public static String getVersion() {
 		if(version == null) {
 			try {

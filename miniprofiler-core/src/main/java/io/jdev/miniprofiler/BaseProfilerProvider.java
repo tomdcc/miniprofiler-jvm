@@ -50,6 +50,11 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 	 */
 	protected abstract void profilerStopped(Profiler profiler);
 
+
+	/**
+	 * Return the current profiler, if any.
+	 * @return The current profiler, or null if none.
+	 */
 	protected abstract Profiler lookupCurrentProfiler();
 
 	/**
@@ -150,6 +155,10 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 		this.storage = storage;
 	}
 
+	/**
+	 * Return the current storage implementation.
+	 * @return current storage
+	 */
 	public Storage getStorage() {
 		return storage;
 	}
@@ -164,6 +173,10 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 		this.machineName = machineName;
 	}
 
+	/**
+	 * Returnes the current machine name set
+	 * @return the current machine name
+	 */
 	public String getMachineName() {
 		return machineName;
 	}

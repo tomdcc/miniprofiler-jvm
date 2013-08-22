@@ -16,6 +16,11 @@
 
 package io.jdev.miniprofiler;
 
+/**
+ * An enum representing different levels of detail.
+ *
+ * @see Profiler#step(String, ProfileLevel)
+ */
 public enum ProfileLevel {
 	Info, Verbose
 }
