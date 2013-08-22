@@ -72,4 +72,9 @@ public class NullProfiler implements Profiler {
 	public boolean hasAllTrivialTimings() {
 		return false;
 	}
+
+	@Override
+	public Timing getHead() {
+		return NullTiming.INSTANCE;
+	}
 }

@@ -24,7 +24,7 @@ public class TimingImpl implements Timing {
 	private static final long serialVersionUID = 1;
 
 	private final UUID id;
-	private final String name;
+	private String name;
 	private final long startMilliseconds;
 	private Long durationMilliseconds;
 	private final ProfilerImpl profiler;
@@ -143,6 +143,10 @@ public class TimingImpl implements Timing {
 
 	public String getName() {
 		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Long getDurationMilliseconds() {

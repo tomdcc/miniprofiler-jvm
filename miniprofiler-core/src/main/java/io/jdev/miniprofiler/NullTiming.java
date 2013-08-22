@@ -35,7 +35,21 @@ class NullTiming implements Timing {
 	}
 
 	@Override
+	public void setName(String name) {
+	}
+
+	@Override
 	public Map<String, Object> toMap() {
 		return Collections.emptyMap();
+	}
+
+	@Override
+	public String getName() {
+		return "";
+	}
+
+	@Override
+	public Timing getParent() {
+		return null;
 	}
 }

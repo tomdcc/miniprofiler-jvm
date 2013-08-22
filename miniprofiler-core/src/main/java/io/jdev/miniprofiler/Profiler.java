@@ -41,4 +41,6 @@ public interface Profiler extends Serializable, Jsonable, Closeable {
 
 	public boolean hasAllTrivialTimings();
 
+	public Timing getHead();
+
 }

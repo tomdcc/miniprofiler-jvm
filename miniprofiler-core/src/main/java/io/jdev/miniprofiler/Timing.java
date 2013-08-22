@@ -26,4 +26,10 @@ public interface Timing extends Serializable, Jsonable, Closeable {
 	public void close();
 
 	public void stop();
+
+	public void setName(String name);
+
+	public String getName();
+
+	public Timing getParent();
 }

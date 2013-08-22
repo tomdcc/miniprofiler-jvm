@@ -164,6 +164,10 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 		this.machineName = machineName;
 	}
 
+	public String getMachineName() {
+		return machineName;
+	}
+
 	/**
 	 * Sets the user provider for this profiler provider.
 	 *
@@ -178,7 +182,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 	 * Return the local host name, or the loopback name (usually "localhost")
 	 * if it doesn't resolve in DNS.
 	 */
-	protected String getDefaultHostname() {
+	public String getDefaultHostname() {
 		try {
 			return InetAddress.getLocalHost().getHostName();
 		} catch (UnknownHostException e) {
