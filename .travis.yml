@@ -10,5 +10,5 @@ before_install:
 script: ./gradlew clean test uploadSnapshots
 env:
   global:
-  - secure: "oAuW4pouqeljU/POQtmHHCPnRqsuZ6jGj4+jw9egUjXX7fLuiGzEfxTkXRmJkhkmXfM0PTnGwCu7ccwoJcd1CDT5ZomHgVxm/fr/tajaDABmEGzC3mb4onJLAb8+wltF9bY7m9rMZSjx+NaZFceZ1D+D0DwBjF0L4nJWo5uoftY="
-  - secure: "kpO+uJjqCe2ngn92Y7aDTkOzm8k/VFbeUk4Y23IaDzUUy29xnvxWuOziUxgSzvD4DZXB+DbMLQifMuQGgXfwdT5EalIRYKsXg/M+yAu2eb9mMGFG8V+RndKnQmEBGsmvGSx3f/4Nh8Ed+b/IjCmPtIcTMFEeXAR+Pvs1zVoIRBY="
+  - secure: "JUvsQdNlTT5HO3FX+3A4Ex/V9kiiGQe9yYU9IxkrN6ohyYLCwbNn32cdFC3PUsqV+FYEbSGU2lGnEWtfysWZEehFZZb15DhV/6LlpO4XMec2QWbbD2DaW6NKmHC8GEo1dXDqJTZRBz9mMWSojZvCnScLjn3UIT3krJbgdUlrJPE="
+  - secure: "MXVhVp0m2IHaAb905jKfN44I+qI8vB3Vix6QdX4gGecDaOUG4kcUXlDBbvUeW9mlGo1nQYT+fyimZmMpAOQRoKbQnqcNWUegzexH8iqk5X+mq/9SrWx7vLS8N9uyJWCctECRb7BpB7xjBo7jFQa5UcA3qIo1ngR+Rt2e3PXZo4w="
