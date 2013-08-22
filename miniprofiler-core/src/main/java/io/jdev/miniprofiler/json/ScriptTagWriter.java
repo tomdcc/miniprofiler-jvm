@@ -24,9 +24,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-public class ScriptUtil {
+public class ScriptTagWriter {
 
-	public static String printScriptTag(Profiler profiler, String path) {
+	public String printScriptTag(Profiler profiler, String path) {
 		if (profiler == null || profiler == NullProfiler.INSTANCE) {
 			return "";
 		}
