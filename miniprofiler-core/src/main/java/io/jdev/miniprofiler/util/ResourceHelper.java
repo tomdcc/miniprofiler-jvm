@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.json;
+package io.jdev.miniprofiler.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -24,9 +24,16 @@ public class ResourceHelper {
 	private static final String RESOURCE_BASE_PATH = "io/jdev/miniprofiler/ui/";
 	private static final int BUFFER_SIZE = 1024;
 
+	private final String resourceBasePath;
 	private final ClassLoader classLoader;
 
 	public ResourceHelper() {
+		this(RESOURCE_BASE_PATH);
+	}
+
+	public ResourceHelper(String resourceBasePath) {
+		resourceBasePath = resourceBasePath.endsWith("/") ? resourceBasePath : resourceBasePath + "/";
+		this.resourceBasePath = resourceBasePath;
 		this.classLoader = getClass().getClassLoader();
 	}
 
@@ -36,6 +43,13 @@ public class ResourceHelper {
 		if (stream == null) return null;
 		byte[] bytes = readResource(stream);
 		return new Resource(bytes, guessContentType(uri));
+	}
+
+	public String getResourceAsString(String resource) throws IOException {
+		InputStream stream = classLoader.getResourceAsStream(resourceBasePath + resource);
+		if (stream == null) return null;
+		byte[] bytes = readResource(stream);
+		return new String(bytes);
 	}
 
 	private String guessContentType(String uri) {

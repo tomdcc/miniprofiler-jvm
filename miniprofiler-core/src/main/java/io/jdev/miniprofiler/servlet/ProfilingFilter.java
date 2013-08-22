@@ -20,7 +20,7 @@ import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.json.JsonUtil;
-import io.jdev.miniprofiler.json.ResourceHelper;
+import io.jdev.miniprofiler.util.ResourceHelper;
 import io.jdev.miniprofiler.storage.Storage;
 
 import javax.servlet.*;

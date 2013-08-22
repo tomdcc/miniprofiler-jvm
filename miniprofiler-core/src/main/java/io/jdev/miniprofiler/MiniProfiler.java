@@ -17,9 +17,13 @@
 package io.jdev.miniprofiler;
 
 import io.jdev.miniprofiler.storage.Storage;
+import io.jdev.miniprofiler.util.ResourceHelper;
+
+import java.io.IOException;
 
 public class MiniProfiler {
 	private static ProfilerProvider profilerProvider;
+	private static String version;
 
 	public static ProfilerProvider getProfilerProvider() {
 		return profilerProvider;
@@ -51,5 +55,17 @@ public class MiniProfiler {
 
 	public static Storage getStorage() {
 		return getOrCreateProfilerProvider().getStorage();
+	}
+
+	public static String getVersion() {
+		if(version == null) {
+			try {
+				version = new ResourceHelper("io/jdev/miniprofiler/").getResourceAsString("miniprofiler-version.txt");
+			} catch(IOException e) {
+				// something prety weird going on
+				version = "UNKNOWN";
+			}
+		}
+		return version;
 	}
 }

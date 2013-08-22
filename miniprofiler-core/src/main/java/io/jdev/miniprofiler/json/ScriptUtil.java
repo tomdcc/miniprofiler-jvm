@@ -16,6 +16,7 @@
 
 package io.jdev.miniprofiler.json;
 
+import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.NullProfiler;
 import io.jdev.miniprofiler.Profiler;
 
@@ -39,7 +40,7 @@ public class ScriptUtil {
 		boolean showControls = false;
 		boolean authorized = true;
 		boolean useExistingjQuery = false;
-		String version = "1";
+		String version = MiniProfiler.getVersion();
 
 		if (!path.endsWith("/")) {
 			path = path + "/";
