@@ -48,13 +48,14 @@ class MiniProfilerPopupModule extends Module {
 
 class MiniProfilerTimingRowModule extends Module {
 	static content = {
-		label                    { $('.profiler-label')?.text()?.trim() }
-		durations(cache: true)   { $('.profiler-duration') }
-		duration                 { durations[0] }
-		durationWithChildren     { durations[1] }
-		timeFromStart            { durations[2] }
-		queries                  { durations[3].find('a') }
-		queryTime                { durations[4] }
+		label                      { $('.profiler-label')?.text()?.trim() }
+		indent                     { $('.profiler-label .profiler-indent').text().length() }
+		durations(cache: true)     { $('.profiler-duration') }
+		duration                   { durations[0] }
+		durationWithChildren       { durations[1] }
+		timeFromStart              { durations[2] }
+		queries(required: false)   { durations[3].find('a') }
+		queryTime(required: false) { durations[4] }
 	}
 }
 
