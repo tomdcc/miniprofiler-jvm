@@ -19,7 +19,11 @@ jar {
 }
 
 
-// as far as I'm concerned, this stuff never belongs in a published pom
-install.repositories.mavenInstaller.pom.whenConfigured { pom ->
-	pom.dependencies.removeAll { it.scope == "test" }
+modifyPom { pom ->
+	pom.project {
+		name "MiniProfiler JVM Core"
+		description "MiniProfiler JVM is an implementation of the StackExchange MiniProfiler for the JVM. It provides easily accessible profiling information while developing a web-based app."
+	}
+
+	pom.dependencies.findAll { it.groupId == "org.seleniumhq.selenium" }*.scope = "provided"
 }

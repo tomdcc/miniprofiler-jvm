@@ -12,7 +12,6 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'groovy'
 	apply plugin: 'propdeps'
-	apply plugin: 'maven'
 
 	// IDE support
     apply plugin: 'idea'
@@ -37,6 +36,56 @@ subprojects {
 		gebVersion = '0.9.1'
 		seleniumVersion = "2.35.0"
 		spockVersion = "0.7-groovy-2.0"
+
+		isSnapshot = version.endsWith("-SNAPSHOT")
+
+		publishedModules = [':miniprofiler-core', ':miniprofiler-test-support']
+	}
+
+	if (path in publishedModules) {
+		apply plugin: "base"
+		apply plugin: "maven"
+		apply plugin: "signing"
+
+		signing {
+			sign configurations.archives
+			required { !isSnapshot && gradle.taskGraph.hasTask(uploadArchives) }
+		}
+
+		task javadocJar(type: Jar, dependsOn: javadoc) {
+			classifier = 'javadoc'
+			from 'build/docs/javadoc'
+		}
+
+		task sourcesJar(type: Jar) {
+			from sourceSets.main.allSource
+			classifier = 'sources'
+		}
+
+		artifacts {
+			archives jar
+			archives javadocJar
+			archives sourcesJar
+		}
+
+		apply from: "$rootDir/gradle/pom.gradle"
+
+		uploadArchives { task ->
+			repositories.mavenDeployer {
+				beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+				uniqueVersion = false
+				gradle.taskGraph.whenReady { taskGraph ->
+					if (taskGraph.hasTask(task)) {
+						repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+							authentication(userName: sonatypeOssUsername, password: sonatypeOssPassword)
+						}
+						snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+							authentication(userName: sonatypeOssUsername, password: sonatypeOssPassword)
+						}
+					}
+				}
+			}
+		}
 	}
 }
 

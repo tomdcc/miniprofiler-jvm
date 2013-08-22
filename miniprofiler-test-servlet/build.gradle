@@ -29,9 +29,6 @@ test.doLast {
 	jettyStop.execute()
 }
 
-// don't install this anywhere
-install.enabled = false
-
 test {
 	systemProperties "geb.build.reportsDir": "$reporting.baseDir/geb"
 }
