@@ -10,3 +10,10 @@ dependencies {
 	compile "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
 	compile "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
 }
+
+modifyPom { pom ->
+	pom.project {
+		name "MiniProfiler Test Support Classes"
+		description "Contains Geb modules modelling the MiniProfiler UI for easy functional testing"
+	}
+}
