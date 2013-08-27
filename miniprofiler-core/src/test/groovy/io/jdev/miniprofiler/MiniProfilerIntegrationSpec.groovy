@@ -73,7 +73,7 @@ class MiniProfilerIntegrationSpec extends Specification {
 		when: 'add some stuff'
             Timing firstTiming = profiler.step("fooService.whatever")
             Timing childTiming = profiler.step("child")
-            profiler.addQueryTiming("select * from foo", 5L)
+            profiler.addQueryTiming('select * from "foo"', 5L)
 			Thread.sleep(5)
             childTiming.stop()
             Timing trivialTiming = profiler.step("trivial")
@@ -121,7 +121,7 @@ class MiniProfilerIntegrationSpec extends Specification {
             nestedChild.SqlTimings.size() == 1
 
             def sql = nestedChild.SqlTimings[0]
-            verifySqlTiming(sql, [FormattedCommandString: "\n    select\n        * \n    from\n        foo", ParentTimingName: "child", ExecuteType: 0])
+            verifySqlTiming(sql, [FormattedCommandString: '\n    select\n        * \n    from\n        "foo"', ParentTimingName: "child", ExecuteType: 0])
 
             def trivialChild = firstChild.Children[1]
             verifyTiming(trivialChild, [Name: 'trivial', HasSqlTimings: false, Depth: 2, IsTrivial: true, HasChildren: false])

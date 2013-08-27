@@ -64,12 +64,65 @@ public class JsonUtil {
 		if (str == null) {
 			buf.append("null");
 		} else {
-			str = str.replaceAll("\\\\", "\\\\");
-			str = str.replaceAll("\"", "\\\"");
-			str = str.replaceAll("\r\n", "\\\\n");
-			str = str.replaceAll("\n", "\\\\n");
-			buf.append('"').append(str).append('"');
+			quote(str, buf);
 		}
+	}
+	/**
+	 * Produce a string in double quotes with backslash sequences in all the
+	 * right places. A backslash will be inserted within </, allowing JSON
+	 * text to be delivered in HTML. In JSON text, a string cannot contain a
+	 * control character or an unescaped quote or backslash.
+	 *
+	 * This code copied from The Jettison project JSONObject class, also under
+	 * the Apcache 2.0 license.
+	 *
+	 * @param string A String
+	 * @return  A String correctly formatted for insertion in a JSON text.
+	 */
+	public static void quote(String string, StringBuilder sb) {
+		char         c = 0;
+		int          i;
+		int          len = string.length();
+		String       t;
+
+		sb.append('"');
+		for (i = 0; i < len; i += 1) {
+			c = string.charAt(i);
+			switch (c) {
+				case '\\':
+				case '"':
+					sb.append('\\');
+					sb.append(c);
+					break;
+				case '/':
+					sb.append('\\');
+					sb.append(c);
+					break;
+				case '\b':
+					sb.append("\\b");
+					break;
+				case '\t':
+					sb.append("\\t");
+					break;
+				case '\n':
+					sb.append("\\n");
+					break;
+				case '\f':
+					sb.append("\\f");
+					break;
+				case '\r':
+					sb.append("\\r");
+					break;
+				default:
+					if (c < ' ') {
+						t = "000" + Integer.toHexString(c);
+						sb.append("\\u" + t.substring(t.length() - 4));
+					} else {
+						sb.append(c);
+					}
+			}
+		}
+		sb.append('"');
 	}
 
 	private static void collectionToJsonBuffer(StringBuilder buf, Collection<?> src) {
