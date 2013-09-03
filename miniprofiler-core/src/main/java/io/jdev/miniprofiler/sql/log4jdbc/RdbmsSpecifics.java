@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sf.log4jdbc;
+package io.jdev.miniprofiler.sql.log4jdbc;
 
 import java.util.Date;
 import java.text.SimpleDateFormat;

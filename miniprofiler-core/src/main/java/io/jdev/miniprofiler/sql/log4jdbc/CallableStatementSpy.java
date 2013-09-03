@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package net.sf.log4jdbc;
+package io.jdev.miniprofiler.sql.log4jdbc;
 
 import java.io.InputStream;
 import java.io.Reader;
