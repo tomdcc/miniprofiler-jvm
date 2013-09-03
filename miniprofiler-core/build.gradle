@@ -3,8 +3,6 @@ sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
 dependencies {
-    compile 'com.googlecode.log4jdbc:log4jdbc:1.2'
-
 	provided 'javax.servlet:servlet-api:2.3'
 
 	provided 'net.sf.ehcache:ehcache:2.7.2'
