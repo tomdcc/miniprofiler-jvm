@@ -1016,4 +1016,32 @@ public class StatementSpy implements Statement, Spy
     }
   }
 
+  public void closeOnCompletion() throws SQLException {
+    String methodCall = "closeOnCompletion()";
+    try
+    {
+	  realStatement.closeOnCompletion();
+      reportReturn(methodCall);
+    }
+    catch (SQLException s)
+    {
+      reportException(methodCall,s);
+      throw s;
+    }
+  }
+
+  public boolean isCloseOnCompletion() throws SQLException {
+    String methodCall = "isCloseOnCompletion()";
+    try
+    {
+	  boolean result = realStatement.isCloseOnCompletion();
+      reportReturn(methodCall, result);
+	  return result;
+    }
+    catch (SQLException s)
+    {
+      reportException(methodCall,s);
+      throw s;
+    }
+  }
 }

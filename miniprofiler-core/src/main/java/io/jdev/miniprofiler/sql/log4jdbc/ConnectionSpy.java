@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.Executor;
 
 /**
  * Wraps a JDBC Connection and reports method calls, returns and exceptions.
@@ -938,4 +939,77 @@ public class ConnectionSpy implements Connection, Spy
       throw s;
     }
   }
+
+  public void setSchema(String schema) throws SQLException {
+    String methodCall = "setSchema(" + schema + ")";
+    try
+    {
+      realConnection.setSchema(schema);
+      reportReturn(methodCall);
+    }
+    catch (SQLException s)
+    {
+      reportException(methodCall,s);
+      throw s;
+    }
+  }
+
+  public String getSchema() throws SQLException {
+    String methodCall = "getSchema()";
+    try
+    {
+      String result = realConnection.getSchema();
+      reportReturn(methodCall, result);
+      return result;
+    }
+    catch (SQLException s)
+    {
+      reportException(methodCall,s);
+      throw s;
+    }
+  }
+
+  public void abort(Executor executor) throws SQLException {
+    String methodCall = "abort(" + executor + ")";
+    try
+    {
+      realConnection.abort(executor);
+      reportReturn(methodCall);
+    }
+    catch (SQLException s)
+    {
+      reportException(methodCall,s);
+      throw s;
+    }
+  }
+
+  public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+    String methodCall = "setNetworkTimeout(" + executor + ", " + milliseconds + ")";
+    try
+    {
+      realConnection.setNetworkTimeout(executor, milliseconds);
+      reportReturn(methodCall);
+    }
+    catch (SQLException s)
+    {
+      reportException(methodCall,s);
+      throw s;
+    }
+  }
+
+  public int getNetworkTimeout() throws SQLException {
+    String methodCall = "getNetworkTimeout()";
+    try
+    {
+      int result = realConnection.getNetworkTimeout();
+      reportReturn(methodCall, result);
+      return result;
+    }
+    catch (SQLException s)
+    {
+      reportException(methodCall,s);
+      throw s;
+    }
+  }
+
 }
