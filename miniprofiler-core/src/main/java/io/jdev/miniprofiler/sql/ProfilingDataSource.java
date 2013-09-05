@@ -17,8 +17,8 @@
 package io.jdev.miniprofiler.sql;
 
 import io.jdev.miniprofiler.ProfilerProvider;
-import net.sf.log4jdbc.ConnectionSpy;
-import net.sf.log4jdbc.SpyLogFactory;
+import io.jdev.miniprofiler.sql.log4jdbc.ConnectionSpy;
+import io.jdev.miniprofiler.sql.log4jdbc.SpyLogFactory;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;

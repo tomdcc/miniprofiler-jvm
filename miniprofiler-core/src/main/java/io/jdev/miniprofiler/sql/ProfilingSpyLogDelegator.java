@@ -19,8 +19,8 @@ package io.jdev.miniprofiler.sql;
 import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.ProfilerProvider;
-import net.sf.log4jdbc.Spy;
-import net.sf.log4jdbc.SpyLogDelegator;
+import io.jdev.miniprofiler.sql.log4jdbc.Spy;
+import io.jdev.miniprofiler.sql.log4jdbc.SpyLogDelegator;
 
 public class ProfilingSpyLogDelegator implements SpyLogDelegator {
 
