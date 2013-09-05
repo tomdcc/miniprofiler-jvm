@@ -5,12 +5,16 @@ targetCompatibility = 1.6
 dependencies {
 	provided 'javax.servlet:servlet-api:2.3'
 
-	provided 'net.sf.ehcache:ehcache:2.7.2'
-	provided 'org.slf4j:slf4j-api:1.7.5'
+	provided('net.sf.ehcache:ehcache:2.7.2') {
+		exclude group: 'org.slf4j', module: 'slf4j-api'
+	}
 
 
     testCompile "org.codehaus.groovy:groovy-all:$groovyVersion"
     testCompile "org.spockframework:spock-core:$spockVersion"
+
+    testRuntime "org.slf4j:slf4j-api:1.7.4"
+
 }
 
 import org.apache.tools.ant.filters.*

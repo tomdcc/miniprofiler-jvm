@@ -15,6 +15,8 @@
  */
 package io.jdev.miniprofiler.sql.log4jdbc;
 
+import io.jdev.miniprofiler.sql.ProfilingSpyLogDelegator;
+
 /**
  * A provider for a SpyLogDelegator.  This allows a single switch point to abstract
  * away which logging system to use for spying on JDBC calls.
@@ -34,8 +36,11 @@ public class SpyLogFactory
   /**
    * The logging system of choice.
    */
-  private static final SpyLogDelegator logger = new Slf4jSpyLogDelegator();
-  //new Log4jSpyLogDelegator();
+  private static SpyLogDelegator logger = new ProfilingSpyLogDelegator(null);
+
+  public static void setSpyLogDelegator(SpyLogDelegator logger) {
+	SpyLogFactory.logger = logger;
+  }
 
   /**
    * Get the default SpyLogDelegator for logging to the logger.
