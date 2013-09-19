@@ -19,6 +19,7 @@ package io.jdev.miniprofiler.servlet;
 import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.ProfilerProvider;
+import io.jdev.miniprofiler.StaticProfilerProvider;
 import io.jdev.miniprofiler.json.JsonUtil;
 import io.jdev.miniprofiler.util.ResourceHelper;
 import io.jdev.miniprofiler.storage.Storage;
@@ -39,14 +40,14 @@ import java.util.regex.Pattern;
  * <p>If a profiler provider is injected using
  * {@link #setProfilerProvider(io.jdev.miniprofiler.ProfilerProvider)}, then
  * it will be used to start new profiling sessions. Otherwise the filter will
- * call {@link MiniProfiler#start(String)}, and it will be up to any setup
- * code to set the profiler provider statically using
+ * use a {@link StaticProfilerProvider} which defers to {@link MiniProfiler},
+ * and it will be up to any setup code to set the profiler provider statically using
  * {@link MiniProfiler#setProfilerProvider(io.jdev.miniprofiler.ProfilerProvider)}
  * if the default profiler provider isn't enough.</p>
  */
 public class ProfilingFilter implements Filter {
 
-	protected ProfilerProvider profilerProvider;
+	protected ProfilerProvider profilerProvider = new StaticProfilerProvider();
 	// TODO: un-hardcode this
 	protected String profilerPath = "/miniprofiler/";
 	protected ResourceHelper resourceHelper = new ResourceHelper();
@@ -121,7 +122,7 @@ public class ProfilingFilter implements Filter {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}
-		Storage storage = profilerProvider != null ? profilerProvider.getStorage() : MiniProfiler.getStorage();
+		Storage storage = profilerProvider.getStorage();
 		Profiler profiler = storage.load(UUID.fromString(id));
 		if (profiler == null) {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -135,13 +136,7 @@ public class ProfilingFilter implements Filter {
 	}
 
 	protected Profiler startProfiling(HttpServletRequest request) {
-		String uri = request.getRequestURI();
-		if (profilerProvider != null) {
-			return profilerProvider.start(uri);
-		} else {
-			// use global one instead
-			return MiniProfiler.start(uri);
-		}
+		return profilerProvider.start(request.getRequestURI());
 	}
 
 	@Override

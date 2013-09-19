@@ -36,7 +36,7 @@ public class SpyLogFactory
   /**
    * The logging system of choice.
    */
-  private static SpyLogDelegator logger = new ProfilingSpyLogDelegator(null);
+  private static SpyLogDelegator logger = new ProfilingSpyLogDelegator();
 
   public static void setSpyLogDelegator(SpyLogDelegator logger) {
 	SpyLogFactory.logger = logger;

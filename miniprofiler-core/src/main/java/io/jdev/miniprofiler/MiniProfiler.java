@@ -65,7 +65,7 @@ public class MiniProfiler {
 		return profilerProvider != null ? profilerProvider.getCurrentProfiler() : NullProfiler.INSTANCE;
 	}
 
-	private static ProfilerProvider getOrCreateProfilerProvider() {
+	static ProfilerProvider getOrCreateProfilerProvider() {
 		if (profilerProvider == null) {
 			// default to something hopefully sane
 			profilerProvider = new DefaultProfilerProvider();

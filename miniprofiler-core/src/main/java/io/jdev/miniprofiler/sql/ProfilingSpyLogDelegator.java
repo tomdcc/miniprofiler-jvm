@@ -19,12 +19,17 @@ package io.jdev.miniprofiler.sql;
 import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.ProfilerProvider;
+import io.jdev.miniprofiler.StaticProfilerProvider;
 import io.jdev.miniprofiler.sql.log4jdbc.Spy;
 import io.jdev.miniprofiler.sql.log4jdbc.SpyLogDelegator;
 
 public class ProfilingSpyLogDelegator implements SpyLogDelegator {
 
 	private ProfilerProvider profilerProvider;
+
+	public ProfilingSpyLogDelegator() {
+		this(new StaticProfilerProvider());
+	}
 
 	public ProfilingSpyLogDelegator(ProfilerProvider profilerProvider) {
 		this.profilerProvider = profilerProvider;
