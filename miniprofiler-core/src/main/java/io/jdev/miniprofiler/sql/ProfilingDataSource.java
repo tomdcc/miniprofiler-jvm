@@ -17,13 +17,12 @@
 package io.jdev.miniprofiler.sql;
 
 import io.jdev.miniprofiler.ProfilerProvider;
+import io.jdev.miniprofiler.StaticProfilerProvider;
 import io.jdev.miniprofiler.sql.log4jdbc.ConnectionSpy;
 import io.jdev.miniprofiler.sql.log4jdbc.SpyLogFactory;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
@@ -32,34 +31,14 @@ import java.util.logging.Logger;
 public class ProfilingDataSource implements DataSource {
 
 	private final DataSource targetDataSource;
-	private final ProfilerProvider profilerProvider;
 
 	public ProfilingDataSource(DataSource targetDataSource) {
-		this(targetDataSource, null);
+		this(targetDataSource, new StaticProfilerProvider());
 	}
 
 	public ProfilingDataSource(DataSource targetDataSource, ProfilerProvider profilerProvider) {
 		this.targetDataSource = targetDataSource;
-		this.profilerProvider = profilerProvider;
-		setuplLog4JdbcLogger(profilerProvider);
-	}
-
-
-	private void setuplLog4JdbcLogger(ProfilerProvider profilerProvider) {
-		// work around hardcoded delegator in log4jdbc, this probably won't work if you're running under
-		// a SecurityManager
-		try {
-			Field field = SpyLogFactory.class.getDeclaredField("logger");
-			field.setAccessible(true);
-			Field modifiersField = Field.class.getDeclaredField("modifiers");
-			modifiersField.setAccessible(true);
-			modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-			field.set(null, new ProfilingSpyLogDelegator(profilerProvider));
-		} catch (RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new UnsupportedOperationException("Unable to set log4jdbc logger - are you running under a security manager?");
-		}
+		SpyLogFactory.setSpyLogDelegator(new ProfilingSpyLogDelegator(profilerProvider));
 	}
 
 	@Override
