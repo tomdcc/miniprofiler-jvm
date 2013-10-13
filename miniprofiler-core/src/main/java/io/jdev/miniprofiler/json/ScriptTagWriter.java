@@ -55,7 +55,6 @@ public class ScriptTagWriter {
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("<script async type='text/javascript' id='mini-profiler'");
-		sb.append(" src='").append(path).append("includes.js?version=").append(version).append("'");
 		appendAttribute(sb, "src", path + "includes.js?version=" + version);
 		appendAttribute(sb, "data-version", version);
 		appendAttribute(sb, "data-path", path);
