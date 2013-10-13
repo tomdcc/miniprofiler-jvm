@@ -22,6 +22,7 @@ import io.jdev.miniprofiler.Profiler;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -34,25 +35,29 @@ public class ScriptTagWriter {
 	 * Writes out a script tag in the format that the mini profiler front end
 	 * javascript expects.
 	 */
-	public String printScriptTag(Profiler profiler, String path) {
+	public String printScriptTag(Profiler profiler, String path, Map tagAttributes) {
 		if (profiler == null || profiler == NullProfiler.INSTANCE) {
 			return "";
 		}
-		// TODO: un-hard-code all of this stuff
+
 		UUID currentId = profiler.getId();
 		List<UUID> ids = Collections.singletonList(currentId);
-		String position = "left";
-		boolean showTrivial = false;
-		boolean showChildren = false;
-		int maxTracesToShow = 15;
-		boolean showControls = false;
-		boolean authorized = true;
-		boolean useExistingjQuery = false;
+
+		String position = (String) tagAttributes.get("data-position");
+		boolean showTrivial = (Boolean) tagAttributes.get("data-trivial");
+		boolean showChildren = (Boolean) tagAttributes.get("data-children");
+		int maxTracesToShow = (Integer) tagAttributes.get("data-max-traces");
+		boolean showControls = (Boolean) tagAttributes.get("data-controls");
+		boolean authorized = (Boolean) tagAttributes.get("data-authorized");
+		String toggleShortcut = (String) tagAttributes.get("data-toggle-shortcut");
+		boolean startHidden = (Boolean) tagAttributes.get("data-start-hidden");
+
 		String version = MiniProfiler.getVersion();
 
 		if (!path.endsWith("/")) {
 			path = path + "/";
 		}
+
 		StringBuilder sb = new StringBuilder();
 		sb.append("<script async type='text/javascript' id='mini-profiler'");
 		sb.append(" src='").append(path).append("includes.js?version=").append(version).append("'");
@@ -67,7 +72,10 @@ public class ScriptTagWriter {
 		appendAttribute(sb, "data-max-traces", maxTracesToShow);
 		appendAttribute(sb, "data-controls", showControls);
 		appendAttribute(sb, "data-authorized", authorized);
+		appendAttribute(sb, "data-toggle-shortcut", toggleShortcut);
+		appendAttribute(sb, "data-start-hidden", startHidden);
 		sb.append("></script>");
+
 		return sb.toString();
 	}
 
