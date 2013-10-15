@@ -178,9 +178,16 @@ var MiniProfiler = (function () {
         var trivialGaps = popup.parent().find('.profiler-toggle-trivial-gaps');
 
         var toggleIt = function (node) {
-            var link = $(node),
-                klass = "profiler-" + link.attr('class').substr('profiler-toggle-'.length),
-                isHidden = link.text().indexOf('show') > -1;
+            var klass, isHidden;
+            var link = $(node);
+            var linkClassAttr = link.attr('class');
+
+            if (typeof linkClassAttr === 'undefined') {
+                return;
+            }
+
+            klass = "profiler-" + linkClassAttr.substr('profiler-toggle-'.length);
+            isHidden = link.text().indexOf('show') > -1;
 
             popup.parent().find('.' + klass).toggle(isHidden);
             link.text(link.text().replace(isHidden ? 'show' : 'hide', isHidden ? 'hide' : 'show'));
