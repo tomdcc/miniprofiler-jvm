@@ -34,7 +34,7 @@ subprojects {
 	ext {
 		groovyVersion = "2.1.6"
 		gebVersion = '0.9.1'
-		seleniumVersion = "2.35.0"
+		seleniumVersion = "2.41.0"
 		spockVersion = "0.7-groovy-2.0"
 
 		isSnapshot = version.endsWith("-SNAPSHOT")
