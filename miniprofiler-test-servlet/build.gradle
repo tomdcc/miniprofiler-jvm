@@ -13,7 +13,9 @@ dependencies {
 	testCompile "org.spockframework:spock-core:$spockVersion"
 
 	// Need a driver implementation
-	testCompile "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
+	testRuntime("com.github.detro.ghostdriver:phantomjsdriver:1.1.0") {
+		exclude module: "selenium-java"
+	}
 	testRuntime "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
 	testRuntime "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
 }
