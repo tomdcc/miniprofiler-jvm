@@ -6,3 +6,4 @@ build/
 .settings
 .gradle
 /.idea
+.DS_Store
