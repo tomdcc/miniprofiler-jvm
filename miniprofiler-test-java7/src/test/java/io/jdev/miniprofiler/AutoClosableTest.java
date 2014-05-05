@@ -20,6 +20,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Map;
 
 public class AutoClosableTest {
 
@@ -31,11 +32,11 @@ public class AutoClosableTest {
 		// add some stuff
 		try (Timing firstTiming = profiler.step("fooService.whatever")) {
 			try (Timing childTiming = profiler.step("child")) {
-				profiler.addQueryTiming("select * from foo", 5L);
+				profiler.addCustomTiming("sql", "query", "select * from foo", 5L);
 			}
 		}
 		try (Timing lastTiming = profiler.step("again")) {
-			profiler.addQueryTiming("select * from bar", 5L);
+			profiler.addCustomTiming("sql", "query", "select * from bar", 5L);
 		}
 
 		profiler.stop();
@@ -52,10 +53,13 @@ public class AutoClosableTest {
 		Assert.assertEquals(1, nestedChildren.size());
 		TimingImpl nestedChild = nestedChildren.get(0);
 		Assert.assertEquals("child", nestedChild.getName());
-		List<QueryTiming> nestedChildQueries = nestedChild.getQueryTimings();
-		Assert.assertEquals(1, nestedChildQueries.size());
+		Map<String,List<CustomTiming>> groupedNestedChildQueries = nestedChild.getCustomTimings();
+		Assert.assertEquals(1, groupedNestedChildQueries.size());
+		List<CustomTiming> nestedChildQueries = groupedNestedChildQueries.get("sql");
 		Assert.assertEquals("select * from foo", nestedChildQueries.get(0).getCommandString());
-		List<QueryTiming> secondChildQueries = secondChild.getQueryTimings();
+		Map<String,List<CustomTiming>> secondGroupedNestedChildQueries = secondChild.getCustomTimings();
+		Assert.assertEquals(1, secondGroupedNestedChildQueries.size());
+		List<CustomTiming> secondChildQueries = secondGroupedNestedChildQueries.get("sql");
 		Assert.assertEquals(1, secondChildQueries.size());
 		Assert.assertEquals("select * from bar", secondChildQueries.get(0).getCommandString());
 	}

@@ -18,12 +18,9 @@
 
 package io.jdev.miniprofiler
 
-import groovy.json.JsonSlurper
-import io.jdev.miniprofiler.json.JsonUtil
 import io.jdev.miniprofiler.storage.MapStorage
 import io.jdev.miniprofiler.user.UserProvider
 import spock.lang.Specification
-import spock.lang.Unroll
 
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors

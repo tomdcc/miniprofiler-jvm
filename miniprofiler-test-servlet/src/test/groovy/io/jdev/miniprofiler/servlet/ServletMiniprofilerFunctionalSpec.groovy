@@ -47,14 +47,15 @@ class ServletMiniprofilerFunctionalSpec extends GebReportingSpec {
 			timings[0].label == '/miniprofiler-test-servlet/'
 			timings[0].duration.text() ==~ ~/\d+\.\d/
 			!timings[0].durationWithChildren.displayed
-			timings[0].timeFromStart.text() ==~ ~/\+\d+\.\d/
-			timings[0].queries.text() == "1 sql"
-			timings[0].queryTime.text() ==~ ~/\d+\.\d/
+			!timings[0].timeFromStart.displayed
+			timings[0].queries.text() ==~ ~/\d+\.\d \(1\)/
 
 		when: 'toggle child timings'
 			result.popup.toggleChildTimingLink.click()
 
 		then: 'can see child timings column'
+			timings[0].timeFromStart.displayed
+			timings[0].timeFromStart.text() ==~ ~/\+\d+\.\d/
 			timings[0].durationWithChildren.displayed
 			timings[0].durationWithChildren.text() ==~ ~/\d+\.\d/
 
@@ -76,12 +77,5 @@ class ServletMiniprofilerFunctionalSpec extends GebReportingSpec {
 			queries[1].timeFromStart ==~ ~/T\+\d+.\d ms/
 			queries[1].duration ==~ ~/\d+.\d ms/
 			queries[1].query ==~ ~/select\s+\*\s+from\s+people/
-
-		when: 'show trivial gaps'
-			result.queriesPopup.toggleTrivialGapsLink.click()
-
-		then: 'all timings now visible'
-			queries[0].displayed
-			queries[2].displayed
 	}
 }

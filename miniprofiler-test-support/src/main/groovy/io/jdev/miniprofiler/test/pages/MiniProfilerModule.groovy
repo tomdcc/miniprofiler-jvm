@@ -42,7 +42,7 @@ class MiniProfilerButtonModule extends Module {
 class MiniProfilerPopupModule extends Module {
 	static content = {
 		timings { $('.profiler-output .profiler-timings tbody tr').collect { module MiniProfilerTimingRowModule, it } }
-		toggleChildTimingLink { $('.profiler-toggle-duration-with-children') }
+		toggleChildTimingLink { $('.profiler-toggle-hidden-columns') }
 	}
 }
 
@@ -55,7 +55,6 @@ class MiniProfilerTimingRowModule extends Module {
 		durationWithChildren       { durations[1] }
 		timeFromStart              { durations[2] }
 		queries(required: false)   { durations[3].find('a') }
-		queryTime(required: false) { durations[4] }
 	}
 }
 

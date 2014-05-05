@@ -53,7 +53,8 @@ public class ProfilingSpyLogDelegator implements SpyLogDelegator {
 
 	public void sqlTimingOccured(Spy spy, long time, String method, String sql) {
 		Profiler profiler = profilerProvider != null ? profilerProvider.getCurrentProfiler() : MiniProfiler.getCurrentProfiler();
-		profiler.addQueryTiming(sql, time);
+		// TODO work out more specific execute type based on sql command
+		profiler.addCustomTiming("sql", "query", sql, time);
 	}
 
 	public void connectionOpened(Spy spy) {

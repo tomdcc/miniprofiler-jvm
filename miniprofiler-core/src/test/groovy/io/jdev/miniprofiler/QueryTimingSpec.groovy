@@ -27,7 +27,7 @@ class QueryTimingSpec extends Specification {
 			Thread.sleep(10)
 
 		when: 'create query timing'
-			def query = new QueryTiming("select * from foo")
+			def query = new CustomTiming("query", "select * from foo")
 
 		and: 'ask for start'
 			query.getStartMilliseconds()

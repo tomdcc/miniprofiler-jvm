@@ -16,15 +16,13 @@
 
 package io.jdev.miniprofiler.json;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Utility class used for JSON serialization.
  */
 public class JsonUtil {
+
 	public static List<Map<String, Object>> mapList(List<? extends Jsonable> srcList) {
 		if (srcList == null) return null;
 
@@ -139,10 +137,10 @@ public class JsonUtil {
 		buf.append("]");
 	}
 
-	private static void mapToJsonBuffer(StringBuilder buf, Map<String, Object> src) {
+	private static void mapToJsonBuffer(StringBuilder buf, Map<String, ?> src) {
 		buf.append("{");
 		boolean first = true;
-		for (Map.Entry<String, Object> entry : src.entrySet()) {
+		for (Map.Entry<String, ?> entry : src.entrySet()) {
 			if (first) {
 				first = false;
 			} else {

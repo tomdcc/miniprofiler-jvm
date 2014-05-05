@@ -53,7 +53,7 @@ public class NullProfiler implements Profiler {
 	}
 
 	@Override
-	public void addQueryTiming(String query, long duration) {
+	public void addCustomTiming(String type, String executeType, String command, long duration) {
 	}
 
 	@Override

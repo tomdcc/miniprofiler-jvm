@@ -95,10 +95,12 @@ public interface Profiler extends Serializable, Jsonable, Closeable {
 	 * Add a query timing inside the current timing step. This is usually
 	 * to log an SQL or other query.
 	 *
-	 * @param query the query to save
+	 * @param type the type of query, e.g. sql, memcache etc
+     * @param executeType the type of command executed, e.g. read, fetch, update etc
+	 * @param command the query to save
 	 * @param duration how long it took, in milliseconds
 	 */
-	public void addQueryTiming(String query, long duration);
+	public void addCustomTiming(String type, String executeType, String command, long duration);
 
 	/**
 	 * Stop the current timing session.

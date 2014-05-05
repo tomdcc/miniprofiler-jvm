@@ -34,8 +34,7 @@ public class TimingImpl implements Timing {
 	private final TimingImpl parent;
 	private final int depth;
 	private List<TimingImpl> children;
-	private Map<String, String> keyValues;
-	private List<QueryTiming> queryTimings;
+	private Map<String,List<CustomTiming>> customTimings;
 
 
 	public TimingImpl(ProfilerImpl profiler, TimingImpl parent, String name) {
@@ -72,71 +71,33 @@ public class TimingImpl implements Timing {
 		children.add(child);
 	}
 
-	public void addQueryTiming(String query, long duration) {
-		addQueryTiming(new QueryTiming(query, duration));
+	public void addCustomTiming(String type, String executeType, String command, long duration) {
+		addCustomTiming(type, new CustomTiming(executeType, command, duration));
 	}
 
-	public void addQueryTiming(QueryTiming qt) {
-		if (queryTimings == null) {
-			queryTimings = new ArrayList<QueryTiming>();
+	public void addCustomTiming(String type, CustomTiming qt) {
+		if (customTimings == null) {
+			customTimings = new LinkedHashMap<String,List<CustomTiming>>();
 		}
-		queryTimings.add(qt);
+		List<CustomTiming> timingsForType = customTimings.get(type);
+		if (timingsForType == null) {
+			timingsForType = new ArrayList<CustomTiming>();
+			customTimings.put(type, timingsForType);
+		}
+		timingsForType.add(qt);
 		qt.setParentTiming(this);
-		profiler.setHasQueryTimings(true);
-	}
-
-	public long getDurationWithoutChildrenMilliseconds() {
-		if (durationMilliseconds == null) return 0L;
-
-		long duration = durationMilliseconds;
-		if (children != null) {
-			for (TimingImpl child : children) {
-				final Long milliseconds = child.durationMilliseconds;
-				duration -= (milliseconds != null) ? milliseconds : 0L;
-			}
-		}
-		return duration;
-	}
-
-	public long getQueryTimingsDurationMilliseconds() {
-		long duration = 0;
-		if (hasQueryTimings()) {
-			for (QueryTiming timing : queryTimings) {
-				duration += timing.getDurationMilliseconds();
-			}
-
-		}
-
-		return duration;
-	}
-
-	public boolean hasQueryTimings() {
-		return queryTimings != null && !queryTimings.isEmpty();
-	}
-
-	public boolean hasChildren() {
-		return children != null && !children.isEmpty();
-	}
-
-	public boolean isTrivial() {
-		return durationMilliseconds < profiler.getTrivialDurationThresholdMilliseconds();
 	}
 
 	public Map<String, Object> toMap() {
 		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(13);
 		map.put("Id", id.toString());
 		map.put("Name", name);
-		map.put("DurationMilliseconds", durationMilliseconds);
-		map.put("DurationWithoutChildrenMilliseconds", getDurationWithoutChildrenMilliseconds());
 		map.put("StartMilliseconds", startMilliseconds);
-		map.put("KeyValues", keyValues);
-		map.put("HasSqlTimings", hasQueryTimings());
-		map.put("SqlTimingsDurationMilliseconds", getQueryTimingsDurationMilliseconds());
-		map.put("SqlTimings", JsonUtil.mapList(queryTimings));
-		map.put("Depth", depth);
-		map.put("IsTrivial", isTrivial());
-		map.put("HasChildren", hasChildren());
+		map.put("DurationMilliseconds", durationMilliseconds);
 		map.put("Children", JsonUtil.mapList(children));
+		if(customTimings != null) {
+			map.put("CustomTimings", customTimings);
+		}
 		return map;
 	}
 
@@ -168,16 +129,8 @@ public class TimingImpl implements Timing {
 		return children;
 	}
 
-	public Map<String, String> getKeyValues() {
-		return keyValues;
-	}
-
-	public void setKeyValues(Map<String, String> keyValues) {
-		this.keyValues = keyValues;
-	}
-
-	public List<QueryTiming> getQueryTimings() {
-		return queryTimings;
+	public Map<String,List<CustomTiming>> getCustomTimings() {
+		return customTimings;
 	}
 
 	public ProfilerImpl getProfiler() {

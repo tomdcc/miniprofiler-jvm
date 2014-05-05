@@ -38,6 +38,7 @@ public class ProfilerImpl implements Profiler {
 	private static final long serialVersionUID = 1;
 
 	private final UUID id;
+	private final String name;
 	private final long started;
 	private String user;
 	private String machineName;
@@ -64,12 +65,37 @@ public class ProfilerImpl implements Profiler {
 	 * the profiling info for later retrieval via
 	 * {@link ProfilerProvider#stopSession(ProfilerImpl, boolean)}.</p>
 	 *
+	 * @param name name of the request, will also be the name of the root child element
+	 * @param level the level of the profiler
+	 * @param profilerProvider the profiler provider constructing the
+	 */
+	public ProfilerImpl(String name, ProfileLevel level, ProfilerProvider profilerProvider) {
+		this(name, name, level, profilerProvider);
+	}
+
+	/**
+	 * Construct a new profiling session.
+	 *
+	 * <p>This will create an implicit root {@link Timing} step considered to have
+	 * started now, with the given root name.</p>
+	 *
+	 * <p>A new random UUID id is created for every profiler.</p>
+	 *
+	 * <p>Any profiling steps more verbose than the given level will be ignored.</p>
+	 *
+	 * <p>The profiler provider constructing the profiler is passed in so that
+	 * when {@link #stop()} is called, the profiler can notify the provider to store
+	 * the profiling info for later retrieval via
+	 * {@link ProfilerProvider#stopSession(ProfilerImpl, boolean)}.</p>
+	 *
+	 * @param name name of the request
 	 * @param rootName name of the root timing step to start
 	 * @param level the level of the profiler
 	 * @param profilerProvider the profiler provider constructing the
 	 */
-	public ProfilerImpl(String rootName, ProfileLevel level, ProfilerProvider profilerProvider) {
+	public ProfilerImpl(String name, String rootName, ProfileLevel level, ProfilerProvider profilerProvider) {
 		id = UUID.randomUUID();
+		this.name = name;
 		this.profilerProvider = profilerProvider;
 		this.level = level;
 		started = System.currentTimeMillis();
@@ -80,29 +106,6 @@ public class ProfilerImpl implements Profiler {
 	public long getDurationMilliseconds() {
 		Long milliseconds = root.getDurationMilliseconds();
 		return milliseconds != null ? milliseconds : System.currentTimeMillis() - started;
-	}
-
-	public boolean hasTrivialTimings() {
-		for (TimingImpl t : getTimingHierarchy()) {
-			if (t.isTrivial()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean hasAllTrivialTimings() {
-		for (TimingImpl t : getTimingHierarchy()) {
-			if (!t.isTrivial()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	public int getTrivialDurationThresholdMilliseconds() {
-		// TODO: implement with some sort of config
-		return 2;
 	}
 
 	public void stop() {
@@ -126,66 +129,28 @@ public class ProfilerImpl implements Profiler {
 		return step(name, ProfileLevel.Info);
 	}
 
-	public void addQueryTiming(String query, long duration) {
-		addQueryTiming(new QueryTiming(query, duration));
+	public void addCustomTiming(String type, String executeType, String command, long duration) {
+		addCustomTiming(type, new CustomTiming(executeType, command, duration));
 	}
 
-	public void addQueryTiming(QueryTiming sqlTiming) {
+	public void addCustomTiming(String type, CustomTiming customTiming) {
 		if (head == null) return;
 
 		// TODO: implement SQL duplicates
-		head.addQueryTiming(sqlTiming);
+		head.addCustomTiming(type, customTiming);
 	}
 
-	public long getDurationMillisecondsInSql() {
-		long total = 0;
-		for (TimingImpl t : getTimingHierarchy()) {
-			if (t.hasQueryTimings()) {
-				for (QueryTiming sql : t.getQueryTimings()) {
-					total += sql.getDurationMilliseconds();
-				}
-			}
-		}
-		return total;
-	}
-
-	public List<TimingImpl> getTimingHierarchy() {
-		if (flattenedTimings != null) {
-			return flattenedTimings;
-		}
-		ArrayList<TimingImpl> result = new ArrayList<TimingImpl>();
-		Stack<TimingImpl> stack = new Stack<TimingImpl>();
-		stack.push(root);
-
-		while (stack.size() > 0) {
-			TimingImpl timing = stack.pop();
-			result.add(timing);
-			if (timing.hasChildren()) {
-				stack.addAll(timing.getChildren());
-			}
-		}
-
-		if (stopped) {
-			flattenedTimings = result;
-		}
-		return result;
-	}
 
 	public LinkedHashMap<String, Object> toMap() {
 		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(11);
 		map.put("Id", id.toString());
+		map.put("Name", name);
+		map.put("Started", started);
 		map.put("DurationMilliseconds", getDurationMilliseconds());
-		map.put("HasTrivialTimings", hasTrivialTimings());
-		map.put("HasAllTrivialTimings", hasAllTrivialTimings());
-		map.put("HasSqlTimings", hasQueryTimings);
-		map.put("HasDuplicateSqlTimings", false);
 		map.put("MachineName", machineName);
-		map.put("User", user);
-		map.put("Started", "/Date(" + String.valueOf(started) + ")");
-		map.put("CustomTimingNames", new ArrayList<Object>());
 		map.put("Root", root.toMap());
+		// TODO support ClientTimings and CustomLinks
 		map.put("ClientTimings", null);
-		map.put("DurationMillisecondsInSql", getDurationMillisecondsInSql());
 		return map;
 	}
 

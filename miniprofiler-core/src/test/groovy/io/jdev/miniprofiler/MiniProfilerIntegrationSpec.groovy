@@ -73,7 +73,7 @@ class MiniProfilerIntegrationSpec extends Specification {
 		when: 'add some stuff'
             Timing firstTiming = profiler.step("fooService.whatever")
             Timing childTiming = profiler.step("child")
-            profiler.addQueryTiming('select * from "foo"', 5L)
+            profiler.addCustomTiming('sql', 'query', 'select * from "foo"', 5L)
 			Thread.sleep(5)
             childTiming.stop()
             Timing trivialTiming = profiler.step("trivial")
@@ -99,32 +99,27 @@ class MiniProfilerIntegrationSpec extends Specification {
         then: 'get expected result'
             json.Id == profiler.id as String
             json.MachineName == 'super server'
-            json.User == 'tom'
             json.DurationMilliseconds instanceof Number
-            json.Started ==~ /\/Date\(\d+\)/
-            json.HasTrivialTimings == true
-            json.HasAllTrivialTimings == false
-            json.HasSqlTimings == true
-            json.HasDuplicateSqlTimings == false
-            json.DurationMillisecondsInSql == 5
+            json.Started instanceof Number
 
             def root = json.Root
-            verifyTiming(root, [Name: 'My Function', HasSqlTimings: false, Depth: 0, IsTrivial: false, HasChildren: true])
+            verifyTiming(root, [Name: 'My Function'])
             root.Children.size() == 1
 
             def firstChild = root.Children[0]
-            verifyTiming(firstChild, [Name: 'fooService.whatever', HasSqlTimings: false, Depth: 1, IsTrivial: false, HasChildren: true])
+            verifyTiming(firstChild, [Name: 'fooService.whatever'])
             firstChild.Children.size() == 2
 
             def nestedChild = firstChild.Children[0]
-            verifyTiming(nestedChild, [Name: 'child', HasSqlTimings: true, Depth: 2, IsTrivial: false, HasChildren: false])
-            nestedChild.SqlTimings.size() == 1
+            verifyTiming(nestedChild, [Name: 'child'])
+            nestedChild.CustomTimings.size() == 1
+            nestedChild.CustomTimings.sql.size() == 1
 
-            def sql = nestedChild.SqlTimings[0]
-            verifySqlTiming(sql, [FormattedCommandString: '\n    select\n        * \n    from\n        "foo"', ParentTimingName: "child", ExecuteType: 0])
+            def sqlTiming = nestedChild.CustomTimings.sql[0]
+			verifyCustomTiming(sqlTiming, [CommandString: '\n    select\n        * \n    from\n        "foo"', ExecuteType: 'query'])
 
             def trivialChild = firstChild.Children[1]
-            verifyTiming(trivialChild, [Name: 'trivial', HasSqlTimings: false, Depth: 2, IsTrivial: true, HasChildren: false])
+            verifyTiming(trivialChild, [Name: 'trivial'])
 		where:
 			passedIn << [true, false]
     }
@@ -132,17 +127,14 @@ class MiniProfilerIntegrationSpec extends Specification {
     boolean verifyTiming(def timing, Map expectedValues) {
         assert timing.Id instanceof String
         assert timing.DurationMilliseconds instanceof Number
-        assert timing.DurationWithoutChildrenMilliseconds instanceof Number
         assert timing.StartMilliseconds instanceof Number
-        assert !timing.KeyValues
         expectedValues.each { key, value ->
             assert timing[key] == value
         }
         true
     }
-    boolean verifySqlTiming(def timing, Map expectedValues) {
+    boolean verifyCustomTiming(def timing, Map expectedValues) {
         assert timing.Id instanceof String
-        assert timing.ParentTimingId instanceof String
         assert timing.StartMilliseconds instanceof Number
         assert timing.DurationMilliseconds instanceof Number
         assert timing.StackTraceSnippet == ''
