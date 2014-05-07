@@ -111,3 +111,6 @@ subprojects {
 		}
 	}
 }
+
+// let travis fetch all subproject dependencies ahead of time
+dependencies.dependsOn(subprojects.dependencies)
