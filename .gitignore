@@ -2,8 +2,10 @@ build/
 /classes/
 *.iml
 *.ipr
+.project
 .classpath
 .settings
 .gradle
 /.idea
 .DS_Store
+chromedriver.log
