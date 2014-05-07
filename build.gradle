@@ -29,6 +29,9 @@ subprojects {
 
 	test {
 		systemProperties "geb.build.reportsDir": "$reporting.baseDir/geb"
+		testLogging {
+			exceptionFormat = 'full'
+		}
 	}
 
 	ext {
