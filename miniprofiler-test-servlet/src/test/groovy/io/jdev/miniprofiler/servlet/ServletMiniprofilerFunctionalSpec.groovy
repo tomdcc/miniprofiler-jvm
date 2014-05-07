@@ -19,10 +19,16 @@ package io.jdev.miniprofiler.servlet
 import geb.spock.GebReportingSpec
 import io.jdev.miniprofiler.test.pages.MiniProfilerGapModule
 import io.jdev.miniprofiler.test.pages.MiniProfilerQueryModule
+import org.openqa.selenium.Dimension
 
 class ServletMiniprofilerFunctionalSpec extends GebReportingSpec {
 
-	def "can see miniprofiler"() {
+	void setup() {
+		// ghostdriver way too small otherwise
+		driver.manage().window().setSize(new Dimension(1024, 768))
+	}
+
+	void "can see miniprofiler"() {
 		when:
 			to HomePage
 
@@ -54,7 +60,7 @@ class ServletMiniprofilerFunctionalSpec extends GebReportingSpec {
 			result.popup.toggleChildTimingLink.click()
 
 		then: 'can see child timings column'
-			timings[0].timeFromStart.displayed
+			waitFor { timings[0].timeFromStart.displayed }
 			timings[0].timeFromStart.text() ==~ ~/\+\d+\.\d/
 			timings[0].durationWithChildren.displayed
 			timings[0].durationWithChildren.text() ==~ ~/\d+\.\d/
