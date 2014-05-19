@@ -115,3 +115,10 @@ subprojects {
 	}
 }
 
+allprojects {
+	task resolveAllDependencies {
+		doLast {
+			configurations.all { it.resolve() }
+		}
+	}
+}
