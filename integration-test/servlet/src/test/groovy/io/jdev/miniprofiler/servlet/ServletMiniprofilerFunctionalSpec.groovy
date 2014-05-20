@@ -50,7 +50,7 @@ class ServletMiniprofilerFunctionalSpec extends GebReportingSpec {
 		and: ''
 			def timings = result.popup.timings
 			timings.size() == 1
-			timings[0].label == '/miniprofiler-test-servlet/'
+			timings[0].label == '/servlet/'
 			timings[0].duration.text() ==~ ~/\d+\.\d/
 			!timings[0].durationWithChildren.displayed
 			!timings[0].timeFromStart.displayed
@@ -79,7 +79,7 @@ class ServletMiniprofilerFunctionalSpec extends GebReportingSpec {
 			queries[2].displayed == !queries[2].trivial
 
 		and: 'query has correct info'
-			queries[1].step == '/miniprofiler-test-servlet/'
+			queries[1].step == '/servlet/'
 			queries[1].timeFromStart ==~ ~/T\+\d+.\d ms/
 			queries[1].duration ==~ ~/\d+.\d ms/
 			queries[1].query ==~ ~/select\s+\*\s+from\s+people/

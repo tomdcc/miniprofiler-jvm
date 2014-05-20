@@ -15,7 +15,7 @@
  */
 
 driver = "org.openqa.selenium.phantomjs.PhantomJSDriver"
-baseUrl = 'http://127.0.0.1:8080/miniprofiler-test-servlet/'
+baseUrl = 'http://127.0.0.1:8080/servlet/'
 
 if(!System.getProperty("geb.build.reportsDir")) {
 	// probably running in IDE
