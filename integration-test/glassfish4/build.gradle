@@ -15,21 +15,7 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 dependencies {
-	compile 'javax:javaee-api:7.0'
-
-	testCompile "org.codehaus.groovy:groovy-all:$groovyVersion"
-	testCompile "org.spockframework:spock-core:$spockVersion"
-
-	// If using Spock, need to depend on geb-spock
-	testCompile "org.gebish:geb-spock:$gebVersion"
-	testCompile "org.spockframework:spock-core:$spockVersion"
-
-	// Need a driver implementation
-	testRuntime("com.github.detro.ghostdriver:phantomjsdriver:1.1.0") {
-		exclude module: "selenium-java"
-	}
-	testCompile "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
-	testRuntime "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
+	provided 'javax:javaee-api:7.0'
 
 	def cargoVersion = '1.4.8'
 	cargo "org.codehaus.cargo:cargo-core-uberjar:$cargoVersion"
