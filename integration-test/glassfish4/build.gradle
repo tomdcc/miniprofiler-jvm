@@ -1,0 +1,89 @@
+buildscript {
+	repositories {
+		jcenter()
+	}
+
+	dependencies {
+		classpath 'org.gradle.api.plugins:gradle-cargo-plugin:1.5'
+	}
+}
+
+apply plugin: 'war'
+apply plugin: 'cargo'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+dependencies {
+	compile 'javax:javaee-api:7.0'
+
+	testCompile "org.codehaus.groovy:groovy-all:$groovyVersion"
+	testCompile "org.spockframework:spock-core:$spockVersion"
+
+	// If using Spock, need to depend on geb-spock
+	testCompile "org.gebish:geb-spock:$gebVersion"
+	testCompile "org.spockframework:spock-core:$spockVersion"
+
+	// Need a driver implementation
+	testRuntime("com.github.detro.ghostdriver:phantomjsdriver:1.1.0") {
+		exclude module: "selenium-java"
+	}
+	testCompile "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
+	testRuntime "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
+
+	def cargoVersion = '1.4.8'
+	cargo "org.codehaus.cargo:cargo-core-uberjar:$cargoVersion"
+	cargo "org.codehaus.cargo:cargo-ant:$cargoVersion"
+	cargo 'com.h2database:h2:1.3.173'
+
+}
+
+
+test {
+	systemProperties "geb.build.reportsDir": "$reporting.baseDir/geb"
+}
+
+def glassfishBaseDir = file("$buildDir/glassfish")
+task glassfishDir << {
+	glassfishBaseDir.mkdirs()
+}
+
+[cargoRunLocal, cargoStartLocal]*.dependsOn([':miniprofiler-core:assemble', assemble, glassfishDir])
+
+test.dependsOn(cargoStartLocal)
+cargoStartLocal.finalizedBy(cargoStopLocal)
+cargoStopLocal.mustRunAfter(test)
+
+cargo {
+	containerId = 'glassfish4x'
+	port = 8081
+	deployable {
+		context = '/'
+	}
+
+	local {
+		installer {
+			installUrl = 'http://download.java.net/glassfish/4.0/release/glassfish-4.0.zip'
+			downloadDir = rootProject.file(".gradle/cache/cargo")
+			extractDir = buildDir
+		}
+
+		configHomeDir = buildDir
+		homeDir = glassfishBaseDir
+
+		containerProperties {
+			property 'cargo.datasource.datasource1', 'cargo.datasource.jndi=jdbc/DataSource|cargo.datasource.url=jdbc:h2:mem:miniprofiler;DB_CLOSE_DELAY=-1|cargo.datasource.driver=org.h2.Driver|cargo.datasource.username=sa|cargo.datasource.password=sa'
+		}
+
+		file {
+			file = configurations.cargo.files.find { it.name.startsWith('h2-') }
+			toDir = new File("cargo-domain/lib")
+		}
+	}
+}
+
+idea {
+	module {
+		jdkName = '1.7'
+	}
+}

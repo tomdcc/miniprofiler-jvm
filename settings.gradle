@@ -1,1 +1,2 @@
-include "miniprofiler-core", "miniprofiler-test-support", "integration-test:java7", "integration-test:servlet"
+include "miniprofiler-core", "miniprofiler-test-support",
+		"integration-test:java7", "integration-test:servlet", "integration-test:glassfish4"

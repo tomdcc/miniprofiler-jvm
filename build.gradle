@@ -102,18 +102,15 @@ subprojects {
 		}
 
 	}
-}
 
-
-
-[':integration-test:java7', ':integration-test:servlet'].each {
-	project(it) {
+	if(path.startsWith(':integration-test')) {
 		dependencies {
 			compile project(':miniprofiler-core')
 			testCompile project(':miniprofiler-test-support')
 		}
 	}
 }
+
 
 allprojects {
 	task resolveAllDependencies {
