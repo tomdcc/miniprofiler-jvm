@@ -5,3 +5,10 @@ dependencies {
 	compile project(':miniprofiler-core')
 	provided 'javax:javaee-api:7.0'
 }
+
+modifyPom { pom ->
+	pom.project {
+		name "MiniProfiler Java EE Module"
+		description "Support classes for getting the MiniProfiler working out of the box in modern Java EE containers."
+	}
+}
