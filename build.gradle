@@ -123,8 +123,12 @@ subprojects {
 			testRuntime "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
 		}
 	}
+	if(name == 'glassfish4') {
+		dependencies {
+			compile project(':miniprofiler-javaee')
+		}
+	}
 }
-
 
 allprojects {
 	task resolveAllDependencies {

@@ -16,7 +16,11 @@
 
 package io.jdev.miniprofiler.glassfish4;
 
+import io.jdev.miniprofiler.ProfilerProvider;
+import io.jdev.miniprofiler.Timing;
+
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
@@ -27,9 +31,19 @@ public class PersonServiceImpl implements PersonService {
 	@PersistenceContext
 	private EntityManager entityManager;
 
+	@Inject
+	private ProfilerProvider profilerProvider;
+
 	@Override
 	public List<Person> getAllPeople() {
-		return entityManager.createQuery("select p from Person p", Person.class).getResultList();
+		try(Timing timing = profilerProvider.getCurrentProfiler().step("First thing")) {
+			try { Thread.sleep(500); } catch(InterruptedException e) {}
+		}
+
+		try(Timing timing = profilerProvider.getCurrentProfiler().step("Second thing")) {
+			try { Thread.sleep(500); } catch(InterruptedException e) {}
+			return entityManager.createQuery("select p from Person p").getResultList();
+		}
 	}
 
 	@Override

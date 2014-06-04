@@ -47,12 +47,27 @@ class Glassfish4MiniprofilerFunctionalSpec extends GebReportingSpec {
 		then: 'popup visible'
 			result.popup.displayed
 
-		and: ''
+		and: 'timings have correct labels etc'
 			def timings = result.popup.timings
-			timings.size() == 1
+			timings.size() == 3
 			timings[0].label == '/'
-			timings[0].duration.text() ==~ ~/\d+\.\d/
-			!timings[0].durationWithChildren.displayed
-			!timings[0].timeFromStart.displayed
+			timings[1].label == 'First thing'
+			timings[2].label == 'Second thing'
+			timings.each {
+				assert it.duration.text() ==~ ~/\d+\.\d/
+				assert !it.durationWithChildren.displayed
+				assert !it.timeFromStart.displayed
+		}
+
+		when: 'toggle child timings'
+			result.popup.toggleChildTimingLink.click()
+
+		then: 'can see child timings column'
+			waitFor { timings[0].timeFromStart.displayed }
+			timings.each {
+				assert it.timeFromStart.text() ==~ ~/\+\d+\.\d/
+				assert it.durationWithChildren.displayed
+				assert it.durationWithChildren.text() ==~ ~/\d+\.\d/
+			}
 	}
 }
