@@ -45,6 +45,11 @@ subprojects {
 		publishedModules = [':miniprofiler-core', ':miniprofiler-test-support']
 	}
 
+	dependencies {
+		testCompile "org.codehaus.groovy:groovy-all:$groovyVersion"
+		testCompile "org.spockframework:spock-core:$spockVersion"
+	}
+
 	if (path in publishedModules) {
 		apply plugin: "base"
 		apply plugin: "maven"
@@ -108,12 +113,8 @@ subprojects {
 			compile project(':miniprofiler-core')
 			testCompile project(':miniprofiler-test-support')
 
-			testCompile "org.codehaus.groovy:groovy-all:$groovyVersion"
-			testCompile "org.spockframework:spock-core:$spockVersion"
-
 			// If using Spock, need to depend on geb-spock
 			testCompile "org.gebish:geb-spock:$gebVersion"
-			testCompile "org.spockframework:spock-core:$spockVersion"
 
 			// Need a driver implementation
 			testRuntime("com.github.detro.ghostdriver:phantomjsdriver:1.1.0") {

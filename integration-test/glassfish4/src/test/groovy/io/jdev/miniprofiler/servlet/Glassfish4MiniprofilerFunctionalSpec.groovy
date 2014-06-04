@@ -49,10 +49,11 @@ class Glassfish4MiniprofilerFunctionalSpec extends GebReportingSpec {
 
 		and: 'timings have correct labels etc'
 			def timings = result.popup.timings
-			timings.size() == 3
+			timings.size() == 4
 			timings[0].label == '/'
-			timings[1].label == 'First thing'
-			timings[2].label == 'Second thing'
+			timings[1].label == 'PersonServiceImpl.getAllPeople'
+			timings[2].label == 'First thing'
+			timings[3].label == 'Second thing'
 			timings.each {
 				assert it.duration.text() ==~ ~/\d+\.\d/
 				assert !it.durationWithChildren.displayed

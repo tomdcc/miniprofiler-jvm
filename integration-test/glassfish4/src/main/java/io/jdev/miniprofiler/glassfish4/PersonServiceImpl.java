@@ -18,6 +18,7 @@ package io.jdev.miniprofiler.glassfish4;
 
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.Timing;
+import io.jdev.miniprofiler.javaee.Profiled;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -26,6 +27,7 @@ import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Stateless
+@Profiled
 public class PersonServiceImpl implements PersonService {
 
 	@PersistenceContext
