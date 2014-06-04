@@ -23,7 +23,6 @@ subprojects {
     version = '0.4-SNAPSHOT'
 
 	repositories {
-        mavenLocal()
         mavenCentral()
     }
 
