@@ -59,6 +59,9 @@ cargo {
 
 		containerProperties {
 			property 'cargo.datasource.datasource1', 'cargo.datasource.jndi=jdbc/DataSource|cargo.datasource.url=jdbc:h2:mem:miniprofiler;DB_CLOSE_DELAY=-1|cargo.datasource.driver=org.h2.Driver|cargo.datasource.username=sa|cargo.datasource.password=sa'
+			if(project.hasProperty('debugCargo')) {
+				property 'cargo.glassfish.domain.debug', 'true'
+			}
 		}
 
 		file {

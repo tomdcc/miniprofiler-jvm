@@ -70,5 +70,28 @@ class Glassfish4MiniprofilerFunctionalSpec extends GebReportingSpec {
 				assert it.durationWithChildren.displayed
 				assert it.durationWithChildren.text() ==~ ~/\d+\.\d/
 			}
+
+		and: 'Second thing has sql timing'
+			def secondThingTiming = timings.find { it.label == 'Second thing' }
+			secondThingTiming.queries.text() ==~ ~/\d+\.\d \(1\)/
+
+		when: 'click sql link'
+			secondThingTiming.queries.click()
+
+		then: 'three timings, but trivial gaps not visible'
+			def queries = result.queriesPopup.queries
+			queries.size() == 3
+			queries[0] instanceof MiniProfilerGapModule
+			queries[0].displayed == !queries[0].trivial
+			queries[1] instanceof MiniProfilerQueryModule
+			queries[1].displayed
+			queries[2] instanceof MiniProfilerGapModule
+			queries[2].displayed == !queries[2].trivial
+
+		and: 'query has correct info'
+			queries[1].step == 'Second thing'
+			queries[1].timeFromStart ==~ ~/T\+\d+.\d ms/
+			queries[1].duration ==~ ~/\d+.\d ms/
+			queries[1].query ==~ ~/SELECT\s+ID,\s*FIRSTNAME,\s*LASTNAME\s+FROM\s+PERSON/
 	}
 }

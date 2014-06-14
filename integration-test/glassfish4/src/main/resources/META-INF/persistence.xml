@@ -23,6 +23,7 @@
 		<jta-data-source>jdbc/DataSource</jta-data-source>
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>
+			<property name="eclipselink.session.customizer" value="io.jdev.miniprofiler.sql.eclipselink.ProfilingSessionCustomizer"/>
 			<property name="eclipselink.ddl-generation" value="create-tables"/>
 			<property name="eclipselink.ddl-generation.output-mode" value="database"/>
 		</properties>

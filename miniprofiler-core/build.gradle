@@ -6,7 +6,12 @@ dependencies {
 	provided 'javax.servlet:servlet-api:2.3'
 
 	provided('net.sf.ehcache:ehcache:2.7.2') {
-		exclude group: 'org.slf4j', module: 'slf4j-api'
+		transitive false
+	}
+
+	// for profiling eclipselink-generated sql
+	provided('org.eclipse.persistence:eclipselink:2.5.0') {
+		transitive false
 	}
 
     testRuntime "org.slf4j:slf4j-api:1.7.4"
