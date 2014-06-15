@@ -42,6 +42,7 @@ subprojects {
 		isSnapshot = version.endsWith("-SNAPSHOT")
 
 		publishedModules = [':miniprofiler-core', ':miniprofiler-javaee', ':miniprofiler-test-support']
+		javaeeTestModules = ['glassfish4', 'wildfly8']
 	}
 
 	dependencies {
@@ -123,7 +124,7 @@ subprojects {
 			testRuntime "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
 		}
 	}
-	if(name == 'glassfish4') {
+	if(name in javaeeTestModules) {
 		dependencies {
 			compile project(':miniprofiler-javaee')
 		}

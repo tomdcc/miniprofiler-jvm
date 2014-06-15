@@ -14,6 +14,11 @@ dependencies {
 		transitive false
 	}
 
+	// for profiling hibernate-generated sql
+	provided('org.hibernate:hibernate-core:4.3.5.Final') {
+		transitive false
+	}
+
     testRuntime "org.slf4j:slf4j-api:1.7.4"
 
 }
