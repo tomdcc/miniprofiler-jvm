@@ -24,6 +24,11 @@
 	<filter>
 		<filter-name>miniprofiler</filter-name>
 		<filter-class>io.jdev.miniprofiler.servlet.ProfilingFilter</filter-class>
+		<!-- integration test for non-standard path too -->
+		<init-param>
+			<param-name>path</param-name>
+			<param-value>/admin/miniprofiler</param-value>
+		</init-param>
 	</filter>
 
 	<filter-mapping>

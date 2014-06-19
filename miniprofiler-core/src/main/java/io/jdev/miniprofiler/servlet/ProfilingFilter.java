@@ -47,15 +47,30 @@ import java.util.regex.Pattern;
  */
 public class ProfilingFilter implements Filter {
 
+	private static final String DEFAULT_PROFILER_PATH = "/miniprofiler/";
+	private static final String PROFILER_PATH_PARAM = "path";
+
 	protected ProfilerProvider profilerProvider = new StaticProfilerProvider();
-	// TODO: un-hardcode this
-	protected String profilerPath = "/miniprofiler/";
+	protected String profilerPath = DEFAULT_PROFILER_PATH;
 	protected ResourceHelper resourceHelper = new ResourceHelper();
 	protected ServletContext servletContext;
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		servletContext = filterConfig.getServletContext();
+		String pathParam = filterConfig.getInitParameter(PROFILER_PATH_PARAM);
+		if(pathParam != null) {
+			if(!pathParam.startsWith("/")) {
+				throw new IllegalArgumentException("Filter parameter " + PROFILER_PATH_PARAM + " must start with a /");
+			}
+			if(pathParam.equals("/")) {
+				throw new IllegalArgumentException("Filter parameter " + PROFILER_PATH_PARAM + " must be a unique path more than just /, e.g. /miniprofiler");
+			}
+			if(!pathParam.endsWith("/")) {
+				pathParam += "/";
+			}
+			profilerPath = pathParam;
+		}
 	}
 
 	@Override
