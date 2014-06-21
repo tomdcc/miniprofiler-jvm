@@ -33,6 +33,6 @@
             </tbody>
         </table>
     </div>
-    <%= new ScriptTagWriter().printScriptTag(MiniProfiler.getCurrentProfiler(), request.getContextPath() + "/admin/miniprofiler")%>
+    <%= new ScriptTagWriter().printScriptTag(MiniProfiler.getCurrentProfiler(), "http://127.0.0.1:8081/admin/miniprofiler")%>
 </body>
 </html>

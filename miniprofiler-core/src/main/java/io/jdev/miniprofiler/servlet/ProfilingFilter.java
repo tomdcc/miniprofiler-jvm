@@ -49,9 +49,11 @@ public class ProfilingFilter implements Filter {
 
 	private static final String DEFAULT_PROFILER_PATH = "/miniprofiler/";
 	private static final String PROFILER_PATH_PARAM = "path";
+	private static final String ALLOWED_ORIGIN_PARAM = "allowed-origin";
 
 	protected ProfilerProvider profilerProvider = new StaticProfilerProvider();
 	protected String profilerPath = DEFAULT_PROFILER_PATH;
+	protected String allowedOrigin = null;
 	protected ResourceHelper resourceHelper = new ResourceHelper();
 	protected ServletContext servletContext;
 
@@ -71,6 +73,7 @@ public class ProfilingFilter implements Filter {
 			}
 			profilerPath = pathParam;
 		}
+		allowedOrigin = filterConfig.getInitParameter(ALLOWED_ORIGIN_PARAM);
 	}
 
 	@Override
@@ -114,6 +117,9 @@ public class ProfilingFilter implements Filter {
 		if (resource != null) {
 			response.setContentLength(resource.getContentLength());
 			response.setContentType(resource.getContentType());
+			if(allowedOrigin != null) {
+				response.addHeader("Access-Control-Allow-Origin", allowedOrigin);
+			}
 			OutputStream os = response.getOutputStream();
 			os.write(resource.getContent());
 			os.close();
@@ -144,6 +150,9 @@ public class ProfilingFilter implements Filter {
 			return;
 		}
 		response.setContentType("application/json");
+		if(allowedOrigin != null) {
+			response.addHeader("Access-Control-Allow-Origin", allowedOrigin);
+		}
 		String json = JsonUtil.toJson(profiler);
 		Writer writer = response.getWriter();
 		writer.write(json);

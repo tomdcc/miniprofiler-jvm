@@ -17,6 +17,8 @@
 package io.jdev.miniprofiler.servlet
 
 import groovy.json.JsonSlurper
+import io.jdev.miniprofiler.ProfileLevel
+import io.jdev.miniprofiler.ProfilerImpl
 import io.jdev.miniprofiler.ProfilerProvider
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import io.jdev.miniprofiler.test.TestStorage
@@ -92,9 +94,7 @@ class ProfilingFilterSpec extends Specification {
 			!chain.invoked
 
 		and: 'serves up some json'
-			println "response: $response.contentAsString"
 			def json = new JsonSlurper().parseText(response.contentAsString)
-			println json
 
 		and: 'it looks about right'
 			json.Id == storage.profiler.id.toString()
@@ -135,6 +135,25 @@ class ProfilingFilterSpec extends Specification {
             null                   | '/README.md'                | true        | null
 			'/admin/miniprof'      | '/admin/miniprof/README.md' | false       | 'io/jdev/miniprofiler/ui/README.md'
 			'/admin/miniprof'      | '/miniprofiler/README.md'   | true        | null
+	}
+
+	void "cors host header added to results and resources served"() {
+		given: 'configured filter'
+			def host = 'http://foo.com'
+			config.addInitParameter('allowed-origin', host)
+			filter.init(config)
+
+		and: 'profiler'
+			storage.profiler = new ProfilerImpl("test", ProfileLevel.Info, profilerProvider)
+
+		when: 'ask for results'
+			request.requestURI = '/miniprofiler/results'
+			request.addParameter("id", storage.profiler.id.toString())
+			filter.doFilter(request, response, chain)
+
+		then: 'results have correct header'
+			response.getHeader("Access-Control-Allow-Origin") == host
+
 	}
 
 }

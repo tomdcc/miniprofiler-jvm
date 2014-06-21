@@ -29,6 +29,11 @@
 			<param-name>path</param-name>
 			<param-value>/admin/miniprofiler</param-value>
 		</init-param>
+		<!-- and cross-origin ajax as well -->
+		<init-param>
+			<param-name>allowed-origin</param-name>
+			<param-value>http://localhost:8081</param-value>
+		</init-param>
 	</filter>
 
 	<filter-mapping>
