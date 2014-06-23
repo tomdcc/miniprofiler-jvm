@@ -22,6 +22,7 @@ import io.jdev.miniprofiler.user.UserProvider;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.UUID;
 
 /**
  * Support class for profiler providers. This provides most functionality
@@ -80,6 +81,20 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 	}
 
 	/**
+	 * Create a new profiling session with Info profiling level.
+	 *
+	 * @param id the UUID to use
+	 * @param rootName A name for the session. Thiis is used as the name
+	 *                 of the root timing node for the session, and could be
+	 *                 the currently rendering URL or background job name.
+	 * @return the newly created profiler
+	 */
+	@Override
+	public Profiler start(UUID id, String rootName) {
+		return start(id, rootName, ProfileLevel.Info);
+	}
+
+	/**
 	 * Create a new profiling session.
 	 *
 	 * @param rootName A name for the session. Thiis is used as the name
@@ -90,7 +105,19 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 	 */
 	@Override
 	public Profiler start(String rootName, ProfileLevel level) {
-		ProfilerImpl profiler = new ProfilerImpl(rootName, level, this);
+		return start(null, rootName, level);
+	}
+
+	/**
+	 * Start a new profiling session with the given level, root name and UUID.
+	 * @param id the UUID to use
+	 * @param rootName the name of the root timing step. This might often be the uri of the current request.
+	 * @param level the level of the profiling session
+	 * @return the new profiler
+	 */
+	@Override
+	public Profiler start(UUID id, String rootName, ProfileLevel level) {
+		ProfilerImpl profiler = new ProfilerImpl(id, rootName, rootName, level, this);
 		profiler.setMachineName(machineName);
 		if (userProvider != null) {
 			profiler.setUser(userProvider.getUser());

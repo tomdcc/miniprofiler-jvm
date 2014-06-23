@@ -18,6 +18,8 @@ package io.jdev.miniprofiler;
 
 import io.jdev.miniprofiler.storage.Storage;
 
+import java.util.UUID;
+
 /**
  * Primary interface for starting a profiling session and getting a
  * handle on the current session.
@@ -50,12 +52,29 @@ public interface ProfilerProvider {
 	Profiler start(String rootName);
 
 	/**
+	 * Start a new profiling session with the default {@link ProfileLevel#Info} level.
+	 * @param id the UUID to use
+	 * @param rootName the name of the root timing step. This might often be the uri of the current request.
+	 * @return the new profiler
+	 */
+	Profiler start(UUID id, String rootName);
+
+	/**
 	 * Start a new profiling session with the given level.
 	 * @param rootName the name of the root timing step. This might often be the uri of the current request.
 	 * @param level the level of the profiling session
 	 * @return the new profiler
 	 */
 	Profiler start(String rootName, ProfileLevel level);
+
+	/**
+	 * Start a new profiling session with the given level, root name and UUID.
+	 * @param id the UUID to use
+	 * @param rootName the name of the root timing step. This might often be the uri of the current request.
+	 * @param level the level of the profiling session
+	 * @return the new profiler
+	 */
+	Profiler start(UUID id, String rootName, ProfileLevel level);
 
 	/**
 	 * Ends the current profiling session, if one exists.

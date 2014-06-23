@@ -18,6 +18,8 @@ package io.jdev.miniprofiler;
 
 import io.jdev.miniprofiler.storage.Storage;
 
+import java.util.UUID;
+
 /**
  * A profiler provider that defers to the passed-in profiler provider.
  */
@@ -31,8 +33,18 @@ public abstract class DelegatingProfilerProvider implements ProfilerProvider {
 	}
 
 	@Override
+	public Profiler start(UUID id, String rootName) {
+		return getDelegate().start(id, rootName);
+	}
+
+	@Override
 	public Profiler start(String rootName, ProfileLevel level) {
 		return getDelegate().start(rootName, level);
+	}
+
+	@Override
+	public Profiler start(UUID id, String rootName, ProfileLevel level) {
+		return getDelegate().start(id, rootName, level);
 	}
 
 	@Override

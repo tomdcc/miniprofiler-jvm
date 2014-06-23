@@ -156,6 +156,27 @@ class ProfilingFilterSpec extends Specification {
 
 	}
 
+	void "use specified id if passed as a parameter"() {
+		given: 'request'
+		request.requestURI = '/foo'
+		def id = UUID.randomUUID().toString()
+		request.addParameter("x-miniprofiler-id", id)
+
+		when: 'invoked'
+		filter.doFilter(request, response, chain)
+
+		then: 'chain was invoked'
+		chain.invoked
+
+		and: 'profiling session was captured'
+		storage.profiler
+
+		and: 'profiler id is as passed in'
+		storage.profiler.id.toString() == id
+
+		and: 'profiler id set in header'
+		response.getHeader("X-MiniProfiler-Ids") == """["$id"]"""
+	}
 }
 
 class MockFilterChain implements FilterChain {

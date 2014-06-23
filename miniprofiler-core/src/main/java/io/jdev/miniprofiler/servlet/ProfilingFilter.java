@@ -93,10 +93,19 @@ public class ProfilingFilter implements Filter {
 			// just pass on
 			filterChain.doFilter(servletRequest, servletResponse);
 		} else {
-			Profiler profiler = startProfiling(request);
+			UUID id = null;
+			String idParam = request.getParameter("x-miniprofiler-id");
+			if(idParam != null && !idParam.isEmpty()) {
+				try {
+					id = UUID.fromString(idParam);
+				} catch(IllegalArgumentException e) {
+					// ignore, just generate it then
+				}
+			}
+			Profiler profiler = startProfiling(id, request);
 			try {
 				// add header, this is mostly for ajax
-				UUID id = profiler.getId();
+				id = profiler.getId();
 				if (id != null) {
 					response.addHeader("X-MiniProfiler-Ids", "[\"" + id.toString() + "\"]");
 				}
@@ -159,8 +168,8 @@ public class ProfilingFilter implements Filter {
 		writer.close();
 	}
 
-	protected Profiler startProfiling(HttpServletRequest request) {
-		return profilerProvider.start(request.getRequestURI());
+	protected Profiler startProfiling(UUID id, HttpServletRequest request) {
+		return profilerProvider.start(id, request.getRequestURI());
 	}
 
 	@Override

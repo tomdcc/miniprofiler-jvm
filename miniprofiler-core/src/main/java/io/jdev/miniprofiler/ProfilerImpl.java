@@ -94,7 +94,32 @@ public class ProfilerImpl implements Profiler {
 	 * @param profilerProvider the profiler provider constructing the
 	 */
 	public ProfilerImpl(String name, String rootName, ProfileLevel level, ProfilerProvider profilerProvider) {
-		id = UUID.randomUUID();
+		this(null, name, rootName, level, profilerProvider);
+	}
+
+	/**
+	 * Construct a new profiling session.
+	 *
+	 * <p>This will create an implicit root {@link Timing} step considered to have
+	 * started now, with the given root name.</p>
+	 *
+	 * <p>A new random UUID id is created for every profiler.</p>
+	 *
+	 * <p>Any profiling steps more verbose than the given level will be ignored.</p>
+	 *
+	 * <p>The profiler provider constructing the profiler is passed in so that
+	 * when {@link #stop()} is called, the profiler can notify the provider to store
+	 * the profiling info for later retrieval via
+	 * {@link ProfilerProvider#stopSession(ProfilerImpl, boolean)}.</p>
+	 *
+	 * @param id the id to use, or null to generate a random uuid
+	 * @param name name of the request
+	 * @param rootName name of the root timing step to start
+	 * @param level the level of the profiler
+	 * @param profilerProvider the profiler provider constructing the
+	 */
+	public ProfilerImpl(UUID id, String name, String rootName, ProfileLevel level, ProfilerProvider profilerProvider) {
+		this.id = id != null ? id : UUID.randomUUID();
 		this.name = name;
 		this.profilerProvider = profilerProvider;
 		this.level = level;
