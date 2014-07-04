@@ -44,7 +44,7 @@ public class PersonServiceImpl implements PersonService {
 
 		try(Timing timing = profilerProvider.getCurrentProfiler().step("Second thing")) {
 			try { Thread.sleep(500); } catch(InterruptedException e) {}
-			return entityManager.createQuery("select p from Person p").getResultList();
+			return entityManager.createQuery("select p from Person p", Person.class).getResultList();
 		}
 	}
 

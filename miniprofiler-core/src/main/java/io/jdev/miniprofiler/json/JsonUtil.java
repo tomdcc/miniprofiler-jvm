@@ -75,7 +75,6 @@ public class JsonUtil {
 	 * the Apcache 2.0 license.
 	 *
 	 * @param string A String
-	 * @return  A String correctly formatted for insertion in a JSON text.
 	 */
 	public static void quote(String string, StringBuilder sb) {
 		char         c = 0;
