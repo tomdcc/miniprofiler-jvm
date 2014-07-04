@@ -21,6 +21,7 @@ import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.StaticProfilerProvider;
 import io.jdev.miniprofiler.json.JsonUtil;
+import io.jdev.miniprofiler.sql.DriverUtil;
 import io.jdev.miniprofiler.util.ResourceHelper;
 import io.jdev.miniprofiler.storage.Storage;
 
@@ -174,6 +175,8 @@ public class ProfilingFilter implements Filter {
 
 	@Override
 	public void destroy() {
+		// in shutdown, let's deregister the profiling jdbc driver
+		DriverUtil.deregisterDriverSpy();
 	}
 
 	/**
