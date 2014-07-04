@@ -1,0 +1,18 @@
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+
+dependencies {
+	compile project(':miniprofiler-core')
+	provided 'javax.servlet:servlet-api:2.3'
+	provided 'org.grails:grails-web:2.2.0'
+}
+
+modifyPom { pom ->
+	pom.project {
+		name "MiniProfiler Grails Support"
+		description "Support classes for getting the MiniProfiler working out of the box in Grails."
+	}
+}
+
+

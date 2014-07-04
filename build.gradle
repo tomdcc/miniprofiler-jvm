@@ -41,7 +41,12 @@ subprojects {
 
 		isSnapshot = version.endsWith("-SNAPSHOT")
 
-		publishedModules = [':miniprofiler-core', ':miniprofiler-javaee', ':miniprofiler-test-support']
+		publishedModules = [
+			':miniprofiler-core',
+			':miniprofiler-javaee',
+			':miniprofiler-grails',
+			':miniprofiler-test-support'
+		]
 		javaeeTestModules = ['glassfish4', 'wildfly8']
 	}
 

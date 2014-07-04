@@ -1,3 +1,4 @@
 include "miniprofiler-core", "miniprofiler-javaee", "miniprofiler-test-support",
+		"miniprofiler-grails",
 		"integration-test:java7", "integration-test:servlet", "integration-test:glassfish4",
 		"integration-test:wildfly8"
