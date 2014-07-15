@@ -100,7 +100,7 @@ class Wildfly8MiniprofilerFunctionalSpec extends GebReportingSpec {
 class HomePage extends geb.Page {
 	static url = ''
 	static content = {
-		miniProfiler { module MiniProfilerModule }
+		miniProfiler(wait: true) { module MiniProfilerModule }
 	}
 }
 
