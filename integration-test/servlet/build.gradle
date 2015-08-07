@@ -12,13 +12,9 @@ dependencies {
 [jettyRun, jettyRunWar, jettyStop]*.stopPort = 8081
 [jettyRun, jettyRunWar, jettyStop]*.stopKey = 'stopKey'
 
-test.doFirst {
-	jettyRun.daemon = true
-	jettyRun.execute()
-}
-test.doLast {
-	jettyStop.execute()
-}
+jettyRun.daemon = true
+test.dependsOn(jettyRun)
+test.finalizedBy(jettyStop)
 
 test {
 	systemProperties "geb.build.reportsDir": "$reporting.baseDir/geb"
