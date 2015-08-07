@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-driver = "org.openqa.selenium.phantomjs.PhantomJSDriver"
 baseUrl = 'http://127.0.0.1:8081/'
 
 if(!System.getProperty("geb.build.reportsDir")) {

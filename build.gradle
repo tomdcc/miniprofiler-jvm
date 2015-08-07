@@ -35,8 +35,8 @@ subprojects {
 
 	ext {
 		groovyVersion = "2.1.6"
-		gebVersion = '0.9.1'
-		seleniumVersion = "2.41.0"
+		gebVersion = '0.12.1'
+		seleniumVersion = "2.46.0"
 		spockVersion = "0.7-groovy-2.0"
 
 		isSnapshot = version.endsWith("-SNAPSHOT")
@@ -121,12 +121,10 @@ subprojects {
 			// If using Spock, need to depend on geb-spock
 			testCompile "org.gebish:geb-spock:$gebVersion"
 
-			// Need a driver implementation
-			testRuntime("com.github.detro.ghostdriver:phantomjsdriver:1.1.0") {
-				exclude module: "selenium-java"
-			}
 			testCompile "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
 			testRuntime "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
+			// Need a driver implementation
+			testRuntime "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
 		}
 	}
 	if(name in javaeeTestModules) {
