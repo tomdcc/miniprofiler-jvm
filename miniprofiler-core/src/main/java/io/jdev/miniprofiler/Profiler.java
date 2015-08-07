@@ -31,23 +31,23 @@ import java.util.UUID;
  * should be stopped by calling {@link #stop()}. Typically this might be
  * done in a finally block around some code:</p>
  *
- * <p><blockquote><pre>
+ * <blockquote><pre>
  * Profiler profiler = MiniProfiler.start("/my/uri", Info);
  * try {
  *     // do stuff here
  * } finally {
  *     profiler.stop();
  * }
- * </pre></blockquote></p>
+ * </pre></blockquote>
  *
  * <p>or, since the interface implements {@link Closeable}, you can use
  * Java 7 ARM blocks:</p>
  *
- * <p><blockquote><pre>
+ * <blockquote><pre>
  * try(Profiler profiler = profilerProvider.start("/my/uri", Info)) {
  *     // do stuff here
  * }
- * </pre></blockquote></p>
+ * </pre></blockquote>
  *
  * <p>Individual profiling steps can then be added by calling
  * {@link #step(String, ProfileLevel)}. Usually it would be necessary
@@ -55,22 +55,22 @@ import java.util.UUID;
  * {@link io.jdev.miniprofiler.ProfilerProvider#getCurrentProfiler()}
  * or {@link io.jdev.miniprofiler.MiniProfiler#getCurrentProfiler()}.
  * </p>
- * <p><blockquote><pre>
+ * <blockquote><pre>
  * try(Timing profiler = profilerProvider.getCurrentProfiler().step("Some complicated step", Info)) {
  *     // do stuff here
  * }
- * </pre></blockquote></p>
+ * </pre></blockquote>
  *
  * <p>Calls can be nested, and nested steps will be displayed indented in
  * the UI.</p>
- * <p><blockquote><pre>
+ * <blockquote><pre>
  * try(Timing profiler = profilerProvider.getCurrentProfiler().step("Some complicated step", Info)) {
  *     // do stuff here
  *     try(Timing profiler = profilerProvider.getCurrentProfiler().step("Another step inside that one!", Info)) {
  *         // do stuff here
  *     }
  * }
- * </pre></blockquote></p>
+ * </pre></blockquote>
  */
 public interface Profiler extends Serializable, Jsonable, Closeable {
 
@@ -111,6 +111,8 @@ public interface Profiler extends Serializable, Jsonable, Closeable {
 	 * Stop the current timing session. If passed true, the
 	 * current profiling session won't be saved for later viewing.
 	 * This is usually if the page has been cancelled for some reason.
+	 *
+	 * @param discardResults whether to skip storing the current session data
 	 */
 	public void stop(boolean discardResults);
 

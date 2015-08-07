@@ -775,15 +775,18 @@ public class PreparedStatementSpy extends StatementSpy implements PreparedStatem
   /**
    * Sets the designated parameter to the given input stream, which will have
    * the specified number of bytes.
+   * <p>
    * When a very large ASCII value is input to a <code>LONGVARCHAR</code>
    * parameter, it may be more practical to send it via a
    * <code>java.io.InputStream</code>. Data will be read from the stream
    * as needed until end-of-file is reached.  The JDBC driver will
    * do any necessary conversion from ASCII to the database char format.
-   * <p/>
-   * <P><B>Note:</B> This stream object can either be a standard
+   * </p>
+   * <p>
+   * <B>Note:</B> This stream object can either be a standard
    * Java stream object or your own subclass that implements the
    * standard interface.
+   * </p>
    *
    * @param parameterIndex the first parameter is 1, the second is 2, ...
    * @param x              the Java input stream that contains the ASCII parameter value

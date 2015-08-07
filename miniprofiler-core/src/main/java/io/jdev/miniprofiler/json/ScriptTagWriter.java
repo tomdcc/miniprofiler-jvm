@@ -33,6 +33,10 @@ public class ScriptTagWriter {
 	/**
 	 * Writes out a script tag in the format that the mini profiler front end
 	 * javascript expects.
+	 *
+	 * @param profiler profiler data
+	 * @param path path to the script
+	 * @return script html tag
 	 */
 	public String printScriptTag(Profiler profiler, String path) {
 		if (profiler == null || profiler == NullProfiler.INSTANCE) {

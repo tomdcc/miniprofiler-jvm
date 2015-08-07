@@ -67,7 +67,7 @@ public class JsonUtil {
 	}
 	/**
 	 * Produce a string in double quotes with backslash sequences in all the
-	 * right places. A backslash will be inserted within </, allowing JSON
+	 * right places. A backslash will be inserted within &lt;/, allowing JSON
 	 * text to be delivered in HTML. In JSON text, a string cannot contain a
 	 * control character or an unescaped quote or backslash.
 	 *
@@ -75,6 +75,7 @@ public class JsonUtil {
 	 * the Apcache 2.0 license.
 	 *
 	 * @param string A String
+	 * @param sb buffer to append to
 	 */
 	public static void quote(String string, StringBuilder sb) {
 		char         c = 0;

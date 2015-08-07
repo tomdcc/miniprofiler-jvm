@@ -106,6 +106,8 @@ public interface ProfilerProvider {
 	 * <p>This method should never return null. If there is no current profiling session,
 	 * a {@link NullProfiler} instance will be returned so that calling code does not
 	 * have to do null checks around every timing block.</p>
+	 *
+	 * @return the current profiler
 	 */
 	Profiler getCurrentProfiler();
 

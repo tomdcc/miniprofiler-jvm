@@ -29,24 +29,24 @@ import java.io.Serializable;
  * them. If at all possible, this should be in a finally block just
  * after the creation of the timing like so:
  * </p>
- * <p><blockquote><pre>
+ * <blockquote><pre>
  * Timing timing = profilerProvider.getCurrentProfiler().step("some thing");
  * try {
  *     // do stuff here
  * } finally {
  *     timing.stop();
  * }
- * </pre></blockquote></p>
+ * </pre></blockquote>
  *
  * <p>or, since the timings implements {@link Closeable}, you can use
  * Java 7 ARM blocks:</p>
  *
- * <p><blockquote><pre>
+ * <blockquote><pre>
  * try(Timing timing = profilerProvider.getCurrentProfiler().step("some thing")) {
  *     // do stuff here
  * }
  * // automatically closed!
- * </pre></blockquote></p>
+ * </pre></blockquote>
  */
 public interface Timing extends Serializable, Jsonable, Closeable {
 
@@ -65,7 +65,7 @@ public interface Timing extends Serializable, Jsonable, Closeable {
 	/**
 	 * Allows changing the name of the timing step after creation. Sometimes
 	 * useful when you don't know the name a particular step until later on.
-	 * @param name
+	 * @param name new name of the timing step
 	 */
 	public void setName(String name);
 

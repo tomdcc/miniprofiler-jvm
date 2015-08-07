@@ -167,15 +167,13 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 
 	/**
 	 * Set the profiler storage to be used by this provider.
-	 * <p/>
 	 * <p>The profiler storage is where profiler sessions are stored
 	 * to be retrieved later, either by an AJAX call immediately
 	 * after a page render, or for later debugging.</p>
-	 * <p/>
 	 * <p> By default, the storage property is set to an in-memory
 	 * {@link MapStorage}.</p>
 	 *
-	 * @param storage
+	 * @param storage the storage option to use
 	 * @see Storage
 	 */
 	public void setStorage(Storage storage) {
@@ -194,7 +192,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 	 * Sets the machine name for the current machine. In unset this defaults
 	 * to the local host name, as determined by {@link #getDefaultHostname()}.
 	 *
-	 * @param machineName
+	 * @param machineName the machine name to use
 	 */
 	public void setMachineName(String machineName) {
 		this.machineName = machineName;
@@ -221,6 +219,8 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 	/**
 	 * Return the local host name, or the loopback name (usually "localhost")
 	 * if it doesn't resolve in DNS.
+	 *
+	 * @return host name as returned by {@link InetAddress#getHostName()}
 	 */
 	public String getDefaultHostname() {
 		try {

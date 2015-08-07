@@ -41,45 +41,45 @@ import java.util.logging.Logger;
  * well known drivers at class load time, so that this driver can be
  * "dropped in" to any Java program that uses these drivers without making any
  * code changes.
- * <p/>
+ * <p>
  * The well known driver classes that are loaded are:
- * <p/>
- * <p/>
- * <code>
+ * </p>
  * <ul>
- * <li>oracle.jdbc.driver.OracleDriver</li>
- * <li>com.sybase.jdbc2.jdbc.SybDriver</li>
- * <li>net.sourceforge.jtds.jdbc.Driver</li>
- * <li>com.microsoft.jdbc.sqlserver.SQLServerDriver</li>
- * <li>com.microsoft.sqlserver.jdbc.SQLServerDriver</li>
- * <li>weblogic.jdbc.sqlserver.SQLServerDriver</li>
- * <li>com.informix.jdbc.IfxDriver</li>
- * <li>org.apache.derby.jdbc.ClientDriver</li>
- * <li>org.apache.derby.jdbc.EmbeddedDriver</li>
- * <li>com.mysql.jdbc.Driver</li>
- * <li>org.postgresql.Driver</li>
- * <li>org.hsqldb.jdbcDriver</li>
- * <li>org.h2.Driver</li>
+ * <li><code>oracle.jdbc.driver.OracleDriver</code></li>
+ * <li><code>com.sybase.jdbc2.jdbc.SybDriver</code></li>
+ * <li><code>net.sourceforge.jtds.jdbc.Driver</code></li>
+ * <li><code>com.microsoft.jdbc.sqlserver.SQLServerDriver</code></li>
+ * <li><code>com.microsoft.sqlserver.jdbc.SQLServerDriver</code></li>
+ * <li><code>weblogic.jdbc.sqlserver.SQLServerDriver</code></li>
+ * <li><code>com.informix.jdbc.IfxDriver</code></li>
+ * <li><code>org.apache.derby.jdbc.ClientDriver</code></li>
+ * <li><code>org.apache.derby.jdbc.EmbeddedDriver</code></li>
+ * <li><code>com.mysql.jdbc.Driver</code></li>
+ * <li><code>org.postgresql.Driver</code></li>
+ * <li><code>org.hsqldb.jdbcDriver</code></li>
+ * <li><code>org.h2.Driver</code></li>
  * </ul>
- * </code>
- * <p/>
- * <p/>
+ * <p>
  * Additional drivers can be set via a property: <b>log4jdbc.drivers</b>
  * This can be either a single driver class name or a list of comma separated
  * driver class names.
- * <p/>
+ * </p>
+ * <p>
  * The autoloading behavior can be disabled by setting a property:
  * <b>log4jdbc.auto.load.popular.drivers</b> to false.  If that is done, then
  * the only drivers that log4jdbc will attempt to load are the ones specified
  * in <b>log4jdbc.drivers</b>.
- * <p/>
+ * </p>
+ * <p>
  * If any of the above driver classes cannot be loaded, the driver continues on
  * without failing.
- * <p/>
+ * </p>
+ * <p>
  * Note that the <code>getMajorVersion</code>, <code>getMinorVersion</code> and
  * <code>jdbcCompliant</code> method calls attempt to delegate to the last
  * underlying driver requested through any other call that accepts a JDBC URL.
- * <p/>
+ * </p>
+ * <p>
  * This can cause unexpected behavior in certain circumstances.  For example,
  * if one of these 3 methods is called before any underlying driver has been
  * established, then they will return default values that might not be correct
@@ -89,6 +89,7 @@ import java.util.logging.Logger;
  * time.  This will not usually be a problem, since the driver is retrieved by
  * it's URL from the DriverManager in the first place (thus establishing an
  * underlying real driver), and in most applications their is only one database.
+ * </p>
  *
  * @author Arthur Blake
  */

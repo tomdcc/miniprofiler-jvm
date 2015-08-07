@@ -25,11 +25,11 @@ import java.util.Map;
  * won't ever have to return null.
  *
  * <p>This makes it possible to call:</p>
- * <p><blockquote><pre>
+ * <blockquote><pre>
  * try (Timing t = profilerProvider.getCurrentProfiler().step("do my thing")) {
  *     // do stuff here
  * }
- * </pre></blockquote></p>
+ * </pre></blockquote>
  *
  * <p>...without having to worry about whether there is a current profiler
  * or not. A {@link NullTiming} should be returned by the {@link NullProfiler}

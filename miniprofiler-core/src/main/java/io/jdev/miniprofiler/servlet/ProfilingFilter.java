@@ -211,7 +211,7 @@ public class ProfilingFilter implements Filter {
 	 * Here so that DI frameworks can inject a profiler provider, rather than
 	 * relying on {@link MiniProfiler#start(String)}.
 	 *
-	 * @param profilerProvider
+	 * @param profilerProvider the current profiler provider
 	 */
 	public void setProfilerProvider(ProfilerProvider profilerProvider) {
 		this.profilerProvider = profilerProvider;
