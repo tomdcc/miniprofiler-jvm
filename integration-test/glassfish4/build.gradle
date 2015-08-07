@@ -4,12 +4,12 @@ buildscript {
 	}
 
 	dependencies {
-		classpath 'org.gradle.api.plugins:gradle-cargo-plugin:1.5'
+		classpath 'com.bmuschko:gradle-cargo-plugin:2.1.1'
 	}
 }
 
 apply plugin: 'war'
-apply plugin: 'cargo'
+apply plugin: 'com.bmuschko.cargo'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -17,7 +17,7 @@ targetCompatibility = 1.7
 dependencies {
 	provided 'javax:javaee-api:7.0'
 
-	def cargoVersion = '1.4.8'
+	def cargoVersion = '1.4.15'
 	cargo "org.codehaus.cargo:cargo-core-uberjar:$cargoVersion"
 	cargo "org.codehaus.cargo:cargo-ant:$cargoVersion"
 	cargo 'com.h2database:h2:1.3.173'
@@ -49,7 +49,7 @@ cargo {
 
 	local {
 		installer {
-			installUrl = 'http://download.java.net/glassfish/4.0/release/glassfish-4.0.zip'
+			installUrl = 'http://download.java.net/glassfish/4.1/release/glassfish-4.1.zip'
 			downloadDir = rootProject.file(".gradle/cache/cargo")
 			extractDir = buildDir
 		}
