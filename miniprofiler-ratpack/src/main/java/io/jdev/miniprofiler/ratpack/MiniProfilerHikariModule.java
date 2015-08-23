@@ -25,6 +25,13 @@ import ratpack.guice.ConfigurableModule;
 
 import javax.sql.DataSource;
 
+/**
+ * A module that duplicates Ratpack's <code>HikariModule</code> but provides a <code>DataSource</code>
+ * that is actually a {@link ProfilingDataSource} so that JDBC calls are profiled.
+ *
+ * <p>Annoyingly, we can't extend Ratpack's <code>HikariModule</code> and extend it as Guice now disallows
+ * overriding <code>@Provides</code> methods. So we have to reimplement it here.</p>
+ */
 public class MiniProfilerHikariModule extends ConfigurableModule<HikariConfig> {
 
     @Override
@@ -32,9 +39,13 @@ public class MiniProfilerHikariModule extends ConfigurableModule<HikariConfig> {
 
     }
 
-    // Annoyingly, we can't extend Ratpack's HikariModule and extend it as Guice now disallows
-    // overriding @Provides methods. So we have to reimplement it here.
-
+    /**
+     * Provides a profiling datasource that delegates to a {@link HikariDataSource} configured with the
+     * given config object.
+     *
+     * @param config the Hikari configuration to use
+     * @return a profiled Hikari {@link DataSource}
+     */
     @Provides
     @Singleton
     public DataSource dataSource(HikariConfig config) {

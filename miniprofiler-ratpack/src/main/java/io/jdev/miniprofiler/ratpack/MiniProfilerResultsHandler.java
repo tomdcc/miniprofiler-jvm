@@ -28,9 +28,17 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+/**
+ * A Ratpack {@link Handler} that serves MiniProfiler results to the UI.
+ */
 public class MiniProfilerResultsHandler implements Handler {
     private static final Pattern UUID_PATTERN = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
 
+    /**
+     * Serves MiniProfiler results to the UI.
+     * @param ctx the current context
+     * @throws Exception any
+     */
     @Override
     public void handle(Context ctx) throws Exception {
         Response response = ctx.getResponse();

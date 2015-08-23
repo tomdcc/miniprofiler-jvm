@@ -21,8 +21,21 @@ import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import ratpack.exec.ExecInterceptor;
 
+/**
+ * A Guice module to install a Ratpack compatible {@link ProfilerProvider} and an {@link ExecInterceptor}
+ * to make all executions profiled.
+ *
+ * <p>The created {@link ProfilerProvider} is also installed as the default in the {@link MiniProfiler}
+ * class for compatibility with code that doesn't use dependency injection or Ratpack contexts.</p>
+ *
+ * <p>This does <em>not</em> install handlers to support the UI - you'll need to do that separately
+ * in your handler chain configuration.</p>
+ */
 public class MiniProfilerModule extends AbstractModule {
 
+    /**
+     * Installs Ratpack / MiniProfiler support code.
+     */
     @Override
     protected void configure() {
         ProfilerProvider profilerProvider = new RatpackContextProfilerProvider();

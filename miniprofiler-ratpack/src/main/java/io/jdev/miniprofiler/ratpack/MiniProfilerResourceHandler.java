@@ -21,10 +21,18 @@ import ratpack.handling.Context;
 import ratpack.handling.Handler;
 import ratpack.http.Response;
 
+/**
+ * A Ratpack {@link Handler} that serves MiniProfiler UI resources to the web browser.
+ */
 public class MiniProfilerResourceHandler implements Handler {
 
     private final ResourceHelper resourceHelper = new ResourceHelper();
 
+    /**
+     * Serves MiniProfiler UI resources to the front end
+     * @param ctx the current context
+     * @throws Exception any
+     */
     @Override
     public void handle(Context ctx) throws Exception {
         Response response = ctx.getResponse();

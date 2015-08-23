@@ -20,20 +20,39 @@ import io.jdev.miniprofiler.BaseProfilerProvider;
 import io.jdev.miniprofiler.Profiler;
 import ratpack.exec.Execution;
 
+/**
+ * A {@link io.jdev.miniprofiler.ProfilerProvider} that keeps profilers that it creates on the current Ratpack
+ * {@link Execution} rather than e.g. a {@link ThreadLocal}, since Ratpack executions span across multiple
+ * threads.
+ */
 public class RatpackContextProfilerProvider extends BaseProfilerProvider {
 
+    /**
+     * Adds the given rofiler to the current {@link Execution}.
+     *
+     * @param profiler the newly created profiler
+     */
     @Override
     protected void profilerCreated(Profiler profiler) {
         Execution.current().add(Profiler.class, profiler);
     }
 
+    /**
+     * Does nothing.
+     *
+     * <p> In theory we could remove the profiler from the execution here, but there's no need as executions
+     * are throwaway. This method is really here to support cleaning up threadlocals in thread pools.</p>
+     * @param profiler the stopped profiler
+     */
     @Override
     protected void profilerStopped(Profiler profiler) {
-        // In theory we could remove the profiler here using Execution.current().remove(Profiler.class),
-        // but there's no need as executions are throwaway. This method is really here to support
-        // cleaning up threadlocals in thread pools.
     }
 
+    /**
+     * Grabs the current profiler from the current execution.
+     *
+     * @return the current profiler or <code>null</code> if there isn't one
+     */
     @Override
     protected Profiler lookupCurrentProfiler() {
         return Execution.current().maybeGet(Profiler.class).orElse(null);

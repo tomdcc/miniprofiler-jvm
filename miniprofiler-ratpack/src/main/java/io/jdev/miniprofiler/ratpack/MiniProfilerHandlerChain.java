@@ -19,9 +19,19 @@ package io.jdev.miniprofiler.ratpack;
 import ratpack.func.Action;
 import ratpack.handling.Chain;
 
+/**
+ * A handler chain that serves up miniprofiler results and resources for the UI.
+ */
 public class MiniProfilerHandlerChain implements Action<Chain> {
+
+    /** The default URI prefix that this handler chain should be installed under. */
     public static final String DEFAULT_PREFIX = "miniprofiler";
 
+    /**
+     * Installs handlers to return results and serve UI resources on the given chain.
+     * @param chain the chain to install the handler on
+     * @throws Exception any
+     */
     @Override
     public void execute(Chain chain) throws Exception {
         chain.post("results", new MiniProfilerResultsHandler());
