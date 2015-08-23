@@ -16,61 +16,62 @@
 
 package io.jdev.miniprofiler.ratpack
 
-import io.jdev.miniprofiler.MiniProfiler
-import io.jdev.miniprofiler.Profiler
-import ratpack.exec.Blocking
+import io.jdev.miniprofiler.NullProfiler
+import io.jdev.miniprofiler.ProfilerProvider
+import io.jdev.miniprofiler.test.TestProfilerProvider
+import ratpack.exec.ExecInterceptor
+import ratpack.exec.Execution
 import ratpack.func.Action
-import ratpack.handling.Context
 import ratpack.handling.Handler
 import ratpack.test.handling.RequestFixture
 import spock.lang.Specification
 
 class MiniProfilerExecInterceptorSpec extends Specification {
 
-	void cleanup() {
-		MiniProfiler.profilerProvider = null
+	final String requestUri = "/foo"
+
+	TestProfilerProvider provider
+
+	void setup() {
+		provider = new TestProfilerProvider()
 	}
 
-	def "interceptor works"() {
-		given:
-		def requestUri = "/foo"
-
+	def "interceptor creates new profiler and binds provider to execution"() {
 		when: "run handler with interceptor"
-		def result = RequestFixture.handle(new ContextHandler(), { RequestFixture req ->
+		def result = RequestFixture.handle({ ctx -> ctx.next() } as Handler, { RequestFixture req ->
 			req.uri(requestUri)
-			req.registry.add(MiniProfilerExecInterceptor.create())
+			req.registry.add(new MiniProfilerExecInterceptor(provider))
 		} as Action)
 
-		then: 'correct profiler info attached to execution'
-		def profiler = result.registry.get(Profiler)
+		then: 'profiler provider info attached to execution'
+		provider == result.registry.get(ProfilerProvider)
+
+		and: 'has a profiler'
+		def profiler = provider.currentProfiler
 		profiler != null
 
-		and: 'has correct execution info'
+		and: 'profiler has current request uri as name'
 		profiler.root.name == requestUri
-		profiler.root.children.name == ["handler", "blocking", "staticstep", "then"]
-
-		and: 'has timing info'
-		profiler.root.durationMilliseconds != null
-
-		and: 'was propertly cleaned up'
-		profiler.head == null
 	}
 
-}
-
-class ContextHandler implements Handler {
-	void handle(Context ctx) throws Exception {
-		def profiler = ctx.get(Profiler)
-		def step = profiler.step("handler")
-		Blocking.get({ ->
-			profiler.step("blocking").stop()
-			MiniProfiler.currentProfiler.step("staticstep").stop()
-			"yay"
-		} as ratpack.func.Factory<String>).then({ result ->
-			profiler.step("then").stop()
-			ctx.next()
+	def "interceptor binds provider to execution even when not profiling"() {
+		when: "run handler with interceptor when interceptor won't profile"
+		def result = RequestFixture.handle({ ctx -> ctx.next() } as Handler, { RequestFixture req ->
+			req.uri(requestUri)
+			req.registry.add(new MiniProfilerExecInterceptor(provider) {
+				@Override
+				protected boolean shouldProfile(Execution execution, ExecInterceptor.ExecType execType) {
+					false
+				}
+			})
 		} as Action)
 
-		step.stop();
+		then: 'profiler provider info attached to execution'
+		provider == result.registry.get(ProfilerProvider)
+
+		and: 'does NOT have a profiler'
+		def profiler = provider.currentProfiler
+		profiler instanceof NullProfiler
 	}
+
 }

@@ -80,14 +80,13 @@ public class MiniProfilerExecInterceptor implements ExecInterceptor {
      */
     @Override
     public void intercept(Execution execution, ExecType execType, Block continuation) throws Exception {
+        execution.add(ProfilerProvider.class, profilerProvider);
         if (shouldProfile(execution, execType)) {
-            execution.add(ProfilerProvider.class, profilerProvider);
             Optional<Profiler> existingProfiler = execution.maybeGet(Profiler.class);
             if (!existingProfiler.isPresent()) {
                 Optional<Request> maybeReq = execution.maybeGet(Request.class);
                 String profileName = maybeReq.isPresent() ? maybeReq.get().getUri() : "Unknown";
                 final Profiler profiler = profilerProvider.start(profileName);
-                execution.add(Profiler.class, profiler);
                 execution.onCleanup(profiler);
             }
         }
