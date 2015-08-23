@@ -26,17 +26,26 @@ import ratpack.http.Request;
 
 import javax.inject.Inject;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
- * A Ratpack `ExecInterceptor` that creates a mini
+ * A Ratpack `ExecInterceptor` that provides MiniProfiler support.
+ *
+ * <p>
+ * It binds the current {@link ProfilerProvider} to the execution being intercepted, and starts
+ * a profiling session and binds that to the execution as well, unless {@link #shouldProfile}
+ * is overridden to return false.
+ * </p>
  */
 public class MiniProfilerExecInterceptor implements ExecInterceptor {
 
     private final ProfilerProvider profilerProvider;
 
     /**
-     * Basic convenience factory method which creates a ratpack execution-based profiler provider and binds it
+     * Basic convenience factory method which creates a Ratpack execution-based profiler provider and binds it
      * to the static profiler provider instance as per {@link MiniProfiler#setProfilerProvider}.
+     *
+     * @return an interceptor populated with a {@link RatpackContextProfilerProvider}
      */
     public static MiniProfilerExecInterceptor create() {
         ProfilerProvider profilerProvider = new RatpackContextProfilerProvider();
@@ -45,13 +54,30 @@ public class MiniProfilerExecInterceptor implements ExecInterceptor {
     }
 
     /**
-     * Construct the interceptor with an already provided profiler provider.
+     * Creates an interceptor with the provided {@link ProfilerProvider} instance.
+     *
+     * @param profilerProvider the {@link ProfilerProvider} to use.
      */
     @Inject
     public MiniProfilerExecInterceptor(ProfilerProvider profilerProvider) {
         this.profilerProvider = profilerProvider;
     }
 
+    /**
+     * Intercept the given execution and bind MiniProfiler related objects.
+     *
+     * <p>
+     * The {@link ProfilerProvider} that this interceptor was created with will always get bound to the execution.
+     * </p>
+     * <p>
+     * If {@link #shouldProfile} returns true (the default), a new profiler will be created
+     * and bound to the execution.
+     * </p>
+     * @param execution the execution whose segment is being intercepted
+     * @param execType indicates whether this is a compute (e.g. request handling) segment or blocking segment
+     * @param continuation the “rest” of the execution
+     * @throws Exception any
+     */
     @Override
     public void intercept(Execution execution, ExecType execType, Block continuation) throws Exception {
         if (shouldProfile(execution, execType)) {
@@ -69,10 +95,10 @@ public class MiniProfilerExecInterceptor implements ExecInterceptor {
     }
 
     /**
-     * Override to allow
-     * @param execution
-     * @param execType
-     * @return
+     * Override to switch off profiling for certain executions. Default implementation always returns true.
+     * @param execution the execution whose segment is being intercepted
+     * @param execType indicates whether this is a compute (e.g. request handling) segment or blocking segment
+     * @return true if the execution should be profiled. Default is always true.
      */
     protected boolean shouldProfile(Execution execution, ExecType execType) {
         return true;
