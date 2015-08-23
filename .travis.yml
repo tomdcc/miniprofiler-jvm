@@ -1,3 +1,4 @@
+cache: false
 language: java
 jdk:
   - oraclejdk8
