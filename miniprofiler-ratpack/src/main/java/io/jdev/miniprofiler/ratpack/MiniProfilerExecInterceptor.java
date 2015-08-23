@@ -103,8 +103,4 @@ public class MiniProfilerExecInterceptor implements ExecInterceptor {
     protected boolean shouldProfile(Execution execution, ExecType execType) {
         return true;
     }
-
-    public ProfilerProvider getProfilerProvider() {
-        return this.profilerProvider;
-    }
 }
