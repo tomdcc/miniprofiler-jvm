@@ -23,10 +23,13 @@ dependencies {
 
     testRuntime "org.slf4j:slf4j-api:1.7.4"
 
+	// needed since we're excluding ehcache's deps and spock falls over otherwise
+    testRuntime "javax.transaction:jta:1.1"
+
 }
 
 import org.apache.tools.ant.filters.*
-processResources {
+processResources {\
 	from(sourceSets.main.resources.srcDirs) {
 		include '**/miniprofiler-version.txt'
 		filter(ReplaceTokens, tokens: [
