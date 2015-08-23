@@ -28,5 +28,9 @@ dependencies {
 	testCompile "io.ratpack:ratpack-test:$ratpackVersion"
 }
 
-
-
+modifyPom { pom ->
+	pom.project {
+		name "MiniProfiler Ratpack Support"
+		description "Support classes for getting the MiniProfiler working out of the box in Ratpack."
+	}
+}
