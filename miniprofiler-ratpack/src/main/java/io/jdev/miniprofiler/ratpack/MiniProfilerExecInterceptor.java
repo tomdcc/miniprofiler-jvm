@@ -84,9 +84,7 @@ public class MiniProfilerExecInterceptor implements ExecInterceptor {
         if (shouldProfile(execution, execType)) {
             Optional<Profiler> existingProfiler = execution.maybeGet(Profiler.class);
             if (!existingProfiler.isPresent()) {
-                Optional<Request> maybeReq = execution.maybeGet(Request.class);
-                String profileName = maybeReq.isPresent() ? maybeReq.get().getUri() : "Unknown";
-                final Profiler profiler = profilerProvider.start(profileName);
+                final Profiler profiler = profilerProvider.start(getProfilerName(execution, execType));
                 execution.onCleanup(profiler);
             }
         }
@@ -101,5 +99,20 @@ public class MiniProfilerExecInterceptor implements ExecInterceptor {
      */
     protected boolean shouldProfile(Execution execution, ExecType execType) {
         return true;
+    }
+
+    /**
+     * Override to customize the name given to the profiling instance.
+     *
+     * <p>Default implementation looks for a Ratpack {@link Request} and uses the URI on that if
+     * one is found, otherwise the string <code>"Unknown"</code>.</p>
+     *
+     * @param execution the execution whose segment is being intercepted
+     * @param execType indicates whether this is a compute (e.g. request handling) segment or blocking segment
+     * @return the name to be used for the new profiling session
+     */
+    protected String getProfilerName(Execution execution, ExecType execType) {
+        Optional<Request> maybeReq = execution.maybeGet(Request.class);
+        return maybeReq.isPresent() ? maybeReq.get().getUri() : "Unknown";
     }
 }
