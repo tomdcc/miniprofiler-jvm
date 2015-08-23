@@ -17,6 +17,7 @@
 package io.jdev.miniprofiler.ratpack;
 
 import io.jdev.miniprofiler.MiniProfiler;
+import io.jdev.miniprofiler.NullProfiler;
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import ratpack.exec.ExecInterceptor;
@@ -26,7 +27,6 @@ import ratpack.http.Request;
 
 import javax.inject.Inject;
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * A Ratpack `ExecInterceptor` that provides MiniProfiler support.
@@ -80,11 +80,21 @@ public class MiniProfilerExecInterceptor implements ExecInterceptor {
      */
     @Override
     public void intercept(Execution execution, ExecType execType, Block continuation) throws Exception {
-        execution.add(ProfilerProvider.class, profilerProvider);
-        if (shouldProfile(execution, execType)) {
-            Optional<Profiler> existingProfiler = execution.maybeGet(Profiler.class);
-            if (!existingProfiler.isPresent()) {
-                final Profiler profiler = profilerProvider.start(getProfilerName(execution, execType));
+        // use provider currently on execution, our use ours and bind it to the execution if one isn't there
+        ProfilerProvider executionProfilerProvider;
+        Optional<ProfilerProvider> currentExecutionProvider = execution.maybeGet(ProfilerProvider.class);
+        if(currentExecutionProvider.isPresent()) {
+            executionProfilerProvider = currentExecutionProvider.get();
+        } else {
+            execution.add(ProfilerProvider.class, profilerProvider);
+            executionProfilerProvider = profilerProvider;
+        }
+
+        // now create a profiler if we should and there isn't one already
+        Profiler existingProfiler = executionProfilerProvider.getCurrentProfiler();
+        if (existingProfiler instanceof NullProfiler) {
+            if (shouldProfile(execution, execType)) {
+                final Profiler profiler = executionProfilerProvider.start(getProfilerName(execution, execType));
                 execution.onCleanup(profiler);
             }
         }

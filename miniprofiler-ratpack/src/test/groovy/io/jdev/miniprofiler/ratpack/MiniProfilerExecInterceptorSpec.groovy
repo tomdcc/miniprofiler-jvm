@@ -36,7 +36,7 @@ class MiniProfilerExecInterceptorSpec extends Specification {
 		provider = new TestProfilerProvider()
 	}
 
-	def "interceptor creates new profiler and binds provider to execution"() {
+	void "interceptor creates new profiler and binds provider to execution"() {
 		when: "run handler with interceptor"
 		def result = RequestFixture.handle({ ctx -> ctx.next() } as Handler, { RequestFixture req ->
 			req.uri(requestUri)
@@ -54,7 +54,7 @@ class MiniProfilerExecInterceptorSpec extends Specification {
 		profiler.root.name == requestUri
 	}
 
-	def "interceptor binds provider to execution even when not profiling"() {
+	void "interceptor binds provider to execution even when not profiling"() {
 		when: "run handler with interceptor when interceptor won't profile"
 		def result = RequestFixture.handle({ ctx -> ctx.next() } as Handler, { RequestFixture req ->
 			req.uri(requestUri)
@@ -70,8 +70,46 @@ class MiniProfilerExecInterceptorSpec extends Specification {
 		provider == result.registry.get(ProfilerProvider)
 
 		and: 'does NOT have a profiler'
-		def profiler = provider.currentProfiler
-		profiler instanceof NullProfiler
+		provider.currentProfiler instanceof NullProfiler
 	}
+
+	void "interceptor does not add provider to execution if one is present, uses that instead"() {
+		given: 'different provider'
+		TestProfilerProvider provider2 = new TestProfilerProvider()
+
+		when: "run handler with interceptor on execution which already has a provider"
+		def result = RequestFixture.handle({ ctx -> ctx.next() } as Handler, { RequestFixture req ->
+			req.uri(requestUri)
+			req.registry.add({ execution, execType, cont ->
+				execution.add(ProfilerProvider, provider2)
+				new MiniProfilerExecInterceptor(provider).intercept(execution, execType, cont)
+			} as ExecInterceptor)
+		} as Action)
+
+		then: 'profiler provider info attached to execution is the original one'
+		provider2 == result.registry.get(ProfilerProvider)
+
+		and: "interceptor's own provider does NOT have a profiler"
+		provider.currentProfiler instanceof NullProfiler
+
+		and: 'provider in registry does, though'
+		def profiler = provider2.currentProfiler
+		profiler.root.name == requestUri
+	}
+
+	void "interceptor does not add profiler to execution if one is present"() {
+		given: 'profiler'
+		def profiler = provider.start("already running")
+
+		when: "run handler with interceptor on execution which already has a provider"
+		RequestFixture.handle({ ctx -> ctx.next() } as Handler, { RequestFixture req ->
+			req.uri(requestUri)
+			req.registry.add(new MiniProfilerExecInterceptor(provider))
+		} as Action)
+
+		then: "current profiler is the original one"
+		provider.currentProfiler == profiler
+	}
+
 
 }
