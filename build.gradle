@@ -7,6 +7,7 @@ buildscript {
 	}
 }
 
+apply plugin: 'idea'
 subprojects {
 
     apply plugin: 'java'
@@ -45,6 +46,7 @@ subprojects {
 			':miniprofiler-core',
 			':miniprofiler-javaee',
 			':miniprofiler-grails',
+			':miniprofiler-ratpack',
 			':miniprofiler-test-support'
 		]
 		javaeeTestModules = ['glassfish4', 'wildfly8']

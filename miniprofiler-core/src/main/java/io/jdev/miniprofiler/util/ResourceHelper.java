@@ -42,10 +42,14 @@ public class ResourceHelper {
 
 	public Resource getResource(String requestBasePath, String uri) throws IOException {
 		requestBasePath = requestBasePath.endsWith("/") ? requestBasePath : requestBasePath + "/";
-		InputStream stream = classLoader.getResourceAsStream(convertRequestPathToResourcePath(requestBasePath, uri));
+		return getResource(stripBasePath(requestBasePath, uri));
+	}
+
+	public Resource getResource(String resourceName) throws IOException {
+		InputStream stream = classLoader.getResourceAsStream(RESOURCE_BASE_PATH + resourceName);
 		if (stream == null) return null;
 		byte[] bytes = readResource(stream);
-		return new Resource(bytes, guessContentType(uri));
+		return new Resource(bytes, guessContentType(resourceName));
 	}
 
 	public String getResourceAsString(String resource) throws IOException {
@@ -82,10 +86,6 @@ public class ResourceHelper {
 
 	public boolean uriMatches(String requestBasePath, String uri) {
 		return uri.startsWith(requestBasePath);
-	}
-
-	public String convertRequestPathToResourcePath(String requestBasePath, String uri) {
-		return RESOURCE_BASE_PATH + stripBasePath(requestBasePath, uri);
 	}
 
 	public String stripBasePath(String requestBasePath, String uri) {
