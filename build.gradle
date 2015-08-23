@@ -21,7 +21,7 @@ subprojects {
 	apply plugin: 'propdeps-eclipse'
 
 	group = 'io.jdev.miniprofiler'
-    version = '0.5-SNAPSHOT'
+    version = '0.5'
 
 	repositories {
         mavenCentral()
