@@ -19,65 +19,69 @@ package io.jdev.miniprofiler.test.pages
 import geb.Module
 
 class MiniProfilerModule extends Module {
-	static base = { $('.profiler-results') }
-	static content = {
-		results{ $('.profiler-result').collect { module MiniProfilerResultModule, it } }
-	}
+    static base = { $('.profiler-results') }
+    static content = {
+        results { $('.profiler-result').collect { module MiniProfilerResultModule, it } }
+    }
 }
 
 class MiniProfilerResultModule extends Module {
-	static content = {
-		button       { module MiniProfilerButtonModule,       $('.profiler-button')  }
-		popup        { module MiniProfilerPopupModule,        $('.profiler-popup')   }
-		queriesPopup { module MiniProfilerQueriesPopupModule, $('.profiler-queries') }
-	}
+    static content = {
+        button { module MiniProfilerButtonModule, $('.profiler-button') }
+        popup { module MiniProfilerPopupModule, $('.profiler-popup') }
+        queriesPopup { module MiniProfilerQueriesPopupModule, $('.profiler-queries') }
+    }
 }
 
 class MiniProfilerButtonModule extends Module {
-	static content = {
-		time { $('.profiler-number')?.text()?.trim() }
-	}
+    static content = {
+        time { $('.profiler-number')?.text()?.trim() }
+    }
 }
 
 class MiniProfilerPopupModule extends Module {
-	static content = {
-		timings { $('.profiler-output .profiler-timings tbody tr').collect { module MiniProfilerTimingRowModule, it } }
-		toggleChildTimingLink { $('.profiler-toggle-hidden-columns') }
-	}
+    static content = {
+        timings { $('.profiler-output .profiler-timings tbody tr').collect { module MiniProfilerTimingRowModule, it } }
+        toggleChildTimingLink { $('.profiler-toggle-hidden-columns') }
+    }
 }
 
 class MiniProfilerTimingRowModule extends Module {
-	static content = {
-		label                      { $('.profiler-label')?.text()?.trim() }
-		indent                     { $('.profiler-label .profiler-indent').text().length() }
-		durations(cache: true)     { $('.profiler-duration') }
-		duration                   { durations[0] }
-		durationWithChildren       { durations[1] }
-		timeFromStart              { durations[2] }
-		queries(required: false)   { durations[3].find('a') }
-	}
+    static content = {
+        label { $('.profiler-label')?.text()?.trim() }
+        indent { $('.profiler-label .profiler-indent').text().length() }
+        durations(cache: true) { $('.profiler-duration') }
+        duration { durations[0] }
+        durationWithChildren { durations[1] }
+        timeFromStart { durations[2] }
+        queries(required: false) { durations[3].find('a') }
+    }
 }
 
 class MiniProfilerQueriesPopupModule extends Module {
-	static content = {
-		queries { $('table tbody tr').collect { module((it.hasClass('profiler-gap-info') ?  MiniProfilerGapModule : MiniProfilerQueryModule), it) } }
-		toggleTrivialGapsLink { $('.profiler-toggle-trivial-gaps') }
-	}
+    static content = {
+        queries {
+            $('table tbody tr').collect {
+                module((it.hasClass('profiler-gap-info') ? MiniProfilerGapModule : MiniProfilerQueryModule), it)
+            }
+        }
+        toggleTrivialGapsLink { $('.profiler-toggle-trivial-gaps') }
+    }
 }
 
 class MiniProfilerQueryModule extends Module {
-	static content = {
-		profilerInfo(cache: true) { $('td.profiler-info > div') }
-		step          { profilerInfo[0]?.text()?.trim() }
-		timeFromStart { profilerInfo[1]?.text()?.trim() }
-		duration      { profilerInfo[3]?.text()?.trim() }
-		query         { $('.query code')?.text()?.trim() }
-	}
+    static content = {
+        profilerInfo(cache: true) { $('td.profiler-info > div') }
+        step { profilerInfo[0]?.text()?.trim() }
+        timeFromStart { profilerInfo[1]?.text()?.trim() }
+        duration { profilerInfo[3]?.text()?.trim() }
+        query { $('.query code')?.text()?.trim() }
+    }
 
 }
 
 class MiniProfilerGapModule extends Module {
-	static content = {
-		trivial { $().hasClass('profiler-trivial-gaps') }
-	}
+    static content = {
+        trivial { $().hasClass('profiler-trivial-gaps') }
+    }
 }

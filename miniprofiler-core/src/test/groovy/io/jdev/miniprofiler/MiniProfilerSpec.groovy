@@ -20,52 +20,52 @@ import spock.lang.Specification
 
 class MiniProfilerSpec extends Specification {
 
-	def cleanup() {
-		MiniProfiler.profilerProvider = null
-	}
+    def cleanup() {
+        MiniProfiler.profilerProvider = null
+    }
 
-	void "sets a default profiler if one isn't set when calling start"() {
-		given:
-			MiniProfiler.profilerProvider = null
+    void "sets a default profiler if one isn't set when calling start"() {
+        given:
+        MiniProfiler.profilerProvider = null
 
-		when:
-			def profiler = MiniProfiler.start("foo")
+        when:
+        def profiler = MiniProfiler.start("foo")
 
-		then:
-			profiler instanceof ProfilerImpl
+        then:
+        profiler instanceof ProfilerImpl
 
-		and:
-			MiniProfiler.profilerProvider instanceof DefaultProfilerProvider
+        and:
+        MiniProfiler.profilerProvider instanceof DefaultProfilerProvider
 
-		and:
-			MiniProfiler.currentProfiler == profiler
-	}
+        and:
+        MiniProfiler.currentProfiler == profiler
+    }
 
-	void "returns null profiler as current profiler when no profiler provider set"() {
-		given:
-			MiniProfiler.profilerProvider = null
+    void "returns null profiler as current profiler when no profiler provider set"() {
+        given:
+        MiniProfiler.profilerProvider = null
 
-		when:
-			def profiler = MiniProfiler.currentProfiler
+        when:
+        def profiler = MiniProfiler.currentProfiler
 
-		then:
-			profiler instanceof NullProfiler
+        then:
+        profiler instanceof NullProfiler
 
-	}
+    }
 
-	void "returns current profiler provider's current profiler"() {
-		given:
-			MiniProfiler.profilerProvider = Mock(ProfilerProvider)
-			def profiler = Mock(Profiler)
+    void "returns current profiler provider's current profiler"() {
+        given:
+        MiniProfiler.profilerProvider = Mock(ProfilerProvider)
+        def profiler = Mock(Profiler)
 
-		when:
-			def result = MiniProfiler.currentProfiler
+        when:
+        def result = MiniProfiler.currentProfiler
 
-		then:
-			1 * MiniProfiler.profilerProvider.getCurrentProfiler() >> profiler
+        then:
+        1 * MiniProfiler.profilerProvider.getCurrentProfiler() >> profiler
 
-		and:
-			result == profiler
+        and:
+        result == profiler
 
-	}
+    }
 }

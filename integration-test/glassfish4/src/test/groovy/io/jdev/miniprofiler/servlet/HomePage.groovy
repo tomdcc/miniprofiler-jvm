@@ -16,11 +16,12 @@
 
 package io.jdev.miniprofiler.servlet
 
+import geb.Page
 import io.jdev.miniprofiler.test.pages.MiniProfilerModule
 
-class HomePage extends geb.Page {
-	static url = ''
-	static content = {
-		miniProfiler(wait: true) { module MiniProfilerModule }
-	}
+class HomePage extends Page {
+    static url = ''
+    static content = {
+        miniProfiler(wait: true) { module MiniProfilerModule }
+    }
 }

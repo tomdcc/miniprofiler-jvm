@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-
-
 package io.jdev.miniprofiler
 
 import io.jdev.miniprofiler.storage.MapStorage
@@ -29,51 +27,51 @@ class DefaultProfilerProviderSpec extends Specification {
 
     DefaultProfilerProvider profilerProvider
     MapStorage storage
-	static ExecutorService executorService
+    static ExecutorService executorService
 
-	void setupSpec() {
-		executorService = Executors.newSingleThreadExecutor()
-	}
+    void setupSpec() {
+        executorService = Executors.newSingleThreadExecutor()
+    }
 
     void setup() {
         storage = new MapStorage()
         profilerProvider = new DefaultProfilerProvider(storage: storage)
-		profilerProvider.machineName = "super server"
-		profilerProvider.userProvider = { 'tom' } as UserProvider
+        profilerProvider.machineName = "super server"
+        profilerProvider.userProvider = { 'tom' } as UserProvider
     }
 
-	def cleanup() {
-		executorService.submit( { profilerProvider.stopCurrentSession(false) } )
-	}
+    def cleanup() {
+        executorService.submit({ profilerProvider.stopCurrentSession(false) })
+    }
 
-	void cleanupSpec() {
-		executorService.shutdownNow()
-	}
+    void cleanupSpec() {
+        executorService.shutdownNow()
+    }
 
     void "stores current profiler in threadlocal"() {
         when: 'start profiler'
-            Profiler profiler = profilerProvider.start('asd')
+        Profiler profiler = profilerProvider.start('asd')
 
         then: 'current profiler is the one returned'
-            profilerProvider.currentProfiler == profiler
+        profilerProvider.currentProfiler == profiler
 
-		and: 'other thread has no current profiler'
-			executorService.submit( { profilerProvider.currentProfiler } ).get() == null
+        and: 'other thread has no current profiler'
+        executorService.submit({ profilerProvider.currentProfiler }).get() == null
 
-		when: 'call stop'
-			profilerProvider.stopCurrentSession(false)
+        when: 'call stop'
+        profilerProvider.stopCurrentSession(false)
 
-		then: 'no longer available'
-			profilerProvider.currentProfiler == NullProfiler.INSTANCE
+        then: 'no longer available'
+        profilerProvider.currentProfiler == NullProfiler.INSTANCE
 
-		when: 'other thread creates profiler'
-			def otherProfiler = executorService.submit( { profilerProvider.start('lkj') } ).get()
+        when: 'other thread creates profiler'
+        def otherProfiler = executorService.submit({ profilerProvider.start('lkj') }).get()
 
-		then: 'not set in this thread'
-			profilerProvider.currentProfiler == NullProfiler.INSTANCE
+        then: 'not set in this thread'
+        profilerProvider.currentProfiler == NullProfiler.INSTANCE
 
-		and: 'still current in that thread'
-			otherProfiler == executorService.submit( { profilerProvider.currentProfiler } ).get()
-	}
+        and: 'still current in that thread'
+        otherProfiler == executorService.submit({ profilerProvider.currentProfiler }).get()
+    }
 
 }

@@ -21,42 +21,42 @@ import spock.lang.Specification
 
 class StaticProfilerProviderSpec extends Specification {
 
-	StaticProfilerProvider provider
+    StaticProfilerProvider provider
 
-	void setup() {
-		provider = new StaticProfilerProvider()
-	}
+    void setup() {
+        provider = new StaticProfilerProvider()
+    }
 
-	void cleanup() {
-		MiniProfiler.profilerProvider.stopCurrentSession(true)
-		MiniProfiler.profilerProvider = null
-	}
+    void cleanup() {
+        MiniProfiler.profilerProvider.stopCurrentSession(true)
+        MiniProfiler.profilerProvider = null
+    }
 
-	void "provider delegates to static miniprofiler provider"() {
-		given:
-			MiniProfiler.profilerProvider = new TestProfilerProvider()
+    void "provider delegates to static miniprofiler provider"() {
+        given:
+        MiniProfiler.profilerProvider = new TestProfilerProvider()
 
-		when:
-			def profiler = provider.start("foo")
+        when:
+        def profiler = provider.start("foo")
 
-		then:
-			MiniProfiler.profilerProvider.currentProfiler == profiler
-			MiniProfiler.profilerProvider.currentProfiler.head.name == 'foo'
-	}
+        then:
+        MiniProfiler.profilerProvider.currentProfiler == profiler
+        MiniProfiler.profilerProvider.currentProfiler.head.name == 'foo'
+    }
 
-	void "provider delegates to static miniprofiler provider and uses created one when none set"() {
-		// bit of an integration test, this
-		given: 'no static profiler provider'
-			MiniProfiler.profilerProvider = null
+    void "provider delegates to static miniprofiler provider and uses created one when none set"() {
+        // bit of an integration test, this
+        given: 'no static profiler provider'
+        MiniProfiler.profilerProvider = null
 
-		when:
-			def profiler = provider.start("foo")
+        when:
+        def profiler = provider.start("foo")
 
-		then: 'static profiler provider initialised'
-			MiniProfiler.profilerProvider
+        then: 'static profiler provider initialised'
+        MiniProfiler.profilerProvider
 
-		and: 'being used'
-			MiniProfiler.profilerProvider.currentProfiler == profiler
-			MiniProfiler.profilerProvider.currentProfiler.head.name == 'foo'
-	}
+        and: 'being used'
+        MiniProfiler.profilerProvider.currentProfiler == profiler
+        MiniProfiler.profilerProvider.currentProfiler.head.name == 'foo'
+    }
 }

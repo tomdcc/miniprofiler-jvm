@@ -36,157 +36,157 @@ import javax.servlet.ServletResponse
 
 class ProfilingFilterSpec extends Specification {
 
-	ProfilingFilter filter
-	MockFilterConfig config
-	MockServletContext context
-	FilterChain chain
-	MockHttpServletRequest request
-	MockHttpServletResponse response
-	TestProfilerProvider profilerProvider
-	TestStorage storage
+    ProfilingFilter filter
+    MockFilterConfig config
+    MockServletContext context
+    FilterChain chain
+    MockHttpServletRequest request
+    MockHttpServletResponse response
+    TestProfilerProvider profilerProvider
+    TestStorage storage
 
-	void setup() {
-		context = new MockServletContext()
-		config = new MockFilterConfig(context)
-		storage = new TestStorage()
-		profilerProvider = new TestProfilerProvider(storage: storage)
+    void setup() {
+        context = new MockServletContext()
+        config = new MockFilterConfig(context)
+        storage = new TestStorage()
+        profilerProvider = new TestProfilerProvider(storage: storage)
 
-		filter = new ProfilingFilter()
-		filter.profilerProvider = profilerProvider
-		filter.init(config)
-
-
-		chain = new MockFilterChain(profilerProvider: profilerProvider)
-		request = new MockHttpServletRequest()
-		response = new MockHttpServletResponse()
-	}
+        filter = new ProfilingFilter()
+        filter.profilerProvider = profilerProvider
+        filter.init(config)
 
 
-	void "passes normal requests through with profiler set up"() {
-		given: 'request'
-			request.requestURI = '/foo'
-
-		when: 'invoked'
-			filter.doFilter(request, response, chain)
-
-		then: 'chain was invoked'
-			chain.invoked
-
-		and: 'profiling session was captured'
-			storage.profiler
-
-		and: 'profiler id set in header'
-			response.getHeader("X-MiniProfiler-Ids") == """["$storage.profiler.id"]"""
-
-		and: 'has expected values'
-			storage.profiler.root.name == '/foo'
-			storage.profiler.root.children.size() == 1
-			storage.profiler.root.children[0].name == 'MockFilterChain'
-
-		when: 'ask for json'
-			request = new MockHttpServletRequest('GET', '/miniprofiler/results')
-			request.addParameter("id", storage.profiler.id.toString())
-			response = new MockHttpServletResponse()
-			chain.invoked = false
-			filter.doFilter(request, response, chain)
-
-		then: 'chain not invoked'
-			!chain.invoked
-
-		and: 'serves up some json'
-			def json = new JsonSlurper().parseText(response.contentAsString)
-
-		and: 'it looks about right'
-			json.Id == storage.profiler.id.toString()
-			json.Name == "/foo"
-			json.Root.Name == '/foo'
-			json.Root.Children.size() == 1
-			json.Root.Children[0].Name == 'MockFilterChain'
+        chain = new MockFilterChain(profilerProvider: profilerProvider)
+        request = new MockHttpServletRequest()
+        response = new MockHttpServletResponse()
+    }
 
 
-	}
+    void "passes normal requests through with profiler set up"() {
+        given: 'request'
+        request.requestURI = '/foo'
 
-	@Unroll
-	void "returns ui resource"() {
-		given: 'configured filter'
-			if(configuredResourcePath) {
-				config.addInitParameter('path', configuredResourcePath)
-				filter.init(config)
-			}
+        when: 'invoked'
+        filter.doFilter(request, response, chain)
 
-		and: 'request'
-			request.requestURI = requestedResource
+        then: 'chain was invoked'
+        chain.invoked
 
-		when: 'invoked'
-			filter.doFilter(request, response, chain)
+        and: 'profiling session was captured'
+        storage.profiler
 
-		then: 'chain was invoked if expected'
-			chain.invoked == chainCalled
+        and: 'profiler id set in header'
+        response.getHeader("X-MiniProfiler-Ids") == """["$storage.profiler.id"]"""
 
-		and: 'returned expected resource'
-			if(expectedResource) {
-				def expectedBytes = Thread.currentThread().contextClassLoader.getResourceAsStream((expectedResource)).bytes
-				expectedBytes == response.contentAsByteArray
-			}
+        and: 'has expected values'
+        storage.profiler.root.name == '/foo'
+        storage.profiler.root.children.size() == 1
+        storage.profiler.root.children[0].name == 'MockFilterChain'
 
-		where:
-			configuredResourcePath | requestedResource           | chainCalled | expectedResource
-            null                   | '/miniprofiler/README.md'   | false       | 'io/jdev/miniprofiler/ui/README.md'
-            null                   | '/README.md'                | true        | null
-			'/admin/miniprof'      | '/admin/miniprof/README.md' | false       | 'io/jdev/miniprofiler/ui/README.md'
-			'/admin/miniprof'      | '/miniprofiler/README.md'   | true        | null
-	}
+        when: 'ask for json'
+        request = new MockHttpServletRequest('GET', '/miniprofiler/results')
+        request.addParameter("id", storage.profiler.id.toString())
+        response = new MockHttpServletResponse()
+        chain.invoked = false
+        filter.doFilter(request, response, chain)
 
-	void "cors host header added to results and resources served"() {
-		given: 'configured filter'
-			def host = 'http://foo.com'
-			config.addInitParameter('allowed-origin', host)
-			filter.init(config)
+        then: 'chain not invoked'
+        !chain.invoked
 
-		and: 'profiler'
-			storage.profiler = new ProfilerImpl("test", ProfileLevel.Info, profilerProvider)
+        and: 'serves up some json'
+        def json = new JsonSlurper().parseText(response.contentAsString)
 
-		when: 'ask for results'
-			request.requestURI = '/miniprofiler/results'
-			request.addParameter("id", storage.profiler.id.toString())
-			filter.doFilter(request, response, chain)
+        and: 'it looks about right'
+        json.Id == storage.profiler.id.toString()
+        json.Name == "/foo"
+        json.Root.Name == '/foo'
+        json.Root.Children.size() == 1
+        json.Root.Children[0].Name == 'MockFilterChain'
 
-		then: 'results have correct header'
-			response.getHeader("Access-Control-Allow-Origin") == host
 
-	}
+    }
 
-	void "use specified id if passed as a parameter"() {
-		given: 'request'
-		request.requestURI = '/foo'
-		def id = UUID.randomUUID().toString()
-		request.addParameter("x-miniprofiler-id", id)
+    @Unroll
+    void "returns ui resource"() {
+        given: 'configured filter'
+        if (configuredResourcePath) {
+            config.addInitParameter('path', configuredResourcePath)
+            filter.init(config)
+        }
 
-		when: 'invoked'
-		filter.doFilter(request, response, chain)
+        and: 'request'
+        request.requestURI = requestedResource
 
-		then: 'chain was invoked'
-		chain.invoked
+        when: 'invoked'
+        filter.doFilter(request, response, chain)
 
-		and: 'profiling session was captured'
-		storage.profiler
+        then: 'chain was invoked if expected'
+        chain.invoked == chainCalled
 
-		and: 'profiler id is as passed in'
-		storage.profiler.id.toString() == id
+        and: 'returned expected resource'
+        if (expectedResource) {
+            def expectedBytes = Thread.currentThread().contextClassLoader.getResourceAsStream((expectedResource)).bytes
+            expectedBytes == response.contentAsByteArray
+        }
 
-		and: 'profiler id set in header'
-		response.getHeader("X-MiniProfiler-Ids") == """["$id"]"""
-	}
+        where:
+        configuredResourcePath | requestedResource           | chainCalled | expectedResource
+        null                   | '/miniprofiler/README.md'   | false       | 'io/jdev/miniprofiler/ui/README.md'
+        null                   | '/README.md'                | true        | null
+        '/admin/miniprof'      | '/admin/miniprof/README.md' | false       | 'io/jdev/miniprofiler/ui/README.md'
+        '/admin/miniprof'      | '/miniprofiler/README.md'   | true        | null
+    }
+
+    void "cors host header added to results and resources served"() {
+        given: 'configured filter'
+        def host = 'http://foo.com'
+        config.addInitParameter('allowed-origin', host)
+        filter.init(config)
+
+        and: 'profiler'
+        storage.profiler = new ProfilerImpl("test", ProfileLevel.Info, profilerProvider)
+
+        when: 'ask for results'
+        request.requestURI = '/miniprofiler/results'
+        request.addParameter("id", storage.profiler.id.toString())
+        filter.doFilter(request, response, chain)
+
+        then: 'results have correct header'
+        response.getHeader("Access-Control-Allow-Origin") == host
+
+    }
+
+    void "use specified id if passed as a parameter"() {
+        given: 'request'
+        request.requestURI = '/foo'
+        def id = UUID.randomUUID().toString()
+        request.addParameter("x-miniprofiler-id", id)
+
+        when: 'invoked'
+        filter.doFilter(request, response, chain)
+
+        then: 'chain was invoked'
+        chain.invoked
+
+        and: 'profiling session was captured'
+        storage.profiler
+
+        and: 'profiler id is as passed in'
+        storage.profiler.id.toString() == id
+
+        and: 'profiler id set in header'
+        response.getHeader("X-MiniProfiler-Ids") == """["$id"]"""
+    }
 }
 
 class MockFilterChain implements FilterChain {
 
-	ProfilerProvider profilerProvider
-	boolean invoked = false
+    ProfilerProvider profilerProvider
+    boolean invoked = false
 
-	@Override
-	void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) throws IOException, ServletException {
-		invoked = true
-		profilerProvider.getCurrentProfiler().step("MockFilterChain").close()
-	}
+    @Override
+    void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) throws IOException, ServletException {
+        invoked = true
+        profilerProvider.getCurrentProfiler().step("MockFilterChain").close()
+    }
 }

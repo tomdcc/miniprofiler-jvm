@@ -24,33 +24,33 @@ import io.jdev.miniprofiler.storage.Storage
  */
 public class TestStorage implements Storage {
 
-	ProfilerImpl profiler
+    ProfilerImpl profiler
 
-	@Override
-	public Collection<UUID> list(int maxResults, Date start, Date finish, Storage.ListResultsOrder orderBy) {
-		throw new UnsupportedOperationException()
-	}
+    @Override
+    public Collection<UUID> list(int maxResults, Date start, Date finish, Storage.ListResultsOrder orderBy) {
+        throw new UnsupportedOperationException()
+    }
 
-	@Override
-	public void save(ProfilerImpl profiler) {
-		this.profiler = profiler
-	}
+    @Override
+    public void save(ProfilerImpl profiler) {
+        this.profiler = profiler
+    }
 
-	@Override
-	public ProfilerImpl load(UUID id) {
-		profiler.id == id ? profiler : null
-	}
+    @Override
+    public ProfilerImpl load(UUID id) {
+        profiler.id == id ? profiler : null
+    }
 
-	@Override
-	public void setUnviewed(String user, UUID id) {
-	}
+    @Override
+    public void setUnviewed(String user, UUID id) {
+    }
 
-	@Override
-	public void setViewed(String user, UUID id) {
-	}
+    @Override
+    public void setViewed(String user, UUID id) {
+    }
 
-	@Override
-	public Collection<UUID> getUnviewedIds(String user) {
-		Collections.emptyList()
-	}
+    @Override
+    public Collection<UUID> getUnviewedIds(String user) {
+        Collections.emptyList()
+    }
 }

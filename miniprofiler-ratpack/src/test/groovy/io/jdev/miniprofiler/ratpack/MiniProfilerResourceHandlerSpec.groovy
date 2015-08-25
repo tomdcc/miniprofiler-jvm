@@ -22,32 +22,32 @@ import spock.lang.Specification
 
 class MiniProfilerResourceHandlerSpec extends Specification {
 
-	void "handler returns response and correct content type"() {
-		given: "resource"
-		def resName = 'includes.js'
-		def expectedBytes = Thread.currentThread().contextClassLoader
-				.getResourceAsStream("io/jdev/miniprofiler/ui/$resName").bytes
+    void "handler returns response and correct content type"() {
+        given: "resource"
+        def resName = 'includes.js'
+        def expectedBytes = Thread.currentThread().contextClassLoader
+                .getResourceAsStream("io/jdev/miniprofiler/ui/$resName").bytes
 
 
-		when: 'ask for resource'
-		def result = RequestFixture.handle(new MiniProfilerResourceHandler(), { RequestFixture req ->
-			req.pathBinding(path: resName)
-		} as Action)
+        when: 'ask for resource'
+        def result = RequestFixture.handle(new MiniProfilerResourceHandler(), { RequestFixture req ->
+            req.pathBinding(path: resName)
+        } as Action)
 
-		then:
-		result.sentResponse
-		result.status.code == 200
-		result.bodyBytes == expectedBytes
-	}
+        then:
+        result.sentResponse
+        result.status.code == 200
+        result.bodyBytes == expectedBytes
+    }
 
-	void "handler returns 404 for and correct content type"() {
-		when: 'ask for non-existent resource'
-		def result = RequestFixture.handle(new MiniProfilerResourceHandler(), { RequestFixture req ->
-			req.pathBinding(path: "notthere")
-		} as Action)
+    void "handler returns 404 for and correct content type"() {
+        when: 'ask for non-existent resource'
+        def result = RequestFixture.handle(new MiniProfilerResourceHandler(), { RequestFixture req ->
+            req.pathBinding(path: "notthere")
+        } as Action)
 
-		then:
-		result.sentResponse
-		result.status.code == 404
-	}
+        then:
+        result.sentResponse
+        result.status.code == 404
+    }
 }

@@ -30,98 +30,98 @@ class MiniProfilerIntegrationSpec extends Specification {
 
     DefaultProfilerProvider profilerProvider
     MapStorage storage
-	static ExecutorService executorService
+    static ExecutorService executorService
 
-	void setupSpec() {
-		executorService = Executors.newSingleThreadExecutor()
-	}
+    void setupSpec() {
+        executorService = Executors.newSingleThreadExecutor()
+    }
 
     void setup() {
         storage = new MapStorage()
         profilerProvider = new DefaultProfilerProvider(storage: storage)
-		profilerProvider.machineName = "super server"
-		profilerProvider.userProvider = { 'tom' } as UserProvider
+        profilerProvider.machineName = "super server"
+        profilerProvider.userProvider = { 'tom' } as UserProvider
     }
 
-	void cleanup() {
-		MiniProfiler.profilerProvider = null
-	}
+    void cleanup() {
+        MiniProfiler.profilerProvider = null
+    }
 
-	void cleanupSpec() {
-		executorService.shutdownNow()
-	}
+    void cleanupSpec() {
+        executorService.shutdownNow()
+    }
 
-	@Unroll
+    @Unroll
     void "basic functionality using passed-in profile = #passedIn"() {
-		given:
-			if(!passedIn) {
-				MiniProfiler.profilerProvider = profilerProvider
-			}
-			def pp = passedIn ? profilerProvider : MiniProfiler
+        given:
+        if (!passedIn) {
+            MiniProfiler.profilerProvider = profilerProvider
+        }
+        def pp = passedIn ? profilerProvider : MiniProfiler
 
         when: 'start profiler'
-            def name = 'My Function'
+        def name = 'My Function'
 
-            Profiler profiler = pp.start(name, ProfileLevel.Verbose)
+        Profiler profiler = pp.start(name, ProfileLevel.Verbose)
 
         then: 'current profiler is the one returned'
-            pp.currentProfiler == profiler
+        pp.currentProfiler == profiler
 
-		and: 'other thread has no current profiler'
-			executorService.submit( { pp.currentProfiler } ).get() == null
+        and: 'other thread has no current profiler'
+        executorService.submit({ pp.currentProfiler }).get() == null
 
-		when: 'add some stuff'
-            Timing firstTiming = profiler.step("fooService.whatever")
-            Timing childTiming = profiler.step("child")
-            profiler.addCustomTiming('sql', 'query', 'select * from "foo"', 5L)
-			Thread.sleep(5)
-            childTiming.stop()
-            Timing trivialTiming = profiler.step("trivial")
-            trivialTiming.stop()
-            firstTiming.stop()
+        when: 'add some stuff'
+        Timing firstTiming = profiler.step("fooService.whatever")
+        Timing childTiming = profiler.step("child")
+        profiler.addCustomTiming('sql', 'query', 'select * from "foo"', 5L)
+        Thread.sleep(5)
+        childTiming.stop()
+        Timing trivialTiming = profiler.step("trivial")
+        trivialTiming.stop()
+        firstTiming.stop()
 
         and: 'stop profiler'
-			profiler.stop()
+        profiler.stop()
 
         then: 'no current profiler anymore'
-            pp.currentProfiler == NullProfiler.INSTANCE
+        pp.currentProfiler == NullProfiler.INSTANCE
 
         and: 'ask for some data'
-            def saved = storage.load(profiler.id)
+        def saved = storage.load(profiler.id)
 
         then: 'exists'
-            saved
+        saved
 
         when: 'convert it into json'
-            def jsonString = JsonUtil.toJson(saved)
-            def json = new JsonSlurper().parseText(jsonString)
+        def jsonString = JsonUtil.toJson(saved)
+        def json = new JsonSlurper().parseText(jsonString)
 
         then: 'get expected result'
-            json.Id == profiler.id as String
-            json.MachineName == 'super server'
-            json.DurationMilliseconds instanceof Number
-            json.Started instanceof Number
+        json.Id == profiler.id as String
+        json.MachineName == 'super server'
+        json.DurationMilliseconds instanceof Number
+        json.Started instanceof Number
 
-            def root = json.Root
-            verifyTiming(root, [Name: 'My Function'])
-            root.Children.size() == 1
+        def root = json.Root
+        verifyTiming(root, [Name: 'My Function'])
+        root.Children.size() == 1
 
-            def firstChild = root.Children[0]
-            verifyTiming(firstChild, [Name: 'fooService.whatever'])
-            firstChild.Children.size() == 2
+        def firstChild = root.Children[0]
+        verifyTiming(firstChild, [Name: 'fooService.whatever'])
+        firstChild.Children.size() == 2
 
-            def nestedChild = firstChild.Children[0]
-            verifyTiming(nestedChild, [Name: 'child'])
-            nestedChild.CustomTimings.size() == 1
-            nestedChild.CustomTimings.sql.size() == 1
+        def nestedChild = firstChild.Children[0]
+        verifyTiming(nestedChild, [Name: 'child'])
+        nestedChild.CustomTimings.size() == 1
+        nestedChild.CustomTimings.sql.size() == 1
 
-            def sqlTiming = nestedChild.CustomTimings.sql[0]
-			verifyCustomTiming(sqlTiming, [CommandString: '\n    select\n        * \n    from\n        "foo"', ExecuteType: 'query'])
+        def sqlTiming = nestedChild.CustomTimings.sql[0]
+        verifyCustomTiming(sqlTiming, [CommandString: '\n    select\n        * \n    from\n        "foo"', ExecuteType: 'query'])
 
-            def trivialChild = firstChild.Children[1]
-            verifyTiming(trivialChild, [Name: 'trivial'])
-		where:
-			passedIn << [true, false]
+        def trivialChild = firstChild.Children[1]
+        verifyTiming(trivialChild, [Name: 'trivial'])
+        where:
+        passedIn << [true, false]
     }
 
     boolean verifyTiming(def timing, Map expectedValues) {
@@ -133,6 +133,7 @@ class MiniProfilerIntegrationSpec extends Specification {
         }
         true
     }
+
     boolean verifyCustomTiming(def timing, Map expectedValues) {
         assert timing.Id instanceof String
         assert timing.StartMilliseconds instanceof Number

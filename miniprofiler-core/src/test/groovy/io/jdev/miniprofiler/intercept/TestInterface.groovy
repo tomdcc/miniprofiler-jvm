@@ -17,7 +17,7 @@
 package io.jdev.miniprofiler.intercept
 
 interface TestInterface {
-	String method(String arg)
+    String method(String arg)
 }
 
 

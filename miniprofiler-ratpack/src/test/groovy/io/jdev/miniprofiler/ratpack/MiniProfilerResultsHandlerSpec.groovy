@@ -32,89 +32,91 @@ import static ratpack.http.MediaType.APPLICATION_FORM
 
 class MiniProfilerResultsHandlerSpec extends Specification {
 
-	@Shared TestProfilerProvider provider
-	@Shared Profiler profiler
+    @Shared
+    TestProfilerProvider provider
+    @Shared
+    Profiler profiler
 
-	void setupSpec() {
-		provider = new TestProfilerProvider()
-		profiler = new ProfilerImpl("name", ProfileLevel.Info, provider)
-		profiler.stop()
-	}
+    void setupSpec() {
+        provider = new TestProfilerProvider()
+        profiler = new ProfilerImpl("name", ProfileLevel.Info, provider)
+        profiler.stop()
+    }
 
-	@Unroll
-	void "handler serves up result as json"() {
-		when: 'ask for results'
-		def result = RequestFixture.handle(new MiniProfilerResultsHandler(), { RequestFixture req ->
-			req.body("id=$param", APPLICATION_FORM)
-			req.registry.add(ProfilerProvider, provider)
-		} as Action)
+    @Unroll
+    void "handler serves up result as json"() {
+        when: 'ask for results'
+        def result = RequestFixture.handle(new MiniProfilerResultsHandler(), { RequestFixture req ->
+            req.body("id=$param", APPLICATION_FORM)
+            req.registry.add(ProfilerProvider, provider)
+        } as Action)
 
-		then: 'response sent'
-		result.sentResponse
-		result.status.code == 200
+        then: 'response sent'
+        result.sentResponse
+        result.status.code == 200
 
-		and: 'sent correct json'
-		JsonUtil.toJson(profiler) == result.bodyText
+        and: 'sent correct json'
+        JsonUtil.toJson(profiler) == result.bodyText
 
-		where:
-		param << ["$profiler.id", "[$profiler.id]"]
-	}
+        where:
+        param << ["$profiler.id", "[$profiler.id]"]
+    }
 
-	void "handler serves up 404 for nonexistent result"() {
-		when: 'ask for results'
-		def result = RequestFixture.handle(new MiniProfilerResultsHandler(), { RequestFixture req ->
-			req.body("id=${UUID.randomUUID()}", APPLICATION_FORM)
-			req.registry.add(ProfilerProvider, provider)
-		} as Action)
+    void "handler serves up 404 for nonexistent result"() {
+        when: 'ask for results'
+        def result = RequestFixture.handle(new MiniProfilerResultsHandler(), { RequestFixture req ->
+            req.body("id=${UUID.randomUUID()}", APPLICATION_FORM)
+            req.registry.add(ProfilerProvider, provider)
+        } as Action)
 
-		then: '404 sent'
-		result.sentResponse
-		result.status.code == 404
-	}
+        then: '404 sent'
+        result.sentResponse
+        result.status.code == 404
+    }
 
-	void "handler serves up 400 when no form"() {
-		when: 'ask for results'
-		def result = RequestFixture.handle(new MiniProfilerResultsHandler(), { RequestFixture req ->
-			req.registry.add(ProfilerProvider, provider)
-		} as Action)
+    void "handler serves up 400 when no form"() {
+        when: 'ask for results'
+        def result = RequestFixture.handle(new MiniProfilerResultsHandler(), { RequestFixture req ->
+            req.registry.add(ProfilerProvider, provider)
+        } as Action)
 
-		then: '400 sent'
-		result.sentResponse
-		result.status.code == 400
-	}
+        then: '400 sent'
+        result.sentResponse
+        result.status.code == 400
+    }
 
-	void "handler serves up 400 when no id"() {
-		when: 'ask for results'
-		def result = RequestFixture.handle(new MiniProfilerResultsHandler(), { RequestFixture req ->
-			req.body("", APPLICATION_FORM)
-			req.registry.add(ProfilerProvider, provider)
-		} as Action)
+    void "handler serves up 400 when no id"() {
+        when: 'ask for results'
+        def result = RequestFixture.handle(new MiniProfilerResultsHandler(), { RequestFixture req ->
+            req.body("", APPLICATION_FORM)
+            req.registry.add(ProfilerProvider, provider)
+        } as Action)
 
-		then: '400 sent'
-		result.sentResponse
-		result.status.code == 400
-	}
+        then: '400 sent'
+        result.sentResponse
+        result.status.code == 400
+    }
 
-	void "handler serves up 400 when badly formed id"() {
-		when: 'ask for results'
-		def result = RequestFixture.handle(new MiniProfilerResultsHandler(), { RequestFixture req ->
-			req.body("id=foo", APPLICATION_FORM)
-			req.registry.add(ProfilerProvider, provider)
-		} as Action)
+    void "handler serves up 400 when badly formed id"() {
+        when: 'ask for results'
+        def result = RequestFixture.handle(new MiniProfilerResultsHandler(), { RequestFixture req ->
+            req.body("id=foo", APPLICATION_FORM)
+            req.registry.add(ProfilerProvider, provider)
+        } as Action)
 
-		then: '400 sent'
-		result.sentResponse
-		result.status.code == 400
-	}
+        then: '400 sent'
+        result.sentResponse
+        result.status.code == 400
+    }
 
-	void "handler serves up 500 when no provider in context"() {
-		when: 'ask for results'
-		def result = RequestFixture.handle(new MiniProfilerResultsHandler(), { RequestFixture req ->
-			req.body("id=$profiler.id", APPLICATION_FORM)
-		} as Action)
+    void "handler serves up 500 when no provider in context"() {
+        when: 'ask for results'
+        def result = RequestFixture.handle(new MiniProfilerResultsHandler(), { RequestFixture req ->
+            req.body("id=$profiler.id", APPLICATION_FORM)
+        } as Action)
 
-		then: '500 sent'
-		result.sentResponse
-		result.status.code == 500
-	}
+        then: '500 sent'
+        result.sentResponse
+        result.status.code == 500
+    }
 }

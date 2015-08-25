@@ -26,80 +26,81 @@ import java.lang.reflect.Method
 
 class ProfilingEJBInterceptorSpec extends Specification {
 
-	TestProfilerProvider profilerProvider
-	Profiler profiler
-	Foo foo
-	InvocationContext context
-	ProfilingEJBInterceptor interceptor
+    TestProfilerProvider profilerProvider
+    Profiler profiler
+    Foo foo
+    InvocationContext context
+    ProfilingEJBInterceptor interceptor
 
-	void setup() {
-		profilerProvider = new TestProfilerProvider()
-		profiler = profilerProvider.start("test")
-		foo = new Foo()
-		context = new MockInvocationContext()
-		context.target = foo
-		context.method = Comparable.getMethod("compareTo", Object)
-		context.parameters = ["foo"] as Object[]
-		interceptor = new ProfilingEJBInterceptor()
-		interceptor.profilerProvider = profilerProvider
-	}
+    void setup() {
+        profilerProvider = new TestProfilerProvider()
+        profiler = profilerProvider.start("test")
+        foo = new Foo()
+        context = new MockInvocationContext()
+        context.target = foo
+        context.method = Comparable.getMethod("compareTo", Object)
+        context.parameters = ["foo"] as Object[]
+        interceptor = new ProfilingEJBInterceptor()
+        interceptor.profilerProvider = profilerProvider
+    }
 
-	void "interceptor profiles target method"() {
-		when: 'call interceptor'
-		def result = interceptor.profile(context)
+    void "interceptor profiles target method"() {
+        when: 'call interceptor'
+        def result = interceptor.profile(context)
 
-		then: 'returns correct result'
-		result == 0
+        then: 'returns correct result'
+        result == 0
 
-		and: 'was profiled'
-		profiler.head.name == 'test'
-		profiler.head.children.size() == 1
-		profiler.head.children[0].name == 'Foo.compareTo'
+        and: 'was profiled'
+        profiler.head.name == 'test'
+        profiler.head.children.size() == 1
+        profiler.head.children[0].name == 'Foo.compareTo'
 
-		and: 'timing has been stopped'
-		profiler.head.children[0].durationMilliseconds != null
-	}
+        and: 'timing has been stopped'
+        profiler.head.children[0].durationMilliseconds != null
+    }
 
-	void "interceptor profiles target method which throws exception"() {
-		given: 'target will throw exception'
-		context.error = new RuntimeException()
+    void "interceptor profiles target method which throws exception"() {
+        given: 'target will throw exception'
+        context.error = new RuntimeException()
 
-		when: 'call interceptor'
-		interceptor.profile(context)
+        when: 'call interceptor'
+        interceptor.profile(context)
 
-		then: 'exception thrown'
-		def ex = thrown(RuntimeException)
-		ex == context.error
+        then: 'exception thrown'
+        def ex = thrown(RuntimeException)
+        ex == context.error
 
-		and: 'was profiled'
-		profiler.head.name == 'test'
-		profiler.head.children.size() == 1
-		profiler.head.children[0].name == 'Foo.compareTo'
+        and: 'was profiled'
+        profiler.head.name == 'test'
+        profiler.head.children.size() == 1
+        profiler.head.children[0].name == 'Foo.compareTo'
 
-		and: 'timing has been stopped'
-		profiler.head.children[0].durationMilliseconds != null
-	}
+        and: 'timing has been stopped'
+        profiler.head.children[0].durationMilliseconds != null
+    }
 }
 
 class Foo implements Comparable<String> {
-	@Override
-	int compareTo(String o) {
-		return 0
-	}
+    @Override
+    int compareTo(String o) {
+        return 0
+    }
 }
 
 class MockInvocationContext implements InvocationContext {
-	Object target
-	Object timer
-	Method method
-	Constructor<?> constructor
-	Object[] parameters
-	Map<String, Object> contextData
-	Exception error
-	Object proceed() throws Exception {
-		if(error) {
-			throw error
-		}
-		method.invoke(target, parameters)
-	}
+    Object target
+    Object timer
+    Method method
+    Constructor<?> constructor
+    Object[] parameters
+    Map<String, Object> contextData
+    Exception error
+
+    Object proceed() throws Exception {
+        if (error) {
+            throw error
+        }
+        method.invoke(target, parameters)
+    }
 }

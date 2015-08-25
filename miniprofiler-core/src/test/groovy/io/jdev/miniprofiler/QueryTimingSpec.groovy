@@ -20,29 +20,29 @@ import spock.lang.Specification
 
 class QueryTimingSpec extends Specification {
 
-	void "calculates start milliseconds correctly"() {
-		given:
-			ProfilerImpl mp = new ProfilerImpl("hi there", ProfileLevel.Info, Mock(ProfilerProvider))
-			TimingImpl timing = mp.getRoot()
-			Thread.sleep(10)
+    void "calculates start milliseconds correctly"() {
+        given:
+        ProfilerImpl mp = new ProfilerImpl("hi there", ProfileLevel.Info, Mock(ProfilerProvider))
+        TimingImpl timing = mp.getRoot()
+        Thread.sleep(10)
 
-		when: 'create query timing'
-			def query = new CustomTiming("query", "select * from foo")
+        when: 'create query timing'
+        def query = new CustomTiming("query", "select * from foo")
 
-		and: 'ask for start'
-			query.getStartMilliseconds()
+        and: 'ask for start'
+        query.getStartMilliseconds()
 
-		then: 'throws exception'
-			thrown(IllegalStateException)
+        then: 'throws exception'
+        thrown(IllegalStateException)
 
-		when: 'set miniprofiler start'
-			query.setParentTiming(timing)
+        when: 'set miniprofiler start'
+        query.setParentTiming(timing)
 
-		and: 'ask for start'
-			long start = query.getStartMilliseconds()
+        and: 'ask for start'
+        long start = query.getStartMilliseconds()
 
-		then: 'equals start time minus miniprofiler start'
-			start == query.absoluteStartMilliseconds - mp.started
+        then: 'equals start time minus miniprofiler start'
+        start == query.absoluteStartMilliseconds - mp.started
 
-	}
+    }
 }

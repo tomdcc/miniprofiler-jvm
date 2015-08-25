@@ -24,39 +24,39 @@ import spock.lang.Specification
 class MapStorageSpec extends Specification {
 
     MapStorage storage
-	ProfilerProvider profilerProvider
+    ProfilerProvider profilerProvider
 
     void setup() {
         storage = new MapStorage(2)
-		profilerProvider = Mock(ProfilerProvider)
+        profilerProvider = Mock(ProfilerProvider)
     }
 
     void "map storage returns saved value"() {
         given:
-            def val = new ProfilerImpl('test', ProfileLevel.Info, profilerProvider)
+        def val = new ProfilerImpl('test', ProfileLevel.Info, profilerProvider)
 
         when:
-            storage.save(val)
+        storage.save(val)
 
         then:
-            storage.load(val.id) == val
+        storage.load(val.id) == val
     }
 
     void "map storage does not grow boundlessly"() {
         given:
-            def val1 = new ProfilerImpl('test1', ProfileLevel.Info, profilerProvider)
-            def val2 = new ProfilerImpl('test2', ProfileLevel.Info, profilerProvider)
-            def val3 = new ProfilerImpl('test3', ProfileLevel.Info, profilerProvider)
+        def val1 = new ProfilerImpl('test1', ProfileLevel.Info, profilerProvider)
+        def val2 = new ProfilerImpl('test2', ProfileLevel.Info, profilerProvider)
+        def val3 = new ProfilerImpl('test3', ProfileLevel.Info, profilerProvider)
 
         when:
-            storage.save(val1)
-            storage.save(val2)
-            storage.save(val3)
+        storage.save(val1)
+        storage.save(val2)
+        storage.save(val3)
 
         then:
-            storage.cache.size() == 2
-            !storage.load(val1.id)
-            storage.load(val2.id) == val2
-            storage.load(val3.id) == val3
+        storage.cache.size() == 2
+        !storage.load(val1.id)
+        storage.load(val2.id) == val2
+        storage.load(val3.id) == val3
     }
 }
