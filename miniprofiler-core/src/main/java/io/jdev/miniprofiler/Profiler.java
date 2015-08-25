@@ -74,77 +74,81 @@ import java.util.UUID;
  */
 public interface Profiler extends Serializable, Jsonable, Closeable {
 
-	/**
-	 * Start a new profiling step with the default {@link ProfileLevel#Info} level;
-	 *
-	 * @param name The name of the step.
-	 * @return a Timing instance to be stopped when the step is done
-	 */
-	public Timing step(String name);
+    /**
+     * Start a new profiling step with the default {@link ProfileLevel#Info} level;
+     *
+     * @param name The name of the step.
+     * @return a Timing instance to be stopped when the step is done
+     */
+    public Timing step(String name);
 
-	/**
-	 * Start a new profiling step with the given level;
-	 *
-	 * @param name The name of the step.
-	 * @param level the profiling level for this step
-	 * @return a Timing instance to be stopped when the step is done
-	 */
-	public Timing step(String name, ProfileLevel level);
+    /**
+     * Start a new profiling step with the given level;
+     *
+     * @param name  The name of the step.
+     * @param level the profiling level for this step
+     * @return a Timing instance to be stopped when the step is done
+     */
+    public Timing step(String name, ProfileLevel level);
 
-	/**
-	 * Add a query timing inside the current timing step. This is usually
-	 * to log an SQL or other query.
-	 *
-	 * @param type the type of query, e.g. sql, memcache etc
+    /**
+     * Add a query timing inside the current timing step. This is usually
+     * to log an SQL or other query.
+     *
+     * @param type        the type of query, e.g. sql, memcache etc
      * @param executeType the type of command executed, e.g. read, fetch, update etc
-	 * @param command the query to save
-	 * @param duration how long it took, in milliseconds
-	 */
-	public void addCustomTiming(String type, String executeType, String command, long duration);
+     * @param command     the query to save
+     * @param duration    how long it took, in milliseconds
+     */
+    public void addCustomTiming(String type, String executeType, String command, long duration);
 
-	/**
-	 * Stop the current timing session.
-	 */
-	public void stop();
+    /**
+     * Stop the current timing session.
+     */
+    public void stop();
 
-	/**
-	 * Stop the current timing session. If passed true, the
-	 * current profiling session won't be saved for later viewing.
-	 * This is usually if the page has been cancelled for some reason.
-	 *
-	 * @param discardResults whether to skip storing the current session data
-	 */
-	public void stop(boolean discardResults);
+    /**
+     * Stop the current timing session. If passed true, the
+     * current profiling session won't be saved for later viewing.
+     * This is usually if the page has been cancelled for some reason.
+     *
+     * @param discardResults whether to skip storing the current session data
+     */
+    public void stop(boolean discardResults);
 
-	/**
-	 * Same as calling {@link #stop()}. Here to satisfy {@link Closeable} so
-	 * that the profiler can be auto-closed in a Java 7 try-with-resources
-	 * block.
-	 */
-	public void close();
+    /**
+     * Same as calling {@link #stop()}. Here to satisfy {@link Closeable} so
+     * that the profiler can be auto-closed in a Java 7 try-with-resources
+     * block.
+     */
+    public void close();
 
-	/**
-	 * Returns a unique id for the profiling session.
-	 * @return the session's id
-	 */
-	public UUID getId();
+    /**
+     * Returns a unique id for the profiling session.
+     *
+     * @return the session's id
+     */
+    public UUID getId();
 
 
-	/**
-	 * Returns the current live timing for this profiler.
-	 * @return the current timing
-	 */
-	public Timing getHead();
+    /**
+     * Returns the current live timing for this profiler.
+     *
+     * @return the current timing
+     */
+    public Timing getHead();
 
-	/**
-	 * Set the user name for the current profiling session
-	 * @param user the user
-	 */
-	public void setUser(String user);
+    /**
+     * Set the user name for the current profiling session
+     *
+     * @param user the user
+     */
+    public void setUser(String user);
 
-	/**
-	 * Returns the user name for the profile session.
-	 * @return the current user
-	 */
-	public String getUser();
+    /**
+     * Returns the user name for the profile session.
+     *
+     * @return the current user
+     */
+    public String getUser();
 }

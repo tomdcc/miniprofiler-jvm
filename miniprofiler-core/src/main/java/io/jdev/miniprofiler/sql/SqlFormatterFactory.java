@@ -20,14 +20,14 @@ import io.jdev.miniprofiler.sql.hibernate.BasicFormatterImpl;
 
 public class SqlFormatterFactory {
 
-	private static SqlFormatter formatter = new BasicFormatterImpl();
+    private static SqlFormatter formatter = new BasicFormatterImpl();
 
-	public static SqlFormatter getFormatter() {
-		return formatter;
-	}
+    public static SqlFormatter getFormatter() {
+        return formatter;
+    }
 
-	public static void setFormatter(SqlFormatter formatter) {
-		SqlFormatterFactory.formatter = formatter;
-	}
+    public static void setFormatter(SqlFormatter formatter) {
+        SqlFormatterFactory.formatter = formatter;
+    }
 
 }

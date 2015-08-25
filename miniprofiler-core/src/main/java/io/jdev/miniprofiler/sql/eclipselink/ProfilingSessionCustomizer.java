@@ -31,36 +31,35 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * An EclipseLink SessionCustomizer that installs a
  * {@link ProfilingConnector} onto EclipseLink's read and write pools.
  *
- * <p>
- *     The customizer can be installed by setting the
- *     <code>eclipselink.session.customizer</code> property to this class name
- *     <code>io.jdev.miniprofiler.sql.eclipselink.ProfilingSessionCustomizer</code>
+ * <p>The customizer can be installed by setting the
+ * <code>eclipselink.session.customizer</code> property to this class name
+ * <code>io.jdev.miniprofiler.sql.eclipselink.ProfilingSessionCustomizer</code>
  * </p>
  */
 public class ProfilingSessionCustomizer implements SessionCustomizer {
 
-	public ProfilingSessionCustomizer() {
-		this(new StaticProfilerProvider());
-	}
+    public ProfilingSessionCustomizer() {
+        this(new StaticProfilerProvider());
+    }
 
-	public ProfilingSessionCustomizer(ProfilerProvider profilerProvider) {
-		SpyLogFactory.setSpyLogDelegator(new ProfilingSpyLogDelegator(profilerProvider));
-	}
+    public ProfilingSessionCustomizer(ProfilerProvider profilerProvider) {
+        SpyLogFactory.setSpyLogDelegator(new ProfilingSpyLogDelegator(profilerProvider));
+    }
 
-	@Override
-	public void customize(Session session) throws Exception {
-		DatasourceLogin login = session.getLogin();
-		login.setConnector(new ProfilingConnector(login.getConnector()));
-		if(session instanceof ServerSession) {
-			ServerSession serverSession = (ServerSession) session;
-			ConnectionPool pool =  serverSession.getReadConnectionPool();
-			if(pool != null) {
-				Login poolLogin = pool.getLogin();
-				if(poolLogin instanceof DatasourceLogin) {
-					login = (DatasourceLogin) poolLogin;
-					login.setConnector(new ProfilingConnector(login.getConnector()));
-				}
-			}
-		}
-	}
+    @Override
+    public void customize(Session session) throws Exception {
+        DatasourceLogin login = session.getLogin();
+        login.setConnector(new ProfilingConnector(login.getConnector()));
+        if (session instanceof ServerSession) {
+            ServerSession serverSession = (ServerSession) session;
+            ConnectionPool pool = serverSession.getReadConnectionPool();
+            if (pool != null) {
+                Login poolLogin = pool.getLogin();
+                if (poolLogin instanceof DatasourceLogin) {
+                    login = (DatasourceLogin) poolLogin;
+                    login.setConnector(new ProfilingConnector(login.getConnector()));
+                }
+            }
+        }
+    }
 }

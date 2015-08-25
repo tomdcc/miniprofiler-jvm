@@ -30,61 +30,61 @@ import java.util.logging.Logger;
 
 public class ProfilingDataSource implements DataSource {
 
-	private final DataSource targetDataSource;
+    private final DataSource targetDataSource;
 
-	public ProfilingDataSource(DataSource targetDataSource) {
-		this(targetDataSource, new StaticProfilerProvider());
-	}
+    public ProfilingDataSource(DataSource targetDataSource) {
+        this(targetDataSource, new StaticProfilerProvider());
+    }
 
-	public ProfilingDataSource(DataSource targetDataSource, ProfilerProvider profilerProvider) {
-		this.targetDataSource = targetDataSource;
-		SpyLogFactory.setSpyLogDelegator(new ProfilingSpyLogDelegator(profilerProvider));
-	}
+    public ProfilingDataSource(DataSource targetDataSource, ProfilerProvider profilerProvider) {
+        this.targetDataSource = targetDataSource;
+        SpyLogFactory.setSpyLogDelegator(new ProfilingSpyLogDelegator(profilerProvider));
+    }
 
-	@Override
-	public Connection getConnection() throws SQLException {
-		Connection conn = targetDataSource.getConnection();
-		return new ConnectionSpy(conn);
-	}
+    @Override
+    public Connection getConnection() throws SQLException {
+        Connection conn = targetDataSource.getConnection();
+        return new ConnectionSpy(conn);
+    }
 
-	@Override
-	public Connection getConnection(String username, String password) throws SQLException {
-		Connection conn = targetDataSource.getConnection(username, password);
-		return new ConnectionSpy(conn);
-	}
+    @Override
+    public Connection getConnection(String username, String password) throws SQLException {
+        Connection conn = targetDataSource.getConnection(username, password);
+        return new ConnectionSpy(conn);
+    }
 
-	@Override
-	public PrintWriter getLogWriter() throws SQLException {
-		return targetDataSource.getLogWriter();
-	}
+    @Override
+    public PrintWriter getLogWriter() throws SQLException {
+        return targetDataSource.getLogWriter();
+    }
 
-	@Override
-	public void setLogWriter(PrintWriter out) throws SQLException {
-		targetDataSource.setLogWriter(out);
-	}
+    @Override
+    public void setLogWriter(PrintWriter out) throws SQLException {
+        targetDataSource.setLogWriter(out);
+    }
 
-	@Override
-	public void setLoginTimeout(int seconds) throws SQLException {
-		targetDataSource.setLoginTimeout(seconds);
-	}
+    @Override
+    public void setLoginTimeout(int seconds) throws SQLException {
+        targetDataSource.setLoginTimeout(seconds);
+    }
 
-	@Override
-	public int getLoginTimeout() throws SQLException {
-		return targetDataSource.getLoginTimeout();
-	}
+    @Override
+    public int getLoginTimeout() throws SQLException {
+        return targetDataSource.getLoginTimeout();
+    }
 
-	@Override
-	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-		return targetDataSource.getParentLogger();
-	}
+    @Override
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        return targetDataSource.getParentLogger();
+    }
 
-	@Override
-	public <T> T unwrap(Class<T> iface) throws SQLException {
-		return targetDataSource.unwrap(iface);
-	}
+    @Override
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        return targetDataSource.unwrap(iface);
+    }
 
-	@Override
-	public boolean isWrapperFor(Class<?> iface) throws SQLException {
-		return targetDataSource.isWrapperFor(iface);
-	}
+    @Override
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return targetDataSource.isWrapperFor(iface);
+    }
 }

@@ -24,43 +24,43 @@ import java.util.Map;
 
 public class AutoClosableTest {
 
-	@Test
-	public void testAutoClosing() {
-		String name = "My Function";
-		ProfilerImpl profiler =  new ProfilerImpl(name, ProfileLevel.Verbose, new DefaultProfilerProvider());
+    @Test
+    public void testAutoClosing() {
+        String name = "My Function";
+        ProfilerImpl profiler = new ProfilerImpl(name, ProfileLevel.Verbose, new DefaultProfilerProvider());
 
-		// add some stuff
-		try (Timing firstTiming = profiler.step("fooService.whatever")) {
-			try (Timing childTiming = profiler.step("child")) {
-				profiler.addCustomTiming("sql", "query", "select * from foo", 5L);
-			}
-		}
-		try (Timing lastTiming = profiler.step("again")) {
-			profiler.addCustomTiming("sql", "query", "select * from bar", 5L);
-		}
+        // add some stuff
+        try (Timing firstTiming = profiler.step("fooService.whatever")) {
+            try (Timing childTiming = profiler.step("child")) {
+                profiler.addCustomTiming("sql", "query", "select * from foo", 5L);
+            }
+        }
+        try (Timing lastTiming = profiler.step("again")) {
+            profiler.addCustomTiming("sql", "query", "select * from bar", 5L);
+        }
 
-		profiler.stop();
+        profiler.stop();
 
-		TimingImpl rootTiming = (TimingImpl) profiler.getRoot();
-		Assert.assertEquals(name, rootTiming.getName());
-		List<TimingImpl> children = rootTiming.getChildren();
-		Assert.assertEquals(2, children.size());
-		TimingImpl firstChild = children.get(0);
-		TimingImpl secondChild = children.get(1);
-		Assert.assertEquals("fooService.whatever", firstChild.getName());
-		Assert.assertEquals("again", secondChild.getName());
-		List<TimingImpl> nestedChildren = firstChild.getChildren();
-		Assert.assertEquals(1, nestedChildren.size());
-		TimingImpl nestedChild = nestedChildren.get(0);
-		Assert.assertEquals("child", nestedChild.getName());
-		Map<String,List<CustomTiming>> groupedNestedChildQueries = nestedChild.getCustomTimings();
-		Assert.assertEquals(1, groupedNestedChildQueries.size());
-		List<CustomTiming> nestedChildQueries = groupedNestedChildQueries.get("sql");
-		Assert.assertEquals("select * from foo", nestedChildQueries.get(0).getCommandString());
-		Map<String,List<CustomTiming>> secondGroupedNestedChildQueries = secondChild.getCustomTimings();
-		Assert.assertEquals(1, secondGroupedNestedChildQueries.size());
-		List<CustomTiming> secondChildQueries = secondGroupedNestedChildQueries.get("sql");
-		Assert.assertEquals(1, secondChildQueries.size());
-		Assert.assertEquals("select * from bar", secondChildQueries.get(0).getCommandString());
-	}
+        TimingImpl rootTiming = (TimingImpl) profiler.getRoot();
+        Assert.assertEquals(name, rootTiming.getName());
+        List<TimingImpl> children = rootTiming.getChildren();
+        Assert.assertEquals(2, children.size());
+        TimingImpl firstChild = children.get(0);
+        TimingImpl secondChild = children.get(1);
+        Assert.assertEquals("fooService.whatever", firstChild.getName());
+        Assert.assertEquals("again", secondChild.getName());
+        List<TimingImpl> nestedChildren = firstChild.getChildren();
+        Assert.assertEquals(1, nestedChildren.size());
+        TimingImpl nestedChild = nestedChildren.get(0);
+        Assert.assertEquals("child", nestedChild.getName());
+        Map<String, List<CustomTiming>> groupedNestedChildQueries = nestedChild.getCustomTimings();
+        Assert.assertEquals(1, groupedNestedChildQueries.size());
+        List<CustomTiming> nestedChildQueries = groupedNestedChildQueries.get("sql");
+        Assert.assertEquals("select * from foo", nestedChildQueries.get(0).getCommandString());
+        Map<String, List<CustomTiming>> secondGroupedNestedChildQueries = secondChild.getCustomTimings();
+        Assert.assertEquals(1, secondGroupedNestedChildQueries.size());
+        List<CustomTiming> secondChildQueries = secondGroupedNestedChildQueries.get("sql");
+        Assert.assertEquals(1, secondChildQueries.size());
+        Assert.assertEquals("select * from bar", secondChildQueries.get(0).getCommandString());
+    }
 }

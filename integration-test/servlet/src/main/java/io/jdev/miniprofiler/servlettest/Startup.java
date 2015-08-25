@@ -19,46 +19,45 @@ package io.jdev.miniprofiler.servlettest;
 import io.jdev.miniprofiler.sql.ProfilingDataSource;
 import org.h2.jdbcx.JdbcDataSource;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Startup implements ServletContextListener {
 
-	@Override
-	public void contextInitialized(ServletContextEvent servletContextEvent) {
-		DataSource ds = setupDataSource();
-		setupData(ds);
+    @Override
+    public void contextInitialized(ServletContextEvent servletContextEvent) {
+        DataSource ds = setupDataSource();
+        setupData(ds);
 
-		// since we want to profile stuff, do it
-		ProfilingDataSource profilingDataSource = new ProfilingDataSource(ds);
-		servletContextEvent.getServletContext().setAttribute("dataSource", profilingDataSource);
-	}
+        // since we want to profile stuff, do it
+        ProfilingDataSource profilingDataSource = new ProfilingDataSource(ds);
+        servletContextEvent.getServletContext().setAttribute("dataSource", profilingDataSource);
+    }
 
-	private DataSource setupDataSource() {
-		JdbcDataSource ds = new JdbcDataSource();
-		ds.setURL("jdbc:h2:mem:miniprofiler;DB_CLOSE_DELAY=-1");
-		ds.setUser("sa");
-		ds.setPassword("sa");
-		return ds;
-	}
+    private DataSource setupDataSource() {
+        JdbcDataSource ds = new JdbcDataSource();
+        ds.setURL("jdbc:h2:mem:miniprofiler;DB_CLOSE_DELAY=-1");
+        ds.setUser("sa");
+        ds.setPassword("sa");
+        return ds;
+    }
 
-	private void setupData(DataSource ds) {
-		try (Connection con = ds.getConnection();
-			Statement st = con.createStatement()) {
-			st.executeUpdate("create table people (id bigint identity, name varchar(255) not null)");
-			st.executeUpdate("insert into people(name) values ('Tom')");
-			st.executeUpdate("insert into people(name) values ('Demi')");
-		} catch(SQLException sqle) {
-			throw new RuntimeException("Unexpected error setting up data", sqle);
-		}
-	}
+    private void setupData(DataSource ds) {
+        try (Connection con = ds.getConnection();
+             Statement st = con.createStatement()) {
+            st.executeUpdate("create table people (id bigint identity, name varchar(255) not null)");
+            st.executeUpdate("insert into people(name) values ('Tom')");
+            st.executeUpdate("insert into people(name) values ('Demi')");
+        } catch (SQLException sqle) {
+            throw new RuntimeException("Unexpected error setting up data", sqle);
+        }
+    }
 
-	@Override
-	public void contextDestroyed(ServletContextEvent servletContextEvent) {	}
+    @Override
+    public void contextDestroyed(ServletContextEvent servletContextEvent) {
+    }
 }

@@ -16,8 +16,8 @@
 
 package io.jdev.miniprofiler.test;
 
-import io.jdev.miniprofiler.*;
-import io.jdev.miniprofiler.storage.Storage;
+import io.jdev.miniprofiler.BaseProfilerProvider;
+import io.jdev.miniprofiler.Profiler;
 
 /**
  * Profiler provider to assist testing. Has a single profiler instance and performs
@@ -26,19 +26,19 @@ import io.jdev.miniprofiler.storage.Storage;
 
 public class TestProfilerProvider extends BaseProfilerProvider {
 
-	private Profiler profiler;
+    private Profiler profiler;
 
-	@Override
-	protected void profilerCreated(Profiler profiler) {
-		this.profiler = profiler;
-	}
+    @Override
+    protected void profilerCreated(Profiler profiler) {
+        this.profiler = profiler;
+    }
 
-	@Override
-	protected void profilerStopped(Profiler profiler) {
-	}
+    @Override
+    protected void profilerStopped(Profiler profiler) {
+    }
 
-	@Override
-	protected Profiler lookupCurrentProfiler() {
-		return profiler;
-	}
+    @Override
+    protected Profiler lookupCurrentProfiler() {
+        return profiler;
+    }
 }

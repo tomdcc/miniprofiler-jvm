@@ -27,11 +27,12 @@ import java.io.IOException;
 @WebServlet("")
 public class IndexServlet extends HttpServlet {
 
-	@EJB private PersonService personService;
+    @EJB
+    private PersonService personService;
 
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		req.setAttribute("people", personService.getAllPeople());
-		getServletContext().getRequestDispatcher("/index.jsp").forward(req, resp);
-	}
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setAttribute("people", personService.getAllPeople());
+        getServletContext().getRequestDispatcher("/index.jsp").forward(req, resp);
+    }
 }

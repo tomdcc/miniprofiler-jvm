@@ -27,62 +27,62 @@ import java.util.Iterator;
 public class ProfilingDecorator implements com.opensymphony.sitemesh.Decorator, com.opensymphony.module.sitemesh.Decorator {
 
     private final com.opensymphony.module.sitemesh.Decorator oldDecorator;
-	private final com.opensymphony.sitemesh.Decorator newDecorator;
+    private final com.opensymphony.sitemesh.Decorator newDecorator;
     private Profiler profiler;
 
-	// called from contexts that don't expect an old profiler
-	public ProfilingDecorator(com.opensymphony.sitemesh.Decorator newDecorator, Profiler profiler) {
-		this.oldDecorator = null;
-		this.profiler = profiler;
-		this.newDecorator = newDecorator;
-	}
+    // called from contexts that don't expect an old profiler
+    public ProfilingDecorator(com.opensymphony.sitemesh.Decorator newDecorator, Profiler profiler) {
+        this.oldDecorator = null;
+        this.profiler = profiler;
+        this.newDecorator = newDecorator;
+    }
 
     public ProfilingDecorator(com.opensymphony.module.sitemesh.Decorator oldDecorator, Profiler profiler) {
         this.oldDecorator = oldDecorator;
         this.profiler = profiler;
-		if(oldDecorator instanceof com.opensymphony.sitemesh.Decorator) {
-			newDecorator = (com.opensymphony.sitemesh.Decorator) oldDecorator;
-		} else {
-			newDecorator = new OldDecorator2NewDecorator(oldDecorator);
-		}
+        if (oldDecorator instanceof com.opensymphony.sitemesh.Decorator) {
+            newDecorator = (com.opensymphony.sitemesh.Decorator) oldDecorator;
+        } else {
+            newDecorator = new OldDecorator2NewDecorator(oldDecorator);
+        }
     }
 
     public void render(Content content, SiteMeshContext siteMeshContext) {
         Timing timing = profiler.step("Layout");
         try {
-			newDecorator.render(content, siteMeshContext);
+            newDecorator.render(content, siteMeshContext);
         } finally {
             timing.stop();
         }
     }
 
-	@Override
-	public String getPage() {
-		return oldDecorator.getPage();
-	}
+    @Override
+    public String getPage() {
+        return oldDecorator.getPage();
+    }
 
-	@Override
-	public String getName() {
-		return oldDecorator.getName();
-	}
+    @Override
+    public String getName() {
+        return oldDecorator.getName();
+    }
 
-	@Override
-	public String getURIPath() {
-		return oldDecorator.getURIPath();
-	}
+    @Override
+    public String getURIPath() {
+        return oldDecorator.getURIPath();
+    }
 
-	@Override
-	public String getRole() {
-		return oldDecorator.getRole();
-	}
+    @Override
+    public String getRole() {
+        return oldDecorator.getRole();
+    }
 
-	@Override
-	public String getInitParameter(String param) {
-		return oldDecorator.getInitParameter(param);
-	}
+    @Override
+    public String getInitParameter(String param) {
+        return oldDecorator.getInitParameter(param);
+    }
 
-	@Override
-	public Iterator getInitParameterNames() {
-		return oldDecorator.getInitParameterNames();
-	}
+    @Override
+    public Iterator getInitParameterNames() {
+        return oldDecorator.getInitParameterNames();
+    }
 }

@@ -27,32 +27,35 @@ import java.util.Properties;
 
 public class ProfilingDecoratorMapper implements DecoratorMapper {
 
-	private final DecoratorMapper target;
-	private final ProfilerProvider profilerProvider;
+    private final DecoratorMapper target;
+    private final ProfilerProvider profilerProvider;
 
-	public ProfilingDecoratorMapper(DecoratorMapper target, ProfilerProvider profilerProvider) {
-		this.target = target;
-		this.profilerProvider = profilerProvider;
-	}
+    public ProfilingDecoratorMapper(DecoratorMapper target, ProfilerProvider profilerProvider) {
+        this.target = target;
+        this.profilerProvider = profilerProvider;
+    }
 
-	@Override
-	public void init(Config config, Properties properties, DecoratorMapper decoratorMapper) throws InstantiationException {
-		target.init(config, properties, decoratorMapper);
-	}
+    @Override
+    public void init(Config config, Properties properties, DecoratorMapper decoratorMapper) throws InstantiationException {
+        target.init(config, properties, decoratorMapper);
+    }
 
-	@Override
-	public Decorator getDecorator(HttpServletRequest httpServletRequest, Page page) {
-		return wrapDecorator(target.getDecorator(httpServletRequest, page));
-	}
+    @Override
+    public Decorator getDecorator(HttpServletRequest httpServletRequest, Page page) {
+        return wrapDecorator(target.getDecorator(httpServletRequest, page));
+    }
 
-	@Override
-	public Decorator getNamedDecorator(HttpServletRequest httpServletRequest, String name) {
-		return wrapDecorator(target.getNamedDecorator(httpServletRequest, name));
-	}
+    @Override
+    public Decorator getNamedDecorator(HttpServletRequest httpServletRequest, String name) {
+        return wrapDecorator(target.getNamedDecorator(httpServletRequest, name));
+    }
 
 
-	private Decorator wrapDecorator(Decorator decorator) {
-		if(decorator == null) return null;
-		return new ProfilingDecorator(decorator, profilerProvider.getCurrentProfiler());
-	}
+    private Decorator wrapDecorator(Decorator decorator) {
+        if (decorator == null) {
+            return null;
+        } else {
+            return new ProfilingDecorator(decorator, profilerProvider.getCurrentProfiler());
+        }
+    }
 }

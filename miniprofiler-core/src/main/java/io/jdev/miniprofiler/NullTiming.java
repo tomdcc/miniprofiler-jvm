@@ -37,35 +37,35 @@ import java.util.Map;
  */
 class NullTiming implements Timing {
 
-	static NullTiming INSTANCE = new NullTiming();
+    static final NullTiming INSTANCE = new NullTiming();
 
-	private NullTiming() {
-	}
+    private NullTiming() {
+    }
 
-	@Override
-	public void close() {
-	}
+    @Override
+    public void close() {
+    }
 
-	@Override
-	public void stop() {
-	}
+    @Override
+    public void stop() {
+    }
 
-	@Override
-	public void setName(String name) {
-	}
+    @Override
+    public void setName(String name) {
+    }
 
-	@Override
-	public Map<String, Object> toMap() {
-		return Collections.emptyMap();
-	}
+    @Override
+    public Map<String, Object> toMap() {
+        return Collections.emptyMap();
+    }
 
-	@Override
-	public String getName() {
-		return "";
-	}
+    @Override
+    public String getName() {
+        return "";
+    }
 
-	@Override
-	public Timing getParent() {
-		return null;
-	}
+    @Override
+    public Timing getParent() {
+        return null;
+    }
 }

@@ -29,12 +29,12 @@ class StaticProfilerProviderSpec extends Specification {
 
 	void cleanup() {
 		MiniProfiler.profilerProvider.stopCurrentSession(true)
-		MiniProfiler.profilerProvider = null;
+		MiniProfiler.profilerProvider = null
 	}
 
 	void "provider delegates to static miniprofiler provider"() {
 		given:
-			MiniProfiler.profilerProvider = new TestProfilerProvider();
+			MiniProfiler.profilerProvider = new TestProfilerProvider()
 
 		when:
 			def profiler = provider.start("foo")

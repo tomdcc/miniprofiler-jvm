@@ -16,7 +16,6 @@
 
 package io.jdev.miniprofiler.ratpack
 
-import io.jdev.miniprofiler.ratpack.MiniProfilerResourceHandler
 import ratpack.func.Action
 import ratpack.test.handling.RequestFixture
 import spock.lang.Specification

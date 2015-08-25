@@ -13,6 +13,8 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'groovy'
 	apply plugin: 'propdeps'
+	apply from: "$rootDir/gradle/checkstyle.gradle"
+	apply from: "$rootDir/gradle/codenarc.gradle"
 
 	// IDE support
     apply plugin: 'idea'

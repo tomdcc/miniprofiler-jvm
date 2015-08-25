@@ -100,6 +100,6 @@ class MockInvocationContext implements InvocationContext {
 		if(error) {
 			throw error
 		}
-		method.invoke(target, parameters);
+		method.invoke(target, parameters)
 	}
 }

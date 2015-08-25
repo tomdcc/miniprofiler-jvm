@@ -21,14 +21,14 @@ package io.jdev.miniprofiler.user;
  */
 public interface UserProvider {
 
-	/**
-	 * Returns the currently logged in user, if that is known.
-	 *
-	 * This would normally be a username of some kind, but could potentially be
-	 * e.g. a job name for background tasks.
-	 *
-	 * @return the current user, or null if it doesn't exist
-	 */
-	String getUser();
+    /**
+     * Returns the currently logged in user, if that is known.
+     *
+     * <p>This would normally be a username of some kind, but could potentially be
+     * e.g. a job name for background tasks.</p>
+     *
+     * @return the current user, or null if it doesn't exist
+     */
+    String getUser();
 
 }

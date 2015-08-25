@@ -27,37 +27,37 @@ import java.util.UUID;
  * Storage implementation based on an LRU in-memory map.
  */
 public class MapStorage extends BaseStorage {
-	private static final int DEFAULT_MAX_SIZE = 500;
+    private static final int DEFAULT_MAX_SIZE = 500;
 
-	private final Map<UUID, ProfilerImpl> cache;
+    private final Map<UUID, ProfilerImpl> cache;
 
-	public MapStorage() {
-		this(DEFAULT_MAX_SIZE);
-	}
+    public MapStorage() {
+        this(DEFAULT_MAX_SIZE);
+    }
 
-	public MapStorage(int maxSize) {
-		cache = Collections.synchronizedMap(new LRUMapCache(maxSize));
-	}
+    public MapStorage(int maxSize) {
+        cache = Collections.synchronizedMap(new LRUMapCache(maxSize));
+    }
 
-	public void save(ProfilerImpl profiler) {
-		cache.put(profiler.getId(), profiler);
-	}
+    public void save(ProfilerImpl profiler) {
+        cache.put(profiler.getId(), profiler);
+    }
 
-	public ProfilerImpl load(UUID id) {
-		return cache.get(id);
-	}
+    public ProfilerImpl load(UUID id) {
+        return cache.get(id);
+    }
 
-	private static class LRUMapCache extends LinkedHashMap<UUID, ProfilerImpl> {
-		private int maxSize;
+    private static class LRUMapCache extends LinkedHashMap<UUID, ProfilerImpl> {
+        private int maxSize;
 
-		LRUMapCache(int maxSize) {
-			super(10, 0.75f, true);
-			this.maxSize = maxSize;
-		}
+        LRUMapCache(int maxSize) {
+            super(10, 0.75f, true);
+            this.maxSize = maxSize;
+        }
 
-		@Override
-		protected boolean removeEldestEntry(Map.Entry<UUID, ProfilerImpl> eldest) {
-			return size() > maxSize;
-		}
-	}
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<UUID, ProfilerImpl> eldest) {
+            return size() > maxSize;
+        }
+    }
 }

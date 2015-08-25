@@ -37,60 +37,60 @@ import java.util.UUID;
  */
 public class NullProfiler implements Profiler {
 
-	public static NullProfiler INSTANCE = new NullProfiler();
+    public static final NullProfiler INSTANCE = new NullProfiler();
 
-	private NullProfiler() {
-	}
+    private NullProfiler() {
+    }
 
-	@Override
-	public Timing step(String name) {
-		return NullTiming.INSTANCE;
-	}
+    @Override
+    public Timing step(String name) {
+        return NullTiming.INSTANCE;
+    }
 
-	@Override
-	public Timing step(String name, ProfileLevel level) {
-		return NullTiming.INSTANCE;
-	}
+    @Override
+    public Timing step(String name, ProfileLevel level) {
+        return NullTiming.INSTANCE;
+    }
 
-	@Override
-	public void addCustomTiming(String type, String executeType, String command, long duration) {
-	}
+    @Override
+    public void addCustomTiming(String type, String executeType, String command, long duration) {
+    }
 
-	@Override
-	public void close() {
-	}
+    @Override
+    public void close() {
+    }
 
-	@Override
-	public void stop() {
-	}
+    @Override
+    public void stop() {
+    }
 
-	@Override
-	public void stop(boolean discardResults) {
-	}
+    @Override
+    public void stop(boolean discardResults) {
+    }
 
-	@Override
-	public Map<String, Object> toMap() {
-		return Collections.emptyMap();
-	}
+    @Override
+    public Map<String, Object> toMap() {
+        return Collections.emptyMap();
+    }
 
-	@Override
-	public UUID getId() {
-		return null;
-	}
+    @Override
+    public UUID getId() {
+        return null;
+    }
 
-	@Override
-	public Timing getHead() {
-		return NullTiming.INSTANCE;
-	}
+    @Override
+    public Timing getHead() {
+        return NullTiming.INSTANCE;
+    }
 
-	@Override
-	public void setUser(String user) {
-	}
+    @Override
+    public void setUser(String user) {
+    }
 
-	@Override
-	public String getUser() {
-		return null;
-	}
+    @Override
+    public String getUser() {
+        return null;
+    }
 
 
 }

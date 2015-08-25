@@ -34,7 +34,7 @@ class ProfilingInvocationHandlerSpec extends Specification {
 		profilerProvider = new TestProfilerProvider()
 		profiler = profilerProvider.start("ProfilingInvocationHandlerSpec")
 		target = Mock(TestInterface)
-		proxy = ProfilingInvocationHandler.createProxy(profilerProvider, target, TestInterface);
+		proxy = ProfilingInvocationHandler.createProxy(profilerProvider, target, TestInterface)
 	}
 
 	def "handler intercepts method call"() {

@@ -28,20 +28,20 @@ import java.sql.SQLException;
 
 public class ProfilingDatasourceConnectionProvider extends DatasourceConnectionProviderImpl {
 
-	private final ProfilerProvider profilerProvider;
+    private final ProfilerProvider profilerProvider;
 
-	public ProfilingDatasourceConnectionProvider() {
-		this(new StaticProfilerProvider());
-	}
+    public ProfilingDatasourceConnectionProvider() {
+        this(new StaticProfilerProvider());
+    }
 
-	public ProfilingDatasourceConnectionProvider(ProfilerProvider profilerProvider) {
-		this.profilerProvider = profilerProvider;
-		SpyLogFactory.setSpyLogDelegator(new ProfilingSpyLogDelegator(profilerProvider));
-	}
+    public ProfilingDatasourceConnectionProvider(ProfilerProvider profilerProvider) {
+        this.profilerProvider = profilerProvider;
+        SpyLogFactory.setSpyLogDelegator(new ProfilingSpyLogDelegator(profilerProvider));
+    }
 
-	@Override
-	public Connection getConnection() throws SQLException {
-		return new ConnectionSpy(super.getConnection());
-	}
+    @Override
+    public Connection getConnection() throws SQLException {
+        return new ConnectionSpy(super.getConnection());
+    }
 
 }

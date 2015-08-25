@@ -19,6 +19,7 @@ package io.jdev.miniprofiler.storage;
 import io.jdev.miniprofiler.ProfilerImpl;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
+
 import java.util.UUID;
 
 /**
@@ -26,23 +27,23 @@ import java.util.UUID;
  */
 public class EhcacheStorage extends BaseStorage {
 
-	private final Ehcache cache;
+    private final Ehcache cache;
 
-	public EhcacheStorage(Ehcache cache) {
-		this.cache = cache;
-	}
+    public EhcacheStorage(Ehcache cache) {
+        this.cache = cache;
+    }
 
-	@Override
-	public void save(ProfilerImpl profiler) {
-		cache.put(new Element(profiler.getId(), profiler));
-	}
+    @Override
+    public void save(ProfilerImpl profiler) {
+        cache.put(new Element(profiler.getId(), profiler));
+    }
 
-	@Override
-	public ProfilerImpl load(UUID id) {
-		Element profilerElement = cache.get(id);
-		if(profilerElement == null || profilerElement.isExpired()) {
-			return null;
-		}
-		return (ProfilerImpl) profilerElement.getObjectValue();
-	}
+    @Override
+    public ProfilerImpl load(UUID id) {
+        Element profilerElement = cache.get(id);
+        if (profilerElement == null || profilerElement.isExpired()) {
+            return null;
+        }
+        return (ProfilerImpl) profilerElement.getObjectValue();
+    }
 }

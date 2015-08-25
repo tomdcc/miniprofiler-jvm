@@ -25,50 +25,50 @@ import java.util.UUID;
  */
 public abstract class DelegatingProfilerProvider implements ProfilerProvider {
 
-	protected abstract ProfilerProvider getDelegate();
+    protected abstract ProfilerProvider getDelegate();
 
-	@Override
-	public Profiler start(String rootName) {
-		return getDelegate().start(rootName);
-	}
+    @Override
+    public Profiler start(String rootName) {
+        return getDelegate().start(rootName);
+    }
 
-	@Override
-	public Profiler start(UUID id, String rootName) {
-		return getDelegate().start(id, rootName);
-	}
+    @Override
+    public Profiler start(UUID id, String rootName) {
+        return getDelegate().start(id, rootName);
+    }
 
-	@Override
-	public Profiler start(String rootName, ProfileLevel level) {
-		return getDelegate().start(rootName, level);
-	}
+    @Override
+    public Profiler start(String rootName, ProfileLevel level) {
+        return getDelegate().start(rootName, level);
+    }
 
-	@Override
-	public Profiler start(UUID id, String rootName, ProfileLevel level) {
-		return getDelegate().start(id, rootName, level);
-	}
+    @Override
+    public Profiler start(UUID id, String rootName, ProfileLevel level) {
+        return getDelegate().start(id, rootName, level);
+    }
 
-	@Override
-	public void stopCurrentSession(boolean discardResults) {
-		getDelegate().stopCurrentSession(discardResults);
-	}
+    @Override
+    public void stopCurrentSession(boolean discardResults) {
+        getDelegate().stopCurrentSession(discardResults);
+    }
 
-	@Override
-	public void stopSession(ProfilerImpl profilingSession, boolean discardResults) {
-		getDelegate().stopSession(profilingSession, discardResults);
-	}
+    @Override
+    public void stopSession(ProfilerImpl profilingSession, boolean discardResults) {
+        getDelegate().stopSession(profilingSession, discardResults);
+    }
 
-	@Override
-	public Profiler getCurrentProfiler() {
-		return getDelegate().getCurrentProfiler();
-	}
+    @Override
+    public Profiler getCurrentProfiler() {
+        return getDelegate().getCurrentProfiler();
+    }
 
-	@Override
-	public Storage getStorage() {
-		return getDelegate().getStorage();
-	}
+    @Override
+    public Storage getStorage() {
+        return getDelegate().getStorage();
+    }
 
-	@Override
-	public void setStorage(Storage storage) {
-		getDelegate().setStorage(storage);
-	}
+    @Override
+    public void setStorage(Storage storage) {
+        getDelegate().setStorage(storage);
+    }
 }

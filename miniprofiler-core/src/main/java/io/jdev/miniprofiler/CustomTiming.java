@@ -25,68 +25,68 @@ import java.util.Map;
 import java.util.UUID;
 
 public class CustomTiming implements Serializable, Jsonable {
-	private UUID id;
-	private String executeType;
-	private String commandString;
-	private TimingImpl parentTiming;
-	private long absoluteStartMilliseconds;
-	private long durationMilliseconds;
-	private long miniprofilerStartMilliseconds = -1L;
+    private UUID id;
+    private String executeType;
+    private String commandString;
+    private TimingImpl parentTiming;
+    private long absoluteStartMilliseconds;
+    private long durationMilliseconds;
+    private long miniprofilerStartMilliseconds = -1L;
 
-	public CustomTiming(String executeType, String commandString) {
-		id = UUID.randomUUID();
-		this.executeType = executeType;
-		this.commandString = commandString;
-		// TODO: stack traces
-		absoluteStartMilliseconds = System.currentTimeMillis();
-	}
+    public CustomTiming(String executeType, String commandString) {
+        id = UUID.randomUUID();
+        this.executeType = executeType;
+        this.commandString = commandString;
+        // TODO: stack traces
+        absoluteStartMilliseconds = System.currentTimeMillis();
+    }
 
-	public CustomTiming(String executeType, String command, long duration) {
-		this(executeType, command);
-		setDurationMilliseconds(duration);
-	}
+    public CustomTiming(String executeType, String command, long duration) {
+        this(executeType, command);
+        setDurationMilliseconds(duration);
+    }
 
-	public Map<String, Object> toMap() {
-		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(8);
-		map.put("Id", id.toString());
-		if(executeType != null) {
-			map.put("ExecuteType", executeType);
-		}
-		map.put("CommandString", SqlFormatterFactory.getFormatter().format(commandString));
-		map.put("StartMilliseconds", getStartMilliseconds());
-		map.put("DurationMilliseconds", durationMilliseconds);
-		map.put("StackTraceSnippet", "");
-		// TODO FirstFetchDurationMilliseconds
-		return map;
-	}
+    public Map<String, Object> toMap() {
+        LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(8);
+        map.put("Id", id.toString());
+        if (executeType != null) {
+            map.put("ExecuteType", executeType);
+        }
+        map.put("CommandString", SqlFormatterFactory.getFormatter().format(commandString));
+        map.put("StartMilliseconds", getStartMilliseconds());
+        map.put("DurationMilliseconds", durationMilliseconds);
+        map.put("StackTraceSnippet", "");
+        // TODO FirstFetchDurationMilliseconds
+        return map;
+    }
 
-	public UUID getId() {
-		return id;
-	}
+    public UUID getId() {
+        return id;
+    }
 
-	public String getCommandString() {
-		return commandString;
-	}
+    public String getCommandString() {
+        return commandString;
+    }
 
-	void setParentTiming(TimingImpl parentTiming) {
-		// stored as we'll use this in sql storage
-		this.parentTiming = parentTiming;
-		miniprofilerStartMilliseconds = parentTiming.getProfiler().getStarted();
-	}
+    void setParentTiming(TimingImpl parentTiming) {
+        // stored as we'll use this in sql storage
+        this.parentTiming = parentTiming;
+        miniprofilerStartMilliseconds = parentTiming.getProfiler().getStarted();
+    }
 
-	public TimingImpl getParentTiming() {
-		return parentTiming;
-	}
+    public TimingImpl getParentTiming() {
+        return parentTiming;
+    }
 
-	private long getStartMilliseconds() {
-		if (miniprofilerStartMilliseconds < 0L) {
-			throw new IllegalStateException("Can't determine start until mini profiler start is set");
-		}
-		return absoluteStartMilliseconds - miniprofilerStartMilliseconds;
-	}
+    private long getStartMilliseconds() {
+        if (miniprofilerStartMilliseconds < 0L) {
+            throw new IllegalStateException("Can't determine start until mini profiler start is set");
+        }
+        return absoluteStartMilliseconds - miniprofilerStartMilliseconds;
+    }
 
-	public void setDurationMilliseconds(long durationMilliseconds) {
-		this.durationMilliseconds = durationMilliseconds;
-	}
+    public void setDurationMilliseconds(long durationMilliseconds) {
+        this.durationMilliseconds = durationMilliseconds;
+    }
 
 }

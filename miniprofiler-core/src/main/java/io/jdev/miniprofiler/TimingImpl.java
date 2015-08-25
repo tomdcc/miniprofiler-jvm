@@ -24,129 +24,129 @@ import java.util.*;
  * Concrete implementation of {@link Timing} interface.
  */
 public class TimingImpl implements Timing {
-	private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
 
-	private final UUID id;
-	private String name;
-	private final long startMilliseconds;
-	private Long durationMilliseconds;
-	private final ProfilerImpl profiler;
-	private final TimingImpl parent;
-	private final int depth;
-	private List<TimingImpl> children;
-	private Map<String,List<CustomTiming>> customTimings;
+    private final UUID id;
+    private String name;
+    private final long startMilliseconds;
+    private Long durationMilliseconds;
+    private final ProfilerImpl profiler;
+    private final TimingImpl parent;
+    private final int depth;
+    private List<TimingImpl> children;
+    private Map<String, List<CustomTiming>> customTimings;
 
 
-	public TimingImpl(ProfilerImpl profiler, TimingImpl parent, String name) {
-		this.id = UUID.randomUUID();
-		this.profiler = profiler;
-		this.name = name;
-		this.parent = parent;
-		startMilliseconds = System.currentTimeMillis() - profiler.getStarted();
+    public TimingImpl(ProfilerImpl profiler, TimingImpl parent, String name) {
+        this.id = UUID.randomUUID();
+        this.profiler = profiler;
+        this.name = name;
+        this.parent = parent;
+        startMilliseconds = System.currentTimeMillis() - profiler.getStarted();
 
-		// root will have no parent
-		if (parent != null) {
-			parent.addChild(this);
-			depth = parent.depth + 1;
-		} else {
-			depth = 0;
-		}
+        // root will have no parent
+        if (parent != null) {
+            parent.addChild(this);
+            depth = parent.depth + 1;
+        } else {
+            depth = 0;
+        }
 
-		profiler.setHead(this);
-	}
+        profiler.setHead(this);
+    }
 
-	public void stop() {
-		if (durationMilliseconds == null) {
-			durationMilliseconds = System.currentTimeMillis() - startMilliseconds - profiler.getStarted();
-		}
+    public void stop() {
+        if (durationMilliseconds == null) {
+            durationMilliseconds = System.currentTimeMillis() - startMilliseconds - profiler.getStarted();
+        }
 
-		profiler.setHead(parent);
-	}
+        profiler.setHead(parent);
+    }
 
-	public void addChild(TimingImpl child) {
-		if (children == null) {
-			children = new ArrayList<TimingImpl>();
-		}
+    public void addChild(TimingImpl child) {
+        if (children == null) {
+            children = new ArrayList<TimingImpl>();
+        }
 
-		children.add(child);
-	}
+        children.add(child);
+    }
 
-	public void addCustomTiming(String type, String executeType, String command, long duration) {
-		addCustomTiming(type, new CustomTiming(executeType, command, duration));
-	}
+    public void addCustomTiming(String type, String executeType, String command, long duration) {
+        addCustomTiming(type, new CustomTiming(executeType, command, duration));
+    }
 
-	public void addCustomTiming(String type, CustomTiming qt) {
-		if (customTimings == null) {
-			customTimings = new LinkedHashMap<String,List<CustomTiming>>();
-		}
-		List<CustomTiming> timingsForType = customTimings.get(type);
-		if (timingsForType == null) {
-			timingsForType = new ArrayList<CustomTiming>();
-			customTimings.put(type, timingsForType);
-		}
-		timingsForType.add(qt);
-		qt.setParentTiming(this);
-	}
+    public void addCustomTiming(String type, CustomTiming qt) {
+        if (customTimings == null) {
+            customTimings = new LinkedHashMap<String, List<CustomTiming>>();
+        }
+        List<CustomTiming> timingsForType = customTimings.get(type);
+        if (timingsForType == null) {
+            timingsForType = new ArrayList<CustomTiming>();
+            customTimings.put(type, timingsForType);
+        }
+        timingsForType.add(qt);
+        qt.setParentTiming(this);
+    }
 
-	public Map<String, Object> toMap() {
-		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(13);
-		map.put("Id", id.toString());
-		map.put("Name", name);
-		map.put("StartMilliseconds", startMilliseconds);
-		map.put("DurationMilliseconds", durationMilliseconds);
-		map.put("Children", JsonUtil.mapList(children));
-		if(customTimings != null) {
-			map.put("CustomTimings", customTimings);
-		}
-		return map;
-	}
+    public Map<String, Object> toMap() {
+        LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(13);
+        map.put("Id", id.toString());
+        map.put("Name", name);
+        map.put("StartMilliseconds", startMilliseconds);
+        map.put("DurationMilliseconds", durationMilliseconds);
+        map.put("Children", JsonUtil.mapList(children));
+        if (customTimings != null) {
+            map.put("CustomTimings", customTimings);
+        }
+        return map;
+    }
 
-	public UUID getId() {
-		return id;
-	}
+    public UUID getId() {
+        return id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public Long getDurationMilliseconds() {
-		return durationMilliseconds;
-	}
+    public Long getDurationMilliseconds() {
+        return durationMilliseconds;
+    }
 
-	public void setDurationMilliseconds(long durationMilliseconds) {
-		this.durationMilliseconds = durationMilliseconds;
-	}
+    public void setDurationMilliseconds(long durationMilliseconds) {
+        this.durationMilliseconds = durationMilliseconds;
+    }
 
-	public long getStartMilliseconds() {
-		return startMilliseconds;
-	}
+    public long getStartMilliseconds() {
+        return startMilliseconds;
+    }
 
-	public List<TimingImpl> getChildren() {
-		return children;
-	}
+    public List<TimingImpl> getChildren() {
+        return children;
+    }
 
-	public Map<String,List<CustomTiming>> getCustomTimings() {
-		return customTimings;
-	}
+    public Map<String, List<CustomTiming>> getCustomTimings() {
+        return customTimings;
+    }
 
-	public ProfilerImpl getProfiler() {
-		return profiler;
-	}
+    public ProfilerImpl getProfiler() {
+        return profiler;
+    }
 
-	public TimingImpl getParent() {
-		return parent;
-	}
+    public TimingImpl getParent() {
+        return parent;
+    }
 
-	public int getDepth() {
-		return depth;
-	}
+    public int getDepth() {
+        return depth;
+    }
 
-	@Override
-	public void close() {
-		stop();
-	}
+    @Override
+    public void close() {
+        stop();
+    }
 }

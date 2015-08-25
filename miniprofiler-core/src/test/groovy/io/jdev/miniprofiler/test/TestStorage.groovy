@@ -16,8 +16,8 @@
 
 package io.jdev.miniprofiler.test
 
-import io.jdev.miniprofiler.ProfilerImpl;
-import io.jdev.miniprofiler.storage.Storage;
+import io.jdev.miniprofiler.ProfilerImpl
+import io.jdev.miniprofiler.storage.Storage
 
 /**
  * Storage class for testing.

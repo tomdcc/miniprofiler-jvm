@@ -23,25 +23,25 @@ import java.util.Enumeration;
 
 public class DriverUtil {
 
-	public static void deregisterDriverSpy() {
-		deregisterDriverFromClassloader("io.jdev.miniprofiler.sql.log4jdbc.DriverSpy", Thread.currentThread().getContextClassLoader());
-	}
+    public static void deregisterDriverSpy() {
+        deregisterDriverFromClassloader("io.jdev.miniprofiler.sql.log4jdbc.DriverSpy", Thread.currentThread().getContextClassLoader());
+    }
 
-	public static void deregisterDriverFromClassloader(String driverClassName, ClassLoader cl) {
-		// pass a class name through rather than a class so that we don't end up loading it accidentally
+    public static void deregisterDriverFromClassloader(String driverClassName, ClassLoader cl) {
+        // pass a class name through rather than a class so that we don't end up loading it accidentally
 
-		Enumeration<Driver> drivers = DriverManager.getDrivers();
-		while (drivers.hasMoreElements()) {
-			Driver driver = drivers.nextElement();
-			Class<? extends Driver> driverClass = driver.getClass();
-			if (driverClass.getName().equals(driverClassName) && driverClass.getClassLoader() == cl) {
-				// This driver was registered by the app's ClassLoader, so deregister it:
-				try {
-					DriverManager.deregisterDriver(driver);
-				} catch (SQLException ex) {
-					// oh well
-				}
-			}
-		}
-	}
+        Enumeration<Driver> drivers = DriverManager.getDrivers();
+        while (drivers.hasMoreElements()) {
+            Driver driver = drivers.nextElement();
+            Class<? extends Driver> driverClass = driver.getClass();
+            if (driverClass.getName().equals(driverClassName) && driverClass.getClassLoader() == cl) {
+                // This driver was registered by the app's ClassLoader, so deregister it:
+                try {
+                    DriverManager.deregisterDriver(driver);
+                } catch (SQLException ex) {
+                    // oh well
+                }
+            }
+        }
+    }
 }

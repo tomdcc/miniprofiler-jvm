@@ -30,31 +30,39 @@ import java.util.List;
 @Profiled
 public class PersonServiceImpl implements PersonService {
 
-	@PersistenceContext
-	private EntityManager entityManager;
+    @PersistenceContext
+    private EntityManager entityManager;
 
-	@Inject
-	private ProfilerProvider profilerProvider;
+    @Inject
+    private ProfilerProvider profilerProvider;
 
-	@Override
-	public List<Person> getAllPeople() {
-		try(Timing timing = profilerProvider.getCurrentProfiler().step("First thing")) {
-			try { Thread.sleep(500); } catch(InterruptedException e) {}
-		}
+    @Override
+    public List<Person> getAllPeople() {
+        try (Timing timing = profilerProvider.getCurrentProfiler().step("First thing")) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+        }
 
-		try(Timing timing = profilerProvider.getCurrentProfiler().step("Second thing")) {
-			try { Thread.sleep(500); } catch(InterruptedException e) {}
-			return entityManager.createQuery("select p from Person p", Person.class).getResultList();
-		}
-	}
+        try (Timing timing = profilerProvider.getCurrentProfiler().step("Second thing")) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+            return entityManager.createQuery("select p from Person p", Person.class).getResultList();
+        }
+    }
 
-	@Override
-	public Person createPerson(String firstName, String lastName) {
-		Person p = new Person();
-		p.setFirstName(firstName);
-		p.setLastName(lastName);
-		entityManager.persist(p);
-		return p;
-	}
+    @Override
+    public Person createPerson(String firstName, String lastName) {
+        Person p = new Person();
+        p.setFirstName(firstName);
+        p.setLastName(lastName);
+        entityManager.persist(p);
+        return p;
+    }
 
 }

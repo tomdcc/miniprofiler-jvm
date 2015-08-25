@@ -24,16 +24,16 @@ import javax.servlet.annotation.WebListener;
 @WebListener
 public class Startup implements ServletContextListener {
 
-	@EJB
-	private PersonService personService;
+    @EJB
+    private PersonService personService;
 
-	@Override
-	public void contextInitialized(ServletContextEvent sce) {
-		personService.createPerson("Alex", "Smith");
-		personService.createPerson("Kim", "Jones");
-	}
+    @Override
+    public void contextInitialized(ServletContextEvent sce) {
+        personService.createPerson("Alex", "Smith");
+        personService.createPerson("Kim", "Jones");
+    }
 
-	@Override
-	public void contextDestroyed(ServletContextEvent sce) {
-	}
+    @Override
+    public void contextDestroyed(ServletContextEvent sce) {
+    }
 }

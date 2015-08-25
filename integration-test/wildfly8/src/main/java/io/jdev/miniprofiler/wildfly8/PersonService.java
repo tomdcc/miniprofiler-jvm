@@ -19,6 +19,7 @@ package io.jdev.miniprofiler.wildfly8;
 import java.util.List;
 
 public interface PersonService {
-	List<Person> getAllPeople();
-	Person createPerson(String firstName, String lastName);
+    List<Person> getAllPeople();
+
+    Person createPerson(String firstName, String lastName);
 }

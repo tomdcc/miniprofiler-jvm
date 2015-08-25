@@ -30,34 +30,34 @@ import java.util.Properties;
  */
 public class ProfilingConnector implements Connector {
 
-	private Connector target;
+    private Connector target;
 
-	public ProfilingConnector(Connector target) {
-		this.target = target;
-	}
+    public ProfilingConnector(Connector target) {
+        this.target = target;
+    }
 
-	@Override
-	public Connection connect(Properties properties, Session session) {
-		Connection orig = target.connect(properties, session);
-		return new ConnectionSpy(orig);
-	}
+    @Override
+    public Connection connect(Properties properties, Session session) {
+        Connection orig = target.connect(properties, session);
+        return new ConnectionSpy(orig);
+    }
 
-	@Override
-	public void toString(PrintWriter writer) {
-		target.toString(writer);
-	}
+    @Override
+    public void toString(PrintWriter writer) {
+        target.toString(writer);
+    }
 
-	@Override
-	public String getConnectionDetails() {
-		return target.getConnectionDetails();
-	}
+    @Override
+    public String getConnectionDetails() {
+        return target.getConnectionDetails();
+    }
 
-	@Override
-	public Object clone() {
-		try {
-			return super.clone();
-		} catch (Exception exception) {
-			throw new InternalError("Clone failed");
-		}
-	}
+    @Override
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (Exception exception) {
+            throw new InternalError("Clone failed");
+        }
+    }
 }

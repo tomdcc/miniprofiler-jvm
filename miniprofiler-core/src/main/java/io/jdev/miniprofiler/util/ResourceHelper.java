@@ -24,97 +24,101 @@ import java.io.InputStream;
  * Helper class for loading internal resources.
  */
 public class ResourceHelper {
-	private static final String RESOURCE_BASE_PATH = "io/jdev/miniprofiler/ui/";
-	private static final int BUFFER_SIZE = 1024;
+    private static final String RESOURCE_BASE_PATH = "io/jdev/miniprofiler/ui/";
+    private static final int BUFFER_SIZE = 1024;
 
-	private final String resourceBasePath;
-	private final ClassLoader classLoader;
+    private final String resourceBasePath;
+    private final ClassLoader classLoader;
 
-	public ResourceHelper() {
-		this(RESOURCE_BASE_PATH);
-	}
+    public ResourceHelper() {
+        this(RESOURCE_BASE_PATH);
+    }
 
-	public ResourceHelper(String resourceBasePath) {
-		resourceBasePath = resourceBasePath.endsWith("/") ? resourceBasePath : resourceBasePath + "/";
-		this.resourceBasePath = resourceBasePath;
-		this.classLoader = getClass().getClassLoader();
-	}
+    public ResourceHelper(String resourceBasePath) {
+        resourceBasePath = resourceBasePath.endsWith("/") ? resourceBasePath : resourceBasePath + "/";
+        this.resourceBasePath = resourceBasePath;
+        this.classLoader = getClass().getClassLoader();
+    }
 
-	public Resource getResource(String requestBasePath, String uri) throws IOException {
-		requestBasePath = requestBasePath.endsWith("/") ? requestBasePath : requestBasePath + "/";
-		return getResource(stripBasePath(requestBasePath, uri));
-	}
+    public Resource getResource(String requestBasePath, String uri) throws IOException {
+        requestBasePath = requestBasePath.endsWith("/") ? requestBasePath : requestBasePath + "/";
+        return getResource(stripBasePath(requestBasePath, uri));
+    }
 
-	public Resource getResource(String resourceName) throws IOException {
-		InputStream stream = classLoader.getResourceAsStream(RESOURCE_BASE_PATH + resourceName);
-		if (stream == null) return null;
-		byte[] bytes = readResource(stream);
-		return new Resource(bytes, guessContentType(resourceName));
-	}
+    public Resource getResource(String resourceName) throws IOException {
+        InputStream stream = classLoader.getResourceAsStream(RESOURCE_BASE_PATH + resourceName);
+        if (stream == null) {
+            return null;
+        }
+        byte[] bytes = readResource(stream);
+        return new Resource(bytes, guessContentType(resourceName));
+    }
 
-	public String getResourceAsString(String resource) throws IOException {
-		InputStream stream = classLoader.getResourceAsStream(resourceBasePath + resource);
-		if (stream == null) return null;
-		byte[] bytes = readResource(stream);
-		return new String(bytes);
-	}
+    public String getResourceAsString(String resource) throws IOException {
+        InputStream stream = classLoader.getResourceAsStream(resourceBasePath + resource);
+        if (stream == null) {
+            return null;
+        }
+        byte[] bytes = readResource(stream);
+        return new String(bytes);
+    }
 
-	private String guessContentType(String uri) {
-		if (uri.endsWith(".css")) {
-			return "text/css";
-		} else if (uri.endsWith("js")) {
-			return "text/javascript";
-		} else {
-			return "text/html";
-		}
-	}
+    private String guessContentType(String uri) {
+        if (uri.endsWith(".css")) {
+            return "text/css";
+        } else if (uri.endsWith("js")) {
+            return "text/javascript";
+        } else {
+            return "text/html";
+        }
+    }
 
-	private byte[] readResource(InputStream stream) throws IOException {
-		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		try {
-			byte[] buffer = new byte[BUFFER_SIZE];
-			int read;
-			while ((read = stream.read(buffer)) != -1) {
-				os.write(buffer, 0, read);
-			}
-			return os.toByteArray();
-		} finally {
-			os.close();
-			stream.close();
-		}
-	}
+    private byte[] readResource(InputStream stream) throws IOException {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try {
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int read;
+            while ((read = stream.read(buffer)) != -1) {
+                os.write(buffer, 0, read);
+            }
+            return os.toByteArray();
+        } finally {
+            os.close();
+            stream.close();
+        }
+    }
 
-	public boolean uriMatches(String requestBasePath, String uri) {
-		return uri.startsWith(requestBasePath);
-	}
+    public boolean uriMatches(String requestBasePath, String uri) {
+        return uri.startsWith(requestBasePath);
+    }
 
-	public String stripBasePath(String requestBasePath, String uri) {
-		if (!uriMatches(requestBasePath, uri)) {
-			throw new IllegalArgumentException("URI " + uri + " does not match request base path " + requestBasePath);
-		}
-		return uri.substring(requestBasePath.length());
-	}
+    public String stripBasePath(String requestBasePath, String uri) {
+        if (!uriMatches(requestBasePath, uri)) {
+            throw new IllegalArgumentException("URI " + uri + " does not match request base path " + requestBasePath);
+        }
+        return uri.substring(requestBasePath.length());
+    }
 
-	public static class Resource {
-		private final byte[] content;
-		private final String contentType;
+    public static class Resource {
+        private final byte[] content;
+        private final String contentType;
 
-		public Resource(byte[] content, String contentType) {
-			this.content = content;
-			this.contentType = contentType;
-		}
+        public Resource(byte[] content, String contentType) {
+            this.content = content;
+            this.contentType = contentType;
+        }
 
-		public byte[] getContent() {
-			return content;
-		}
+        public byte[] getContent() {
+            return content;
+        }
 
-		public int getContentLength() {
-			return content.length;
-		}
+        public int getContentLength() {
+            return content.length;
+        }
 
-		public String getContentType() {
-			return contentType;
-		}
+        public String getContentType() {
+            return contentType;
+        }
 
-	}
+    }
 }

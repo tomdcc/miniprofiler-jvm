@@ -44,82 +44,88 @@ import java.util.UUID;
  */
 public interface ProfilerProvider {
 
-	/**
-	 * Start a new profiling session with the default {@link ProfileLevel#Info} level.
-	 * @param rootName the name of the root timing step. This might often be the uri of the current request.
-	 * @return the new profiler
-	 */
-	Profiler start(String rootName);
+    /**
+     * Start a new profiling session with the default {@link ProfileLevel#Info} level.
+     *
+     * @param rootName the name of the root timing step. This might often be the uri of the current request.
+     * @return the new profiler
+     */
+    Profiler start(String rootName);
 
-	/**
-	 * Start a new profiling session with the default {@link ProfileLevel#Info} level.
-	 * @param id the UUID to use
-	 * @param rootName the name of the root timing step. This might often be the uri of the current request.
-	 * @return the new profiler
-	 */
-	Profiler start(UUID id, String rootName);
+    /**
+     * Start a new profiling session with the default {@link ProfileLevel#Info} level.
+     *
+     * @param id       the UUID to use
+     * @param rootName the name of the root timing step. This might often be the uri of the current request.
+     * @return the new profiler
+     */
+    Profiler start(UUID id, String rootName);
 
-	/**
-	 * Start a new profiling session with the given level.
-	 * @param rootName the name of the root timing step. This might often be the uri of the current request.
-	 * @param level the level of the profiling session
-	 * @return the new profiler
-	 */
-	Profiler start(String rootName, ProfileLevel level);
+    /**
+     * Start a new profiling session with the given level.
+     *
+     * @param rootName the name of the root timing step. This might often be the uri of the current request.
+     * @param level    the level of the profiling session
+     * @return the new profiler
+     */
+    Profiler start(String rootName, ProfileLevel level);
 
-	/**
-	 * Start a new profiling session with the given level, root name and UUID.
-	 * @param id the UUID to use
-	 * @param rootName the name of the root timing step. This might often be the uri of the current request.
-	 * @param level the level of the profiling session
-	 * @return the new profiler
-	 */
-	Profiler start(UUID id, String rootName, ProfileLevel level);
+    /**
+     * Start a new profiling session with the given level, root name and UUID.
+     *
+     * @param id       the UUID to use
+     * @param rootName the name of the root timing step. This might often be the uri of the current request.
+     * @param level    the level of the profiling session
+     * @return the new profiler
+     */
+    Profiler start(UUID id, String rootName, ProfileLevel level);
 
-	/**
-	 * Ends the current profiling session, if one exists.
-	 *
-	 * <p>Generally it is preferrable to stop a profiling session by
-	 * calling {@link io.jdev.miniprofiler.Profiler#stop()}, but in some circumstances
-	 * it may be easier to call this method.</p>
-	 *
-	 * @param discardResults When true, clears the miniprofiler for this request, allowing profiling to
-	 *                       be prematurely stopped and discarded. Useful for when a specific route does not need to be profiled.
-	 */
-	void stopCurrentSession(boolean discardResults);
+    /**
+     * Ends the current profiling session, if one exists.
+     *
+     * <p>Generally it is preferrable to stop a profiling session by
+     * calling {@link io.jdev.miniprofiler.Profiler#stop()}, but in some circumstances
+     * it may be easier to call this method.</p>
+     *
+     * @param discardResults When true, clears the miniprofiler for this request, allowing profiling to
+     *                       be prematurely stopped and discarded. Useful for when a specific route does not need to be profiled.
+     */
+    void stopCurrentSession(boolean discardResults);
 
-	/**
-	 * Marks the given profiling session as stopped. This is generally
-	 * called from inside the {@link io.jdev.miniprofiler.ProfilerImpl#stop()}
-	 * method. End users do not need to call it. Only public so that
-	 * custom ProfilerProviders can be developed.
-	 *
-	 * @param profilingSession the profiler to register as stopped
-	 * @param discardResults   When true, clears the miniprofiler for this request, allowing profiling to
-	 *                         be prematurely stopped and discarded. Useful for when a specific route does not need to be profiled.
-	 */
-	void stopSession(ProfilerImpl profilingSession, boolean discardResults);
+    /**
+     * Marks the given profiling session as stopped. This is generally
+     * called from inside the {@link io.jdev.miniprofiler.ProfilerImpl#stop()}
+     * method. End users do not need to call it. Only public so that
+     * custom ProfilerProviders can be developed.
+     *
+     * @param profilingSession the profiler to register as stopped
+     * @param discardResults   When true, clears the miniprofiler for this request, allowing profiling to
+     *                         be prematurely stopped and discarded. Useful for when a specific route does not need to be profiled.
+     */
+    void stopSession(ProfilerImpl profilingSession, boolean discardResults);
 
-	/**
-	 * Returns the current MiniProfiler.
-	 *
-	 * <p>This method should never return null. If there is no current profiling session,
-	 * a {@link NullProfiler} instance will be returned so that calling code does not
-	 * have to do null checks around every timing block.</p>
-	 *
-	 * @return the current profiler
-	 */
-	Profiler getCurrentProfiler();
+    /**
+     * Returns the current MiniProfiler.
+     *
+     * <p>This method should never return null. If there is no current profiling session,
+     * a {@link NullProfiler} instance will be returned so that calling code does not
+     * have to do null checks around every timing block.</p>
+     *
+     * @return the current profiler
+     */
+    Profiler getCurrentProfiler();
 
-	/**
-	 * Returns the {@link Storage} associated with this provider.
-	 * @return the provider's storage
-	 */
-	Storage getStorage();
+    /**
+     * Returns the {@link Storage} associated with this provider.
+     *
+     * @return the provider's storage
+     */
+    Storage getStorage();
 
-	/**
-	 * Sets the {@link Storage} for this provider to use.
-	 * @param storage the storage to use
-	 */
-	public void setStorage(Storage storage);
+    /**
+     * Sets the {@link Storage} for this provider to use.
+     *
+     * @param storage the storage to use
+     */
+    void setStorage(Storage storage);
 }

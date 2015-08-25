@@ -46,7 +46,7 @@ public class TestHandler implements Handler {
         }
     }
 
-    private List<Map<String,String>> getData(Context ctx) throws SQLException {
+    private List<Map<String, String>> getData(Context ctx) throws SQLException {
         try (Timing timing = ctx.get(Profiler.class).step("TestHandler.getData")) {
             List<Map<String, String>> results = new ArrayList<>();
             try (Connection con = ctx.get(DataSource.class).getConnection(); Statement st = con.createStatement()) {

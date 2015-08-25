@@ -29,56 +29,57 @@ import java.lang.reflect.Proxy;
  */
 public class ProfilingInvocationHandler implements InvocationHandler {
 
-	private final ProfilerProvider profilerProvider;
-	private final Object target;
+    private final ProfilerProvider profilerProvider;
+    private final Object target;
 
-	/**
-	 * Create a new handler with the given profiler provider and target object
-	 * @param profilerProvider the profiler provider to use
-	 * @param target the target to invoke methods on
-	 */
-	public ProfilingInvocationHandler(ProfilerProvider profilerProvider, Object target) {
-		this.profilerProvider = profilerProvider;
-		this.target = target;
-	}
+    /**
+     * Create a new handler with the given profiler provider and target object
+     *
+     * @param profilerProvider the profiler provider to use
+     * @param target           the target to invoke methods on
+     */
+    public ProfilingInvocationHandler(ProfilerProvider profilerProvider, Object target) {
+        this.profilerProvider = profilerProvider;
+        this.target = target;
+    }
 
-	@Override
-	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		Timing timing =	profilerProvider.getCurrentProfiler().step(method.getDeclaringClass().getSimpleName() + "." + method.getName());
-		try {
-			return method.invoke(target, args);
-		} finally {
-			timing.stop();
-		}
-	}
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        Timing timing = profilerProvider.getCurrentProfiler().step(method.getDeclaringClass().getSimpleName() + "." + method.getName());
+        try {
+            return method.invoke(target, args);
+        } finally {
+            timing.stop();
+        }
+    }
 
-	/**
-	 * Convenience method to create a profiling proxy for the given target object and interface.
-	 *
-	 * @param profilerProvider the profiler provider to use
-	 * @param target the target object to invoke methods on
-	 * @param interfaceClass the interface that the returned proxy will implement
-	 * @param <T> the interface that the returned proxy will implement
-	 * @return a JDK dynamic proxy implementing the given interface
-	 * @see Proxy
-	 */
-	public static <T> T createProxy(ProfilerProvider profilerProvider, Object target, Class<T> interfaceClass) {
-		Class<?>[] interfaces = new Class<?>[] { interfaceClass };
-		@SuppressWarnings("unchecked")
-		T result = (T) createProxy(profilerProvider, target, interfaces);
-		return result;
-	}
+    /**
+     * Convenience method to create a profiling proxy for the given target object and interface.
+     *
+     * @param profilerProvider the profiler provider to use
+     * @param target           the target object to invoke methods on
+     * @param interfaceClass   the interface that the returned proxy will implement
+     * @param <T>              the interface that the returned proxy will implement
+     * @return a JDK dynamic proxy implementing the given interface
+     * @see Proxy
+     */
+    public static <T> T createProxy(ProfilerProvider profilerProvider, Object target, Class<T> interfaceClass) {
+        Class<?>[] interfaces = new Class<?>[]{interfaceClass};
+        @SuppressWarnings("unchecked")
+        T result = (T) createProxy(profilerProvider, target, interfaces);
+        return result;
+    }
 
-	/**
-	 * Convenience method to create a profiling proxy for the given target object and interfaces.
-	 *
-	 * @param profilerProvider the profiler provider to use
-	 * @param target the target object to invoke methods on
-	 * @param interfaces the interfaces that the returned proxy will implement
-	 * @return a JDK dynamic proxy implementing the given interface
-	 * @see Proxy
-	 */
-	public static Object createProxy(ProfilerProvider profilerProvider, Object target, Class<?>... interfaces) {
-		return Proxy.newProxyInstance(target.getClass().getClassLoader(), interfaces, new ProfilingInvocationHandler(profilerProvider, target));
-	}
+    /**
+     * Convenience method to create a profiling proxy for the given target object and interfaces.
+     *
+     * @param profilerProvider the profiler provider to use
+     * @param target           the target object to invoke methods on
+     * @param interfaces       the interfaces that the returned proxy will implement
+     * @return a JDK dynamic proxy implementing the given interface
+     * @see Proxy
+     */
+    public static Object createProxy(ProfilerProvider profilerProvider, Object target, Class<?>... interfaces) {
+        return Proxy.newProxyInstance(target.getClass().getClassLoader(), interfaces, new ProfilingInvocationHandler(profilerProvider, target));
+    }
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE suppressions PUBLIC
+    "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+    "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+
+<suppressions>
+
+  <!-- hibernate sql formatter -->
+  <suppress checks="." files=".*[\\/]BasicFormatterImpl.java"/>
+
+  <!-- log4jdbc classes -->
+  <suppress checks="." files="io[\\/]jdev[\\/]miniprofiler[\\/]sql[\\/]log4jdbc[\\/]"/>
+
+  <!-- we actually need clone in here, thanks eclipselink! -->
+  <suppress checks="NoClone" files=".*[\\/]ProfilingConnector.java"/>
+
+</suppressions>

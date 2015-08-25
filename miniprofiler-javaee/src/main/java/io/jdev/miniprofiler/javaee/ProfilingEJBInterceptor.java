@@ -29,19 +29,19 @@ import javax.interceptor.InvocationContext;
 @Profiled
 public class ProfilingEJBInterceptor {
 
-	@Inject
-	private ProfilerProvider profilerProvider;
+    @Inject
+    private ProfilerProvider profilerProvider;
 
-	@AroundInvoke
-	public Object profile(InvocationContext ctx) throws Exception {
-		Profiler profiler = profilerProvider.getCurrentProfiler();
-		String stepName = String.format("%s.%s", ctx.getTarget().getClass().getSimpleName(), ctx.getMethod().getName());
-		Timing timing = profiler.step(stepName);
-		try {
-			return ctx.proceed();
-		} finally {
-			timing.close();
-		}
-	}
+    @AroundInvoke
+    public Object profile(InvocationContext ctx) throws Exception {
+        Profiler profiler = profilerProvider.getCurrentProfiler();
+        String stepName = String.format("%s.%s", ctx.getTarget().getClass().getSimpleName(), ctx.getMethod().getName());
+        Timing timing = profiler.step(stepName);
+        try {
+            return ctx.proceed();
+        } finally {
+            timing.close();
+        }
+    }
 
 }

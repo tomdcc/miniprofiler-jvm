@@ -50,34 +50,37 @@ import java.io.Serializable;
  */
 public interface Timing extends Serializable, Jsonable, Closeable {
 
-	/**
-	 * Stops the timing step. This sets the end time for the timing
-	 * to the current time.
-	 */
-	public void stop();
+    /**
+     * Stops the timing step. This sets the end time for the timing
+     * to the current time.
+     */
+    void stop();
 
-	/**
-	 * Returns the name of the timing
-	 * @return the name
-	 */
-	public String getName();
+    /**
+     * Returns the name of the timing
+     *
+     * @return the name
+     */
+    String getName();
 
-	/**
-	 * Allows changing the name of the timing step after creation. Sometimes
-	 * useful when you don't know the name a particular step until later on.
-	 * @param name new name of the timing step
-	 */
-	public void setName(String name);
+    /**
+     * Allows changing the name of the timing step after creation. Sometimes
+     * useful when you don't know the name a particular step until later on.
+     *
+     * @param name new name of the timing step
+     */
+    void setName(String name);
 
 
-	/**
-	 * Returns the parent timing of this one.
-	 * @return the timing's parent, nor null for the root timing for a profiler
-	 */
-	public Timing getParent();
+    /**
+     * Returns the parent timing of this one.
+     *
+     * @return the timing's parent, nor null for the root timing for a profiler
+     */
+    Timing getParent();
 
-	/**
-	 * Same as calling {@link #stop()}. ere to satisfy {@link Closeable}.
-	 */
-	public void close();
+    /**
+     * Same as calling {@link #stop()}. ere to satisfy {@link Closeable}.
+     */
+    void close();
 }

@@ -17,5 +17,5 @@
 package io.jdev.miniprofiler.sql;
 
 public interface SqlFormatter {
-	String format(String sql);
+    String format(String sql);
 }

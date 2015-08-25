@@ -22,5 +22,5 @@ import java.util.Map;
  * Internal interface used by JSON serialization classes.
  */
 public interface Jsonable {
-	Map<String, Object> toMap();
+    Map<String, Object> toMap();
 }

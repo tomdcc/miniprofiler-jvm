@@ -36,12 +36,12 @@ import javax.servlet.ServletResponse
 
 class ProfilingFilterSpec extends Specification {
 
-	ProfilingFilter filter;
-	MockFilterConfig config;
-	MockServletContext context;
-	FilterChain chain;
-	MockHttpServletRequest request;
-	MockHttpServletResponse response;
+	ProfilingFilter filter
+	MockFilterConfig config
+	MockServletContext context
+	FilterChain chain
+	MockHttpServletRequest request
+	MockHttpServletResponse response
 	TestProfilerProvider profilerProvider
 	TestStorage storage
 
@@ -187,6 +187,6 @@ class MockFilterChain implements FilterChain {
 	@Override
 	void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) throws IOException, ServletException {
 		invoked = true
-		profilerProvider.getCurrentProfiler().step("MockFilterChain").close();
+		profilerProvider.getCurrentProfiler().step("MockFilterChain").close()
 	}
 }

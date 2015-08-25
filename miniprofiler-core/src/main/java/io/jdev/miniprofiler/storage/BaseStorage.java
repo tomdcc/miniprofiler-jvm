@@ -27,30 +27,30 @@ import java.util.UUID;
  */
 public abstract class BaseStorage implements Storage {
 
-	/**
-	 * Default implementation. Returns no results
-	 */
-	public Collection<UUID> list(int maxResults, Date start, Date finish, ListResultsOrder orderBy) {
-		return Collections.emptyList();
-	}
+    /**
+     * Default implementation. Returns no results
+     */
+    public Collection<UUID> list(int maxResults, Date start, Date finish, ListResultsOrder orderBy) {
+        return Collections.emptyList();
+    }
 
-	/**
-	 * Default implementation. Does nothing.
-	 */
-	public void setUnviewed(String user, UUID id) {
-	}
+    /**
+     * Default implementation. Does nothing.
+     */
+    public void setUnviewed(String user, UUID id) {
+    }
 
-	/**
-	 * Default implementation. Does nothing.
-	 */
-	public void setViewed(String user, UUID id) {
-	}
+    /**
+     * Default implementation. Does nothing.
+     */
+    public void setViewed(String user, UUID id) {
+    }
 
-	/**
-	 * Default implementation. Returns no results
-	 */
-	public Collection<UUID> getUnviewedIds(String user) {
-		return Collections.emptyList();
-	}
+    /**
+     * Default implementation. Returns no results
+     */
+    public Collection<UUID> getUnviewedIds(String user) {
+        return Collections.emptyList();
+    }
 
 }

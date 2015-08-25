@@ -30,52 +30,60 @@ import java.util.UUID;
  */
 public interface Storage {
 
-	/**
-	 * Which order to list results in.
-	 */
-	public static enum ListResultsOrder { Ascending, Descending }
+    /**
+     * Which order to list results in.
+     */
+    public static enum ListResultsOrder {
+        Ascending, Descending
+    }
 
-	/**
-	 * List profiling
-	 * @param maxResults the maximum number of ids to list.
-	 * @param start the date to start searching
-	 * @param finish the end date
-	 * @param orderBy which order to list the uuids
-	 * @return a list of UUIDs that match the dates
-	 */
-	Collection<UUID> list(int maxResults, Date start, Date finish, ListResultsOrder orderBy);
+    /**
+     * List profiling
+     *
+     * @param maxResults the maximum number of ids to list.
+     * @param start      the date to start searching
+     * @param finish     the end date
+     * @param orderBy    which order to list the uuids
+     * @return a list of UUIDs that match the dates
+     */
+    Collection<UUID> list(int maxResults, Date start, Date finish, ListResultsOrder orderBy);
 
-	/**
-	 * Stores the given profiling information
-	 * @param profiler the profiling information to store
-	 */
-	void save(ProfilerImpl profiler);
+    /**
+     * Stores the given profiling information
+     *
+     * @param profiler the profiling information to store
+     */
+    void save(ProfilerImpl profiler);
 
-	/**
-	 * Returns a previously saved profiling session.
- 	 * @param id the id of the profiling session to fetch
-	 * @return the profiler, or null if not found
-	 */
-	ProfilerImpl load(UUID id);
+    /**
+     * Returns a previously saved profiling session.
+     *
+     * @param id the id of the profiling session to fetch
+     * @return the profiler, or null if not found
+     */
+    ProfilerImpl load(UUID id);
 
-	/**
-	 * Sets a particular profiler session so it is considered "un-viewed" by the given user
-	 * @param user the user
-	 * @param id the id of the session
-	 */
-	void setUnviewed(String user, UUID id);
+    /**
+     * Sets a particular profiler session so it is considered "un-viewed" by the given user
+     *
+     * @param user the user
+     * @param id   the id of the session
+     */
+    void setUnviewed(String user, UUID id);
 
-	/**
-	 * Sets a particular profiler session to "viewed" for the given user.
-	 * @param user the user
-	 * @param id the id of the session
-	 */
-	void setViewed(String user, UUID id);
+    /**
+     * Sets a particular profiler session to "viewed" for the given user.
+     *
+     * @param user the user
+     * @param id   the id of the session
+     */
+    void setViewed(String user, UUID id);
 
-	/**
-	 * Returns a list of profiling session ids s that haven't been seen by the given user.
-	 * @param user the user
-	 * @return a list of ids that the user hasn't viewed
-	 */
-	Collection<UUID> getUnviewedIds(String user);
+    /**
+     * Returns a list of profiling session ids s that haven't been seen by the given user.
+     *
+     * @param user the user
+     * @return a list of ids that the user hasn't viewed
+     */
+    Collection<UUID> getUnviewedIds(String user);
 }

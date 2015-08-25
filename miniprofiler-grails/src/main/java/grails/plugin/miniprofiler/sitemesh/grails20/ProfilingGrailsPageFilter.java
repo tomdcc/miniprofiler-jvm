@@ -36,18 +36,18 @@ public class ProfilingGrailsPageFilter extends GrailsPageFilter {
         super.init(fc);
         profilerProvider = WebApplicationContextUtils.getRequiredWebApplicationContext(fc.getServletContext()).getBean("profilerProvider", ProfilerProvider.class);
 
-		Field field = null;
-		try {
-			field = GrailsPageFilter.class.getDeclaredField("decoratorMapper");
-			field.setAccessible(true);
-			DecoratorMapper decoratorMapper = (DecoratorMapper) field.get(this);
-			field.set(this, new ProfilingDecoratorMapper(decoratorMapper, profilerProvider));
-		} catch (NoSuchFieldException e) {
-			// different grails version which doesn't have that field?
-		} catch (IllegalAccessException e) {
-			// just won't work, we're in a security manager
-		}
-	}
+        Field field = null;
+        try {
+            field = GrailsPageFilter.class.getDeclaredField("decoratorMapper");
+            field.setAccessible(true);
+            DecoratorMapper decoratorMapper = (DecoratorMapper) field.get(this);
+            field.set(this, new ProfilingDecoratorMapper(decoratorMapper, profilerProvider));
+        } catch (NoSuchFieldException e) {
+            // different grails version which doesn't have that field?
+        } catch (IllegalAccessException e) {
+            // just won't work, we're in a security manager
+        }
+    }
 
     @Override
     protected DecoratorSelector initDecoratorSelector(SiteMeshWebAppContext webAppContext) {

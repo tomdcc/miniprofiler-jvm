@@ -23,24 +23,24 @@ package io.jdev.miniprofiler;
  */
 public class DefaultProfilerProvider extends BaseProfilerProvider {
 
-	private static final ThreadLocal<Profiler> profilerHolder = new ThreadLocal<Profiler>();
+    private static final ThreadLocal<Profiler> PROFILER_HOLDER = new ThreadLocal<Profiler>();
 
-	@Override
-	protected void profilerCreated(Profiler profiler) {
-		profilerHolder.set(profiler);
-	}
+    @Override
+    protected void profilerCreated(Profiler profiler) {
+        PROFILER_HOLDER.set(profiler);
+    }
 
-	@Override
-	protected void profilerStopped(Profiler profiler) {
-		profilerHolder.remove();
-	}
+    @Override
+    protected void profilerStopped(Profiler profiler) {
+        PROFILER_HOLDER.remove();
+    }
 
-	/**
-	 * Returns the current MiniProfiler.
-	 */
-	@Override
-	public Profiler lookupCurrentProfiler() {
-		return profilerHolder.get();
-	}
+    /**
+     * Returns the current MiniProfiler.
+     */
+    @Override
+    public Profiler lookupCurrentProfiler() {
+        return PROFILER_HOLDER.get();
+    }
 
 }
