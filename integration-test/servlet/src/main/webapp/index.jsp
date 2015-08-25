@@ -5,7 +5,7 @@
 <%@ page import="java.sql.ResultSet" %>
 <%@ page import="java.util.*" %>
 <%@ page import="java.sql.SQLException" %>
-<%@ page import="io.jdev.miniprofiler.json.ScriptTagWriter" %>
+<%@ page import="io.jdev.miniprofiler.ScriptTagWriter" %>
 <%@ page import="io.jdev.miniprofiler.MiniProfiler" %>
 <%
     DataSource ds = (DataSource) application.getAttribute("dataSource");
@@ -60,6 +60,6 @@
             </tbody>
         </table>
     </div>
-    <%= new ScriptTagWriter().printScriptTag(MiniProfiler.getCurrentProfiler(), request.getContextPath() + "/miniprofiler")%>
+    <%= new ScriptTagWriter().printScriptTag(request.getContextPath() + "/miniprofiler")%>
 </body>
 </html>

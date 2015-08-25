@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <%@ page import="java.util.*" %>
-<%@ page import="io.jdev.miniprofiler.json.ScriptTagWriter" %>
+<%@ page import="io.jdev.miniprofiler.ScriptTagWriter" %>
 <%@ page import="io.jdev.miniprofiler.MiniProfiler" %>
 <%@ page import="io.jdev.miniprofiler.wildfly8.funtest.Person" %>
 <html>
@@ -33,6 +33,6 @@
             </tbody>
         </table>
     </div>
-    <%= new ScriptTagWriter().printScriptTag(MiniProfiler.getCurrentProfiler(), request.getContextPath() + "/miniprofiler")%>
+    <%= new ScriptTagWriter().printScriptTag(request.getContextPath() + "/miniprofiler")%>
 </body>
 </html>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <%@ page import="java.util.*" %>
-<%@ page import="io.jdev.miniprofiler.json.ScriptTagWriter" %>
+<%@ page import="io.jdev.miniprofiler.ScriptTagWriter" %>
 <%@ page import="io.jdev.miniprofiler.MiniProfiler" %>
 <%@ page import="io.jdev.miniprofiler.glassfish4.funtest.Person" %>
 <html>
@@ -33,6 +33,6 @@
             </tbody>
         </table>
     </div>
-    <%= new ScriptTagWriter().printScriptTag(MiniProfiler.getCurrentProfiler(), "http://127.0.0.1:8081/admin/miniprofiler")%>
+    <%= new ScriptTagWriter().printScriptTag("http://127.0.0.1:8081/admin/miniprofiler")%>
 </body>
 </html>

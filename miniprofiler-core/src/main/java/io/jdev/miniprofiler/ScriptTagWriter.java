@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.json;
-
-import io.jdev.miniprofiler.MiniProfiler;
-import io.jdev.miniprofiler.NullProfiler;
-import io.jdev.miniprofiler.Profiler;
+package io.jdev.miniprofiler;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +26,40 @@ import java.util.UUID;
  */
 public class ScriptTagWriter {
 
+    private final ProfilerProvider provider;
+
+    public ScriptTagWriter(ProfilerProvider provider) {
+        this.provider = provider;
+    }
+
+    public ScriptTagWriter() {
+        this(new StaticProfilerProvider());
+    }
+
+    /**
+     * Writes out a script tag in the format that the mini profiler front end
+     * javascript expects.
+     *
+     * <p>Writes tag using default path to miniprofiler resources (<code>/miniprofiler</code>).</p>
+     *
+     * @return script html tag
+     */
+    public String printScriptTag() {
+        // TODO: pull from config when we have some
+        return printScriptTag("/miniprofiler");
+    }
+
+    /**
+     * Writes out a script tag in the format that the mini profiler front end
+     * javascript expects.
+     *
+     * @param path     path to the script
+     * @return script html tag
+     */
+    public String printScriptTag(String path) {
+        return printScriptTag(provider.getCurrentProfiler(), path);
+    }
+
     /**
      * Writes out a script tag in the format that the mini profiler front end
      * javascript expects.
@@ -37,6 +67,8 @@ public class ScriptTagWriter {
      * @param profiler profiler data
      * @param path     path to the script
      * @return script html tag
+     *
+     * @deprecated use {@link #printScriptTag(String)} and create writer with a provider
      */
     public String printScriptTag(Profiler profiler, String path) {
         if (profiler == null || profiler == NullProfiler.INSTANCE) {
