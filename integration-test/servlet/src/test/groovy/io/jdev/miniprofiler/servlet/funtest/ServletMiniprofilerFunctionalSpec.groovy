@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.servlet
+package io.jdev.miniprofiler.servlet.funtest
 
 import geb.spock.GebReportingSpec
 import io.jdev.miniprofiler.test.pages.MiniProfilerGapModule
-import io.jdev.miniprofiler.test.pages.MiniProfilerModule
 import io.jdev.miniprofiler.test.pages.MiniProfilerQueryModule
 
-class Wildfly8MiniprofilerFunctionalSpec extends GebReportingSpec {
+class ServletMiniprofilerFunctionalSpec extends GebReportingSpec {
 
     void "can see miniprofiler"() {
         when:
@@ -42,36 +41,26 @@ class Wildfly8MiniprofilerFunctionalSpec extends GebReportingSpec {
         then: 'popup visible'
         result.popup.displayed
 
-        and: 'timings have correct labels etc'
+        and: ''
         def timings = result.popup.timings
-        timings.size() == 4
-        timings[0].label == '/'
-        timings[1].label == 'PersonServiceImpl.getAllPeople'
-        timings[2].label == 'First thing'
-        timings[3].label == 'Second thing'
-        timings.each {
-            assert it.duration.text() ==~ ~/\d+\.\d/
-            assert !it.durationWithChildren.displayed
-            assert !it.timeFromStart.displayed
-        }
+        timings.size() == 1
+        timings[0].label == '/servlet/'
+        timings[0].duration.text() ==~ ~/\d+\.\d/
+        !timings[0].durationWithChildren.displayed
+        !timings[0].timeFromStart.displayed
+        timings[0].queries.text() ==~ ~/\d+\.\d \(1\)/
 
         when: 'toggle child timings'
         result.popup.toggleChildTimingLink.click()
 
         then: 'can see child timings column'
         waitFor { timings[0].timeFromStart.displayed }
-        timings.each {
-            assert it.timeFromStart.text() ==~ ~/\+\d+\.\d/
-            assert it.durationWithChildren.displayed
-            assert it.durationWithChildren.text() ==~ ~/\d+\.\d/
-        }
-
-        and: 'Second thing has sql timing'
-        def secondThingTiming = timings.find { it.label == 'Second thing' }
-        secondThingTiming.queries.text() ==~ ~/\d+\.\d \(1\)/
+        timings[0].timeFromStart.text() ==~ ~/\+\d+\.\d/
+        timings[0].durationWithChildren.displayed
+        timings[0].durationWithChildren.text() ==~ ~/\d+\.\d/
 
         when: 'click sql link'
-        secondThingTiming.queries.click()
+        timings[0].queries.click()
 
         then: 'three timings, but trivial gaps not visible'
         def queries = result.queriesPopup.queries
@@ -84,17 +73,9 @@ class Wildfly8MiniprofilerFunctionalSpec extends GebReportingSpec {
         queries[2].displayed == !queries[2].trivial
 
         and: 'query has correct info'
-        queries[1].step == 'Second thing'
+        queries[1].step == '/servlet/'
         queries[1].timeFromStart ==~ ~/T\+\d+.\d ms/
         queries[1].duration ==~ ~/\d+.\d ms/
-        queries[1].query ==~ ~/select\s+person0_.id as id1_0_,\s+person0_.firstName as firstNam2_0_,\s+person0_.lastName as lastName3_0_\s+from\s+Person person0_/
+        queries[1].query ==~ ~/select\s+\*\s+from\s+people/
     }
 }
-
-class HomePage extends geb.Page {
-    static url = ''
-    static content = {
-        miniProfiler(wait: true) { module MiniProfilerModule }
-    }
-}
-

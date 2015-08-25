@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.ratpacktest;
+package io.jdev.miniprofiler.ratpack.funtest;
 
 import io.jdev.miniprofiler.ratpack.MiniProfilerHandlerChain;
 import io.jdev.miniprofiler.ratpack.MiniProfilerHikariModule;

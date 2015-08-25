@@ -29,7 +29,7 @@ apply plugin: "idea"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-mainClassName = "io.jdev.miniprofiler.ratpacktest.Main"
+mainClassName = "io.jdev.miniprofiler.ratpack.funtest.Main"
 
 dependencies {
 	compile project(":miniprofiler-ratpack")

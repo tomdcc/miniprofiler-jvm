@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.servlet
+package io.jdev.miniprofiler.glassfish4.funtest
 
 import geb.Page
 import io.jdev.miniprofiler.test.pages.MiniProfilerModule

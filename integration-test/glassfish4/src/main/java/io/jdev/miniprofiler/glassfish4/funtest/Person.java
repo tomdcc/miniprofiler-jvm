@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.glassfish4;
+package io.jdev.miniprofiler.glassfish4.funtest;
 
 import javax.persistence.*;
 

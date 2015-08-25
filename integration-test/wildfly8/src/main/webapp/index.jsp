@@ -2,7 +2,7 @@
 <%@ page import="java.util.*" %>
 <%@ page import="io.jdev.miniprofiler.json.ScriptTagWriter" %>
 <%@ page import="io.jdev.miniprofiler.MiniProfiler" %>
-<%@ page import="io.jdev.miniprofiler.wildfly8.Person" %>
+<%@ page import="io.jdev.miniprofiler.wildfly8.funtest.Person" %>
 <html>
 <head>
     <title>MiniProfiler Servlet Test</title>

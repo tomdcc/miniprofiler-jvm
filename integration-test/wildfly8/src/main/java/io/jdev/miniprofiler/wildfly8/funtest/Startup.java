@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.glassfish4;
+package io.jdev.miniprofiler.wildfly8.funtest;
 
 import javax.ejb.EJB;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
 
-@WebServlet("")
-public class IndexServlet extends HttpServlet {
+@WebListener
+public class Startup implements ServletContextListener {
 
     @EJB
     private PersonService personService;
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("people", personService.getAllPeople());
-        getServletContext().getRequestDispatcher("/index.jsp").forward(req, resp);
+    public void contextInitialized(ServletContextEvent sce) {
+        personService.createPerson("Alex", "Smith");
+        personService.createPerson("Kim", "Jones");
+    }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent sce) {
     }
 }

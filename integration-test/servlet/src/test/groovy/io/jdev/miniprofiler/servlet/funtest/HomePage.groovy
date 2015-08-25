@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.ratpacktest
+package io.jdev.miniprofiler.servlet.funtest
 
 import geb.Page
 import io.jdev.miniprofiler.test.pages.MiniProfilerModule

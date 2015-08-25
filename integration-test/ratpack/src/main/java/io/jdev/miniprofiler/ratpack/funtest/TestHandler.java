@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.ratpacktest;
+package io.jdev.miniprofiler.ratpack.funtest;
 
 import com.google.common.collect.ImmutableMap;
 import io.jdev.miniprofiler.Profiler;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.wildfly8;
+package io.jdev.miniprofiler.wildfly8.funtest;
 
 import javax.persistence.*;
 

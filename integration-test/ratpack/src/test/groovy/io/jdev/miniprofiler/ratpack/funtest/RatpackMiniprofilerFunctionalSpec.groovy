@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.servlet
+package io.jdev.miniprofiler.ratpack.funtest
 
 import geb.spock.GebReportingSpec
 import io.jdev.miniprofiler.test.pages.MiniProfilerGapModule
 import io.jdev.miniprofiler.test.pages.MiniProfilerQueryModule
+import ratpack.test.MainClassApplicationUnderTest
+import ratpack.test.ServerBackedApplicationUnderTest
 
-class Glassfish4MiniprofilerFunctionalSpec extends GebReportingSpec {
+class RatpackMiniprofilerFunctionalSpec extends GebReportingSpec {
+
+    ServerBackedApplicationUnderTest aut
+
+    void setup() {
+        aut = new MainClassApplicationUnderTest(Main)
+        browser.baseUrl = aut.address.toString()
+    }
 
     void "can see miniprofiler"() {
         when:
@@ -41,36 +50,27 @@ class Glassfish4MiniprofilerFunctionalSpec extends GebReportingSpec {
         then: 'popup visible'
         result.popup.displayed
 
-        and: 'timings have correct labels etc'
+        and: ''
         def timings = result.popup.timings
-        timings.size() == 4
-        timings[0].label == '/'
-        timings[1].label == 'PersonServiceImpl.getAllPeople'
-        timings[2].label == 'First thing'
-        timings[3].label == 'Second thing'
-        timings.each {
-            assert it.duration.text() ==~ ~/\d+\.\d/
-            assert !it.durationWithChildren.displayed
-            assert !it.timeFromStart.displayed
-        }
+        timings.size() == 3
+        timings.label == ['/', 'TestHandler.handle', 'TestHandler.getData']
+        timings[0].duration.text() ==~ ~/\d+\.\d/
+        !timings[0].durationWithChildren.displayed
+        !timings[0].timeFromStart.displayed
+        !timings[0].queries
+        timings[2].queries.text() ==~ ~/\d+\.\d \(1\)/
 
         when: 'toggle child timings'
         result.popup.toggleChildTimingLink.click()
 
         then: 'can see child timings column'
         waitFor { timings[0].timeFromStart.displayed }
-        timings.each {
-            assert it.timeFromStart.text() ==~ ~/\+\d+\.\d/
-            assert it.durationWithChildren.displayed
-            assert it.durationWithChildren.text() ==~ ~/\d+\.\d/
-        }
-
-        and: 'Second thing has sql timing'
-        def secondThingTiming = timings.find { it.label == 'Second thing' }
-        secondThingTiming.queries.text() ==~ ~/\d+\.\d \(1\)/
+        timings[0].timeFromStart.text() ==~ ~/\+\d+\.\d/
+        timings[0].durationWithChildren.displayed
+        timings[0].durationWithChildren.text() ==~ ~/\d+\.\d/
 
         when: 'click sql link'
-        secondThingTiming.queries.click()
+        timings[2].queries.click()
 
         then: 'three timings, but trivial gaps not visible'
         def queries = result.queriesPopup.queries
@@ -83,9 +83,9 @@ class Glassfish4MiniprofilerFunctionalSpec extends GebReportingSpec {
         queries[2].displayed == !queries[2].trivial
 
         and: 'query has correct info'
-        queries[1].step == 'Second thing'
+        queries[1].step == 'TestHandler.getData'
         queries[1].timeFromStart ==~ ~/T\+\d+.\d ms/
         queries[1].duration ==~ ~/\d+.\d ms/
-        queries[1].query ==~ ~/SELECT\s+ID,\s*FIRSTNAME,\s*LASTNAME\s+FROM\s+PERSON/
+        queries[1].query ==~ ~/select\s+\*\s+from\s+people/
     }
 }
