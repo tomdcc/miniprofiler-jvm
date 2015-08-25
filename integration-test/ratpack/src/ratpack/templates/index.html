@@ -34,6 +34,12 @@
         </tr>
         </thead>
         <tbody>
+        <% model.people.each { p -> %>
+            <tr>
+                <td>${p.id}</td>
+                <td>${p.name}</td>
+            </tr>
+        <% } %>
         </tbody>
     </table>
 </div>
