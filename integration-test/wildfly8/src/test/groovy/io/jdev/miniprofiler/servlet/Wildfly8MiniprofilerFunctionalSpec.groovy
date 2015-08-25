@@ -20,14 +20,8 @@ import geb.spock.GebReportingSpec
 import io.jdev.miniprofiler.test.pages.MiniProfilerGapModule
 import io.jdev.miniprofiler.test.pages.MiniProfilerModule
 import io.jdev.miniprofiler.test.pages.MiniProfilerQueryModule
-import org.openqa.selenium.Dimension
 
 class Wildfly8MiniprofilerFunctionalSpec extends GebReportingSpec {
-
-    void setup() {
-        // ghostdriver way too small otherwise
-        driver.manage().window().setSize(new Dimension(1024, 768))
-    }
 
     void "can see miniprofiler"() {
         when:

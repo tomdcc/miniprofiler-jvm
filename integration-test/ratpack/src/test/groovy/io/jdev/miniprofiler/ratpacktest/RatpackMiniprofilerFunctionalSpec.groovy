@@ -19,7 +19,6 @@ package io.jdev.miniprofiler.ratpacktest
 import geb.spock.GebReportingSpec
 import io.jdev.miniprofiler.test.pages.MiniProfilerGapModule
 import io.jdev.miniprofiler.test.pages.MiniProfilerQueryModule
-import org.openqa.selenium.Dimension
 import ratpack.test.MainClassApplicationUnderTest
 import ratpack.test.ServerBackedApplicationUnderTest
 
@@ -30,9 +29,6 @@ class RatpackMiniprofilerFunctionalSpec extends GebReportingSpec {
     void setup() {
         aut = new MainClassApplicationUnderTest(Main)
         browser.baseUrl = aut.address.toString()
-
-        // ghostdriver way too small otherwise
-        driver.manage().window().setSize(new Dimension(1024, 768))
     }
 
     void "can see miniprofiler"() {
