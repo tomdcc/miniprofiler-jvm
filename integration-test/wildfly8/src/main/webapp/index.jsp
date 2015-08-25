@@ -5,13 +5,13 @@
 <%@ page import="io.jdev.miniprofiler.wildfly8.funtest.Person" %>
 <html>
 <head>
-    <title>MiniProfiler Servlet Test</title>
+    <title>MiniProfiler Glassfish Test</title>
     <link href="bootstrap.min.css" rel="stylesheet"/>
     <script src="jquery-2.0.3.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>MiniProfiler Servlet Test</h1>
+        <h1>MiniProfiler Glassfish Test</h1>
 
         <h2>People</h2>
         <table class='table table-striped'>
