@@ -22,13 +22,17 @@ import io.jdev.miniprofiler.sql.log4jdbc.ConnectionSpy;
 import io.jdev.miniprofiler.sql.log4jdbc.SpyLogFactory;
 
 import javax.sql.DataSource;
+import java.io.Closeable;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
-public class ProfilingDataSource implements DataSource {
+public class ProfilingDataSource implements DataSource, Closeable {
 
     private final DataSource targetDataSource;
 
@@ -86,5 +90,28 @@ public class ProfilingDataSource implements DataSource {
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return targetDataSource.isWrapperFor(iface);
+    }
+
+    @Override
+    public void close() throws IOException {
+        if(targetDataSource instanceof Closeable) {
+            ((Closeable) targetDataSource).close();
+        } else {
+            try {
+                Method closeMethod = targetDataSource.getClass().getMethod("close");
+                closeMethod.invoke(targetDataSource);
+            } catch (NoSuchMethodException e) {
+                throw new UnsupportedOperationException("Data source has no close method", e);
+            } catch (InvocationTargetException e) {
+                Throwable cause = e.getCause();
+                if(cause instanceof RuntimeException) {
+                    throw (RuntimeException) cause;
+                } else {
+                    throw new RuntimeException("Error closing data source", cause);
+                }
+            } catch (IllegalAccessException e) {
+                throw new UnsupportedOperationException("Error closing data source", e);
+            }
+        }
     }
 }
