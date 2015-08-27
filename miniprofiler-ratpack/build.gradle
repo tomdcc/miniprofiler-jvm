@@ -21,7 +21,7 @@ targetCompatibility = 1.8
 
 dependencies {
 	compile project(":miniprofiler-core")
-	compile "io.ratpack:ratpack-core:$ratpackVersion"
+	provided "io.ratpack:ratpack-core:$ratpackVersion"
 	provided "io.ratpack:ratpack-guice:$ratpackVersion"
 	provided "io.ratpack:ratpack-hikari:$ratpackVersion"
 	provided "io.ratpack:ratpack-h2:$ratpackVersion"
