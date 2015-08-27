@@ -13,7 +13,7 @@ The JVM MiniProfiler is deployed to Maven Central and can be added to your proje
 
     groupId: io.jdev.miniprofiler
     artifactId: miniprofiler-core
-    version: 0.5.1
+    version: 0.5.2
 
 Or just download the jar from http://search.maven.org/ if your build system is a bit less connected.
 
