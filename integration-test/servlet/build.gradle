@@ -14,7 +14,8 @@ dependencies {
 
 jettyRun.daemon = true
 test.dependsOn(jettyRun)
-test.finalizedBy(jettyStop)
+jettyRun.finalizedBy(jettyStop)
+jettyStop.mustRunAfter(test)
 
 test {
 	systemProperties "geb.build.reportsDir": "$reporting.baseDir/geb"
