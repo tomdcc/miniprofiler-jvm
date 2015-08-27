@@ -16,40 +16,20 @@
 
 package io.jdev.miniprofiler.ratpack;
 
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import io.jdev.miniprofiler.sql.ProfilingDataSource;
-import ratpack.guice.ConfigurableModule;
+import ratpack.hikari.HikariModule;
+import ratpack.hikari.HikariService;
 
 import javax.sql.DataSource;
 
 /**
- * A module that duplicates Ratpack's <code>HikariModule</code> but provides a <code>DataSource</code>
+ * A module that extends Ratpack's <code>HikariModule</code> but provides a <code>DataSource</code>
  * that is actually a {@link ProfilingDataSource} so that JDBC calls are profiled.
- *
- * <p>Annoyingly, we can't extend Ratpack's <code>HikariModule</code> and extend it as Guice now disallows
- * overriding <code>@Provides</code> methods. So we have to reimplement it here.</p>
  */
-public class MiniProfilerHikariModule extends ConfigurableModule<HikariConfig> {
+public class MiniProfilerHikariModule extends HikariModule {
 
-    @Override
-    protected void configure() {
-
-    }
-
-    /**
-     * Provides a profiling datasource that delegates to a {@link HikariDataSource} configured with the
-     * given config object.
-     *
-     * @param config the Hikari configuration to use
-     * @return a profiled Hikari {@link DataSource}
-     */
-    @Provides
-    @Singleton
-    public DataSource dataSource(HikariConfig config) {
-        return new ProfilingDataSource(new HikariDataSource(config));
+    protected DataSource getDataSource(HikariService service) {
+        return new ProfilingDataSource(super.getDataSource(service));
     }
 
 }

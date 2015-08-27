@@ -27,6 +27,9 @@ subprojects {
 
 	repositories {
         mavenCentral()
+        maven {
+            url "https://oss.jfrog.org/repo"
+        }
     }
 
 	test {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-def ratpackVersion = "0.9.19"
+def ratpackVersion = "1.0.0-SNAPSHOT"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -24,6 +24,7 @@ dependencies {
 	compile "io.ratpack:ratpack-core:$ratpackVersion"
 	provided "io.ratpack:ratpack-guice:$ratpackVersion"
 	provided "io.ratpack:ratpack-hikari:$ratpackVersion"
+	provided "io.ratpack:ratpack-h2:$ratpackVersion"
 
 	testCompile "io.ratpack:ratpack-test:$ratpackVersion"
 }

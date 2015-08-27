@@ -14,31 +14,21 @@
  * limitations under the License.
  */
 
-buildscript {
-	repositories {
-		jcenter()
-        maven {
-            url "https://oss.jfrog.org/repo"
-        }
+package io.jdev.miniprofiler.ratpack;
+
+import io.jdev.miniprofiler.sql.ProfilingDataSource;
+import ratpack.h2.H2Module;
+
+import javax.sql.DataSource;
+
+/**
+ * A module that extends Ratpack's <code>H2Module</code> but provides a <code>DataSource</code>
+ * that is actually a {@link ProfilingDataSource} so that JDBC calls are profiled.
+ */
+public class MiniProfilerH2Module extends H2Module {
+
+    protected DataSource createDataSource() {
+        return new ProfilingDataSource(super.createDataSource());
     }
-	dependencies {
-		classpath "io.ratpack:ratpack-gradle:1.0.0-SNAPSHOT"
-	}
-}
 
-apply plugin: "io.ratpack.ratpack-java"
-apply plugin: "idea"
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-mainClassName = "io.jdev.miniprofiler.ratpack.funtest.Main"
-
-dependencies {
-	compile project(":miniprofiler-ratpack")
-	compile ratpack.dependency("hikari")
-	compile ratpack.dependency("groovy")
-	compile 'com.h2database:h2:1.3.173'
-
-	testCompile ratpack.dependency("test")
 }

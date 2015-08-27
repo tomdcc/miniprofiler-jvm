@@ -95,7 +95,7 @@ public class MiniProfilerExecInterceptor implements ExecInterceptor {
         if (existingProfiler instanceof NullProfiler) {
             if (shouldProfile(execution, execType)) {
                 final Profiler profiler = executionProfilerProvider.start(getProfilerName(execution, execType));
-                execution.onCleanup(profiler);
+                execution.onComplete(profiler);
             }
         }
         continuation.execute();
