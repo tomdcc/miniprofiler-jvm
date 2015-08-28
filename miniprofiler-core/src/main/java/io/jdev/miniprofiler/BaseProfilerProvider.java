@@ -69,6 +69,15 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
     }
 
     /**
+     * Indicates whether there is currently a profiler in the context.
+     * @return true if there is a profiler currently running
+     */
+    @Override
+    public boolean hasCurrentProfiler() {
+        return lookupCurrentProfiler() != null;
+    }
+
+    /**
      * Create a new profiling session with Info profiling level.
      *
      * @param rootName A name for the session. Thiis is used as the name

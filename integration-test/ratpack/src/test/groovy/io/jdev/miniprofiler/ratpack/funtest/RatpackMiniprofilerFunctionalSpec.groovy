@@ -37,55 +37,54 @@ class RatpackMiniprofilerFunctionalSpec extends GebReportingSpec {
 
         then: 'mini profiler visible with single timing info'
         miniProfiler
-        miniProfiler.results.size() == 1
-        def result = miniProfiler.results[0]
-        result.button.time ==~ ~/\d+\.\d ms/
+        miniProfiler.results.size() >= 1
+        verifyResults(miniProfiler.results[0])
 
-        and: 'popup not visible'
-        !result.popup.displayed
+        and: 'ajax timer also visible, eventually'
+        waitFor { miniProfiler.results.size() == 2 }
+        verifyResults(miniProfiler.results[1])
+    }
 
-        when: 'click button'
+    private boolean verifyResults(result) {
+        assert result.button.time ==~ ~/\d+\.\d ms/
+
+        assert !result.popup.displayed
+
         result.button.click()
+        assert result.popup.displayed
 
-        then: 'popup visible'
-        result.popup.displayed
-
-        and: ''
         def timings = result.popup.timings
-        timings.size() == 3
-        timings.label == ['/', 'TestHandler.handle', 'TestHandler.getData']
-        timings[0].duration.text() ==~ ~/\d+\.\d/
-        !timings[0].durationWithChildren.displayed
-        !timings[0].timeFromStart.displayed
-        !timings[0].queries
-        timings[2].queries.text() ==~ ~/\d+\.\d \(1\)/
+        assert timings.size() == 3
+        assert timings.label == ['/', 'TestHandler.handle', 'TestHandler.getData']
+        assert timings[0].duration.text() ==~ ~/\d+\.\d/
+        assert !timings[0].durationWithChildren.displayed
+        assert !timings[0].timeFromStart.displayed
+        assert !timings[0].queries
+        assert timings[2].queries.text() ==~ ~/\d+\.\d \(1\)/
 
-        when: 'toggle child timings'
         result.popup.toggleChildTimingLink.click()
 
-        then: 'can see child timings column'
-        waitFor { timings[0].timeFromStart.displayed }
-        timings[0].timeFromStart.text() ==~ ~/\+\d+\.\d/
-        timings[0].durationWithChildren.displayed
-        timings[0].durationWithChildren.text() ==~ ~/\d+\.\d/
+        assert waitFor { timings[0].timeFromStart.displayed }
+        assert timings[0].timeFromStart.text() ==~ ~/\+\d+\.\d/
+        assert timings[0].durationWithChildren.displayed
+        assert timings[0].durationWithChildren.text() ==~ ~/\d+\.\d/
 
-        when: 'click sql link'
         timings[2].queries.click()
 
-        then: 'three timings, but trivial gaps not visible'
         def queries = result.queriesPopup.queries
-        queries.size() == 3
-        queries[0] instanceof MiniProfilerGapModule
-        queries[0].displayed == !queries[0].trivial
-        queries[1] instanceof MiniProfilerQueryModule
-        queries[1].displayed
-        queries[2] instanceof MiniProfilerGapModule
-        queries[2].displayed == !queries[2].trivial
+        assert queries.size() == 3
+        assert queries[0] instanceof MiniProfilerGapModule
+        assert queries[0].displayed == !queries[0].trivial
+        assert queries[1] instanceof MiniProfilerQueryModule
+        assert queries[1].displayed
+        assert queries[2] instanceof MiniProfilerGapModule
+        assert queries[2].displayed == !queries[2].trivial
 
-        and: 'query has correct info'
-        queries[1].step == 'TestHandler.getData'
-        queries[1].timeFromStart ==~ ~/T\+\d+.\d ms/
-        queries[1].duration ==~ ~/\d+.\d ms/
-        queries[1].query ==~ ~/select\s+\*\s+from\s+people/
+        assert queries[1].step == 'TestHandler.getData'
+        assert queries[1].timeFromStart ==~ ~/T\+\d+.\d ms/
+        assert queries[1].duration ==~ ~/\d+.\d ms/
+        assert queries[1].query ==~ ~/select\s+\*\s+from\s+people/
+
+        true
     }
 }

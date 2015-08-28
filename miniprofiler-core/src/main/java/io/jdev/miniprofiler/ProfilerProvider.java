@@ -116,6 +116,13 @@ public interface ProfilerProvider {
     Profiler getCurrentProfiler();
 
     /**
+     * Return true if there is a current profiler.
+     *
+     * @return true if there is a current profiler
+     */
+    boolean hasCurrentProfiler();
+
+    /**
      * Returns the {@link Storage} associated with this provider.
      *
      * @return the provider's storage

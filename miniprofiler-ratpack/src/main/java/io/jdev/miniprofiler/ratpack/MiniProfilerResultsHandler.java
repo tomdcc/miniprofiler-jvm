@@ -24,7 +24,7 @@ import ratpack.handling.Context;
 import ratpack.handling.Handler;
 import ratpack.http.Response;
 
-import java.util.Optional;
+import javax.inject.Inject;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -33,6 +33,13 @@ import java.util.regex.Pattern;
  */
 public class MiniProfilerResultsHandler implements Handler {
     private static final Pattern UUID_PATTERN = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
+
+    private final ProfilerProvider provider;
+
+    @Inject
+    public MiniProfilerResultsHandler(ProfilerProvider provider) {
+        this.provider = provider;
+    }
 
     /**
      * Serves MiniProfiler results to the UI.
@@ -62,14 +69,8 @@ public class MiniProfilerResultsHandler implements Handler {
             }
 
             UUID uuid = UUID.fromString(id);
-            Optional<ProfilerProvider> provider = ctx.maybeGet(ProfilerProvider.class);
-            if (!provider.isPresent()) {
-                // no provider, this is misconfiguration
-                response.status(500).send();
-                return;
-            }
 
-            Profiler profiler = provider.get().getStorage().load(uuid);
+            Profiler profiler = provider.getStorage().load(uuid);
             if (profiler != null) {
                 response.status(200).contentType("text/json").send(JsonUtil.toJson(profiler));
             } else {

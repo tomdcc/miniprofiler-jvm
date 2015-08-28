@@ -34,7 +34,7 @@ public class MiniProfilerHandlerChain implements Action<Chain> {
      */
     @Override
     public void execute(Chain chain) throws Exception {
-        chain.post("results", new MiniProfilerResultsHandler());
-        chain.get(":path", new MiniProfilerResourceHandler());
+        chain.post("results", MiniProfilerResultsHandler.class);
+        chain.get(":path", MiniProfilerResourceHandler.class);
     }
 }

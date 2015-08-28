@@ -22,6 +22,7 @@ import io.jdev.miniprofiler.Timing;
 import ratpack.exec.Blocking;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
+import ratpack.jackson.Jackson;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -41,7 +42,10 @@ public class TestHandler implements Handler {
     public void handle(Context ctx) throws Exception {
         try (Timing timing = ctx.get(Profiler.class).step("TestHandler.handle")) {
             Blocking.get(() -> getData(ctx)).then(data -> {
-                ctx.render(groovyTemplate(ImmutableMap.of("people", data), "index.html"));
+                ctx.byContent(spr -> {
+                    spr.json(() -> ctx.render(Jackson.json(data)));
+                    spr.html(() -> ctx.render(groovyTemplate(ImmutableMap.of("people", data), "index.html")));
+                });
             });
         }
     }

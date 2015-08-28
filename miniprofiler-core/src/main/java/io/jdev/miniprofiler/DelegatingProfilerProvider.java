@@ -63,6 +63,11 @@ public abstract class DelegatingProfilerProvider implements ProfilerProvider {
     }
 
     @Override
+    public boolean hasCurrentProfiler() {
+        return getDelegate().hasCurrentProfiler();
+    }
+
+    @Override
     public Storage getStorage() {
         return getDelegate().getStorage();
     }

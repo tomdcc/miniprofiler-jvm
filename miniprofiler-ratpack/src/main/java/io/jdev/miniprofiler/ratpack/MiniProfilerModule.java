@@ -16,10 +16,14 @@
 
 package io.jdev.miniprofiler.ratpack;
 
-import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
+import com.google.inject.Scopes;
 import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import ratpack.exec.ExecInterceptor;
+import ratpack.guice.ConfigurableModule;
+
+import javax.inject.Singleton;
 
 /**
  * A Guice module to install a Ratpack compatible {@link ProfilerProvider} and an {@link ExecInterceptor}
@@ -31,17 +35,39 @@ import ratpack.exec.ExecInterceptor;
  * <p>This does <em>not</em> install handlers to support the UI - you'll need to do that separately
  * in your handler chain configuration.</p>
  */
-public class MiniProfilerModule extends AbstractModule {
+public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Config> {
 
     /**
      * Installs Ratpack / MiniProfiler support code.
      */
     @Override
     protected void configure() {
-        ProfilerProvider profilerProvider = new RatpackContextProfilerProvider();
-        bind(ProfilerProvider.class).toInstance(new RatpackContextProfilerProvider());
-        bind(ExecInterceptor.class).toInstance(new MiniProfilerExecInterceptor(profilerProvider));
-        MiniProfiler.setProfilerProvider(profilerProvider);
+        ProfilerProvider provider = new RatpackContextProfilerProvider();
+        bind(ProfilerProvider.class).toInstance(provider);
+        MiniProfiler.setProfilerProvider(provider);
+
+        // these just here to enable someone to bind a handler etc to the class rather than
+        // a new instance if they want to do that
+        bind(ExecInterceptor.class).to(MiniProfilerExecInterceptor.class).in(Scopes.SINGLETON);
+        bind(MiniProfilerAjaxHeaderHandler.class).in(Scopes.SINGLETON);
+        bind(MiniProfilerHandlerChain.class).in(Scopes.SINGLETON);
+        bind(StoreMiniProfilerHandler.class).in(Scopes.SINGLETON);
+        bind(DiscardMiniProfilerHandler.class).in(Scopes.SINGLETON);
+        bind(MiniProfilerResultsHandler.class).in(Scopes.SINGLETON);
+        bind(MiniProfilerResourceHandler.class).in(Scopes.SINGLETON);
     }
 
+    @Provides
+    @Singleton
+    public MiniProfilerExecInterceptor interceptor(ProfilerProvider provider, Config config) {
+        return createInterceptor(provider, config);
+    }
+
+    protected MiniProfilerExecInterceptor createInterceptor(ProfilerProvider provider, Config config) {
+        return new MiniProfilerExecInterceptor(provider, config.defaultProfilerStoreOption);
+    }
+
+    public static class Config {
+        public ProfilerStoreOption defaultProfilerStoreOption = ProfilerStoreOption.STORE_RESULTS;
+    }
 }

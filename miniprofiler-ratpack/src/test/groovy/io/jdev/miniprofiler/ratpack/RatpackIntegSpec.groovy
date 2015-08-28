@@ -79,8 +79,6 @@ class AssertionHandler implements Handler {
         assert MiniProfiler.currentProfiler instanceof ProfilerImpl
         assert ctx.get(Profiler) == MiniProfiler.currentProfiler
 
-        assert ctx.get(ProfilerProvider) == provider
-
         assert provider.currentProfiler == ctx.get(Profiler)
 
         ctx.next()

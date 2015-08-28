@@ -16,9 +16,7 @@
 
 package io.jdev.miniprofiler.ratpack.funtest;
 
-import io.jdev.miniprofiler.ratpack.MiniProfilerHandlerChain;
-import io.jdev.miniprofiler.ratpack.MiniProfilerHikariModule;
-import io.jdev.miniprofiler.ratpack.MiniProfilerModule;
+import io.jdev.miniprofiler.ratpack.*;
 import ratpack.groovy.template.TextTemplateModule;
 import ratpack.guice.Guice;
 import ratpack.server.*;
@@ -39,12 +37,15 @@ public class Main {
                         hikariConfig.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
                         hikariConfig.addDataSourceProperty("URL", "jdbc:h2:mem:miniprofiler;DB_CLOSE_DELAY=-1");
                     });
-                    bindings.module(MiniProfilerModule.class);
+                    bindings.module(MiniProfilerModule.class, miniProfilerConfig -> {
+                        miniProfilerConfig.defaultProfilerStoreOption = ProfilerStoreOption.DISCARD_RESULTS;
+                    });
                     bindings.add(new DataSetup());
                 }))
                 .handlers(chain -> chain
-                        .prefix(MiniProfilerHandlerChain.DEFAULT_PREFIX, new MiniProfilerHandlerChain())
+                        .prefix(MiniProfilerHandlerChain.DEFAULT_PREFIX, MiniProfilerHandlerChain.class)
                         .files(f -> f.dir("public"))
+                        .all(MiniProfilerAjaxHeaderHandler.class)
                         .get("", new TestHandler())
                 )
         );

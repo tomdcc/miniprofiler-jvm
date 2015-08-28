@@ -16,8 +16,6 @@
 
 package io.jdev.miniprofiler.ratpack;
 
-import io.jdev.miniprofiler.MiniProfiler;
-import io.jdev.miniprofiler.NullProfiler;
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import ratpack.exec.ExecInterceptor;
@@ -25,53 +23,56 @@ import ratpack.exec.Execution;
 import ratpack.func.Block;
 import ratpack.http.Request;
 
-import javax.inject.Inject;
 import java.util.Optional;
 
 /**
  * A Ratpack `ExecInterceptor` that provides MiniProfiler support.
  *
+ * <p>It starts a profiling session and binds that to the execution.</p>
+ *
  * <p>
- * It binds the current {@link ProfilerProvider} to the execution being intercepted, and starts
- * a profiling session and binds that to the execution as well, unless {@link #shouldProfile}
- * is overridden to return false.
+ *     If the <code>defaultProfilerStoreOption</code> constructor argument is
+ *     {@link ProfilerStoreOption#STORE_RESULTS}, the profiler will be saved to storage
+ *     at the end of the execution. if that value is set to {@link ProfilerStoreOption#DISCARD_RESULTS},
+ *     the profiler results will not be saved. The default can be overridden by
+ *     binding one of those values to the execution during execution, or by
+ *     adding one of {@link StoreMiniProfilerHandler} or {@link DiscardMiniProfilerHandler}
+ *     to the handler chain.
  * </p>
  */
 public class MiniProfilerExecInterceptor implements ExecInterceptor {
 
-    private final ProfilerProvider profilerProvider;
+    private final ProfilerProvider provider;
+    private final ProfilerStoreOption defaultProfilerStoreOption;
 
     /**
-     * Basic convenience factory method which creates a Ratpack execution-based profiler provider and binds it
-     * to the static profiler provider instance as per {@link MiniProfiler#setProfilerProvider}.
+     * Construct the interceptor with the given provider and default storage option.
      *
-     * @return an interceptor populated with a {@link RatpackContextProfilerProvider}
+     * @param provider the profiler provider to use
+     * @param defaultProfilerStoreOption the default profiler storage behaviour
      */
-    public static MiniProfilerExecInterceptor create() {
-        ProfilerProvider profilerProvider = new RatpackContextProfilerProvider();
-        MiniProfiler.setProfilerProvider(profilerProvider);
-        return new MiniProfilerExecInterceptor(profilerProvider);
+    public MiniProfilerExecInterceptor(ProfilerProvider provider, ProfilerStoreOption defaultProfilerStoreOption) {
+        this.provider = provider;
+        if (defaultProfilerStoreOption == null) {
+           throw new IllegalArgumentException("defaultProfilerStoreOption cannot be null");
+        }
+        this.defaultProfilerStoreOption = defaultProfilerStoreOption;
     }
 
     /**
-     * Creates an interceptor with the provided {@link ProfilerProvider} instance.
+     * Construct the interceptor with the given provider and a default to store all profiler results.
      *
-     * @param profilerProvider the {@link ProfilerProvider} to use.
+     * @param provider the profiler provider to use
      */
-    @Inject
-    public MiniProfilerExecInterceptor(ProfilerProvider profilerProvider) {
-        this.profilerProvider = profilerProvider;
+    public MiniProfilerExecInterceptor(ProfilerProvider provider) {
+        this(provider, ProfilerStoreOption.STORE_RESULTS);
     }
 
     /**
-     * Intercept the given execution and bind MiniProfiler related objects.
+     * Intercept the given execution and bind a new Profiler object
      *
      * <p>
      * The {@link ProfilerProvider} that this interceptor was created with will always get bound to the execution.
-     * </p>
-     * <p>
-     * If {@link #shouldProfile} returns true (the default), a new profiler will be created
-     * and bound to the execution.
      * </p>
      * @param execution the execution whose segment is being intercepted
      * @param execType indicates whether this is a compute (e.g. request handling) segment or blocking segment
@@ -80,35 +81,17 @@ public class MiniProfilerExecInterceptor implements ExecInterceptor {
      */
     @Override
     public void intercept(Execution execution, ExecType execType, Block continuation) throws Exception {
-        // use provider currently on execution, our use ours and bind it to the execution if one isn't there
-        ProfilerProvider executionProfilerProvider;
-        Optional<ProfilerProvider> currentExecutionProvider = execution.maybeGet(ProfilerProvider.class);
-        if(currentExecutionProvider.isPresent()) {
-            executionProfilerProvider = currentExecutionProvider.get();
-        } else {
-            execution.add(ProfilerProvider.class, profilerProvider);
-            executionProfilerProvider = profilerProvider;
-        }
-
-        // now create a profiler if we should and there isn't one already
-        Profiler existingProfiler = executionProfilerProvider.getCurrentProfiler();
-        if (existingProfiler instanceof NullProfiler) {
-            if (shouldProfile(execution, execType)) {
-                final Profiler profiler = executionProfilerProvider.start(getProfilerName(execution, execType));
-                execution.onComplete(profiler);
-            }
+        // create a profiler if there isn't one already
+        if (!provider.hasCurrentProfiler()) {
+            Profiler profiler = provider.start(getProfilerName(execution, execType));
+            execution.onComplete(() -> executionComplete(execution, profiler));
         }
         continuation.execute();
     }
 
-    /**
-     * Override to switch off profiling for certain executions. Default implementation always returns true.
-     * @param execution the execution whose segment is being intercepted
-     * @param execType indicates whether this is a compute (e.g. request handling) segment or blocking segment
-     * @return true if the execution should be profiled. Default is always true.
-     */
-    protected boolean shouldProfile(Execution execution, ExecType execType) {
-        return true;
+    private void executionComplete(Execution execution, Profiler profiler) {
+        ProfilerStoreOption store = execution.maybeGet(ProfilerStoreOption.class).orElse(defaultProfilerStoreOption);
+        profiler.stop(store == ProfilerStoreOption.DISCARD_RESULTS);
     }
 
     /**

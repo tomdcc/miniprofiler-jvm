@@ -18,6 +18,7 @@ package io.jdev.miniprofiler.test;
 
 import io.jdev.miniprofiler.BaseProfilerProvider;
 import io.jdev.miniprofiler.Profiler;
+import io.jdev.miniprofiler.ProfilerImpl;
 
 /**
  * Profiler provider to assist testing. Has a single profiler instance and performs
@@ -27,6 +28,7 @@ import io.jdev.miniprofiler.Profiler;
 public class TestProfilerProvider extends BaseProfilerProvider {
 
     private Profiler profiler;
+    private boolean discarded;
 
     @Override
     protected void profilerCreated(Profiler profiler) {
@@ -40,5 +42,15 @@ public class TestProfilerProvider extends BaseProfilerProvider {
     @Override
     protected Profiler lookupCurrentProfiler() {
         return profiler;
+    }
+
+    @Override
+    public void stopSession(ProfilerImpl profilingSession, boolean discardResults) {
+        discarded = discardResults;
+        super.stopSession(profilingSession, discardResults);
+    }
+
+    public boolean wasDiscarded() {
+        return discarded;
     }
 }

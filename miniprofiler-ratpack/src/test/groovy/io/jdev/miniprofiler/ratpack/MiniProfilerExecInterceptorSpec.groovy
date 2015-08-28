@@ -17,10 +17,7 @@
 package io.jdev.miniprofiler.ratpack
 
 import io.jdev.miniprofiler.NullProfiler
-import io.jdev.miniprofiler.ProfilerProvider
 import io.jdev.miniprofiler.test.TestProfilerProvider
-import ratpack.exec.ExecInterceptor
-import ratpack.exec.Execution
 import ratpack.func.Action
 import ratpack.handling.Handler
 import ratpack.test.handling.RequestFixture
@@ -38,63 +35,30 @@ class MiniProfilerExecInterceptorSpec extends Specification {
 
     void "interceptor creates new profiler and binds provider to execution"() {
         when: "run handler with interceptor"
-        def result = RequestFixture.handle({ ctx -> ctx.next() } as Handler, { RequestFixture req ->
+        RequestFixture.handle({ ctx -> ctx.next() } as Handler, { RequestFixture req ->
             req.uri(requestUri)
             req.registry.add(new MiniProfilerExecInterceptor(provider))
         } as Action)
 
-        then: 'profiler provider info attached to execution'
-        provider == result.registry.get(ProfilerProvider)
-
-        and: 'has a profiler'
-        def profiler = provider.currentProfiler
-        profiler != null
-
-        and: 'profiler has current request uri as name'
-        profiler.root.name == requestUri
+        then: 'profiler created and was stoped but not discarded'
+        provider.currentProfiler
+        provider.currentProfiler.stopped
+        !(provider.currentProfiler instanceof NullProfiler)
+        !provider.wasDiscarded()
     }
 
-    void "interceptor binds provider to execution even when not profiling"() {
+    void "interceptor binds provider to execution and discards if option was not to store"() {
         when: "run handler with interceptor when interceptor won't profile"
-        def result = RequestFixture.handle({ ctx -> ctx.next() } as Handler, { RequestFixture req ->
+        RequestFixture.handle({ ctx -> ctx.next() } as Handler, { RequestFixture req ->
             req.uri(requestUri)
-            req.registry.add(new MiniProfilerExecInterceptor(provider) {
-                @Override
-                protected boolean shouldProfile(Execution execution, ExecInterceptor.ExecType execType) {
-                    false
-                }
-            })
+            req.registry.add(new MiniProfilerExecInterceptor(provider, ProfilerStoreOption.DISCARD_RESULTS))
         } as Action)
 
-        then: 'profiler provider info attached to execution'
-        provider == result.registry.get(ProfilerProvider)
-
-        and: 'does NOT have a profiler'
-        provider.currentProfiler instanceof NullProfiler
-    }
-
-    void "interceptor does not add provider to execution if one is present, uses that instead"() {
-        given: 'different provider'
-        TestProfilerProvider provider2 = new TestProfilerProvider()
-
-        when: "run handler with interceptor on execution which already has a provider"
-        def result = RequestFixture.handle({ ctx -> ctx.next() } as Handler, { RequestFixture req ->
-            req.uri(requestUri)
-            req.registry.add({ execution, execType, cont ->
-                execution.add(ProfilerProvider, provider2)
-                new MiniProfilerExecInterceptor(provider).intercept(execution, execType, cont)
-            } as ExecInterceptor)
-        } as Action)
-
-        then: 'profiler provider info attached to execution is the original one'
-        provider2 == result.registry.get(ProfilerProvider)
-
-        and: "interceptor's own provider does NOT have a profiler"
-        provider.currentProfiler instanceof NullProfiler
-
-        and: 'provider in registry does, though'
-        def profiler = provider2.currentProfiler
-        profiler.root.name == requestUri
+        then: 'profiler created but was discarded'
+        provider.currentProfiler
+        provider.currentProfiler.stopped
+        !(provider.currentProfiler instanceof NullProfiler)
+        provider.wasDiscarded()
     }
 
     void "interceptor does not add profiler to execution if one is present"() {
