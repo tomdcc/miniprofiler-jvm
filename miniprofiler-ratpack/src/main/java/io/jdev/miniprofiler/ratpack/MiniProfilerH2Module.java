@@ -27,6 +27,13 @@ import javax.sql.DataSource;
  */
 public class MiniProfilerH2Module extends H2Module {
 
+    public MiniProfilerH2Module() {
+    }
+
+    public MiniProfilerH2Module(String username, String password, String url) {
+        super(username, password, url);
+    }
+
     protected DataSource createDataSource() {
         return new ProfilingDataSource(super.createDataSource());
     }
