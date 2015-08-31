@@ -28,8 +28,23 @@ import javax.sql.DataSource;
  */
 public class MiniProfilerHikariModule extends HikariModule {
 
+    private final boolean suppressProfiling;
+
+    public MiniProfilerHikariModule() {
+        this(false);
+    }
+
+    /**
+     * Creates a module with profiling turned off completely, mainly for testing.
+     * @param suppressProfiling whether to suppress profiling
+     */
+    public MiniProfilerHikariModule(boolean suppressProfiling) {
+        this.suppressProfiling = suppressProfiling;
+    }
+
     protected DataSource getDataSource(HikariService service) {
-        return new ProfilingDataSource(super.getDataSource(service));
+        DataSource ds = super.getDataSource(service);
+        return suppressProfiling ? ds : new ProfilingDataSource(ds);
     }
 
 }

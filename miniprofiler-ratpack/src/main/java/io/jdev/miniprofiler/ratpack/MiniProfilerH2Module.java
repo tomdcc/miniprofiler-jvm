@@ -27,15 +27,32 @@ import javax.sql.DataSource;
  */
 public class MiniProfilerH2Module extends H2Module {
 
+    private final boolean suppressProfiling;
+
+    /**
+     * Creates a module with profiling turned off completely, mainly for testing.
+     * @param suppressProfiling whether to suppress profiling
+     */
+    public MiniProfilerH2Module(boolean suppressProfiling) {
+        this.suppressProfiling = suppressProfiling;
+    }
+
     public MiniProfilerH2Module() {
+        this(false);
     }
 
     public MiniProfilerH2Module(String username, String password, String url) {
+        this(username, password, url, false);
+    }
+
+    public MiniProfilerH2Module(String username, String password, String url, boolean suppressProfiling) {
         super(username, password, url);
+        this.suppressProfiling = suppressProfiling;
     }
 
     protected DataSource createDataSource() {
-        return new ProfilingDataSource(super.createDataSource());
+        DataSource ds = super.createDataSource();
+        return suppressProfiling ? ds : new ProfilingDataSource(ds);
     }
 
 }
