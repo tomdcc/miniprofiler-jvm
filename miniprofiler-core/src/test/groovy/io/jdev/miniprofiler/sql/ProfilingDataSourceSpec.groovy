@@ -19,6 +19,7 @@ package io.jdev.miniprofiler.sql
 import spock.lang.Specification
 
 import javax.sql.DataSource
+import java.sql.SQLException
 
 class ProfilingDataSourceSpec extends Specification {
 
@@ -56,6 +57,44 @@ class ProfilingDataSourceSpec extends Specification {
 
         then:
         thrown(UnsupportedOperationException)
+    }
+
+    static interface OuterDataSource extends DataSource { }
+    static interface InnerDataSource extends DataSource { }
+    static interface OtherDataSource extends DataSource { }
+
+    void "wrapper returns correct values for unwrap and isWrapperFor"() {
+        given:
+        def outerDs = Mock(OuterDataSource)
+        def innerDs = Mock(InnerDataSource)
+        _ * outerDs.isWrapperFor(InnerDataSource) >> true
+        _ * outerDs.unwrap(InnerDataSource) >> innerDs
+        _ * outerDs.isWrapperFor(OtherDataSource) >> false
+        _ * outerDs.unwrap(OtherDataSource) >> { clz -> throw new SQLException() }
+        def pds = new ProfilingDataSource(outerDs)
+
+        expect:
+        pds.isWrapperFor(ProfilingDataSource)
+        pds.unwrap(ProfilingDataSource) == pds
+
+        and:
+        pds.isWrapperFor(OuterDataSource)
+        pds.unwrap(OuterDataSource) == outerDs
+
+        and:
+        pds.isWrapperFor(InnerDataSource)
+        pds.unwrap(InnerDataSource) == innerDs
+
+        and:
+        !pds.isWrapperFor(OtherDataSource)
+
+        when:
+        pds.unwrap(OtherDataSource)
+
+        then:
+        thrown(SQLException)
+
+
     }
 
 

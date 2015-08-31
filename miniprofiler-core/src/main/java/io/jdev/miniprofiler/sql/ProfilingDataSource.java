@@ -82,14 +82,23 @@ public class ProfilingDataSource implements DataSource, Closeable {
         return targetDataSource.getParentLogger();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
-        return targetDataSource.unwrap(iface);
+        if (iface.isAssignableFrom(getClass())) {
+            return (T) this;
+        } else if(iface.isAssignableFrom(targetDataSource.getClass())) {
+            return (T) targetDataSource;
+        } else {
+            return targetDataSource.unwrap(iface);
+        }
     }
 
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return targetDataSource.isWrapperFor(iface);
+        return iface.isAssignableFrom(getClass())
+            || iface.isAssignableFrom(targetDataSource.getClass())
+            || targetDataSource.isWrapperFor(iface);
     }
 
     @Override
