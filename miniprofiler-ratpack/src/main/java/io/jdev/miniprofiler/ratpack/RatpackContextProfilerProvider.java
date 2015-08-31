@@ -31,6 +31,7 @@ public class RatpackContextProfilerProvider extends BaseProfilerProvider {
      * Adds the given rofiler to the current {@link Execution}.
      *
      * @param profiler the newly created profiler
+     * @throws ratpack.exec.UnmanagedThreadException if there is no current execution
      */
     @Override
     protected void profilerCreated(Profiler profiler) {
@@ -51,10 +52,14 @@ public class RatpackContextProfilerProvider extends BaseProfilerProvider {
     /**
      * Grabs the current profiler from the current execution.
      *
-     * @return the current profiler or <code>null</code> if there isn't one
+     * @return the current profiler or <code>null</code> if there isn't one or there is no current execution
      */
     @Override
     protected Profiler lookupCurrentProfiler() {
-        return Execution.current().maybeGet(Profiler.class).orElse(null);
+        if(Execution.isManagedThread()) {
+            return Execution.current().maybeGet(Profiler.class).orElse(null);
+        } else {
+            return null;
+        }
     }
 }
