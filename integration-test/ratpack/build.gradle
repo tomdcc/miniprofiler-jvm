@@ -22,7 +22,7 @@ buildscript {
         }
     }
 	dependencies {
-		classpath "io.ratpack:ratpack-gradle:1.0.0-SNAPSHOT"
+		classpath "io.ratpack:ratpack-gradle:1.0.0"
 	}
 }
 

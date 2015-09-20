@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-def ratpackVersion = "1.0.0-SNAPSHOT"
+def ratpackVersion = "1.0.0"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
