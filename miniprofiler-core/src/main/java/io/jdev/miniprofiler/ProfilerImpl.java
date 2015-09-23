@@ -217,7 +217,9 @@ public class ProfilerImpl implements Profiler {
 
             List<Timing> children = timing.getChildren();
             if (children != null) {
-                for (int i = children.size() - 1; i >= 0; i--) timings.push(children.get(i));
+                for (int i = children.size() - 1; i >= 0; i--) {
+                    timings.push(children.get(i));
+                }
             }
         }
 
