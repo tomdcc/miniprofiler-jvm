@@ -43,15 +43,15 @@ public class AutoClosableTest {
 
         TimingImpl rootTiming = (TimingImpl) profiler.getRoot();
         Assert.assertEquals(name, rootTiming.getName());
-        List<TimingImpl> children = rootTiming.getChildren();
+        List<Timing> children = rootTiming.getChildren();
         Assert.assertEquals(2, children.size());
-        TimingImpl firstChild = children.get(0);
-        TimingImpl secondChild = children.get(1);
+        Timing firstChild = children.get(0);
+        Timing secondChild = children.get(1);
         Assert.assertEquals("fooService.whatever", firstChild.getName());
         Assert.assertEquals("again", secondChild.getName());
-        List<TimingImpl> nestedChildren = firstChild.getChildren();
+        List<Timing> nestedChildren = firstChild.getChildren();
         Assert.assertEquals(1, nestedChildren.size());
-        TimingImpl nestedChild = nestedChildren.get(0);
+        Timing nestedChild = nestedChildren.get(0);
         Assert.assertEquals("child", nestedChild.getName());
         Map<String, List<CustomTiming>> groupedNestedChildQueries = nestedChild.getCustomTimings();
         Assert.assertEquals(1, groupedNestedChildQueries.size());
