@@ -17,6 +17,7 @@
 package io.jdev.miniprofiler;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -68,4 +69,35 @@ class NullTiming implements Timing {
     public Timing getParent() {
         return null;
     }
+
+    @Override
+    public Long getDurationMilliseconds() {
+        return null;
+    }
+
+    @Override
+    public int getDepth() {
+        return 0;
+    }
+
+    @Override
+    public Map<String, List<CustomTiming>> getCustomTimings() {
+        return null;
+    }
+
+    @Override
+    public List<Timing> getChildren() {
+        return null;
+    }
+
+    @Override
+    public void addCustomTiming(String type, String executeType, String command, long duration) {
+
+    }
+
+    @Override
+    public void addCustomTiming(String type, CustomTiming qt) {
+
+    }
+
 }

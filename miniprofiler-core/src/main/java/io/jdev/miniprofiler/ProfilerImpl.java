@@ -16,8 +16,7 @@
 
 package io.jdev.miniprofiler;
 
-import java.util.LinkedHashMap;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Profiler implementation.
@@ -178,6 +177,58 @@ public class ProfilerImpl implements Profiler {
         // TODO support ClientTimings and CustomLinks
         map.put("ClientTimings", null);
         return map;
+    }
+
+    /**
+     * Render a plain test version of this profiler, for logging
+     *
+     * @return the plain text representation
+     */
+    public String renderPlainText() {
+        StringBuilder text = new StringBuilder();
+        text.append(machineName).append(" at ").append(new Date()).append("\n");
+
+        Stack<Timing> timings = new Stack<Timing>();
+        timings.push(root);
+
+        while (!timings.isEmpty()) {
+            Timing timing = timings.pop();
+            appendTimingPrefix(text, timing);
+            text.append(String.format(" %s = %,dms", timing.getName(), timing.getDurationMilliseconds()));
+
+            Map<String, List<CustomTiming>> customTimings = timing.getCustomTimings();
+
+            if (customTimings != null) {
+                for (Map.Entry<String, List<CustomTiming>> entry : customTimings.entrySet()) {
+                    String type = entry.getKey();
+                    List<CustomTiming> typeCustomTimings = entry.getValue();
+                    long sum = 0;
+                    for (CustomTiming customTiming : typeCustomTimings) {
+                        sum += customTiming.getDurationMilliseconds();
+                    }
+                    text.append(String.format(" (%s = %,dms in %d cmd%s)",
+                        type,
+                        sum, customTimings.size(),
+                        customTimings.size() == 1 ? "" : "s"));
+                }
+            }
+
+            text.append("\n");
+
+            List<Timing> children = timing.getChildren();
+            if (children != null) {
+                for (int i = children.size() - 1; i >= 0; i--) timings.push(children.get(i));
+            }
+        }
+
+        return text.toString();
+    }
+
+    private void appendTimingPrefix(StringBuilder sb, Timing timing) {
+        int depth = timing.getDepth();
+        for (int i = 0; i < depth; i++) {
+            sb.append('>');
+        }
     }
 
     public UUID getId() {

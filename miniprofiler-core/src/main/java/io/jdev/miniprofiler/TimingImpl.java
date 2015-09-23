@@ -125,8 +125,8 @@ public class TimingImpl implements Timing {
         return startMilliseconds;
     }
 
-    public List<TimingImpl> getChildren() {
-        return children;
+    public List<Timing> getChildren() {
+        return children != null ? new ArrayList<Timing>(children) : Collections.<Timing>emptyList();
     }
 
     public Map<String, List<CustomTiming>> getCustomTimings() {

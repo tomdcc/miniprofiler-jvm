@@ -89,4 +89,7 @@ public class CustomTiming implements Serializable, Jsonable {
         this.durationMilliseconds = durationMilliseconds;
     }
 
+    public long getDurationMilliseconds() {
+        return durationMilliseconds;
+    }
 }

@@ -20,6 +20,8 @@ import io.jdev.miniprofiler.json.Jsonable;
 
 import java.io.Closeable;
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a step to be timed / profiled.
@@ -83,4 +85,52 @@ public interface Timing extends Serializable, Jsonable, Closeable {
      * Same as calling {@link #stop()}. ere to satisfy {@link Closeable}.
      */
     void close();
+
+    /**
+     * Returned the length of this timing event
+     *
+     * @return the timing's duration, or null if still ongoing or the {@link #stop()} method
+     *         was never called
+     */
+    Long getDurationMilliseconds();
+
+    /**
+     * How many hops from the root timing
+     *
+     * @return depth from the root timing, 0 for the root timing
+     */
+    int getDepth();
+
+    /**
+     * Returns custom timings
+     *
+     * @return all custom timings registered against this timing
+     */
+    Map<String, List<CustomTiming>> getCustomTimings();
+
+    /**
+     * Returns all child timings of this timing
+     *
+     * @return all children
+     */
+    List<Timing> getChildren();
+
+    /**
+     * Add a custom timing to this timing
+     *
+     * @param type type of timing, e.g. "sql"
+     * @param executeType what type of execution, e.g. "query"
+     * @param command e.g. "select * from foo"
+     * @param duration how long the command took
+     */
+    void addCustomTiming(String type, String executeType, String command, long duration);
+
+    /**
+     * Add a custom timing to this timing
+     *
+     * @param type type of timing, e.g. "sql"
+     * @param ct the custom timing
+     */
+    void addCustomTiming(String type, CustomTiming ct);
+
 }
