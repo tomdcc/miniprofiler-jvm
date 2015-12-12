@@ -24,11 +24,8 @@ dependencies {
 
 }
 
-// glassfish 4, 4.1 start scripts don't start on yosemite
-boolean yosemite = System.getProperty("os.name") == "Mac OS X" && System.getProperty("os.version").startsWith("10.10.")
 test {
 	systemProperties "geb.build.reportsDir": "$reporting.baseDir/geb"
-	enabled = !yosemite
 }
 
 def glassfishBaseDir = file("$buildDir/glassfish")
@@ -38,11 +35,9 @@ task glassfishDir << {
 
 [cargoRunLocal, cargoStartLocal]*.dependsOn([':miniprofiler-core:assemble', assemble, glassfishDir])
 
-if(!yosemite) {
-    test.dependsOn(cargoStartLocal)
-    cargoStartLocal.finalizedBy(cargoStopLocal)
-    cargoStopLocal.mustRunAfter(test)
-}
+test.dependsOn(cargoStartLocal)
+cargoStartLocal.finalizedBy(cargoStopLocal)
+cargoStopLocal.mustRunAfter(test)
 
 cargo {
 	containerId = 'glassfish4x'
@@ -53,7 +48,7 @@ cargo {
 
 	local {
 		installer {
-			installUrl = 'http://download.java.net/glassfish/4.1/release/glassfish-4.1.zip'
+			installUrl = 'http://download.java.net/glassfish/4.1.1/release/glassfish-4.1.1.zip'
 			downloadDir = rootProject.file(".gradle/cache/cargo")
 			extractDir = buildDir
 		}
