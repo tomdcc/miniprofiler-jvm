@@ -17,12 +17,9 @@
 buildscript {
 	repositories {
 		jcenter()
-        maven {
-            url "https://oss.jfrog.org/repo"
-        }
     }
 	dependencies {
-		classpath "io.ratpack:ratpack-gradle:1.0.0"
+		classpath "io.ratpack:ratpack-gradle:1.1.1"
 	}
 }
 
