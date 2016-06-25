@@ -1,10 +1,18 @@
 buildscript {
 	repositories {
 		maven { url 'http://repo.springsource.org/plugins-release' }
+		maven { url 'https://plugins.gradle.org/m2' }
 	}
 	dependencies {
 		classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7'
+		classpath "com.gradle:build-scan-plugin:1.0"
 	}
+}
+
+apply plugin: 'com.gradle.build-scan'
+buildScan {
+    licenseAgreementUrl = 'https://gradle.com/terms-of-service'
+    licenseAgree = 'yes'
 }
 
 apply plugin: 'idea'
