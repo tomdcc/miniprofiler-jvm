@@ -33,7 +33,11 @@ subprojects {
     }
 
 	test {
-		systemProperties "geb.build.reportsDir": "$reporting.baseDir/geb"
+		systemProperty "geb.build.reportsDir", "$reporting.baseDir/geb"
+        String firefoxPath = System.getProperty('webdriver.firefox.bin')
+        if (firefoxPath) {
+            systemProperty "webdriver.firefox.bin", firefoxPath
+        }
 		testLogging {
 			exceptionFormat = 'full'
 		}
@@ -42,7 +46,7 @@ subprojects {
 	ext {
 		groovyVersion = "2.4.3"
 		gebVersion = '0.12.1'
-		seleniumVersion = "2.48.2"
+		seleniumVersion = "2.53.0"
 		spockVersion = "1.0-groovy-2.4"
 
 		isSnapshot = version.endsWith("-SNAPSHOT")
