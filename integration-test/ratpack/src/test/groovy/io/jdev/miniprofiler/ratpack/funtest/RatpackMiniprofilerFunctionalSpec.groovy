@@ -19,6 +19,7 @@ package io.jdev.miniprofiler.ratpack.funtest
 import geb.spock.GebReportingSpec
 import io.jdev.miniprofiler.test.pages.MiniProfilerGapModule
 import io.jdev.miniprofiler.test.pages.MiniProfilerQueryModule
+import org.openqa.selenium.Keys
 import ratpack.test.MainClassApplicationUnderTest
 import ratpack.test.ServerBackedApplicationUnderTest
 
@@ -38,11 +39,22 @@ class RatpackMiniprofilerFunctionalSpec extends GebReportingSpec {
         then: 'mini profiler visible with single timing info'
         miniProfiler
         miniProfiler.results.size() >= 1
-        verifyResults(miniProfiler.results[0])
 
         and: 'ajax timer also visible, eventually'
-        waitFor { miniProfiler.results.size() == 2 }
+        waitFor(60) { miniProfiler.results.size() == 2 }
+
+        and:
+        verifyResults(miniProfiler.results[0])
         verifyResults(miniProfiler.results[1])
+    }
+
+    private void closeResultPopup(result) {
+        if (result.popup.displayed) {
+            if (result.queriesPopup.displayed) {
+                result.queriesPopup.firstElement().sendKeys(Keys.ESCAPE)
+            }
+            result.popup.firstElement().sendKeys(Keys.ESCAPE)
+        }
     }
 
     private boolean verifyResults(result) {
@@ -51,7 +63,7 @@ class RatpackMiniprofilerFunctionalSpec extends GebReportingSpec {
         assert !result.popup.displayed
 
         result.button.click()
-        assert result.popup.displayed
+        assert waitFor { result.popup.displayed }
 
         def timings = result.popup.timings
         assert timings.size() == 3
@@ -84,6 +96,8 @@ class RatpackMiniprofilerFunctionalSpec extends GebReportingSpec {
         assert queries[1].timeFromStart ==~ ~/T\+\d+.\d ms/
         assert queries[1].duration ==~ ~/\d+.\d ms/
         assert queries[1].query ==~ ~/select\s+\*\s+from\s+people/
+
+        closeResultPopup(result)
 
         true
     }

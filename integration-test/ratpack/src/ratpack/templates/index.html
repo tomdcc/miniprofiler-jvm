@@ -58,16 +58,14 @@
 <%= new io.jdev.miniprofiler.ScriptTagWriter().printScriptTag() %>
 <script>
     jQuery(document).ready(function() {
-        window.setTimeout(function() {
-            jQuery.ajax('/', {
-                success: function(data) {
-                    var tb = jQuery("#ajax-table tbody");
-                    for(var i = 0; i < data.length; i++) {
-                        tb.append("<tr><td>" + data[i].id + "</td><td>" + data[i].name + "</td></tr>");
-                    }
+        jQuery.ajax('/', {
+            success: function(data) {
+                var tb = jQuery("#ajax-table tbody");
+                for(var i = 0; i < data.length; i++) {
+                    tb.append("<tr><td>" + data[i].id + "</td><td>" + data[i].name + "</td></tr>");
                 }
-            });
-        }, 1000);
+            }
+        });
     });
 </script>
 </body>
