@@ -40,7 +40,7 @@ import ratpack.handling.Handler;
 /**
  * Handler which adds the miniprofiler id for the current request as a response header.
  *
- * <p>Ussed by the UI javascript code to display AJAX profiler info.</p>
+ * <p>Used by the UI javascript code to display AJAX profiler info.</p>
  */
 public class MiniProfilerAjaxHeaderHandler implements Handler {
 
