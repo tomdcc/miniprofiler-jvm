@@ -3,19 +3,19 @@ sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
 dependencies {
-	provided 'javax.servlet:servlet-api:2.3'
+    compileOnly 'javax.servlet:servlet-api:2.3'
 
-	provided('net.sf.ehcache:ehcache:2.7.2') {
+    compileOnly('net.sf.ehcache:ehcache:2.7.2') {
 		transitive false
 	}
 
 	// for profiling eclipselink-generated sql
-	provided('org.eclipse.persistence:eclipselink:2.5.0') {
+    compileOnly('org.eclipse.persistence:eclipselink:2.5.0') {
 		transitive false
 	}
 
 	// for profiling hibernate-generated sql
-	provided('org.hibernate:hibernate-core:4.3.5.Final') {
+    compileOnly('org.hibernate:hibernate-core:4.3.5.Final') {
 		transitive false
 	}
 
@@ -26,6 +26,13 @@ dependencies {
 	// needed since we're excluding ehcache's deps and spock falls over otherwise
     testRuntime "javax.transaction:jta:1.1"
 
+}
+
+sourceSets {
+    test {
+        compileClasspath += configurations.compileOnly
+        runtimeClasspath += configurations.compileOnly
+    }
 }
 
 import org.apache.tools.ant.filters.*

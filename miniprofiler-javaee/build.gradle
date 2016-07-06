@@ -3,7 +3,14 @@ targetCompatibility = 1.6
 
 dependencies {
 	compile project(':miniprofiler-core')
-	provided 'javax:javaee-api:7.0'
+    compileOnly 'javax:javaee-api:7.0'
+}
+
+sourceSets {
+    test {
+        compileClasspath += configurations.compileOnly
+        runtimeClasspath += configurations.compileOnly
+    }
 }
 
 modifyPom { pom ->

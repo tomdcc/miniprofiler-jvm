@@ -21,12 +21,19 @@ targetCompatibility = 1.8
 
 dependencies {
 	compile project(":miniprofiler-core")
-	provided "io.ratpack:ratpack-core:$ratpackVersion"
-	provided "io.ratpack:ratpack-guice:$ratpackVersion"
-	provided "io.ratpack:ratpack-hikari:$ratpackVersion"
-	provided "io.ratpack:ratpack-h2:$ratpackVersion"
+    compileOnly "io.ratpack:ratpack-core:$ratpackVersion"
+    compileOnly "io.ratpack:ratpack-guice:$ratpackVersion"
+    compileOnly "io.ratpack:ratpack-hikari:$ratpackVersion"
+    compileOnly "io.ratpack:ratpack-h2:$ratpackVersion"
 
 	testCompile "io.ratpack:ratpack-test:$ratpackVersion"
+}
+
+sourceSets {
+    test {
+        compileClasspath += configurations.compileOnly
+        runtimeClasspath += configurations.compileOnly
+    }
 }
 
 modifyPom { pom ->

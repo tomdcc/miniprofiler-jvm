@@ -15,7 +15,7 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 dependencies {
-	provided 'javax:javaee-api:7.0'
+    compileOnly 'javax:javaee-api:7.0'
 
 	def cargoVersion = '1.4.8'
 	cargo "org.codehaus.cargo:cargo-core-uberjar:$cargoVersion"

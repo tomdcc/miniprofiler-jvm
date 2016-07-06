@@ -4,8 +4,8 @@ targetCompatibility = 1.6
 
 dependencies {
 	compile project(':miniprofiler-core')
-	provided 'javax.servlet:servlet-api:2.3'
-	provided 'org.grails:grails-web:2.2.0'
+    compileOnly 'javax.servlet:servlet-api:2.3'
+    compileOnly 'org.grails:grails-web:2.2.0'
 }
 
 modifyPom { pom ->
