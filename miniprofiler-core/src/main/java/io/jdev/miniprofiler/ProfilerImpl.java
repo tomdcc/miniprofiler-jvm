@@ -17,6 +17,7 @@
 package io.jdev.miniprofiler;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 
 /**
  * Profiler implementation.
@@ -153,6 +154,32 @@ public class ProfilerImpl implements Profiler {
 
     public Timing step(String name) {
         return step(name, ProfileLevel.Info);
+    }
+
+    public void step(String name, ProfileLevel level, Runnable block) {
+        Timing timing = step(name, level);
+        try {
+            block.run();
+        } finally {
+            timing.stop();
+        }
+    }
+
+    public void step(String name, Runnable block) {
+        step(name, ProfileLevel.Info, block);
+    }
+
+    public <T> T step(String name, ProfileLevel level, Callable<T> function) throws Exception {
+        Timing timing = step(name, level);
+        try {
+            return function.call();
+        } finally {
+            timing.stop();
+        }
+    }
+
+    public <T> T step(String name, Callable<T> function) throws Exception {
+        return step(name, ProfileLevel.Info, function);
     }
 
     public void addCustomTiming(String type, String executeType, String command, long duration) {

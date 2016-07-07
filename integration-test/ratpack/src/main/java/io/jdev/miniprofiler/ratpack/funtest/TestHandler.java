@@ -18,7 +18,6 @@ package io.jdev.miniprofiler.ratpack.funtest;
 
 import com.google.common.collect.ImmutableMap;
 import io.jdev.miniprofiler.ProfilerProvider;
-import io.jdev.miniprofiler.Timing;
 import ratpack.exec.Blocking;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
@@ -28,7 +27,6 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,19 +46,18 @@ public class TestHandler implements Handler {
 
     @Override
     public void handle(Context ctx) throws Exception {
-        System.out.println("Handler handling " + ctx.getRequest().getUri() + ", " + ctx.getRequest().getContentType().toString());
-        try (Timing timing = profilerProvider.getCurrentProfiler().step("TestHandler.handle")) {
+        profilerProvider.getCurrentProfiler().step("TestHandler.handle", () -> {
             Blocking.get(() -> getData(ctx)).then(data -> {
                 ctx.byContent(spr -> {
                     spr.json(() -> ctx.render(Jackson.json(data)));
                     spr.html(() -> ctx.render(groovyTemplate(ImmutableMap.of("people", data), "index.html")));
                 });
             });
-        }
+        });
     }
 
-    private List<Map<String, String>> getData(Context ctx) throws SQLException {
-        try (Timing timing = profilerProvider.getCurrentProfiler().step("TestHandler.getData")) {
+    private List<Map<String, String>> getData(Context ctx) throws Exception {
+        return profilerProvider.getCurrentProfiler().step("TestHandler.getData", () -> {
             List<Map<String, String>> results = new ArrayList<>();
             try (Connection con = ctx.get(DataSource.class).getConnection(); Statement st = con.createStatement()) {
                 try (ResultSet rs = st.executeQuery("select * from people")) {
@@ -73,6 +70,6 @@ public class TestHandler implements Handler {
                     return results;
                 }
             }
-        }
+        });
     }
 }

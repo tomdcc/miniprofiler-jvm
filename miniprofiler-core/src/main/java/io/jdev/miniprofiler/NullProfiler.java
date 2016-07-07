@@ -19,6 +19,7 @@ package io.jdev.miniprofiler;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 
 /**
  * A profiler implementation which does nothing. Mainly exists
@@ -50,6 +51,26 @@ public class NullProfiler implements Profiler {
     @Override
     public Timing step(String name, ProfileLevel level) {
         return NullTiming.INSTANCE;
+    }
+
+    @Override
+    public void step(String name, Runnable block) {
+        block.run();
+    }
+
+    @Override
+    public void step(String name, ProfileLevel level, Runnable block) {
+        block.run();
+    }
+
+    @Override
+    public <T> T step(String name, Callable<T> function) throws Exception {
+        return function.call();
+    }
+
+    @Override
+    public <T> T step(String name, ProfileLevel level, Callable<T> function) throws Exception {
+        return function.call();
     }
 
     @Override

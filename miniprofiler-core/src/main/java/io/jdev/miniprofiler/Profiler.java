@@ -21,6 +21,7 @@ import io.jdev.miniprofiler.json.Jsonable;
 import java.io.Closeable;
 import java.io.Serializable;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 
 /**
  * Represents a single profiling session.
@@ -90,6 +91,46 @@ public interface Profiler extends Serializable, Jsonable, Closeable {
      * @return a Timing instance to be stopped when the step is done
      */
     public Timing step(String name, ProfileLevel level);
+
+    /**
+     * Start and stop a new profiling step with the given block.
+     *
+     * @param name  The name of the step.
+     * @param block The block to time
+     */
+    public void step(String name, Runnable block);
+
+    /**
+     * Start and stop a new profiling step with the given block.
+     *
+     * @param name  The name of the step.
+     * @param level The profiling level for this step
+     * @param block The block to time
+     */
+    public void step(String name, ProfileLevel level, Runnable block);
+
+    /**
+     * Start and stop a new profiling step with the given callable function.
+     *
+     * @param name  The name of the step.
+     * @param function The function to time
+     * @param <T> the return type of the function
+     * @return the result of calling the function
+     * @throws Exception when the function throws an exception
+     */
+    public <T> T step(String name, Callable<T> function) throws Exception;
+
+    /**
+     * Start and stop a new profiling step with the given block.
+     *
+     * @param name  The name of the step.
+     * @param level The profiling level for this step
+     * @param function The function to time
+     * @param <T> the return type of the function
+     * @return the result of calling the function
+     * @throws Exception when the function throws an exception
+     */
+    public <T> T step(String name, ProfileLevel level, Callable<T> function) throws Exception;
 
     /**
      * Add a query timing inside the current timing step. This is usually

@@ -36,9 +36,7 @@ public class MiniProfilerStartProfilingHandler implements Handler {
 
     @Override
     public void handle(Context ctx) throws Exception {
-        System.out.println("handling " + ctx.getRequest().getUri() + ", " + ctx.getRequest().getContentType().toString());
         if (shouldStartProfiler(ctx)) {
-            System.out.println("starting profiler for " + ctx.getRequest().getUri() + ", " + ctx.getRequest().getContentType().toString());
             profilerProvider.start(ctx.getRequest().getUri());
         }
         ctx.next();
