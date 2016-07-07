@@ -23,34 +23,21 @@ import ratpack.handling.Handler
 import ratpack.test.handling.RequestFixture
 import spock.lang.Specification
 
-class MiniProfilerExecInterceptorSpec extends Specification {
+class EagerMiniProfilerExecInterceptorSpec extends Specification {
 
     final String requestUri = "/foo"
 
     TestProfilerProvider provider
-    MiniProfilerStartProfilingHandler startProfilerHandler
 
     void setup() {
         provider = new TestProfilerProvider()
-        startProfilerHandler = new MiniProfilerStartProfilingHandler(provider)
     }
 
-    void "by default interceptor does not create a new profiler on execuiton start"() {
+    void "interceptor creates new profiler and binds provider to execution"() {
         when: "run handler with interceptor"
         RequestFixture.handle({ ctx -> ctx.next() } as Handler, { RequestFixture req ->
             req.uri(requestUri)
-            req.registry.add(new MiniProfilerExecInterceptor(provider))
-        } as Action)
-
-        then: 'no profiler created'
-        !provider.hasCurrentProfiler()
-    }
-
-    void "interceptor stops any bound profiler on execution finish"() {
-        when: "run handler with interceptor"
-        RequestFixture.handle(startProfilerHandler, { RequestFixture req ->
-            req.uri(requestUri)
-            req.registry.add(new MiniProfilerExecInterceptor(provider))
+            req.registry.add(new EagerMiniProfilerExecInterceptor(provider))
         } as Action)
 
         then: 'profiler created and was stoped but not discarded'
@@ -60,20 +47,6 @@ class MiniProfilerExecInterceptorSpec extends Specification {
         !provider.wasDiscarded()
     }
 
-    void "discards profiler if option was not to store"() {
-        when: "run handler with interceptor when interceptor won't profile"
-        RequestFixture.handle(startProfilerHandler, { RequestFixture req ->
-            req.uri(requestUri)
-            req.registry.add(new MiniProfilerExecInterceptor(provider, ProfilerStoreOption.DISCARD_RESULTS))
-        } as Action)
-
-        then: 'profiler created but was discarded'
-        provider.currentProfiler
-        provider.currentProfiler.stopped
-        !(provider.currentProfiler instanceof NullProfiler)
-        provider.wasDiscarded()
-    }
-
     void "interceptor does not add profiler to execution if one is present"() {
         given: 'profiler'
         def profiler = provider.start("already running")
@@ -81,7 +54,7 @@ class MiniProfilerExecInterceptorSpec extends Specification {
         when: "run handler with interceptor on execution which already has a provider"
         RequestFixture.handle({ ctx -> ctx.next() } as Handler, { RequestFixture req ->
             req.uri(requestUri)
-            req.registry.add(new MiniProfilerExecInterceptor(provider))
+            req.registry.add(new EagerMiniProfilerExecInterceptor(provider))
         } as Action)
 
         then: "current profiler is the original one"

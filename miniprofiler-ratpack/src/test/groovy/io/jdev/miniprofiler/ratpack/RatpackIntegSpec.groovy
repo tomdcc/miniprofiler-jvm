@@ -42,6 +42,7 @@ class RatpackIntegSpec extends Specification {
 
         and: 'chain with handlers'
         def handlerChain = { Chain chain ->
+            chain.all(new MiniProfilerStartProfilingHandler(provider))
             chain.all(new AssertionHandler(provider: provider))
             chain.all(new ContextHandler())
         } as Action<Chain>

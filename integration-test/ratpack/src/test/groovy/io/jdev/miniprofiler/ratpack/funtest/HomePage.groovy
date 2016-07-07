@@ -20,7 +20,7 @@ import geb.Page
 import io.jdev.miniprofiler.test.pages.MiniProfilerModule
 
 class HomePage extends Page {
-    static url = ''
+    static url = 'page'
     static content = {
         miniProfiler(wait: true) { module MiniProfilerModule }
     }

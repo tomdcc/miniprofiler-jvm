@@ -58,7 +58,7 @@
 <%= new io.jdev.miniprofiler.ScriptTagWriter().printScriptTag() %>
 <script>
     jQuery(document).ready(function() {
-        jQuery.ajax('/', {
+        jQuery.ajax('/page', {
             success: function(data) {
                 var tb = jQuery("#ajax-table tbody");
                 for(var i = 0; i < data.length; i++) {

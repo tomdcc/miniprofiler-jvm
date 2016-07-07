@@ -17,13 +17,14 @@
 package io.jdev.miniprofiler.ratpack.funtest;
 
 import com.google.common.collect.ImmutableMap;
-import io.jdev.miniprofiler.Profiler;
+import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.Timing;
 import ratpack.exec.Blocking;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
 import ratpack.jackson.Jackson;
 
+import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -38,9 +39,17 @@ import static ratpack.groovy.Groovy.groovyTemplate;
 
 public class TestHandler implements Handler {
 
+    private final ProfilerProvider profilerProvider;
+
+    @Inject
+    public TestHandler(ProfilerProvider profilerProvider) {
+        this.profilerProvider = profilerProvider;
+    }
+
     @Override
     public void handle(Context ctx) throws Exception {
-        try (Timing timing = ctx.get(Profiler.class).step("TestHandler.handle")) {
+        System.out.println("Handler handling " + ctx.getRequest().getUri() + ", " + ctx.getRequest().getContentType().toString());
+        try (Timing timing = profilerProvider.getCurrentProfiler().step("TestHandler.handle")) {
             Blocking.get(() -> getData(ctx)).then(data -> {
                 ctx.byContent(spr -> {
                     spr.json(() -> ctx.render(Jackson.json(data)));
@@ -51,7 +60,7 @@ public class TestHandler implements Handler {
     }
 
     private List<Map<String, String>> getData(Context ctx) throws SQLException {
-        try (Timing timing = ctx.get(Profiler.class).step("TestHandler.getData")) {
+        try (Timing timing = profilerProvider.getCurrentProfiler().step("TestHandler.getData")) {
             List<Map<String, String>> results = new ArrayList<>();
             try (Connection con = ctx.get(DataSource.class).getConnection(); Statement st = con.createStatement()) {
                 try (ResultSet rs = st.executeQuery("select * from people")) {

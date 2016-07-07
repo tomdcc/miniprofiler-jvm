@@ -63,6 +63,12 @@ public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Co
         return createInterceptor(provider, config);
     }
 
+    @Provides
+    @Singleton
+    public MiniProfilerStartProfilingHandler startProfilingHandler(ProfilerProvider provider) {
+        return new MiniProfilerStartProfilingHandler(provider);
+    }
+
     protected MiniProfilerExecInterceptor createInterceptor(ProfilerProvider provider, Config config) {
         return new MiniProfilerExecInterceptor(provider, config.defaultProfilerStoreOption);
     }

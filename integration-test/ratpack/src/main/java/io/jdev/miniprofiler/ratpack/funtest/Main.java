@@ -37,16 +37,18 @@ public class Main {
                         hikariConfig.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
                         hikariConfig.addDataSourceProperty("URL", "jdbc:h2:mem:miniprofiler;DB_CLOSE_DELAY=-1");
                     });
-                    bindings.module(MiniProfilerModule.class, miniProfilerConfig -> {
-                        miniProfilerConfig.defaultProfilerStoreOption = ProfilerStoreOption.DISCARD_RESULTS;
-                    });
+                    bindings.module(MiniProfilerModule.class);
                     bindings.add(new DataSetup());
+                    bindings.bind(TestHandler.class);
                 }))
                 .handlers(chain -> chain
                         .prefix(MiniProfilerHandlerChain.DEFAULT_PREFIX, MiniProfilerHandlerChain.class)
                         .files(f -> f.dir("public"))
-                        .all(MiniProfilerAjaxHeaderHandler.class)
-                        .get("", new TestHandler())
+                        .prefix("page", c -> c
+                            .all(MiniProfilerStartProfilingHandler.class)
+                            .all(MiniProfilerAjaxHeaderHandler.class)
+                            .get(TestHandler.class)
+                        )
                 )
         );
     }

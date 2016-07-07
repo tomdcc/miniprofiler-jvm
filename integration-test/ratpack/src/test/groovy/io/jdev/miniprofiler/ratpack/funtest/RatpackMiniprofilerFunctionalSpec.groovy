@@ -67,7 +67,7 @@ class RatpackMiniprofilerFunctionalSpec extends GebReportingSpec {
 
         def timings = result.popup.timings
         assert timings.size() == 3
-        assert timings.label == ['/', 'TestHandler.handle', 'TestHandler.getData']
+        assert timings.label == ['/page', 'TestHandler.handle', 'TestHandler.getData']
         assert timings[0].duration.text() ==~ ~/\d+\.\d/
         assert !timings[0].durationWithChildren.displayed
         assert !timings[0].timeFromStart.displayed

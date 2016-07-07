@@ -82,16 +82,19 @@ public class MiniProfilerExecInterceptor implements ExecInterceptor {
     @Override
     public void intercept(Execution execution, ExecType execType, Block continuation) throws Exception {
         // create a profiler if there isn't one already
-        if (!provider.hasCurrentProfiler()) {
-            Profiler profiler = provider.start(getProfilerName(execution, execType));
-            execution.onComplete(() -> executionComplete(execution, profiler));
+        if (shouldCreateProfilerOnExecutionStart(execution, execType) && !provider.hasCurrentProfiler()) {
+            provider.start(getProfilerName(execution, execType));
         }
+        execution.onComplete(() -> executionComplete(execution));
         continuation.execute();
     }
 
-    private void executionComplete(Execution execution, Profiler profiler) {
-        ProfilerStoreOption store = execution.maybeGet(ProfilerStoreOption.class).orElse(defaultProfilerStoreOption);
-        profiler.stop(store == ProfilerStoreOption.DISCARD_RESULTS);
+    private void executionComplete(Execution execution) {
+        if (provider.hasCurrentProfiler()) {
+            Profiler profiler = provider.getCurrentProfiler();
+            ProfilerStoreOption store = execution.maybeGet(ProfilerStoreOption.class).orElse(defaultProfilerStoreOption);
+            profiler.stop(store == ProfilerStoreOption.DISCARD_RESULTS);
+        }
     }
 
     /**
@@ -107,5 +110,19 @@ public class MiniProfilerExecInterceptor implements ExecInterceptor {
     protected String getProfilerName(Execution execution, ExecType execType) {
         Optional<Request> maybeReq = execution.maybeGet(Request.class);
         return maybeReq.isPresent() ? maybeReq.get().getUri() : "Unknown";
+    }
+
+    /**
+     * Controls whether this interceptor will start a profiler at the start of the execution for the given execution.
+     *
+     * <p>Default is to return false, ie profilers are started by some other execution logic, rather than for all
+     * executions.</p>
+     *
+     * @param execution the execution whose segment is being intercepted
+     * @param execType indicates whether this is a compute (e.g. request handling) segment or blocking segment
+     * @return <code>false</code> for the default implementation
+     */
+    protected boolean shouldCreateProfilerOnExecutionStart(Execution execution, ExecType execType) {
+        return false;
     }
 }
