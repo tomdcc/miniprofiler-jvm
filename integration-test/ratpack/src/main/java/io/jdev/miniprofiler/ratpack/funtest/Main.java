@@ -45,8 +45,7 @@ public class Main {
                         .prefix(MiniProfilerHandlerChain.DEFAULT_PREFIX, MiniProfilerHandlerChain.class)
                         .files(f -> f.dir("public"))
                         .prefix("page", c -> c
-                            .all(MiniProfilerStartProfilingHandler.class)
-                            .all(MiniProfilerAjaxHeaderHandler.class)
+                            .insert(MiniProfilerStartProfilingHandlers.class)
                             .get(TestHandler.class)
                         )
                 )

@@ -51,6 +51,7 @@ public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Co
         bind(ExecInterceptor.class).to(MiniProfilerExecInterceptor.class).in(Scopes.SINGLETON);
         bind(MiniProfilerAjaxHeaderHandler.class).in(Scopes.SINGLETON);
         bind(MiniProfilerHandlerChain.class).in(Scopes.SINGLETON);
+        bind(MiniProfilerStartProfilingHandlers.class).in(Scopes.SINGLETON);
         bind(StoreMiniProfilerHandler.class).in(Scopes.SINGLETON);
         bind(DiscardMiniProfilerHandler.class).in(Scopes.SINGLETON);
         bind(MiniProfilerResultsHandler.class).in(Scopes.SINGLETON);
