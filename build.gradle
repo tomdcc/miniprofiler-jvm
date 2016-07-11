@@ -19,7 +19,7 @@ subprojects {
     apply plugin: 'idea'
 
 	group = 'io.jdev.miniprofiler'
-    version = '0.5.7-SNAPSHOT'
+    version = '0.5.7'
 
 	repositories {
         mavenCentral()
