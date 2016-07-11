@@ -23,6 +23,7 @@ import io.jdev.miniprofiler.ProfilerProvider;
 import ratpack.exec.ExecInterceptor;
 import ratpack.guice.ConfigurableModule;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
@@ -42,9 +43,11 @@ public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Co
      */
     @Override
     protected void configure() {
-        ProfilerProvider provider = new RatpackContextProfilerProvider();
-        bind(ProfilerProvider.class).toInstance(provider);
-        MiniProfiler.setProfilerProvider(provider);
+        if (bindDefaultProvider()) {
+            bind(ProfilerProvider.class).toInstance(new RatpackContextProfilerProvider());
+        }
+
+        requestStaticInjection(MiniProfilerModule.class);
 
         // these just here to enable someone to bind a handler etc to the class rather than
         // a new instance if they want to do that
@@ -56,6 +59,17 @@ public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Co
         bind(DiscardMiniProfilerHandler.class).in(Scopes.SINGLETON);
         bind(MiniProfilerResultsHandler.class).in(Scopes.SINGLETON);
         bind(MiniProfilerResourceHandler.class).in(Scopes.SINGLETON);
+    }
+
+    /**
+     * Return whether to explicitly bind the default profiler provider.
+     *
+     * <p>Subclasses can return false here to bind their own profiler provider, e.g. using a provides method.</p>
+     *
+     * @return True if the module should bind a default profiler, false otherwise.
+     */
+    protected boolean bindDefaultProvider() {
+        return true;
     }
 
     @Provides
@@ -76,5 +90,10 @@ public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Co
 
     public static class Config {
         public ProfilerStoreOption defaultProfilerStoreOption = ProfilerStoreOption.STORE_RESULTS;
+    }
+
+    @Inject
+    private static void setStaticProfilerProvider(ProfilerProvider provider) {
+        MiniProfiler.setProfilerProvider(provider);
     }
 }
