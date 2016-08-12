@@ -39,6 +39,9 @@ test.dependsOn(cargoStartLocal)
 cargoStartLocal.finalizedBy(cargoStopLocal)
 cargoStopLocal.mustRunAfter(test)
 
+// this sometimes hasn't cleaned up a process that uses the same port in time
+cargoStartLocal.shouldRunAfter(':integration-test:servlet:test')
+
 cargo {
 	containerId = 'glassfish4x'
 	port = 8081
