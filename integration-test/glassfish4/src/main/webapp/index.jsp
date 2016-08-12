@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <%@ page import="java.util.*" %>
 <%@ page import="io.jdev.miniprofiler.ScriptTagWriter" %>
-<%@ page import="io.jdev.miniprofiler.MiniProfiler" %>
 <%@ page import="io.jdev.miniprofiler.glassfish4.funtest.Person" %>
 <html>
 <head>

@@ -6,7 +6,6 @@
 <%@ page import="java.util.*" %>
 <%@ page import="java.sql.SQLException" %>
 <%@ page import="io.jdev.miniprofiler.ScriptTagWriter" %>
-<%@ page import="io.jdev.miniprofiler.MiniProfiler" %>
 <%
     DataSource ds = (DataSource) application.getAttribute("dataSource");
     List<Map<String,String>> results = new ArrayList<Map<String,String>>();
