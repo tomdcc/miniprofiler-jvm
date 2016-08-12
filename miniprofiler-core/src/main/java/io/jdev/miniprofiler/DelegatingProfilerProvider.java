@@ -76,4 +76,14 @@ public abstract class DelegatingProfilerProvider implements ProfilerProvider {
     public void setStorage(Storage storage) {
         getDelegate().setStorage(storage);
     }
+
+    @Override
+    public ProfilerUiConfig getUiConfig() {
+        return getDelegate().getUiConfig();
+    }
+
+    public void setUiConfig(ProfilerUiConfig uiConfig) {
+        getDelegate().setUiConfig(uiConfig);
+    }
+
 }

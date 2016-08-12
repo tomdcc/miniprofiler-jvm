@@ -135,4 +135,19 @@ public interface ProfilerProvider {
      * @param storage the storage to use
      */
     void setStorage(Storage storage);
+
+    /**
+     * Returns the {@link ProfilerUiConfig} associated with this provider.
+     *
+     * @return the provider's UI config
+     */
+    ProfilerUiConfig getUiConfig();
+
+    /**
+     * Sets the {@link ProfilerUiConfig} for this provider to use.
+     *
+     * @param uiConfig the UI config to use
+     */
+    void setUiConfig(ProfilerUiConfig uiConfig);
+
 }

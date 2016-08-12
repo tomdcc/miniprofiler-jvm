@@ -16,10 +16,12 @@
 
 package io.jdev.miniprofiler.ratpack;
 
+import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.ProfilerProvider;
+import io.jdev.miniprofiler.ProfilerUiConfig;
 import ratpack.exec.ExecInterceptor;
 import ratpack.guice.ConfigurableModule;
 
@@ -44,7 +46,7 @@ public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Co
     @Override
     protected void configure() {
         if (bindDefaultProvider()) {
-            bind(ProfilerProvider.class).toInstance(new RatpackContextProfilerProvider());
+            bind(ProfilerProvider.class).toProvider(ProviderProvider.class).in(Singleton.class);
         }
 
         requestStaticInjection(MiniProfilerModule.class);
@@ -90,10 +92,28 @@ public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Co
 
     public static class Config {
         public ProfilerStoreOption defaultProfilerStoreOption = ProfilerStoreOption.STORE_RESULTS;
+        public ProfilerUiConfig uiConfig = ProfilerUiConfig.create();
     }
 
     @Inject
     private static void setStaticProfilerProvider(ProfilerProvider provider) {
         MiniProfiler.setProfilerProvider(provider);
+    }
+
+    private static class ProviderProvider implements Provider<ProfilerProvider> {
+        private final Config config;
+
+        @Inject
+        private ProviderProvider(Config config) {
+            this.config = config;
+        }
+
+
+        @Override
+        public ProfilerProvider get() {
+            RatpackContextProfilerProvider provider = new RatpackContextProfilerProvider();
+            provider.setUiConfig(config.uiConfig);
+            return provider;
+        }
     }
 }

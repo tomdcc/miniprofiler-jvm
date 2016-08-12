@@ -16,6 +16,7 @@
 
 package io.jdev.miniprofiler.ratpack.funtest;
 
+import io.jdev.miniprofiler.ProfilerUiConfig;
 import io.jdev.miniprofiler.ratpack.*;
 import ratpack.groovy.template.TextTemplateModule;
 import ratpack.guice.Guice;
@@ -37,7 +38,9 @@ public class Main {
                         hikariConfig.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
                         hikariConfig.addDataSourceProperty("URL", "jdbc:h2:mem:miniprofiler;DB_CLOSE_DELAY=-1");
                     });
-                    bindings.module(MiniProfilerModule.class);
+                    bindings.module(MiniProfilerModule.class, profilerConfig -> {
+                        profilerConfig.uiConfig.setPosition(ProfilerUiConfig.Position.LEFT);
+                    });
                     bindings.add(new DataSetup());
                     bindings.bind(TestHandler.class);
                 }))

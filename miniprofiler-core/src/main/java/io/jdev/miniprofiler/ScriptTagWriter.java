@@ -45,8 +45,7 @@ public class ScriptTagWriter {
      * @return script html tag
      */
     public String printScriptTag() {
-        // TODO: pull from config when we have some
-        return printScriptTag("/miniprofiler");
+        return printScriptTag(provider.getCurrentProfiler(), provider.getUiConfig().getPath());
     }
 
     /**
@@ -64,26 +63,28 @@ public class ScriptTagWriter {
      * Writes out a script tag in the format that the mini profiler front end
      * javascript expects.
      *
+     * @param profiler the profiler to use when writing the tag
+     * @return script html tag
+     */
+    public String printScriptTag(Profiler profiler) {
+        return printScriptTag(profiler, provider.getUiConfig().getPath());
+    }
+
+    /**
+     * Writes out a script tag in the format that the mini profiler front end
+     * javascript expects.
+     *
      * @param profiler profiler data
      * @param path     path to the script
      * @return script html tag
-     *
-     * @deprecated use {@link #printScriptTag(String)} and create writer with a provider
      */
     public String printScriptTag(Profiler profiler, String path) {
         if (profiler == null || profiler == NullProfiler.INSTANCE) {
             return "";
         }
-        // TODO: un-hard-code all of this stuff
+        ProfilerUiConfig config = provider.getUiConfig();
         UUID currentId = profiler.getId();
         List<UUID> ids = Collections.singletonList(currentId);
-        String position = "left";
-        boolean showTrivial = false;
-        boolean showChildren = false;
-        int maxTracesToShow = 15;
-        boolean showControls = false;
-        boolean authorized = true;
-        boolean useExistingjQuery = false;
         String version = MiniProfiler.getVersion();
 
         if (!path.endsWith("/")) {
@@ -92,20 +93,34 @@ public class ScriptTagWriter {
         StringBuilder sb = new StringBuilder();
         sb.append("<script type='text/javascript' id='mini-profiler'");
         appendAttribute(sb, "src", path + "includes.js?version=" + version);
-        appendAttribute(sb, "data-version", version);
         appendAttribute(sb, "data-path", path);
+        appendAttribute(sb, "data-version", version);
+
         appendAttribute(sb, "data-current-id", currentId);
         appendAttribute(sb, "data-ids", ids.toString());
-        appendAttribute(sb, "data-position", position);
-        appendAttribute(sb, "data-trivial", showTrivial);
-        appendAttribute(sb, "data-children", showChildren);
-        appendAttribute(sb, "data-max-traces", maxTracesToShow);
-        appendAttribute(sb, "data-controls", showControls);
-        appendAttribute(sb, "data-authorized", authorized);
+
+        appendAttribute(sb, "data-position", config.getPosition().name().toLowerCase());
+        if (config.getToggleShortcut() != null) {
+            appendAttribute(sb, "data-toggle-shortcut", config.getToggleShortcut());
+        }
+        if (config.getMaxTraces() != null) {
+            appendAttribute(sb, "data-max-traces", config.getMaxTraces());
+        }
+        if (config.getTrivialMilliseconds() != null) {
+            appendAttribute(sb, "data-trivial-milliseconds", config.getTrivialMilliseconds());
+        }
+
+        appendAttribute(sb, "data-trivial", config.isTrivial());
+        appendAttribute(sb, "data-children", config.isChildren());
+        appendAttribute(sb, "data-controls", config.isControls());
+        appendAttribute(sb, "data-authorized", config.isAuthorized());
+        appendAttribute(sb, "data-start-hidden", config.isStartHidden());
         sb.append("></script>");
         return sb.toString();
     }
 
+    // TODO: We don't currently encode these attributes properly. The only case where this is likely to be a problem
+    // is the toggleShortcut where someone could put a
     private static void appendAttribute(StringBuilder sb, String attributeName, Object value) {
         sb.append(" ").append(attributeName).append("='").append(value).append("'");
     }

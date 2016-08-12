@@ -33,6 +33,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
     private Storage storage = new MapStorage();
     private String machineName = getDefaultHostname();
     private UserProvider userProvider;
+    private ProfilerUiConfig uiConfig;
 
     /**
      * Called after a new profiler is created. Subclasses should
@@ -244,4 +245,28 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
         }
 
     }
+
+    /**
+     * Returns the {@link ProfilerUiConfig} associated with this provider.
+     *
+     * @return the provider's UI config
+     */
+    @Override
+    public ProfilerUiConfig getUiConfig() {
+        if (uiConfig == null) {
+            uiConfig = ProfilerUiConfig.create();
+        }
+        return uiConfig;
+    }
+
+    /**
+     * Sets the {@link ProfilerUiConfig} for this provider to use.
+     *
+     * @param uiConfig the UI config to use
+     */
+    @Override
+    public void setUiConfig(ProfilerUiConfig uiConfig) {
+        this.uiConfig = uiConfig;
+    }
+
 }
