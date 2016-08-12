@@ -11,3 +11,10 @@ codenarc {
 codenarcTest {
   configFile rootProject.file('gradle/codenarc/codenarcTest.groovy')
 }
+
+// stop codenarc from using a dynamic groovy version
+configurations.codenarc.resolutionStrategy.eachDependency {
+    if (requested.group == "org.codehaus.groovy") {
+        useVersion '2.4.4'
+    }
+}
