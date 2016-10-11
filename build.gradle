@@ -1,5 +1,5 @@
 plugins {
-    id 'com.gradle.build-scan' version '1.0'
+    id 'com.gradle.build-scan' version '1.1'
 }
 
 buildScan {
@@ -147,4 +147,36 @@ allprojects {
 			configurations.all { it.resolve() }
 		}
 	}
+}
+
+if (System.getProperty('scan')) {
+    if (System.getenv("CI")) {
+        buildScan.tag "CI"
+        buildScan.link "Travis Build", "https://travis-ci.org/${System.getenv('TRAVIS_REPO_SLUG')}/builds/${System.getenv('TRAVIS_BUILD_ID')}"
+        buildScan.value "Build Number", System.getenv("TRAVIS_BUILD_NUMBER")
+        buildScan.value "Build ID", System.getenv('TRAVIS_BUILD_ID')
+
+        ext.commitId = System.getenv("TRAVIS_COMMIT")
+    } else {
+        buildScan.tag "LOCAL"
+        try {
+            ext.commitId = 'git rev-parse --verify HEAD'.execute().text.trim()
+        } catch (ignore) {
+            // ignore
+        }
+
+        try {
+            def status = 'git status --porcelain'.execute().text
+            if (status) {
+                buildScan.tag "dirty"
+                buildScan.value "Git Status", status
+            }
+        } catch (ignore) {
+            // ignore
+        }
+    }
+
+    if (commitId) {
+        buildScan.value "Git Commit ID", commitId
+    }
 }
