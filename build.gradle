@@ -2,11 +2,6 @@ plugins {
     id 'com.gradle.build-scan' version '1.2'
 }
 
-buildScan {
-    licenseAgreementUrl = 'https://gradle.com/terms-of-service'
-    licenseAgree = 'yes'
-}
-
 apply plugin: 'idea'
 subprojects {
 
@@ -148,34 +143,38 @@ allprojects {
 	}
 }
 
-if (System.getProperty('scan') != null) {
-    if (System.getenv("CI")) {
-        buildScan.tag "CI"
-        buildScan.link "Travis Build", "https://travis-ci.org/${System.getenv('TRAVIS_REPO_SLUG')}/builds/${System.getenv('TRAVIS_BUILD_ID')}"
-        buildScan.value "Build Number", System.getenv("TRAVIS_BUILD_NUMBER")
-        buildScan.value "Build ID", System.getenv('TRAVIS_BUILD_ID')
+def isCI = System.getenv("CI")
+def buildScansEnabled = isCI || project.hasProperty('enableBuildScans') && project.property('enableBuildScans') == 'true'
+if (buildScansEnabled) {
+    buildScan {
+        licenseAgreementUrl = 'https://gradle.com/terms-of-service'
+        licenseAgree = 'yes'
 
-        ext.commitId = System.getenv("TRAVIS_COMMIT")
-    } else {
-        buildScan.tag "LOCAL"
-        try {
-            ext.commitId = 'git rev-parse --verify HEAD'.execute().text.trim()
-        } catch (ignore) {
-            // ignore
-        }
+        publishAlwaysIf(project.hasProperty('alwaysPublishBuildScans') && project.property('alwaysPublishBuildScans') == 'true')
 
-        try {
-            def status = 'git status --porcelain'.execute().text
-            if (status) {
-                buildScan.tag "dirty"
-                buildScan.value "Git Status", status
+        if (isCI) {
+            publishOnFailure()
+            tag "CI"
+            link "Travis Build", "https://travis-ci.org/${System.getenv('TRAVIS_REPO_SLUG')}/builds/${System.getenv('TRAVIS_BUILD_ID')}"
+            value "Build Number", System.getenv("TRAVIS_BUILD_NUMBER")
+            value "Build ID", System.getenv('TRAVIS_BUILD_ID')
+            value "Git Commit ID", System.getenv("TRAVIS_COMMIT")
+        } else {
+            tag "LOCAL"
+            try {
+                value "Git Commit ID", 'git rev-parse --verify HEAD'.execute().text.trim()
+            } catch (ignore) {
+                // ignore
             }
-        } catch (ignore) {
-            // ignore
+            try {
+                def status = 'git status --porcelain'.execute().text
+                if (status) {
+                    tag "dirty"
+                    value "Git Status", status
+                }
+            } catch (ignore) {
+                // ignore
+            }
         }
-    }
-
-    if (commitId) {
-        buildScan.value "Git Commit ID", commitId
     }
 }
