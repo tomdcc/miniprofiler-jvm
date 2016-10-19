@@ -148,7 +148,7 @@ allprojects {
 	}
 }
 
-if (System.getProperty('scan')) {
+if (System.getProperty('scan') != null) {
     if (System.getenv("CI")) {
         buildScan.tag "CI"
         buildScan.link "Travis Build", "https://travis-ci.org/${System.getenv('TRAVIS_REPO_SLUG')}/builds/${System.getenv('TRAVIS_BUILD_ID')}"
