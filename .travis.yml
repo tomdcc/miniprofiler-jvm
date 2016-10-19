@@ -12,8 +12,10 @@ before_install:
   - "sh -e /etc/init.d/xvfb start"
   - "which firefox"
   - "firefox --version"
+  - "ls -l `which firefox`"
   - "which firefox-bin"
   - "firefox-bin --version"
+  - "ls -l `which firefox-bin`"
 install: ./gradlew -Dscan clean resolveAllDependencies assemble
 script: ./gradlew -Dscan check uploadSnapshots
 env:
