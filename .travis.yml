@@ -10,10 +10,11 @@ branches:
 before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
-install: ./gradlew -Dscan clean resolveAllDependencies assemble
-script: ./gradlew -Dscan check uploadSnapshots
+install: ./gradlew clean resolveAllDependencies
+script: ./gradlew -Dscan assemble check uploadSnapshots
 env:
   global:
   - TERM=dumb
+  - ORG_GRADLE_PROJECT_enableBuildScans=true
   - secure: "JUvsQdNlTT5HO3FX+3A4Ex/V9kiiGQe9yYU9IxkrN6ohyYLCwbNn32cdFC3PUsqV+FYEbSGU2lGnEWtfysWZEehFZZb15DhV/6LlpO4XMec2QWbbD2DaW6NKmHC8GEo1dXDqJTZRBz9mMWSojZvCnScLjn3UIT3krJbgdUlrJPE="
   - secure: "MXVhVp0m2IHaAb905jKfN44I+qI8vB3Vix6QdX4gGecDaOUG4kcUXlDBbvUeW9mlGo1nQYT+fyimZmMpAOQRoKbQnqcNWUegzexH8iqk5X+mq/9SrWx7vLS8N9uyJWCctECRb7BpB7xjBo7jFQa5UcA3qIo1ngR+Rt2e3PXZo4w="
