@@ -13,3 +13,4 @@ bin/
 chromedriver.log
 .shelf/
 out/
+gradle.properties
