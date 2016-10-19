@@ -21,15 +21,15 @@ import geb.Module
 class MiniProfilerModule extends Module {
     static base = { $('.profiler-results') }
     static content = {
-        results { $('.profiler-result').collect { module MiniProfilerResultModule, it } }
+        results { $('.profiler-result')*.module(MiniProfilerResultModule) }
     }
 }
 
 class MiniProfilerResultModule extends Module {
     static content = {
-        button { module MiniProfilerButtonModule, $('.profiler-button') }
-        popup { module MiniProfilerPopupModule, $('.profiler-popup') }
-        queriesPopup { module MiniProfilerQueriesPopupModule, $('.profiler-queries') }
+        button { $('.profiler-button').module(MiniProfilerButtonModule) }
+        popup { $('.profiler-popup').module(MiniProfilerPopupModule) }
+        queriesPopup { $('.profiler-queries').module(MiniProfilerQueriesPopupModule) }
     }
 }
 
@@ -41,7 +41,7 @@ class MiniProfilerButtonModule extends Module {
 
 class MiniProfilerPopupModule extends Module {
     static content = {
-        timings { $('.profiler-output .profiler-timings tbody tr').collect { module MiniProfilerTimingRowModule, it } }
+        timings { $('.profiler-output .profiler-timings tbody tr')*.module(MiniProfilerTimingRowModule) }
         toggleChildTimingLink { $('.profiler-toggle-hidden-columns') }
     }
 }
@@ -62,7 +62,7 @@ class MiniProfilerQueriesPopupModule extends Module {
     static content = {
         queries {
             $('table tbody tr').collect {
-                module((it.hasClass('profiler-gap-info') ? MiniProfilerGapModule : MiniProfilerQueryModule), it)
+                it.module(it.hasClass('profiler-gap-info') ? MiniProfilerGapModule : MiniProfilerQueryModule)
             }
         }
         toggleTrivialGapsLink { $('.profiler-toggle-trivial-gaps') }
