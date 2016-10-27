@@ -229,4 +229,29 @@ public class ProfilerUiConfig {
         result = 31 * result + (startHidden ? 1 : 0);
         return result;
     }
+
+    /**
+     * Creates a copy of this config object.
+     *
+     * <p>
+     *     The main purpose of this is to allow overriding specific options on a case-by-case basis.
+     *     Copy the main config, then override.
+     * </p>
+     *
+     * @return a copy with the same properties
+     */
+    public ProfilerUiConfig copy() {
+        ProfilerUiConfig copy = new ProfilerUiConfig();
+        copy.path = this.path;
+        copy.position = this.position;
+        copy.toggleShortcut = this.toggleShortcut;
+        copy.maxTraces = this.maxTraces;
+        copy.trivialMilliseconds = this.trivialMilliseconds;
+        copy.trivial = this.trivial;
+        copy.children = this.children;
+        copy.controls = this.controls;
+        copy.authorized = this.authorized;
+        copy.startHidden = this.startHidden;
+        return copy;
+    }
 }

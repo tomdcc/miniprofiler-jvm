@@ -104,4 +104,42 @@ class ProfilerUiConfigSpec extends Specification {
         thrown(IllegalArgumentException)
     }
 
+    void "config can be copied"() {
+        given:
+        def config = other()
+
+        when:
+        def copy = config.copy()
+
+        then:
+        with(copy) {
+            path == config.path
+            position == config.position
+            toggleShortcut == config.toggleShortcut
+            maxTraces == config.maxTraces
+            trivialMilliseconds == config.trivialMilliseconds
+            trivial == config.trivial
+            children == config.children
+            controls == config.controls
+            authorized == config.authorized
+            startHidden == config.startHidden
+        }
+    }
+
+    private static ProfilerUiConfig other() {
+        ProfilerUiConfig.create().with {
+            path = '/other-path'
+            position = ProfilerUiConfig.Position.BOTTOMLEFT
+            toggleShortcut = 'whatever'
+            maxTraces = 99
+            trivialMilliseconds = 95
+            trivial = true
+            children = true
+            controls = true
+            authorized = true
+            startHidden = true
+            it
+        }
+    }
+
 }
