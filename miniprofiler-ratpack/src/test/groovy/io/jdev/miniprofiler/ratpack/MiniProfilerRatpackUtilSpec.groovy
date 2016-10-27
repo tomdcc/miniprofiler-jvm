@@ -28,7 +28,7 @@ class MiniProfilerRatpackUtilSpec extends Specification {
 
     def provider = new TestProfilerProvider()
 
-    void "can profile promises from yield"() {
+    void "can profile promises from subscription"() {
         given:
         long sleepTime = 100L
 
@@ -40,7 +40,7 @@ class MiniProfilerRatpackUtilSpec extends Specification {
         def result = ExecHarness.yieldSingle { c ->
             start = System.currentTimeMillis()
             profiler = new ProfilerImpl('root', ProfileLevel.Info, provider)
-            def instrumentedPromise = MiniProfilerRatpackUtil.profileFromYield(profiler, 'foo', Promise.ofLazy { ->
+            def instrumentedPromise = MiniProfilerRatpackUtil.profile(profiler, 'foo', Promise.ofLazy { ->
                 afterYield = System.currentTimeMillis()
                 Thread.sleep(sleepTime)
                 "foo"

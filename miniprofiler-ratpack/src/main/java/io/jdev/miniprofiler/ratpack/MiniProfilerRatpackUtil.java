@@ -18,9 +18,8 @@ package io.jdev.miniprofiler.ratpack;
 
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.Timing;
+import ratpack.exec.Downstream;
 import ratpack.exec.Promise;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A class containing utility methods for timing promises.
@@ -37,11 +36,11 @@ public class MiniProfilerRatpackUtil {
      * @param <T> the type of the promise
      * @return a promise that has profiling instrumentation
      */
-    public static <T> Promise<T> profileFromYield(Profiler profiler, String name, Promise<T> promise) {
-        AtomicReference<Timing> t = new AtomicReference<>();
-        return promise
-            .onYield(() -> t.set(profiler.step(name)))
-            .wiretap(r -> t.get().stop());
+    public static <T> Promise<T> profile(Profiler profiler, String name, Promise<T> promise) {
+        return promise.transform(up -> down -> {
+            Timing step = profiler.step(name);
+            up.connect(new ProfiledDownstream<>(down, step));
+        });
     }
 
     /**
@@ -57,5 +56,33 @@ public class MiniProfilerRatpackUtil {
     public static <T> Promise<T> profileFromNow(Profiler profiler, String name, Promise<T> promise) {
         final Timing t = profiler.step(name);
         return promise.wiretap(r -> t.stop());
+    }
+
+    private static class ProfiledDownstream<T> implements Downstream<T> {
+        private final Downstream<T> down;
+        private final Timing step;
+
+        private ProfiledDownstream(Downstream<T> down, Timing step) {
+            this.down = down;
+            this.step = step;
+        }
+
+        @Override
+        public void success(T value) {
+            step.stop();
+            down.success(value);
+        }
+
+        @Override
+        public void error(Throwable throwable) {
+            step.stop();
+            down.error(throwable);
+        }
+
+        @Override
+        public void complete() {
+            step.stop();
+            down.complete();
+        }
     }
 }
