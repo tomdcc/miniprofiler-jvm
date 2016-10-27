@@ -45,7 +45,20 @@ public class ScriptTagWriter {
      * @return script html tag
      */
     public String printScriptTag() {
-        return printScriptTag(provider.getCurrentProfiler(), provider.getUiConfig().getPath());
+        return printScriptTag(provider.getCurrentProfiler(), provider.getUiConfig());
+    }
+
+    /**
+     * Writes out a script tag in the format that the mini profiler front end
+     * javascript expects.
+     *
+     * <p>Writes tag using default path to miniprofiler resources (<code>/miniprofiler</code>).</p>
+     *
+     * @param config specific UI config
+     * @return script html tag
+     */
+    public String printScriptTag(ProfilerUiConfig config) {
+        return printScriptTag(provider.getCurrentProfiler(), config);
     }
 
     /**
@@ -67,7 +80,7 @@ public class ScriptTagWriter {
      * @return script html tag
      */
     public String printScriptTag(Profiler profiler) {
-        return printScriptTag(profiler, provider.getUiConfig().getPath());
+        return printScriptTag(profiler, provider.getUiConfig());
     }
 
     /**
@@ -82,7 +95,34 @@ public class ScriptTagWriter {
         if (profiler == null || profiler == NullProfiler.INSTANCE) {
             return "";
         }
-        ProfilerUiConfig config = provider.getUiConfig();
+        return printScriptTag(profiler, provider.getUiConfig(), path);
+    }
+
+    /**
+     * Writes out a script tag in the format that the mini profiler front end
+     * javascript expects.
+     *
+     * @param profiler profiler data
+     * @param config   specific UI config
+     * @return script html tag
+     */
+    public String printScriptTag(Profiler profiler, ProfilerUiConfig config) {
+        return printScriptTag(profiler, config, config.getPath());
+    }
+
+    /**
+     * Writes out a script tag in the format that the mini profiler front end
+     * javascript expects.
+     *
+     * @param profiler profiler data
+     * @param config   specific UI config
+     * @param path     path to the script
+     * @return script html tag
+     */
+    public String printScriptTag(Profiler profiler, ProfilerUiConfig config, String path) {
+        if (profiler == null || profiler == NullProfiler.INSTANCE) {
+            return "";
+        }
         UUID currentId = profiler.getId();
         List<UUID> ids = Collections.singletonList(currentId);
         String version = MiniProfiler.getVersion();

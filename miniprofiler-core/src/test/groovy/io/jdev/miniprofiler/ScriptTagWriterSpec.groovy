@@ -45,17 +45,30 @@ class ScriptTagWriterSpec extends Specification {
         attrs['data-ids'] == "[$profiler.id]"
 
         and:
-        attrs['data-position'] == config.position.name().toLowerCase()
-        attrs['data-toggle-shortcut'] == config.toggleShortcut
-        attrs['data-max-traces'] == config.maxTraces as String
+        validateUiAttrs(attrs, config)
+    }
 
-        and:
-        attrs['data-trivial'] == config.trivial as String
-        attrs['data-trivial-milliseconds'] == config.trivialMilliseconds as String
-        attrs['data-children'] == config.children as String
-        attrs['data-controls'] == config.controls as String
-        attrs['data-authorized'] == config.authorized as String
-        attrs['data-start-hidden'] == config.startHidden as String
+    void "writer uses passed-in config"() {
+        given:
+        ProfilerUiConfig override = config.copy().with {
+            path = '/other-path'
+            position = ProfilerUiConfig.Position.BOTTOMLEFT
+            toggleShortcut = 'whatever'
+            maxTraces = 99
+            trivialMilliseconds = 95
+            trivial = true
+            children = true
+            controls = true
+            authorized = true
+            startHidden = true
+            it
+        }
+
+        when:
+        def result = writer.printScriptTag(override)
+
+        then:
+        validateUiAttrs(parseTag(result), override)
     }
 
     void "writer omits attributes for null config values"() {
@@ -99,6 +112,18 @@ class ScriptTagWriterSpec extends Specification {
         attrs['data-path'] == "/foo/"
         attrs['data-current-id'] == profiler.id.toString()
         attrs['data-ids'] == "[$profiler.id]"
+    }
+
+    private static void validateUiAttrs(Map<String, String> attrs, ProfilerUiConfig config) {
+        assert attrs['data-position'] == config.position.name().toLowerCase()
+        assert attrs['data-toggle-shortcut'] == config.toggleShortcut
+        assert attrs['data-max-traces'] == config.maxTraces as String
+        assert attrs['data-trivial'] == config.trivial as String
+        assert attrs['data-trivial-milliseconds'] == config.trivialMilliseconds as String
+        assert attrs['data-children'] == config.children as String
+        assert attrs['data-controls'] == config.controls as String
+        assert attrs['data-authorized'] == config.authorized as String
+        assert attrs['data-start-hidden'] == config.startHidden as String
     }
 
     private static Map<String, String> parseTag(String tag) {
