@@ -20,7 +20,9 @@ import io.jdev.miniprofiler.NullProfiler
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import ratpack.func.Action
 import ratpack.handling.Handler
+import ratpack.test.exec.ExecHarness
 import ratpack.test.handling.RequestFixture
+import spock.lang.Ignore
 import spock.lang.Specification
 
 class MiniProfilerExecInterceptorSpec extends Specification {
@@ -46,7 +48,8 @@ class MiniProfilerExecInterceptorSpec extends Specification {
         !provider.hasCurrentProfiler()
     }
 
-    void "interceptor stops any bound profiler on execution finish"() {
+    @Ignore("See https://github.com/ratpack/ratpack/issues/1110")
+    void "interceptor stops any bound profiler on response send"() {
         when: "run handler with interceptor"
         RequestFixture.handle(startProfilerHandler, { RequestFixture req ->
             req.uri(requestUri)
@@ -60,12 +63,24 @@ class MiniProfilerExecInterceptorSpec extends Specification {
         !provider.wasDiscarded()
     }
 
+    void "interceptor stops any bound profiler on execution finish when no response"() {
+        when: "run handler with interceptor"
+        ExecHarness.yieldSingle({ it.add(new MiniProfilerExecInterceptor(provider))}) { execution ->
+            provider.start("foo")
+        }
+
+        then: 'profiler created and was stoped but not discarded'
+        provider.currentProfiler
+        provider.currentProfiler.stopped
+        !(provider.currentProfiler instanceof NullProfiler)
+        !provider.wasDiscarded()
+    }
+
     void "discards profiler if option was not to store"() {
         when: "run handler with interceptor when interceptor won't profile"
-        RequestFixture.handle(startProfilerHandler, { RequestFixture req ->
-            req.uri(requestUri)
-            req.registry.add(new MiniProfilerExecInterceptor(provider, ProfilerStoreOption.DISCARD_RESULTS))
-        } as Action)
+        ExecHarness.yieldSingle({ it.add(new MiniProfilerExecInterceptor(provider, ProfilerStoreOption.DISCARD_RESULTS))}) { execution ->
+            provider.start("foo")
+        }
 
         then: 'profiler created but was discarded'
         provider.currentProfiler

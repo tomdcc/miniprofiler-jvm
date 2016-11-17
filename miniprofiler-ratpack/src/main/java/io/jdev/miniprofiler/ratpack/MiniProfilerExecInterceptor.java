@@ -22,6 +22,7 @@ import ratpack.exec.ExecInterceptor;
 import ratpack.exec.Execution;
 import ratpack.func.Block;
 import ratpack.http.Request;
+import ratpack.http.Response;
 
 import java.util.Optional;
 
@@ -85,7 +86,14 @@ public class MiniProfilerExecInterceptor implements ExecInterceptor {
         if (shouldCreateProfilerOnExecutionStart(execution, execType) && !provider.hasCurrentProfiler()) {
             provider.start(getProfilerName(execution, execType));
         }
-        execution.onComplete(() -> executionComplete(execution));
+        Optional<Response> maybeResponse = execution.maybeGet(Response.class);
+        if (maybeResponse.isPresent()) {
+            // try to complete the profiler before the response is sent
+            maybeResponse.get().beforeSend(r -> executionComplete(execution));
+        } else {
+            // no request, so just close off at end of execution
+            execution.onComplete(() -> executionComplete(execution));
+        }
         continuation.execute();
     }
 

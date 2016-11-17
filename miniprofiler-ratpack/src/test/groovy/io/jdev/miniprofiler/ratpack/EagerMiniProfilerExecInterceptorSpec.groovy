@@ -20,6 +20,7 @@ import io.jdev.miniprofiler.NullProfiler
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import ratpack.func.Action
 import ratpack.handling.Handler
+import ratpack.test.exec.ExecHarness
 import ratpack.test.handling.RequestFixture
 import spock.lang.Specification
 
@@ -35,10 +36,9 @@ class EagerMiniProfilerExecInterceptorSpec extends Specification {
 
     void "interceptor creates new profiler and binds provider to execution"() {
         when: "run handler with interceptor"
-        RequestFixture.handle({ ctx -> ctx.next() } as Handler, { RequestFixture req ->
-            req.uri(requestUri)
-            req.registry.add(new EagerMiniProfilerExecInterceptor(provider))
-        } as Action)
+        ExecHarness.yieldSingle({ it.add(new EagerMiniProfilerExecInterceptor(provider))}) { execution ->
+            provider.start(requestUri)
+        }
 
         then: 'profiler created and was stoped but not discarded'
         provider.currentProfiler

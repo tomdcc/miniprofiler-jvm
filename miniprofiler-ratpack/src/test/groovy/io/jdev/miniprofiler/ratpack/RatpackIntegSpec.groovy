@@ -26,8 +26,10 @@ import ratpack.handling.Chain
 import ratpack.handling.Context
 import ratpack.handling.Handler
 import ratpack.test.handling.RequestFixture
+import spock.lang.Ignore
 import spock.lang.Specification
 
+@Ignore("See https://github.com/ratpack/ratpack/issues/1110 - relying on integ-test/ratpack in the meantime")
 class RatpackIntegSpec extends Specification {
 
     void cleanup() {

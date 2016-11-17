@@ -15,6 +15,7 @@
  */
 
 def ratpackVersion = "1.0.0"
+def ratpackTestVersion = "1.4.4"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -26,7 +27,7 @@ dependencies {
     compileOnly "io.ratpack:ratpack-hikari:$ratpackVersion"
     compileOnly "io.ratpack:ratpack-h2:$ratpackVersion"
 
-	testCompile "io.ratpack:ratpack-test:$ratpackVersion"
+	testCompile "io.ratpack:ratpack-test:$ratpackTestVersion"
 }
 
 sourceSets {
