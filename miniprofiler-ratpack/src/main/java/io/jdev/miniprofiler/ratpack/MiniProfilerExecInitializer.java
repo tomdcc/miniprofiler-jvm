@@ -18,16 +18,17 @@ package io.jdev.miniprofiler.ratpack;
 
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.ProfilerProvider;
-import ratpack.exec.ExecInterceptor;
+import ratpack.exec.ExecInitializer;
 import ratpack.exec.Execution;
-import ratpack.func.Block;
+import ratpack.func.Action;
 import ratpack.http.Request;
 import ratpack.http.Response;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * A Ratpack `ExecInterceptor` that provides MiniProfiler support.
+ * A Ratpack `ExecInitializer` that provides MiniProfiler support.
  *
  * <p>It starts a profiling session and binds that to the execution.</p>
  *
@@ -41,18 +42,18 @@ import java.util.Optional;
  *     to the handler chain.
  * </p>
  */
-public class MiniProfilerExecInterceptor implements ExecInterceptor {
+public class MiniProfilerExecInitializer implements ExecInitializer {
 
     private final ProfilerProvider provider;
     private final ProfilerStoreOption defaultProfilerStoreOption;
 
     /**
-     * Construct the interceptor with the given provider and default storage option.
+     * Construct the initializer with the given provider and default storage option.
      *
      * @param provider the profiler provider to use
      * @param defaultProfilerStoreOption the default profiler storage behaviour
      */
-    public MiniProfilerExecInterceptor(ProfilerProvider provider, ProfilerStoreOption defaultProfilerStoreOption) {
+    public MiniProfilerExecInitializer(ProfilerProvider provider, ProfilerStoreOption defaultProfilerStoreOption) {
         this.provider = provider;
         if (defaultProfilerStoreOption == null) {
            throw new IllegalArgumentException("defaultProfilerStoreOption cannot be null");
@@ -61,43 +62,36 @@ public class MiniProfilerExecInterceptor implements ExecInterceptor {
     }
 
     /**
-     * Construct the interceptor with the given provider and a default to store all profiler results.
+     * Construct the initializer with the given provider and a default to store all profiler results.
      *
      * @param provider the profiler provider to use
      */
-    public MiniProfilerExecInterceptor(ProfilerProvider provider) {
+    public MiniProfilerExecInitializer(ProfilerProvider provider) {
         this(provider, ProfilerStoreOption.STORE_RESULTS);
     }
 
     /**
-     * Intercept the given execution and bind a new Profiler object
+     * Initialize the given execution and bind a new Profiler object
      *
      * <p>
-     * The {@link ProfilerProvider} that this interceptor was created with will always get bound to the execution.
+     * The {@link ProfilerProvider} that this initializer was created with will always get bound to the execution.
      * </p>
      * @param execution the execution whose segment is being intercepted
-     * @param execType indicates whether this is a compute (e.g. request handling) segment or blocking segment
-     * @param continuation the “rest” of the execution
      * @throws Exception any
      */
     @Override
-    public void intercept(Execution execution, ExecType execType, Block continuation) throws Exception {
+    public void init(Execution execution) {
         // create a profiler if there isn't one already
-        if (shouldCreateProfilerOnExecutionStart(execution, execType) && !provider.hasCurrentProfiler()) {
-            provider.start(getProfilerName(execution, execType));
+        if (shouldCreateProfilerOnExecutionStart(execution) && !provider.hasCurrentProfiler()) {
+            provider.start(getProfilerName(execution));
         }
-        Optional<Response> maybeResponse = execution.maybeGet(Response.class);
-        if (maybeResponse.isPresent()) {
-            // try to complete the profiler before the response is sent
-            maybeResponse.get().beforeSend(r -> executionComplete(execution));
-        } else {
-            // no request, so just close off at end of execution
-            execution.onComplete(() -> executionComplete(execution));
-        }
-        continuation.execute();
+        Completion completion = new Completion(execution);
+        execution.onComplete(completion);
+        // try to complete the profiler before the response is sent, if there is one
+        execution.maybeGet(Response.class).ifPresent(r -> r.beforeSend(completion));
     }
 
-    private void executionComplete(Execution execution) {
+    protected void executionComplete(Execution execution) {
         if (provider.hasCurrentProfiler()) {
             Profiler profiler = provider.getCurrentProfiler();
             ProfilerStoreOption store = execution.maybeGet(ProfilerStoreOption.class).orElse(defaultProfilerStoreOption);
@@ -112,25 +106,49 @@ public class MiniProfilerExecInterceptor implements ExecInterceptor {
      * one is found, otherwise the string <code>"Unknown"</code>.</p>
      *
      * @param execution the execution whose segment is being intercepted
-     * @param execType indicates whether this is a compute (e.g. request handling) segment or blocking segment
      * @return the name to be used for the new profiling session
      */
-    protected String getProfilerName(Execution execution, ExecType execType) {
+    protected String getProfilerName(Execution execution) {
         Optional<Request> maybeReq = execution.maybeGet(Request.class);
         return maybeReq.isPresent() ? maybeReq.get().getUri() : "Unknown";
     }
 
     /**
-     * Controls whether this interceptor will start a profiler at the start of the execution for the given execution.
+     * Controls whether this initializer will start a profiler at the start of the execution for the given execution.
      *
      * <p>Default is to return false, ie profilers are started by some other execution logic, rather than for all
      * executions.</p>
      *
-     * @param execution the execution whose segment is being intercepted
-     * @param execType indicates whether this is a compute (e.g. request handling) segment or blocking segment
+     * @param execution the execution whose segment is being initialized
      * @return <code>false</code> for the default implementation
      */
-    protected boolean shouldCreateProfilerOnExecutionStart(Execution execution, ExecType execType) {
+    protected boolean shouldCreateProfilerOnExecutionStart(Execution execution) {
         return false;
+    }
+
+
+    private class Completion implements AutoCloseable, Action<Response> {
+        private final Execution execution;
+        private final AtomicBoolean completed = new AtomicBoolean(false);
+
+        private Completion(Execution execution) {
+            this.execution = execution;
+        }
+
+        private void complete() {
+            if(!completed.getAndSet(true)) {
+                executionComplete(execution);
+            }
+        }
+
+        @Override
+        public void close() throws Exception {
+            complete();
+        }
+
+        @Override
+        public void execute(Response response) throws Exception {
+            complete();
+        }
     }
 }

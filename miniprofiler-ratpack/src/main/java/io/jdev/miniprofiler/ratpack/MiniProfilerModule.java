@@ -22,14 +22,14 @@ import com.google.inject.Scopes;
 import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.ProfilerUiConfig;
-import ratpack.exec.ExecInterceptor;
+import ratpack.exec.ExecInitializer;
 import ratpack.guice.ConfigurableModule;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
- * A Guice module to install a Ratpack compatible {@link ProfilerProvider} and an {@link ExecInterceptor}
+ * A Guice module to install a Ratpack compatible {@link ProfilerProvider} and an {@link ExecInitializer}
  * to make all executions profiled.
  *
  * <p>The created {@link ProfilerProvider} is also installed as the default in the {@link MiniProfiler}
@@ -53,7 +53,7 @@ public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Co
 
         // these just here to enable someone to bind a handler etc to the class rather than
         // a new instance if they want to do that
-        bind(ExecInterceptor.class).to(MiniProfilerExecInterceptor.class).in(Scopes.SINGLETON);
+        bind(ExecInitializer.class).to(MiniProfilerExecInitializer.class).in(Scopes.SINGLETON);
         bind(MiniProfilerAjaxHeaderHandler.class).in(Scopes.SINGLETON);
         bind(MiniProfilerHandlerChain.class).in(Scopes.SINGLETON);
         bind(MiniProfilerStartProfilingHandlers.class).in(Scopes.SINGLETON);
@@ -76,8 +76,8 @@ public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Co
 
     @Provides
     @Singleton
-    public MiniProfilerExecInterceptor interceptor(ProfilerProvider provider, Config config) {
-        return createInterceptor(provider, config);
+    public MiniProfilerExecInitializer initializer(ProfilerProvider provider, Config config) {
+        return createInitializer(provider, config);
     }
 
     @Provides
@@ -86,8 +86,8 @@ public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Co
         return new MiniProfilerStartProfilingHandler(provider);
     }
 
-    protected MiniProfilerExecInterceptor createInterceptor(ProfilerProvider provider, Config config) {
-        return new MiniProfilerExecInterceptor(provider, config.defaultProfilerStoreOption);
+    protected MiniProfilerExecInitializer createInitializer(ProfilerProvider provider, Config config) {
+        return new MiniProfilerExecInitializer(provider, config.defaultProfilerStoreOption);
     }
 
     public static class Config {

@@ -31,7 +31,7 @@ class RatpackMiniprofilerFunctionalSpec extends GebReportingSpec {
         aut = new MainClassApplicationUnderTest(Main)
         browser.baseUrl = aut.address.toString()
 
-        // Go here first as there's an issue in the ui js the very first time it's loaded, related to something
+        // Go here first as th`ere's an issue in the ui js the very first time it's loaded, related to something
         // being in localStorage I think. Basically the first miniprofiler load on the page is ok, but the second
         // one fails. All loads on subsequent pages are ok.
         to HomePage

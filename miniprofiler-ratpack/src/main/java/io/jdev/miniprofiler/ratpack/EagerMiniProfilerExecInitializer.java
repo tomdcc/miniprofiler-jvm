@@ -20,16 +20,16 @@ import io.jdev.miniprofiler.ProfilerProvider;
 import ratpack.exec.Execution;
 
 /**
- * A Ratpack execution interceptor that, as well as performing general cleanup at the end of an execution, will also
+ * A Ratpack execution initializer that, as well as performing general cleanup at the end of an execution, will also
  * eagerly create a profiler and bind it to the execution at the start of execution.
  */
-public class EagerMiniProfilerExecInterceptor extends MiniProfilerExecInterceptor {
+public class EagerMiniProfilerExecInitializer extends MiniProfilerExecInitializer {
 
-    public EagerMiniProfilerExecInterceptor(ProfilerProvider provider, ProfilerStoreOption defaultProfilerStoreOption) {
+    public EagerMiniProfilerExecInitializer(ProfilerProvider provider, ProfilerStoreOption defaultProfilerStoreOption) {
         super(provider, defaultProfilerStoreOption);
     }
 
-    public EagerMiniProfilerExecInterceptor(ProfilerProvider provider) {
+    public EagerMiniProfilerExecInitializer(ProfilerProvider provider) {
         super(provider);
     }
 
@@ -37,11 +37,10 @@ public class EagerMiniProfilerExecInterceptor extends MiniProfilerExecIntercepto
      * This implementation returns true, ie always start a profiler.
      *
      * @param execution the execution whose segment is being intercepted
-     * @param execType indicates whether this is a compute (e.g. request handling) segment or blocking segment
      * @return <code>true</code>
      */
     @Override
-    protected boolean shouldCreateProfilerOnExecutionStart(Execution execution, ExecType execType) {
+    protected boolean shouldCreateProfilerOnExecutionStart(Execution execution) {
         return true;
     }
 

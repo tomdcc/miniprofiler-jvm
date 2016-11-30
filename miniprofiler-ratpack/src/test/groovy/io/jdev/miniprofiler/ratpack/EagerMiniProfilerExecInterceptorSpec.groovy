@@ -36,7 +36,7 @@ class EagerMiniProfilerExecInterceptorSpec extends Specification {
 
     void "interceptor creates new profiler and binds provider to execution"() {
         when: "run handler with interceptor"
-        ExecHarness.yieldSingle({ it.add(new EagerMiniProfilerExecInterceptor(provider))}) { execution ->
+        ExecHarness.yieldSingle({ it.add(new EagerMiniProfilerExecInitializer(provider))}) { execution ->
             provider.start(requestUri)
         }
 
@@ -54,7 +54,7 @@ class EagerMiniProfilerExecInterceptorSpec extends Specification {
         when: "run handler with interceptor on execution which already has a provider"
         RequestFixture.handle({ ctx -> ctx.next() } as Handler, { RequestFixture req ->
             req.uri(requestUri)
-            req.registry.add(new EagerMiniProfilerExecInterceptor(provider))
+            req.registry.add(new EagerMiniProfilerExecInitializer(provider))
         } as Action)
 
         then: "current profiler is the original one"

@@ -39,7 +39,7 @@ class RatpackIntegSpec extends Specification {
     void "profiler is bound to current execution context and is available statically"() {
         given: 'provider and interceptor'
         RatpackContextProfilerProvider provider = new RatpackContextProfilerProvider()
-        MiniProfilerExecInterceptor interceptor = new MiniProfilerExecInterceptor(provider)
+        MiniProfilerExecInitializer interceptor = new MiniProfilerExecInitializer(provider)
         MiniProfiler.setProfilerProvider(provider)
 
         and: 'chain with handlers'
