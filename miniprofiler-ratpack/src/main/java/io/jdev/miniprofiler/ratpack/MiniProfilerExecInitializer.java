@@ -77,7 +77,6 @@ public class MiniProfilerExecInitializer implements ExecInitializer {
      * The {@link ProfilerProvider} that this initializer was created with will always get bound to the execution.
      * </p>
      * @param execution the execution whose segment is being intercepted
-     * @throws Exception any
      */
     @Override
     public void init(Execution execution) {
