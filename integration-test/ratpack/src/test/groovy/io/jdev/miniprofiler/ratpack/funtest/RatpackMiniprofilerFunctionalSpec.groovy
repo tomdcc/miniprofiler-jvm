@@ -37,8 +37,8 @@ class RatpackMiniprofilerFunctionalSpec extends GebReportingSpec {
         to HomePage
         Thread.sleep(1000)
 
-        // then reset
-        go "about:blank"
+        // then reset - Geb tries to parse the about:blank and fails so we can't just go() there
+        browser.js.exec('window.location = "about:blank"')
     }
 
     void "can see miniprofiler"() {

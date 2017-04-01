@@ -1,5 +1,5 @@
 plugins {
-    id 'com.gradle.build-scan' version '1.3'
+    id 'com.gradle.build-scan' version '1.6'
 }
 
 apply plugin: 'idea'
@@ -34,8 +34,8 @@ subprojects {
 	}
 
 	ext {
-		groovyVersion = "2.4.7"
-		gebVersion = '1.0'
+		groovyVersion = "2.4.10"
+		gebVersion = '1.1.1'
 		seleniumVersion = "2.53.1"
 		spockVersion = "1.0-groovy-2.4"
 
