@@ -1,5 +1,5 @@
 plugins {
-    id 'com.gradle.build-scan' version '1.6'
+    id 'com.gradle.build-scan' version '1.8'
 }
 
 apply plugin: 'idea'
@@ -103,10 +103,12 @@ subprojects {
 			}
 		}
 
-		task uploadSnapshots << {
-			if(!isSnapshot) {
-				println "Not uploading snapshot as not a snapshot version"
-			}
+		task uploadSnapshots {
+            doLast {
+                if (!isSnapshot) {
+                    println "Not uploading snapshot as not a snapshot version"
+                }
+            }
 		}
 		if(isSnapshot) {
 			uploadSnapshots.dependsOn(uploadArchives)
