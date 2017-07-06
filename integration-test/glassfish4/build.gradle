@@ -29,8 +29,10 @@ test {
 }
 
 def glassfishBaseDir = file("$buildDir/glassfish")
-task glassfishDir << {
-	glassfishBaseDir.mkdirs()
+task glassfishDir {
+    doLast {
+        glassfishBaseDir.mkdirs()
+    }
 }
 
 [cargoRunLocal, cargoStartLocal]*.dependsOn([':miniprofiler-core:assemble', assemble, glassfishDir])

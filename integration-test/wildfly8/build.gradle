@@ -30,8 +30,10 @@ test {
 }
 
 def wildflyBaseDir = file("$buildDir/wildfly")
-task wildflyDir << {
-	wildflyBaseDir.mkdirs()
+task wildflyDir {
+    doLast {
+	    wildflyBaseDir.mkdirs()
+    }
 }
 
 [cargoRunLocal, cargoStartLocal]*.dependsOn([':miniprofiler-core:assemble', assemble, wildflyDir])

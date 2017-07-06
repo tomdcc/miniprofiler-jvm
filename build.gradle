@@ -140,7 +140,11 @@ subprojects {
 allprojects {
 	task resolveAllDependencies {
 		doLast {
-			configurations.all { it.resolve() }
+			configurations.all {
+                if (it.canBeResolved) {
+                    it.resolve()
+                }
+            }
 		}
 	}
 }
