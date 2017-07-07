@@ -127,6 +127,16 @@ public class ProfilerImpl implements Profiler {
         head = root;
     }
 
+    ProfilerImpl(String rootName, ProfileLevel level, long started) {
+        this.id = null;
+        this.name = rootName;
+        this.profilerProvider = null;
+        this.level = level;
+        this.started = started;
+        root = new TimingImpl(this, null, rootName);
+        head = root;
+    }
+
     public long getDurationMilliseconds() {
         Long milliseconds = root.getDurationMilliseconds();
         return milliseconds != null ? milliseconds : System.currentTimeMillis() - started;
@@ -140,7 +150,9 @@ public class ProfilerImpl implements Profiler {
         if (!stopped) {
             stopped = true;
             root.stop();
-            profilerProvider.stopSession(this, discardResults);
+            if (profilerProvider != null) { // null for child profilers as we don't want to affect the outer session here
+                profilerProvider.stopSession(this, discardResults);
+            }
         }
     }
 
@@ -313,5 +325,16 @@ public class ProfilerImpl implements Profiler {
     @Override
     public void close() {
         stop();
+    }
+
+    @Override
+    public Profiler addChild(String name) {
+        Timing target = head;
+        if (target == null) {
+            // This can happen if the original execution has finished by the time that a forked
+            // one has started. It's ok to attach the child to the root timing in this case.
+            target = root;
+        }
+        return target.addChildProfiler(name);
     }
 }

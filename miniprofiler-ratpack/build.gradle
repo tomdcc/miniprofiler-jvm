@@ -27,7 +27,7 @@ dependencies {
     compileOnly "io.ratpack:ratpack-h2:$ratpackVersion"
 
 	testCompile "io.ratpack:ratpack-test:$ratpackVersion"
-//	testCompile "com.google.guava:guava:21.0"
+	testCompile "io.ratpack:ratpack-groovy-test:$ratpackVersion"
 }
 
 sourceSets {

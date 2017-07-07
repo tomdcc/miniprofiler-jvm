@@ -81,7 +81,7 @@ public interface Profiler extends Serializable, Jsonable, Closeable {
      * @param name The name of the step.
      * @return a Timing instance to be stopped when the step is done
      */
-    public Timing step(String name);
+    Timing step(String name);
 
     /**
      * Start a new profiling step with the given level;
@@ -90,7 +90,7 @@ public interface Profiler extends Serializable, Jsonable, Closeable {
      * @param level the profiling level for this step
      * @return a Timing instance to be stopped when the step is done
      */
-    public Timing step(String name, ProfileLevel level);
+    Timing step(String name, ProfileLevel level);
 
     /**
      * Start and stop a new profiling step with the given block.
@@ -98,7 +98,7 @@ public interface Profiler extends Serializable, Jsonable, Closeable {
      * @param name  The name of the step.
      * @param block The block to time
      */
-    public void step(String name, Runnable block);
+    void step(String name, Runnable block);
 
     /**
      * Start and stop a new profiling step with the given block.
@@ -107,7 +107,7 @@ public interface Profiler extends Serializable, Jsonable, Closeable {
      * @param level The profiling level for this step
      * @param block The block to time
      */
-    public void step(String name, ProfileLevel level, Runnable block);
+    void step(String name, ProfileLevel level, Runnable block);
 
     /**
      * Start and stop a new profiling step with the given callable function.
@@ -118,7 +118,7 @@ public interface Profiler extends Serializable, Jsonable, Closeable {
      * @return the result of calling the function
      * @throws Exception when the function throws an exception
      */
-    public <T> T step(String name, Callable<T> function) throws Exception;
+    <T> T step(String name, Callable<T> function) throws Exception;
 
     /**
      * Start and stop a new profiling step with the given block.
@@ -130,7 +130,7 @@ public interface Profiler extends Serializable, Jsonable, Closeable {
      * @return the result of calling the function
      * @throws Exception when the function throws an exception
      */
-    public <T> T step(String name, ProfileLevel level, Callable<T> function) throws Exception;
+    <T> T step(String name, ProfileLevel level, Callable<T> function) throws Exception;
 
     /**
      * Add a query timing inside the current timing step. This is usually
@@ -141,12 +141,12 @@ public interface Profiler extends Serializable, Jsonable, Closeable {
      * @param command     the query to save
      * @param duration    how long it took, in milliseconds
      */
-    public void addCustomTiming(String type, String executeType, String command, long duration);
+    void addCustomTiming(String type, String executeType, String command, long duration);
 
     /**
      * Stop the current timing session.
      */
-    public void stop();
+    void stop();
 
     /**
      * Stop the current timing session. If passed true, the
@@ -155,21 +155,21 @@ public interface Profiler extends Serializable, Jsonable, Closeable {
      *
      * @param discardResults whether to skip storing the current session data
      */
-    public void stop(boolean discardResults);
+    void stop(boolean discardResults);
 
     /**
      * Same as calling {@link #stop()}. Here to satisfy {@link Closeable} so
      * that the profiler can be auto-closed in a Java 7 try-with-resources
      * block.
      */
-    public void close();
+    void close();
 
     /**
      * Returns a unique id for the profiling session.
      *
      * @return the session's id
      */
-    public UUID getId();
+    UUID getId();
 
 
     /**
@@ -177,19 +177,34 @@ public interface Profiler extends Serializable, Jsonable, Closeable {
      *
      * @return the current timing
      */
-    public Timing getHead();
+    Timing getHead();
+
+    /**
+     * Returns the root timing for this profiler.
+     *
+     * @return the root timing
+     */
+    Timing getRoot();
 
     /**
      * Set the user name for the current profiling session
      *
      * @param user the user
      */
-    public void setUser(String user);
+    void setUser(String user);
 
     /**
      * Returns the user name for the profile session.
      *
      * @return the current user
      */
-    public String getUser();
+    String getUser();
+
+    /**
+     * Adds a child profiler to the current on.
+     *
+     * @param name The name to give the child profiler
+     * @return the child profiler
+     */
+    Profiler addChild(String name);
 }

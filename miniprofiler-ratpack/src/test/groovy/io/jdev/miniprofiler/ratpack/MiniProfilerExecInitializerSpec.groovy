@@ -23,10 +23,11 @@ import ratpack.exec.Execution
 import ratpack.exec.Promise
 import ratpack.exec.internal.DefaultExecController
 import ratpack.func.Action
-import ratpack.handling.Handler
+import ratpack.groovy.test.handling.GroovyRequestFixture
+import ratpack.handling.Handlers
+import ratpack.registry.RegistrySpec
 import ratpack.test.exec.ExecHarness
 import ratpack.test.exec.internal.DefaultExecHarness
-import ratpack.test.handling.RequestFixture
 import spock.lang.Ignore
 import spock.lang.Specification
 
@@ -35,9 +36,9 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
-class MiniProfilerExecInitializerSpec extends Specification {
+import static ratpack.groovy.test.handling.GroovyRequestFixture.handle
 
-    final String requestUri = "/foo"
+class MiniProfilerExecInitializerSpec extends Specification {
 
     TestProfilerProvider provider
     MiniProfilerStartProfilingHandler startProfilerHandler
@@ -47,12 +48,17 @@ class MiniProfilerExecInitializerSpec extends Specification {
         startProfilerHandler = new MiniProfilerStartProfilingHandler(provider)
     }
 
+    private void addToRegistry(GroovyRequestFixture fixture) {
+        addToRegistry(fixture.registry)
+    }
+
+    private void addToRegistry(RegistrySpec spec) {
+        spec.add(new MiniProfilerExecInitializer(provider))
+    }
+
     void "by default initializer does not create a new profiler on execuiton start"() {
         when: "run handler with initializer"
-        RequestFixture.handle({ ctx -> ctx.next() } as Handler, { RequestFixture req ->
-            req.uri(requestUri)
-            req.registry.add(new MiniProfilerExecInitializer(provider))
-        } as Action)
+        handle(Handlers.next(), this.&addToRegistry)
 
         then: 'no profiler created'
         !provider.hasCurrentProfiler()
@@ -61,10 +67,7 @@ class MiniProfilerExecInitializerSpec extends Specification {
     @Ignore("See https://github.com/ratpack/ratpack/issues/1110")
     void "initializer stops any bound profiler on response send"() {
         when: "run handler with initializer"
-        RequestFixture.handle(startProfilerHandler, { RequestFixture req ->
-            req.uri(requestUri)
-            req.registry.add(new MiniProfilerExecInitializer(provider))
-        } as Action)
+        handle(startProfilerHandler, this.&addToRegistry)
 
         then: 'profiler created and was stoped but not discarded'
         provider.currentProfiler
@@ -75,7 +78,7 @@ class MiniProfilerExecInitializerSpec extends Specification {
 
     void "initializer stops any bound profiler on execution finish when no response"() {
         when: "run handler with initializer"
-        ExecHarness.yieldSingle({ it.add(new MiniProfilerExecInitializer(provider))}) { execution ->
+        ExecHarness.yieldSingle(this.&addToRegistry) { execution ->
             provider.start("foo")
         }
 
@@ -104,10 +107,9 @@ class MiniProfilerExecInitializerSpec extends Specification {
         def profiler = provider.start("already running")
 
         when: "run handler with initializer on execution which already has a provider"
-        RequestFixture.handle({ ctx -> ctx.next() } as Handler, { RequestFixture req ->
-            req.uri(requestUri)
-            req.registry.add(new MiniProfilerExecInitializer(provider))
-        } as Action)
+        handle(Handlers.next()) {
+            registry.add(new MiniProfilerExecInitializer(provider))
+        }
 
         then: "current profiler is the original one"
         provider.currentProfiler == profiler

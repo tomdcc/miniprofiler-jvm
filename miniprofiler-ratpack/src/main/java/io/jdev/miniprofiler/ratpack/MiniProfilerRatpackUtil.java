@@ -18,8 +18,11 @@ package io.jdev.miniprofiler.ratpack;
 
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.Timing;
-import ratpack.exec.Downstream;
-import ratpack.exec.Promise;
+import ratpack.exec.*;
+import ratpack.func.Action;
+
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A class containing utility methods for timing promises.
@@ -56,6 +59,65 @@ public class MiniProfilerRatpackUtil {
     public static <T> Promise<T> profileFromNow(Profiler profiler, String name, Promise<T> promise) {
         final Timing t = profiler.step(name);
         return promise.wiretap(r -> t.stop());
+    }
+
+    /**
+     * Add a child profiler of the current execution's profiler to a forked execution.
+     *
+     * <p>
+     *     Timing steps added to the child profiler will appear in the profiling report as children
+     *     of the current profiling step, but the timings will not affect timing calculations as
+     *     the work happens in parallel.
+     * </p>
+     *
+     * @param execSpec the spec for the forked execution
+     * @param forkedExecutionName the name to give the child
+     * @param <T> The ExecSpec type (e.g. ExecStarter)
+     * @return the passed-in spec
+     */
+    public static <T extends ExecSpec> T forkChildProfiler(T execSpec, String forkedExecutionName) {
+        return forkChildProfiler(execSpec, forkedExecutionName, null);
+    }
+
+    /**
+     * Add a child profiler of the current execution's profiler to a forked execution.
+     *
+     * <p>
+     *     Timing steps added to the child profiler will appear in the profiling report as children
+     *     of the current profiling step, but the timings will not affect timing calculations as
+     *     the work happens in parallel.
+     * </p>
+     *
+     * <p>
+     *     This version accepts an onStart action to compose in, as the mechanism used to attach
+     *     the child profiler to the new execution is via {@link ExecSpec#onStart(Action)}, but
+     *     multiple calls to that method are not additive.
+     * </p>
+     *
+     * @param execSpec the spec for the forked execution
+     * @param forkedExecutionName the name to give the child
+     * @param onStart an onStart action to execute after attaching the child profiler
+     * @param <T> The ExecSpec type (e.g. ExecStarter)
+     * @return the passed-in spec
+     */
+    public static <T extends ExecSpec> T forkChildProfiler(T execSpec, String forkedExecutionName, Action<? super Execution> onStart) {
+        Optional<Execution> maybeParentExecution = Execution.currentOpt();
+        AtomicBoolean setOnStart = new AtomicBoolean();
+        maybeParentExecution.ifPresent(parentExecution -> {
+            parentExecution.maybeGet(Profiler.class).ifPresent(profiler -> {
+                setOnStart.set(true);
+                execSpec.onStart(forkedExecution -> {
+                    forkedExecution.add(Profiler.class, profiler.addChild(forkedExecutionName));
+                    if (onStart != null) {
+                        onStart.execute(forkedExecution);
+                    }
+                });
+            });
+        });
+        if (onStart != null && !setOnStart.get()) {
+            execSpec.onStart(onStart);
+        }
+        return execSpec;
     }
 
     private static class ProfiledDownstream<T> implements Downstream<T> {

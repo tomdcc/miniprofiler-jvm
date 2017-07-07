@@ -87,6 +87,13 @@ public interface Timing extends Serializable, Jsonable, Closeable {
     void close();
 
     /**
+     * Returns the start time of this timing in ms since profiler start
+     *
+     * @return the start time of this timing
+     */
+    long getStartMilliseconds();
+
+    /**
      * Returned the length of this timing event
      *
      * @return the timing's duration, or null if still ongoing or the {@link #stop()} method
@@ -133,4 +140,16 @@ public interface Timing extends Serializable, Jsonable, Closeable {
      */
     void addCustomTiming(String type, CustomTiming ct);
 
+    /**
+     * Adds a child profiler under this step
+     * @param name the name of the profiler
+     * @return the child profiler
+     */
+    Profiler addChildProfiler(String name);
+
+    /**
+     * Returns child profilers of this timing
+     * @return a list with all child profilers, or null if none
+     */
+    List<Profiler> getChildProfilers();
 }

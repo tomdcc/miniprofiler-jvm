@@ -71,6 +71,11 @@ class NullTiming implements Timing {
     }
 
     @Override
+    public long getStartMilliseconds() {
+        return 0;
+    }
+
+    @Override
     public Long getDurationMilliseconds() {
         return null;
     }
@@ -98,6 +103,16 @@ class NullTiming implements Timing {
     @Override
     public void addCustomTiming(String type, CustomTiming qt) {
 
+    }
+
+    @Override
+    public Profiler addChildProfiler(String name) {
+        return NullProfiler.INSTANCE;
+    }
+
+    @Override
+    public List<Profiler> getChildProfilers() {
+        return Collections.emptyList();
     }
 
 }

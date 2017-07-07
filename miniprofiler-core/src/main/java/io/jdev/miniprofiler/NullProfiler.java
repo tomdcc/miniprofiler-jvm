@@ -105,6 +105,11 @@ public class NullProfiler implements Profiler {
     }
 
     @Override
+    public Timing getRoot() {
+        return NullTiming.INSTANCE;
+    }
+
+    @Override
     public void setUser(String user) {
     }
 
@@ -113,5 +118,9 @@ public class NullProfiler implements Profiler {
         return null;
     }
 
+    @Override
+    public Profiler addChild(String name) {
+        return INSTANCE;
+    }
 
 }

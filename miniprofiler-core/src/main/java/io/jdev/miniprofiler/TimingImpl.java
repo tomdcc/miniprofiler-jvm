@@ -35,6 +35,7 @@ public class TimingImpl implements Timing {
     private final int depth;
     private List<TimingImpl> children;
     private Map<String, List<CustomTiming>> customTimings;
+    private List<Profiler> childProfilers;
 
 
     public TimingImpl(ProfilerImpl profiler, TimingImpl parent, String name) {
@@ -94,11 +95,30 @@ public class TimingImpl implements Timing {
         map.put("Name", name);
         map.put("StartMilliseconds", startMilliseconds);
         map.put("DurationMilliseconds", durationMilliseconds);
-        map.put("Children", JsonUtil.mapList(children));
+        map.put("Children", JsonUtil.mapList(allChildren()));
         if (customTimings != null) {
             map.put("CustomTimings", customTimings);
         }
         return map;
+    }
+
+    private List<Timing> allChildren() {
+        if (children == null && childProfilers == null) {
+            return null;
+        }
+        List<Timing> kids = new ArrayList<Timing>(children == null ? Collections.<Timing>emptyList() : children);
+        if (childProfilers != null) {
+            for (Profiler childProfiler : childProfilers) {
+                kids.add(childProfiler.getRoot());
+            }
+        }
+        Collections.sort(kids, new Comparator<Timing>() {
+            @Override
+            public int compare(Timing t1, Timing t2) {
+                return (int) (t1.getStartMilliseconds() - t2.getStartMilliseconds());
+            }
+        });
+        return kids;
     }
 
     public UUID getId() {
@@ -148,5 +168,20 @@ public class TimingImpl implements Timing {
     @Override
     public void close() {
         stop();
+    }
+
+    @Override
+    public Profiler addChildProfiler(String name) {
+        if (childProfilers == null) {
+            childProfilers = new ArrayList<Profiler>();
+        }
+        ProfilerImpl child = new ProfilerImpl("\u2443 " + name, profiler.getLevel(), profiler.getStarted());
+        childProfilers.add(child);
+        return child;
+    }
+
+    @Override
+    public List<Profiler> getChildProfilers() {
+        return childProfilers;
     }
 }
