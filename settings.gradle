@@ -1,4 +1,11 @@
-include "miniprofiler-core", "miniprofiler-javaee", "miniprofiler-test-support",
-		"miniprofiler-grails", "miniprofiler-ratpack",
-		"integration-test:java7", "integration-test:servlet", "integration-test:glassfish4",
-		"integration-test:wildfly8", "integration-test:ratpack"
+include "miniprofiler-core"
+include "miniprofiler-javaee"
+include "miniprofiler-test-support"
+include "miniprofiler-grails"
+include "miniprofiler-ratpack"
+include "miniprofiler-jooq"
+include "integration-test:java7"
+include "integration-test:servlet"
+include "integration-test:glassfish4"
+include "integration-test:wildfly8"
+include "integration-test:ratpack"

@@ -43,6 +43,7 @@ subprojects {
 			':miniprofiler-javaee',
 			':miniprofiler-grails',
 			':miniprofiler-ratpack',
+			':miniprofiler-jooq',
 			':miniprofiler-test-support'
 		]
 		javaeeTestModules = ['glassfish4', 'wildfly8']
