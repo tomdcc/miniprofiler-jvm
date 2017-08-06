@@ -1,0 +1,58 @@
+
+
+tasks.create('api', Javadoc) {
+    group "manual"
+    description "Generate combined Javadoc for all published modules"
+
+    destinationDir = file("$buildDir/api")
+
+    Set<Project> publishedProjects = publishedModules.collect { project(it) }.findAll { it != project }
+
+    source publishedProjects.javadoc.source
+    classpath = files(publishedProjects.javadoc.classpath)
+
+
+    configure(options) {
+        use = true
+        links "http://docs.oracle.com/javase/8/docs/api/"
+        windowTitle "MiniProfiler JVM API ($project.version)"
+        docTitle "MiniProfiler JVM API ($project.version)"
+    }
+}
+
+tasks.create('packageManual', Sync) {
+    group "manual"
+    description "Brings together manual and API reference"
+
+    into "$buildDir/manual"
+
+    into("api") {
+        from api
+    }
+}
+
+tasks.create('openApi') {
+    dependsOn tasks.packageManual
+    group "manual"
+    description "Builds the API reference, then opens it in your web browser"
+
+    doLast {
+        new java.awt.Desktop().browse(file("$packageManual.destinationDir/api/index.html").toURI())
+    }
+}
+
+tasks.create('manualZip', Zip) {
+    from tasks.packageManual
+}
+
+artifacts {
+    archives manualZip
+}
+
+modifyPom { pom ->
+    pom.artifactId = 'miniprofiler-manual'
+    pom.project {
+        name "MiniProfiler Manual"
+        description "The manual for MiniProfiler JVM"
+    }
+}

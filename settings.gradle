@@ -4,6 +4,9 @@ include "miniprofiler-test-support"
 include "miniprofiler-grails"
 include "miniprofiler-ratpack"
 include "miniprofiler-jooq"
+
+include "doc:manual"
+
 include "integration-test:java7"
 include "integration-test:servlet"
 include "integration-test:glassfish4"

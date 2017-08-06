@@ -5,10 +5,13 @@ plugins {
 apply plugin: 'idea'
 subprojects {
 
-    apply plugin: 'java'
-    apply plugin: 'groovy'
-	apply from: "$rootDir/gradle/checkstyle.gradle"
-	apply from: "$rootDir/gradle/codenarc.gradle"
+    boolean javaProject = it.name != 'manual'
+    if (javaProject) {
+        apply plugin: 'java'
+        apply plugin: 'groovy'
+        apply from: "$rootDir/gradle/checkstyle.gradle"
+        apply from: "$rootDir/gradle/codenarc.gradle"
+    }
 
 	// IDE support
     apply plugin: 'idea'
@@ -20,15 +23,15 @@ subprojects {
         jcenter()
     }
 
-	test {
-		systemProperty "geb.build.reportsDir", "$reporting.baseDir/geb"
+    project.tasks.findByName('test')?.with {
+        systemProperty "geb.build.reportsDir", "$reporting.baseDir/geb"
         if (project.hasProperty('webdriverFirefoxBin')) {
             systemProperty "webdriver.firefox.bin", project.property('webdriverFirefoxBin')
         }
-		testLogging {
-			exceptionFormat = 'full'
-		}
-	}
+        testLogging {
+            exceptionFormat = 'full'
+        }
+    }
 
 	ext {
 		groovyVersion = "2.4.10"
@@ -44,17 +47,20 @@ subprojects {
 			':miniprofiler-grails',
 			':miniprofiler-ratpack',
 			':miniprofiler-jooq',
-			':miniprofiler-test-support'
+			':miniprofiler-test-support',
+			':doc:manual'
 		]
 		javaeeTestModules = ['glassfish4', 'wildfly8']
 	}
 
-	dependencies {
-		testCompile "org.codehaus.groovy:groovy-all:$groovyVersion"
-		testCompile("org.spockframework:spock-core:$spockVersion") {
-            exclude group: "org.codehaus.groovy"
+    if (javaProject) {
+        dependencies {
+            testCompile "org.codehaus.groovy:groovy-all:$groovyVersion"
+            testCompile("org.spockframework:spock-core:$spockVersion") {
+                exclude group: "org.codehaus.groovy"
+            }
         }
-	}
+    }
 
 	if (path in publishedModules) {
 		apply plugin: "base"
@@ -66,21 +72,23 @@ subprojects {
 			required { !isSnapshot && gradle.taskGraph.hasTask(uploadArchives) }
 		}
 
-		task javadocJar(type: Jar, dependsOn: javadoc) {
-			classifier = 'javadoc'
-			from 'build/docs/javadoc'
-		}
+        if (javaProject) {
+            task javadocJar(type: Jar, dependsOn: javadoc) {
+                classifier = 'javadoc'
+                from 'build/docs/javadoc'
+            }
 
-		task sourcesJar(type: Jar) {
-			from sourceSets.main.allSource
-			classifier = 'sources'
-		}
+            task sourcesJar(type: Jar) {
+                from sourceSets.main.allSource
+                classifier = 'sources'
+            }
 
-		artifacts {
-			archives jar
-			archives javadocJar
-			archives sourcesJar
-		}
+            artifacts {
+                archives jar
+                archives javadocJar
+                archives sourcesJar
+            }
+        }
 
 		apply from: "$rootDir/gradle/pom.gradle"
 
