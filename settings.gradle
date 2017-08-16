@@ -12,3 +12,10 @@ include "integration-test:servlet"
 include "integration-test:glassfish4"
 include "integration-test:wildfly8"
 include "integration-test:ratpack"
+
+def isCI = System.getenv("CI")
+buildCache {
+    local {
+        enabled = !isCI
+    }
+}
