@@ -1,0 +1,149 @@
+== Basics
+
+=== Creating profiling sessions
+
+Profiling information is captured by an object called a `Profiler` (link to javadoc). Each profiler represents a single bundle of work performed by your software. For a web-based application, this is usually a single HTTP request that the developer is interested in.
+
+=== `ProfilerProviders`
+
+The recommended way to create a `Profiler` is by creating an instance of a `ProfilerProvider` for you application, and then calling one of the `start()` (javadoc link) methods.
+
+```
+// application initializtion
+ProfilerProvider pp = new DefaultProfilerProvider();
+
+// per request
+Profiler profiler = pp.start("profiler name");
+
+// (use the profiler)
+```
+
+A common convention is to use the request URI as the profiler name.
+
+Once a profiler has been started, it's also possible to get the current profiler from the ProfilerProvider by calling `getCurrentProfiler()` (javadoc). This means that it is not necessary to pass the current profiler through your API calls.
+
+The default profiler provider tracks the current profiler by attaching it to the current thread. If your framework uses multiple threads for a single request, a more sophisticated mechnism will be required. The Ratpack integration (link) is an example of a different implementation.
+
+=== Adding timing steps
+
+In the profiler, your program is modeled as a tree of steps.
+
+(screenshot)
+
+Each profiler is started with a root step, but you can add more in a variety of ways.
+
+```java
+Timing t = profilerProvider.getCurrentProfiler().step("My complicated step");
+try {
+    // stuff
+} finally {
+    timing.stop();
+}
+```
+
+`Timing` objects (javadoc) implement `Closeable` (javadoc), so you can use them in Java try-with-resources blocks:
+
+```java
+try (Timing t = profilerProvider.getCurrentProfiler().step("My complicated step")) {
+    // stuff
+}
+
+```
+
+It's also possible to add timings by passing a `Runnable` (javadoc) or `Callable` (javadoc). This is particularly convenient if your code is in a language with closures such as Java 8 or Groovy:
+
+```java
+profilerProvider.getCurrentProfiler().step("My complicated step", () -> {
+    // stuff
+});
+
+// or
+
+myValue = profilerProvider.getCurrentProfiler().step("My complicated step", () -> {
+    // stuff that returns something
+});
+```
+
+Steps can be nested:
+
+```java
+profiler.step("My complicated step", () -> {
+    // ...
+    profiler.step("A sub-part of the complicated step", () -> {
+        // ...
+    });
+})
+```
+
+=== Adding custom timings
+
+It is possible to attach "custom timings" to specific timing steps. This the way that e.g. SQL statements are added to profiles, but this could be anything custom that you'd like to track.
+
+```java
+try (Timing step = profiler.step("My complicated step")) {
+    // adds a SQL query that tokok 15ms
+    step.addCustomTiming("sql", "query", "select * from foo", 15);
+}
+```
+
+The built-in database layer integrations handle this for you (links), so it's typically not necessary to add database custom timings manually in your code.
+
+Often code such as integration layers that would add custom timings does not have access to the current `Timing` step to attach the timing to. In this case, it's possible to get to the "head" timing step on the current profiler and attach it to that:
+
+```java
+profilerProvider.getCurrentProfiler().getHead().addCustomTiming("sql", "query", "select * from foo", 15);
+```
+
+=== Stopping profiling sessions
+
+At the end of a profiling session, call `profiler.stop()` (javadoc). This will end the root timing step. The time from the initial `start()` and `stop()` methods will be considered the overall time for the profile.
+
+=== The `MiniProfiler` class
+
+Sometimes it can be difficult to get a `ProfilerProvider` instance into code that needs to use one. For example, in code instantiated by third-party libraries that do not support dependency injection. In these cases, the `MiniProfiler` helper class has static methods available.
+
+Starting a profiler:
+
+```java
+Profiler p = MiniProfiler.start("the request");
+```
+
+Getting a handle on the current profiler:
+
+```java
+Profiler p = MiniProfiler.getCurrentProfiler();
+```
+
+By default, the `MiniProfiler` class will instantiate a new `DefaultProfilerProvider` if it hasn't had another one configured by calling `MiniProfiler.setProfilerProvider()` (javadoc).
+
+=== Null profilers and null-safety
+
+`ProfilerProvider` instances and the `MiniProfiler` helper class will never return a `null` reference when calling `getCurrentProfiler()`. If there is no current profiling session they will instead return an instance of a `NullProfiler` (javadoc). This instance is safe to call `step()` (javadoc), `getHead()` (javadoc) and other methods on - all timings will be ignored.
+
+This means that the following code is completely safe from `NullPointerException` throws, even if there is no current profiler:
+
+```java
+profilerProvider
+    .getCurrentProfiler()
+    .step("my complex step")
+    .addCustomTiming("sql", "query", "select * from foo", 15);
+```
+
+=== Integrations
+
+Typically it's easiest to use a built-in integration to get the MiniProfiler into an application. The profiler ships with web-framework integrations for:
+
+- Servlet-based web-apps
+- Ratpack-based web-apps
+
+It has database-level integrations for:
+
+- Plain JDBC DataSources
+- Hibernate
+- EclipseLink
+- jOOQ
+
+There is also support for intercepting service-layer boundaries:
+
+- Using InvocationHandlers (commionly used in Spring-based service layers)
+- Use annotated CDI-based EJBs

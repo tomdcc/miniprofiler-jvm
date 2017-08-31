@@ -1,0 +1,10 @@
+== Integrating into web frameworks
+
+General stuff about needed support.
+
+- Wire up resource requests, results requests
+- Start / complete profiler per request
+
+=== Servlet engine integration
+
+=== Ratpack integration

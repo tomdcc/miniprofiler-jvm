@@ -1,4 +1,10 @@
+plugins {
+    id 'org.asciidoctor.gradle.asciidoctor' version '1.5.1'
+}
 
+asciidoctor {
+    separateOutputDirs = false
+}
 
 tasks.create('api', Javadoc) {
     group "manual"
@@ -25,6 +31,7 @@ tasks.create('packageManual', Sync) {
     description "Brings together manual and API reference"
 
     into "$buildDir/manual"
+    from tasks.asciidoctor
 
     into("api") {
         from api
@@ -38,6 +45,16 @@ tasks.create('openApi') {
 
     doLast {
         new java.awt.Desktop().browse(file("$packageManual.destinationDir/api/index.html").toURI())
+    }
+}
+
+tasks.create('openManual') {
+    dependsOn tasks.packageManual
+    group "manual"
+    description "Builds the manual, then opens it in your web browser"
+
+    doLast {
+        new java.awt.Desktop().browse(file("$packageManual.destinationDir/index.html").toURI())
     }
 }
 

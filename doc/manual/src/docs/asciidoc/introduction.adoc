@@ -1,0 +1,11 @@
+== Introduction
+
+The MiniProfiler is a lightweight way to get runtime profiling information about significant parts of your codebase. It's useful to give a deep dive into a single processing unit - typically a single HTTP request for web-based applications - rather than overall metrics that a typical profiler might give.
+
+Typical usage includes showing timing information for database queries, transactional service calls, and other high-level operations in a request.
+
+(screenshot)
+
+The original MiniProfiler was written for the Microsoft CLR by the StackOverflow team and the motivations were described in a blog post by Jeff Atwood. Since then the MiniProfiler project has split into the Javascript-based UI component and a number of backends for different platforms. This project is the JVM backend, and it bundles the latest version of the "official" UI code.
+
+Some effort has been made to follow conventions from the original CLR project around object and method names where possible.

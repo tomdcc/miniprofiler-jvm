@@ -1,0 +1,23 @@
+= MiniProfiler JVM Manual
+
+include::introduction.adoc[]
+
+include::basics.adoc[]
+
+include::displaying-results.adoc[]
+
+include::configuring-ui.adoc[]
+
+include::db-queries.adoc[]
+
+include::web-frameworks.adoc[]
+
+include::interception.adoc[]
+
+include::storage.adoc[]
+
+include::child-profilers.adoc[]
+
+include::username-provision.adoc[]
+
+include::appendix-changelog.adoc[]
