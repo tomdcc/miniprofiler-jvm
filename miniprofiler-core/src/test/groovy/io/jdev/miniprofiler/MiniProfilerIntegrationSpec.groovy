@@ -18,7 +18,6 @@ package io.jdev.miniprofiler
 
 import groovy.json.JsonSlurper
 import io.jdev.miniprofiler.internal.NullProfiler
-import io.jdev.miniprofiler.json.JsonUtil
 import io.jdev.miniprofiler.storage.MapStorage
 import io.jdev.miniprofiler.user.UserProvider
 import spock.lang.Specification
@@ -94,7 +93,7 @@ class MiniProfilerIntegrationSpec extends Specification {
         saved
 
         when: 'convert it into json'
-        def jsonString = JsonUtil.toJson(saved)
+        def jsonString = saved.asUiJson()
         def json = new JsonSlurper().parseText(jsonString)
 
         then: 'get expected result'

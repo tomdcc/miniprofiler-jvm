@@ -20,8 +20,6 @@ import io.jdev.miniprofiler.ProfileLevel;
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.Timing;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
@@ -94,8 +92,13 @@ public class NullProfiler implements Profiler {
     }
 
     @Override
-    public Map<String, Object> toMap() {
-        return Collections.emptyMap();
+    public String asUiJson() {
+        return "{}";
+    }
+
+    @Override
+    public String asPlainText() {
+        return "";
     }
 
     @Override

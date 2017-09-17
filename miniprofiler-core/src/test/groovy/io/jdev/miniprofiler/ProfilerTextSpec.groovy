@@ -34,7 +34,7 @@ class ProfilerTextSpec extends Specification {
         profiler.stop()
 
         when:
-        def lines = profiler.renderPlainText().readLines()
+        def lines = profiler.asPlainText().readLines()
 
         then:
         lines.size() == 4

@@ -17,7 +17,6 @@
 package io.jdev.miniprofiler;
 
 import io.jdev.miniprofiler.internal.CustomTiming;
-import io.jdev.miniprofiler.json.Jsonable;
 
 import java.io.Closeable;
 import java.io.Serializable;
@@ -51,7 +50,7 @@ import java.util.Map;
  * // automatically closed!
  * </pre></blockquote>
  */
-public interface Timing extends Serializable, Jsonable, Closeable {
+public interface Timing extends Serializable, Closeable {
 
     /**
      * Stops the timing step. This sets the end time for the timing

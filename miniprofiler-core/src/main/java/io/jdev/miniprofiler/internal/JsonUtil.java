@@ -14,33 +14,19 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.json;
+package io.jdev.miniprofiler.internal;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 /**
  * Utility class used for JSON serialization.
  */
-public class JsonUtil {
+class JsonUtil {
 
-    public static List<Map<String, Object>> mapList(List<? extends Jsonable> srcList) {
-        if (srcList == null) {
-            return null;
-        }
-
-        List<Map<String, Object>> dest = new ArrayList<Map<String, Object>>(srcList.size());
-        for (Jsonable srcObject : srcList) {
-            dest.add(srcObject != null ? srcObject.toMap() : null);
-        }
-        return dest;
-    }
-
-    public static String toJson(Jsonable src) {
+    static String toJson(Jsonable src) {
         StringBuilder buf = new StringBuilder();
-        mapToJsonBuffer(buf, src.toMap());
+        objectToJsonBuffer(buf, src);
         return buf.toString();
     }
 
@@ -83,7 +69,7 @@ public class JsonUtil {
      * @param string A String
      * @param sb     buffer to append to
      */
-    public static void quote(String string, StringBuilder sb) {
+    private static void quote(String string, StringBuilder sb) {
         char c = 0;
         int i;
         int len = string.length();

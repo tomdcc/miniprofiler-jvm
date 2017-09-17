@@ -16,7 +16,6 @@
 
 package io.jdev.miniprofiler.internal;
 
-import io.jdev.miniprofiler.json.Jsonable;
 import io.jdev.miniprofiler.sql.SqlFormatterFactory;
 
 import java.io.Serializable;

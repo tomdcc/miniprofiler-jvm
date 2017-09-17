@@ -19,7 +19,7 @@ package io.jdev.miniprofiler.ratpack
 import io.jdev.miniprofiler.ProfileLevel
 import io.jdev.miniprofiler.Profiler
 import io.jdev.miniprofiler.internal.ProfilerImpl
-import io.jdev.miniprofiler.json.JsonUtil
+import io.jdev.miniprofiler.internal.JsonUtil
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import ratpack.func.Action
 import ratpack.test.handling.RequestFixture

@@ -16,8 +16,6 @@
 
 package io.jdev.miniprofiler;
 
-import io.jdev.miniprofiler.json.Jsonable;
-
 import java.io.Closeable;
 import java.io.Serializable;
 import java.util.UUID;
@@ -73,7 +71,7 @@ import java.util.concurrent.Callable;
  * }
  * </pre></blockquote>
  */
-public interface Profiler extends Serializable, Jsonable, Closeable {
+public interface Profiler extends Serializable, Closeable {
 
     /**
      * Start a new profiling step with the default {@link ProfileLevel#Info} level;
@@ -207,4 +205,18 @@ public interface Profiler extends Serializable, Jsonable, Closeable {
      * @return the child profiler
      */
     Profiler addChild(String name);
+
+    /**
+     * Returns a JSON string representing this profiler instance in a form understood by the Javascript UI.
+     *
+     * @return a JSON string
+     */
+    String asUiJson();
+
+    /**
+     * Render a plain test version of this profiler, for logging
+     *
+     * @return the plain text representation
+     */
+    String asPlainText();
 }

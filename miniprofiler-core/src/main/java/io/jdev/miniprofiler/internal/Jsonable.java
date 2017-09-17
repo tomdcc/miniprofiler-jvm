@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.json;
+package io.jdev.miniprofiler.internal;
 
 import java.util.Map;
 

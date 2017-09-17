@@ -36,7 +36,7 @@ import java.util.concurrent.Callable;
  * need to construct a new profiler by calling
  * {@link #ProfilerImpl(String, ProfileLevel, ProfilerProvider)}.</p>
  */
-public class ProfilerImpl implements Profiler {
+public class ProfilerImpl implements Profiler, Jsonable {
     private static final long serialVersionUID = 1;
 
     private final UUID id;
@@ -206,7 +206,6 @@ public class ProfilerImpl implements Profiler {
         }
     }
 
-
     public LinkedHashMap<String, Object> toMap() {
         LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(11);
         map.put("Id", id.toString());
@@ -220,12 +219,18 @@ public class ProfilerImpl implements Profiler {
         return map;
     }
 
+    @Override
+    public String asUiJson() {
+        return JsonUtil.toJson(this);
+    }
+
     /**
      * Render a plain test version of this profiler, for logging
      *
      * @return the plain text representation
      */
-    public String renderPlainText() {
+    @Override
+    public String asPlainText() {
         StringBuilder text = new StringBuilder();
         text.append(machineName).append(" at ").append(new Date()).append("\n");
 

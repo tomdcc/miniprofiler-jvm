@@ -20,7 +20,6 @@ import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.StaticProfilerProvider;
-import io.jdev.miniprofiler.json.JsonUtil;
 import io.jdev.miniprofiler.sql.DriverUtil;
 import io.jdev.miniprofiler.storage.Storage;
 import io.jdev.miniprofiler.util.ResourceHelper;
@@ -164,10 +163,12 @@ public class ProfilingFilter implements Filter {
         if (allowedOrigin != null) {
             response.addHeader("Access-Control-Allow-Origin", allowedOrigin);
         }
-        String json = JsonUtil.toJson(profiler);
         Writer writer = response.getWriter();
-        writer.write(json);
-        writer.close();
+        try {
+            writer.write(profiler.asUiJson());
+        } finally {
+            writer.close();
+        }
     }
 
     protected Profiler startProfiling(UUID id, HttpServletRequest request) {

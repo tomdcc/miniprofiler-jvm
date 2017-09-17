@@ -18,7 +18,6 @@ package io.jdev.miniprofiler.ratpack;
 
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.ProfilerProvider;
-import io.jdev.miniprofiler.json.JsonUtil;
 import ratpack.form.Form;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
@@ -72,7 +71,7 @@ public class MiniProfilerResultsHandler implements Handler {
 
             Profiler profiler = provider.getStorage().load(uuid);
             if (profiler != null) {
-                response.status(200).contentType("text/json").send(JsonUtil.toJson(profiler));
+                response.status(200).contentType("text/json").send(profiler.asUiJson());
             } else {
                 // not there
                 response.status(404).send();

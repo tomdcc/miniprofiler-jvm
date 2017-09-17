@@ -18,14 +18,13 @@ package io.jdev.miniprofiler.internal;
 
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.Timing;
-import io.jdev.miniprofiler.json.JsonUtil;
 
 import java.util.*;
 
 /**
  * Concrete implementation of {@link Timing} interface.
  */
-public class TimingImpl implements Timing {
+public class TimingImpl implements Timing, Jsonable {
     private static final long serialVersionUID = 1;
 
     private final UUID id;
@@ -97,7 +96,7 @@ public class TimingImpl implements Timing {
         map.put("Name", name);
         map.put("StartMilliseconds", startMilliseconds);
         map.put("DurationMilliseconds", durationMilliseconds);
-        map.put("Children", JsonUtil.mapList(allChildren()));
+        map.put("Children", allChildren());
         if (customTimings != null) {
             map.put("CustomTimings", customTimings);
         }
