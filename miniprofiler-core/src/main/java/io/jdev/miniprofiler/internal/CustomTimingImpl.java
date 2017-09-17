@@ -98,7 +98,13 @@ class CustomTimingImpl implements CustomTiming, Serializable, Jsonable {
         return startMilliseconds;
     }
 
-    void stop() {
+    @Override
+    public void close() {
+        stop();
+    }
+
+    @Override
+    public void stop() {
         stop(System.currentTimeMillis());
     }
 

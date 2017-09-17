@@ -78,6 +78,11 @@ public class TimingImpl implements Timing, Jsonable {
         return addCustomTiming(type, CustomTimingImpl.forDuration(this, executeType, command, duration));
     }
 
+    @Override
+    public CustomTiming startCustomTiming(String type, String executeType, String command) {
+        return addCustomTiming(type, CustomTimingImpl.fromNow(this, executeType, command));
+    }
+
     private CustomTiming addCustomTiming(String type, CustomTimingImpl ct) {
         if (customTimings == null) {
             customTimings = new LinkedHashMap<String, List<CustomTiming>>();

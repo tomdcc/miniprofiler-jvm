@@ -44,4 +44,12 @@ class NullCustomTiming implements CustomTiming {
     public Long getDurationMilliseconds() {
         return null;
     }
+
+    @Override
+    public void stop() {
+    }
+
+    @Override
+    public void close() {
+    }
 }

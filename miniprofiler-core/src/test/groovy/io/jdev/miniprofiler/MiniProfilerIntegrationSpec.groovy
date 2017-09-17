@@ -124,6 +124,33 @@ class MiniProfilerIntegrationSpec extends Specification {
         passedIn << [true, false]
     }
 
+    @Unroll
+    void "adding open custom timings using passed-in profile = #passedIn"() {
+        given:
+        if (!passedIn) {
+            MiniProfiler.profilerProvider = profilerProvider
+        }
+        def pp = passedIn ? profilerProvider : MiniProfiler
+
+        when: 'add custom timings'
+        Profiler profiler = pp.start('ignored name', ProfileLevel.Verbose)
+        def ct1 = profiler.head.startCustomTiming('the type', 'the execute type', 'the command')
+        Thread.sleep(5)
+        ct1.stop()
+        profiler.stop()
+
+        then: 'has correct custom timings'
+        def jsonString = profiler.asUiJson()
+        def json = new JsonSlurper().parseText(jsonString)
+        def customTimings = json.Root.CustomTimings
+        customTimings.keySet() == ['the type'] as Set
+        def timing1 = customTimings['the type'][0]
+        verifyCustomTiming(timing1, [CommandString: '\n    the command', ExecuteType: 'the execute type'])
+
+        where:
+        passedIn << [true, false]
+    }
+
     boolean verifyTiming(def timing, Map expectedValues) {
         assert timing.Id instanceof String
         assert timing.DurationMilliseconds instanceof Number

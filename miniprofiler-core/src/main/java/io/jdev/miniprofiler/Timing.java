@@ -80,7 +80,10 @@ public interface Timing extends Serializable, Closeable {
     Timing getParent();
 
     /**
-     * Same as calling {@link #stop()}. ere to satisfy {@link Closeable}.
+     * Same as calling {@link #stop()}.
+     * <p>
+     *     Here to satisfy {@link Closeable} and mark the method as not throwing a checked exception.
+     * </p>
      */
     void close();
 
@@ -121,7 +124,7 @@ public interface Timing extends Serializable, Closeable {
     List<Timing> getChildren();
 
     /**
-     * Add a custom timing to this timing
+     * Add a custom timing to this timing.
      * @param type type of timing, e.g. "sql"
      * @param executeType what type of execution, e.g. "query"
      * @param command e.g. "select * from foo"
@@ -129,6 +132,20 @@ public interface Timing extends Serializable, Closeable {
      * @return the custom timing created
      */
     CustomTiming addCustomTiming(String type, String executeType, String command, long duration);
+
+    /**
+     * Starts a custom timing under this timing.
+     *
+     * <p>
+     *     The custom timing will not have a duration until {@link CustomTiming#stop()} is called on the returned object.
+     * </p>
+     *
+     * @param type type of timing, e.g. "sql"
+     * @param executeType what type of execution, e.g. "query"
+     * @param command e.g. "select * from foo"
+     * @return the custom timing created
+     */
+    CustomTiming startCustomTiming(String type, String executeType, String command);
 
     /**
      * Adds a child profiler under this step

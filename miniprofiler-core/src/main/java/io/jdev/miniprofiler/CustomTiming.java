@@ -16,7 +16,10 @@
 
 package io.jdev.miniprofiler;
 
-public interface CustomTiming {
+import java.io.Closeable;
+import java.io.Serializable;
+
+public interface CustomTiming extends Serializable, Closeable {
 
     String getExecuteType();
 
@@ -25,4 +28,15 @@ public interface CustomTiming {
     long getStartMilliseconds();
 
     Long getDurationMilliseconds();
+
+    void stop();
+
+    /**
+     * Same as calling {@link #stop()}.
+     * <p>
+     *     Here to satisfy {@link Closeable} and mark the method as not throwing a checked exception.
+     * </p>
+     */
+    void close();
+
 }

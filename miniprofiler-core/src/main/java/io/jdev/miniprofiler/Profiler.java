@@ -156,9 +156,12 @@ public interface Profiler extends Serializable, Closeable {
     void stop(boolean discardResults);
 
     /**
-     * Same as calling {@link #stop()}. Here to satisfy {@link Closeable} so
-     * that the profiler can be auto-closed in a Java 7 try-with-resources
-     * block.
+     /**
+     * Same as calling {@link #stop()}.
+     *
+     * <p>
+     *     Here to satisfy {@link Closeable} and mark the method as not throwing a checked exception.
+     * </p>
      */
     void close();
 

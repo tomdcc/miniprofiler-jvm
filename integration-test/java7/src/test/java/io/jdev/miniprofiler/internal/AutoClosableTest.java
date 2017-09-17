@@ -41,6 +41,9 @@ public class AutoClosableTest {
         }
         try (Timing lastTiming = profiler.step("again")) {
             lastTiming.addCustomTiming("sql", "query", "select * from bar", 5L);
+            try (CustomTiming ct = lastTiming.startCustomTiming("sql", "query", "select * from baz")) {
+                System.currentTimeMillis(); // just here so we don't have an empty block
+            }
         }
 
         profiler.stop();
@@ -64,7 +67,8 @@ public class AutoClosableTest {
         Map<String, List<CustomTiming>> secondGroupedNestedChildQueries = secondChild.getCustomTimings();
         Assert.assertEquals(1, secondGroupedNestedChildQueries.size());
         List<CustomTiming> secondChildQueries = secondGroupedNestedChildQueries.get("sql");
-        Assert.assertEquals(1, secondChildQueries.size());
+        Assert.assertEquals(2, secondChildQueries.size());
         Assert.assertEquals("select * from bar", secondChildQueries.get(0).getCommandString());
+        Assert.assertEquals("select * from baz", secondChildQueries.get(1).getCommandString());
     }
 }
