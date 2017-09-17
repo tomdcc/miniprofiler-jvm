@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler
+package io.jdev.miniprofiler.internal
 
-import io.jdev.miniprofiler.internal.ProfilerImpl
+import io.jdev.miniprofiler.ProfileLevel
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import spock.lang.Specification
 
@@ -24,9 +24,9 @@ import java.util.concurrent.Callable
 
 class ProfilerImplSpec extends Specification {
 
-    def profiler = new ProfilerImpl("foo", ProfileLevel.Info, new TestProfilerProvider())
+    ProfilerImpl profiler = new ProfilerImpl("foo", ProfileLevel.Info, new TestProfilerProvider())
 
-    void "runnable is profiled properly"() {
+    void "runnable step is profiled properly"() {
         when:
         profiler.step('foo', { -> profiler.step('bar').stop() })
 
@@ -37,7 +37,7 @@ class ProfilerImplSpec extends Specification {
         profiler.root.children[0].children.each { assert it.durationMilliseconds != null }
     }
 
-    void "runnable is profiled properly when it throws an exception"() {
+    void "runnable step is profiled properly when it throws an exception"() {
         when:
         profiler.step('foo', { -> throw new RuntimeException('eek') })
 
@@ -47,10 +47,9 @@ class ProfilerImplSpec extends Specification {
         profiler.root.children.name == ['foo']
         !profiler.root.children[0].children
         profiler.root.children.each { assert it.durationMilliseconds != null }
-
     }
 
-    void "callable is profiled properly"() {
+    void "callable step is profiled properly"() {
         when:
         def result = profiler.step('foo', { ->
             profiler.step('bar').stop()
@@ -65,7 +64,7 @@ class ProfilerImplSpec extends Specification {
         profiler.root.children[0].children.each { assert it.durationMilliseconds != null }
     }
 
-    void "callable is profiled properly when it throws an exception"() {
+    void "callable step is profiled properly when it throws an exception"() {
         when:
         profiler.step('foo', { -> throw new RuntimeException('eek') } as Callable)
 
@@ -75,7 +74,61 @@ class ProfilerImplSpec extends Specification {
         profiler.root.children.name == ['foo']
         !profiler.root.children[0].children
         profiler.root.children.each { assert it.durationMilliseconds != null }
-
     }
 
+    void 'runnable custom timing is passed through to head timing'() {
+        given:
+        def timing = Mock(TimingInternal)
+        profiler.setHead(timing)
+        Runnable block = { -> }
+
+        when:
+        profiler.customTiming('sql', 'query', 'select 1', block)
+
+        then:
+        1 * timing.customTiming('sql', 'query', 'select 1', block)
+    }
+
+    void 'runnable custom timing is called directly when no head timing'() {
+        given:
+        profiler.stop()
+        assert !profiler.head
+        def calls = 0
+        Runnable block = { -> calls++ }
+
+        when:
+        profiler.customTiming('sql', 'query', 'select 1', block)
+
+        then:
+        calls == 1
+    }
+
+    void 'callable custom timing is passed through to head timing'() {
+        given:
+        def timing = Mock(TimingInternal)
+        profiler.setHead(timing)
+        def func = { -> 'foo' } as Callable
+
+        when:
+        def result = profiler.customTiming('sql', 'query', 'select 1', (Callable) func)
+
+        then:
+        result == 'bar'
+        1 * timing.customTiming('sql', 'query', 'select 1', (Callable) func) >> 'bar'
+    }
+
+    void 'callable custom timing is called directly when no head timing'() {
+        given:
+        profiler.stop()
+        assert !profiler.head
+        def calls = 0
+        def func = { -> calls++; 'bar' } as Callable
+
+        when:
+        def result = profiler.customTiming('sql', 'query', 'select 1', (Callable) func)
+
+        then:
+        calls == 1
+        result == 'bar'
+    }
 }

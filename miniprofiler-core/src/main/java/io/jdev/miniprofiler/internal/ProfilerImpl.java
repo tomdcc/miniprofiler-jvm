@@ -48,7 +48,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
     private final ProfileLevel level;
     private final TimingImpl root;
     private boolean hasQueryTimings;
-    private TimingImpl head;
+    private TimingInternal head;
     private boolean stopped;
     private final ProfilerProvider profilerProvider;
 
@@ -211,6 +211,22 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         }
     }
 
+    public void customTiming(String type, String executeType, String command, Runnable block) {
+        if (head != null) {
+            head.customTiming(type, executeType, command, block);
+        } else {
+            block.run();
+        }
+    }
+
+    public <T> T customTiming(String type, String executeType, String command, Callable<T> function) throws Exception {
+        if (head != null) {
+            return head.customTiming(type, executeType, command, function);
+        } else {
+            return function.call();
+        }
+    }
+
     public LinkedHashMap<String, Object> toMap() {
         LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(11);
         map.put("Id", id.toString());
@@ -312,7 +328,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         return head;
     }
 
-    public void setHead(TimingImpl head) {
+    void setHead(TimingInternal head) {
         this.head = head;
     }
 

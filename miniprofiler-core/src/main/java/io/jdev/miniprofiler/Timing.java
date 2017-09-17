@@ -19,6 +19,7 @@ package io.jdev.miniprofiler;
 import java.io.Closeable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
  * Represents a step to be timed / profiled.
@@ -128,9 +129,8 @@ public interface Timing extends Closeable {
      * @param executeType what type of execution, e.g. "query"
      * @param command e.g. "select * from foo"
      * @param duration how long the command took
-     * @return the custom timing created
      */
-    CustomTiming addCustomTiming(String type, String executeType, String command, long duration);
+    void addCustomTiming(String type, String executeType, String command, long duration);
 
     /**
      * Starts a custom timing under this timing.
@@ -145,6 +145,28 @@ public interface Timing extends Closeable {
      * @return the custom timing created
      */
     CustomTiming customTiming(String type, String executeType, String command);
+
+    /**
+     * Start and stop a new custom timing with the given block.
+     * @param type type of timing, e.g. "sql"
+     * @param executeType what type of execution, e.g. "query"
+     * @param command e.g. "select * from foo"
+     * @param block the code to run
+     */
+    void customTiming(String type, String executeType, String command, Runnable block);
+
+    /**
+     * Start and stop a new custom timing with the given callable function.
+     *
+     * @param type type of timing, e.g. "sql"
+     * @param executeType what type of execution, e.g. "query"
+     * @param command e.g. "select * from foo"
+     * @param function The function to time
+     * @param <T> the return type of the function
+     * @return the result of calling the function
+     * @throws Exception when the function throws an exception
+     */
+    <T> T customTiming(String type, String executeType, String command, Callable<T> function) throws Exception;
 
     /**
      * Adds a child profiler under this step

@@ -23,6 +23,7 @@ import io.jdev.miniprofiler.Timing;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 /**
  * A timing implementation which does nothing. Mainly exists
@@ -95,13 +96,22 @@ class NullTiming implements Timing {
     }
 
     @Override
-    public CustomTiming addCustomTiming(String type, String executeType, String command, long duration) {
-        return NullCustomTiming.INSTANCE;
+    public void addCustomTiming(String type, String executeType, String command, long duration) {
     }
 
     @Override
     public CustomTiming customTiming(String type, String executeType, String comman) {
         return NullCustomTiming.INSTANCE;
+    }
+
+    @Override
+    public void customTiming(String type, String executeType, String command, Runnable block) {
+        block.run();
+    }
+
+    @Override
+    public <T> T customTiming(String type, String executeType, String command, Callable<T> function) throws Exception {
+        return function.call();
     }
 
     @Override

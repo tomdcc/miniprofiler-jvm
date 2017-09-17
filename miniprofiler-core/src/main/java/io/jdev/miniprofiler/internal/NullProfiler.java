@@ -86,6 +86,16 @@ public class NullProfiler implements Profiler {
     }
 
     @Override
+    public void customTiming(String type, String executeType, String command, Runnable block) {
+        block.run();
+    }
+
+    @Override
+    public <T> T customTiming(String type, String executeType, String command, Callable<T> function) throws Exception {
+        return function.call();
+    }
+
+    @Override
     public void close() {
     }
 

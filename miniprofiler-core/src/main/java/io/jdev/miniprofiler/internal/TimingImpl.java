@@ -22,11 +22,12 @@ import io.jdev.miniprofiler.Timing;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.Callable;
 
 /**
  * Concrete implementation of {@link Timing} interface.
  */
-public class TimingImpl implements Timing, Serializable, Jsonable {
+public class TimingImpl implements TimingInternal, Serializable, Jsonable {
     private static final long serialVersionUID = 1;
 
     private final UUID id;
@@ -34,14 +35,14 @@ public class TimingImpl implements Timing, Serializable, Jsonable {
     private final long startMilliseconds;
     private Long durationMilliseconds;
     private final ProfilerImpl profiler;
-    private final TimingImpl parent;
+    private final TimingInternal parent;
     private final int depth;
-    private List<TimingImpl> children;
+    private List<TimingInternal> children;
     private Map<String, List<CustomTiming>> customTimings;
     private List<Profiler> childProfilers;
 
 
-    public TimingImpl(ProfilerImpl profiler, TimingImpl parent, String name) {
+    public TimingImpl(ProfilerImpl profiler, TimingInternal parent, String name) {
         this.id = UUID.randomUUID();
         this.profiler = profiler;
         this.name = name;
@@ -51,7 +52,7 @@ public class TimingImpl implements Timing, Serializable, Jsonable {
         // root will have no parent
         if (parent != null) {
             parent.addChild(this);
-            depth = parent.depth + 1;
+            depth = parent.getDepth() + 1;
         } else {
             depth = 0;
         }
@@ -67,21 +68,41 @@ public class TimingImpl implements Timing, Serializable, Jsonable {
         profiler.setHead(parent);
     }
 
-    private void addChild(TimingImpl child) {
+    public void addChild(TimingInternal child) {
         if (children == null) {
-            children = new ArrayList<TimingImpl>();
+            children = new ArrayList<TimingInternal>();
         }
 
         children.add(child);
     }
 
-    public CustomTiming addCustomTiming(String type, String executeType, String command, long duration) {
-        return addCustomTiming(type, CustomTimingImpl.forDuration(this, executeType, command, duration));
+    public void addCustomTiming(String type, String executeType, String command, long duration) {
+        addCustomTiming(type, CustomTimingImpl.forDuration(this, executeType, command, duration));
     }
 
     @Override
     public CustomTiming customTiming(String type, String executeType, String command) {
         return addCustomTiming(type, CustomTimingImpl.fromNow(this, executeType, command));
+    }
+
+    @Override
+    public void customTiming(String type, String executeType, String command, Runnable block) {
+        CustomTiming timing = customTiming(type, executeType, command);
+        try {
+            block.run();
+        } finally {
+            timing.stop();
+        }
+    }
+
+    @Override
+    public <T> T customTiming(String type, String executeType, String command, Callable<T> function) throws Exception {
+        CustomTiming timing = customTiming(type, executeType, command);
+        try {
+            return function.call();
+        } finally {
+            timing.stop();
+        }
     }
 
     private CustomTiming addCustomTiming(String type, CustomTimingImpl ct) {
@@ -161,7 +182,7 @@ public class TimingImpl implements Timing, Serializable, Jsonable {
         return profiler;
     }
 
-    public TimingImpl getParent() {
+    public Timing getParent() {
         return parent;
     }
 
