@@ -88,10 +88,10 @@ try (Timing step = profiler.step("My complicated step")) {
 
 The built-in database layer integrations handle this for you (links), so it's typically not necessary to add database custom timings manually in your code.
 
-Often code such as integration layers that would add custom timings does not have access to the current `Timing` step to attach the timing to. In this case, it's possible to get to the "head" timing step on the current profiler and attach it to that:
+Often code such as integration layers that would add custom timings does not have access to the current `Timing` step to attach the timing to. In this case, it's possible to add the custom timing to the current step by calling `addCustomTiming()` on the current `Profiler`:
 
 ```java
-profilerProvider.getCurrentProfiler().getHead().addCustomTiming("sql", "query", "select * from foo", 15);
+profilerProvider.getCurrentProfiler().addCustomTiming("sql", "query", "select * from foo", 15);
 ```
 
 === Stopping profiling sessions
