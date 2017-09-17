@@ -18,7 +18,7 @@ package io.jdev.miniprofiler.test;
 
 import io.jdev.miniprofiler.BaseProfilerProvider;
 import io.jdev.miniprofiler.Profiler;
-import io.jdev.miniprofiler.ProfilerImpl;
+import io.jdev.miniprofiler.internal.ProfilerImpl;
 
 /**
  * Profiler provider to assist testing. Has a single profiler instance and performs

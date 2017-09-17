@@ -16,7 +16,7 @@
 
 package io.jdev.miniprofiler.ratpack
 
-import io.jdev.miniprofiler.NullProfiler
+import io.jdev.miniprofiler.internal.NullProfiler
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import ratpack.func.Action
 import ratpack.handling.Handler

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler;
+package io.jdev.miniprofiler.internal;
+
+import io.jdev.miniprofiler.*;
 
 import java.util.*;
 import java.util.concurrent.Callable;

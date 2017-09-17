@@ -16,6 +16,8 @@
 
 package io.jdev.miniprofiler;
 
+import io.jdev.miniprofiler.internal.NullProfiler;
+import io.jdev.miniprofiler.internal.ProfilerImpl;
 import io.jdev.miniprofiler.storage.Storage;
 
 import java.util.UUID;
@@ -94,7 +96,7 @@ public interface ProfilerProvider {
 
     /**
      * Marks the given profiling session as stopped. This is generally
-     * called from inside the {@link io.jdev.miniprofiler.ProfilerImpl#stop()}
+     * called from inside the {@link ProfilerImpl#stop()}
      * method. End users do not need to call it. Only public so that
      * custom ProfilerProviders can be developed.
      *

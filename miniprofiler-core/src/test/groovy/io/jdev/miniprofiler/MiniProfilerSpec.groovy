@@ -16,6 +16,8 @@
 
 package io.jdev.miniprofiler
 
+import io.jdev.miniprofiler.internal.NullProfiler
+import io.jdev.miniprofiler.internal.ProfilerImpl
 import spock.lang.Specification
 
 class MiniProfilerSpec extends Specification {

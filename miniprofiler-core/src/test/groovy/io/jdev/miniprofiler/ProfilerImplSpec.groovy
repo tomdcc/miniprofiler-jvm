@@ -16,6 +16,7 @@
 
 package io.jdev.miniprofiler
 
+import io.jdev.miniprofiler.internal.ProfilerImpl
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import spock.lang.Specification
 

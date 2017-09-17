@@ -17,6 +17,7 @@
 package io.jdev.miniprofiler
 
 import groovy.json.JsonSlurper
+import io.jdev.miniprofiler.internal.NullProfiler
 import io.jdev.miniprofiler.json.JsonUtil
 import io.jdev.miniprofiler.storage.MapStorage
 import io.jdev.miniprofiler.user.UserProvider

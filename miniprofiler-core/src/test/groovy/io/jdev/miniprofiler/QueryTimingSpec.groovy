@@ -16,6 +16,9 @@
 
 package io.jdev.miniprofiler
 
+import io.jdev.miniprofiler.internal.CustomTiming
+import io.jdev.miniprofiler.internal.ProfilerImpl
+import io.jdev.miniprofiler.internal.TimingImpl
 import spock.lang.Specification
 
 class QueryTimingSpec extends Specification {

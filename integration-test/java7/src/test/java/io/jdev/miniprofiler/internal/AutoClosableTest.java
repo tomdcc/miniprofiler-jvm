@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler;
+package io.jdev.miniprofiler.internal;
 
+import io.jdev.miniprofiler.DefaultProfilerProvider;
+import io.jdev.miniprofiler.ProfileLevel;
+import io.jdev.miniprofiler.Timing;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -36,12 +39,12 @@ public class AutoClosableTest {
             }
         }
         try (Timing lastTiming = profiler.step("again")) {
-            profiler.addCustomTiming("sql", "query", "select * from bar", 5L);
+            lastTiming.addCustomTiming("sql", "query", "select * from bar", 5L);
         }
 
         profiler.stop();
 
-        TimingImpl rootTiming = (TimingImpl) profiler.getRoot();
+        Timing rootTiming = profiler.getRoot();
         Assert.assertEquals(name, rootTiming.getName());
         List<Timing> children = rootTiming.getChildren();
         Assert.assertEquals(2, children.size());

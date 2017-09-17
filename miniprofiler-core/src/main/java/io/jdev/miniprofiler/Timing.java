@@ -16,6 +16,7 @@
 
 package io.jdev.miniprofiler;
 
+import io.jdev.miniprofiler.internal.CustomTiming;
 import io.jdev.miniprofiler.json.Jsonable;
 
 import java.io.Closeable;

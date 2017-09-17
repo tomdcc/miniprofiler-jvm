@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler;
+package io.jdev.miniprofiler.internal;
 
 import io.jdev.miniprofiler.json.Jsonable;
 import io.jdev.miniprofiler.sql.SqlFormatterFactory;

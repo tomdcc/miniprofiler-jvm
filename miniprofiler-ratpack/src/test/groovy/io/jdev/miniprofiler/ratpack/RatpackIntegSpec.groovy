@@ -18,7 +18,7 @@ package io.jdev.miniprofiler.ratpack
 
 import io.jdev.miniprofiler.MiniProfiler
 import io.jdev.miniprofiler.Profiler
-import io.jdev.miniprofiler.ProfilerImpl
+import io.jdev.miniprofiler.internal.ProfilerImpl
 import io.jdev.miniprofiler.ProfilerProvider
 import ratpack.exec.Blocking
 import ratpack.func.Action

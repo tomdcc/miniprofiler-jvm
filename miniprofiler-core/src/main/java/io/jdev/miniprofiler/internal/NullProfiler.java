@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler;
+package io.jdev.miniprofiler.internal;
+
+import io.jdev.miniprofiler.ProfileLevel;
+import io.jdev.miniprofiler.Profiler;
+import io.jdev.miniprofiler.Timing;
 
 import java.util.Collections;
 import java.util.Map;

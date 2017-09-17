@@ -18,7 +18,7 @@ package io.jdev.miniprofiler.servlet
 
 import groovy.json.JsonSlurper
 import io.jdev.miniprofiler.ProfileLevel
-import io.jdev.miniprofiler.ProfilerImpl
+import io.jdev.miniprofiler.internal.ProfilerImpl
 import io.jdev.miniprofiler.ProfilerProvider
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import io.jdev.miniprofiler.test.TestStorage

@@ -17,7 +17,7 @@
 package io.jdev.miniprofiler.storage
 
 import io.jdev.miniprofiler.ProfileLevel
-import io.jdev.miniprofiler.ProfilerImpl
+import io.jdev.miniprofiler.internal.ProfilerImpl
 import io.jdev.miniprofiler.ProfilerProvider
 import net.sf.ehcache.Ehcache
 import net.sf.ehcache.Element

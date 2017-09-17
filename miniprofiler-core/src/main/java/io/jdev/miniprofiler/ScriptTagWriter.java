@@ -16,6 +16,8 @@
 
 package io.jdev.miniprofiler;
 
+import io.jdev.miniprofiler.internal.NullProfiler;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;

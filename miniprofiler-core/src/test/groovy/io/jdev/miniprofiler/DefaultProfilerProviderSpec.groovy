@@ -16,6 +16,7 @@
 
 package io.jdev.miniprofiler
 
+import io.jdev.miniprofiler.internal.NullProfiler
 import io.jdev.miniprofiler.storage.MapStorage
 import io.jdev.miniprofiler.user.UserProvider
 import spock.lang.Specification

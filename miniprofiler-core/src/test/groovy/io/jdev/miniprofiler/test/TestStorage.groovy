@@ -16,7 +16,7 @@
 
 package io.jdev.miniprofiler.test
 
-import io.jdev.miniprofiler.ProfilerImpl
+import io.jdev.miniprofiler.internal.ProfilerImpl
 import io.jdev.miniprofiler.storage.Storage
 
 /**

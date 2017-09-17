@@ -16,7 +16,7 @@
 
 package io.jdev.miniprofiler.storage;
 
-import io.jdev.miniprofiler.ProfilerImpl;
+import io.jdev.miniprofiler.internal.ProfilerImpl;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;

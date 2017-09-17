@@ -16,6 +16,7 @@
 
 package io.jdev.miniprofiler;
 
+import io.jdev.miniprofiler.internal.ProfilerImpl;
 import io.jdev.miniprofiler.storage.Storage;
 
 import java.util.UUID;
