@@ -109,7 +109,7 @@ class CustomTimingImpl implements CustomTiming, Serializable, Jsonable {
     }
 
     @Override
-    public long getDurationMilliseconds() {
+    public Long getDurationMilliseconds() {
         return durationMilliseconds;
     }
 }

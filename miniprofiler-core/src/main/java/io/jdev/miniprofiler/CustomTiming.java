@@ -24,5 +24,5 @@ public interface CustomTiming {
 
     long getStartMilliseconds();
 
-    long getDurationMilliseconds();
+    Long getDurationMilliseconds();
 }
