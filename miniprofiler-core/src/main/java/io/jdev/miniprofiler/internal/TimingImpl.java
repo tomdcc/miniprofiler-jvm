@@ -20,12 +20,13 @@ import io.jdev.miniprofiler.CustomTiming;
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.Timing;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Concrete implementation of {@link Timing} interface.
  */
-public class TimingImpl implements Timing, Jsonable {
+public class TimingImpl implements Timing, Serializable, Jsonable {
     private static final long serialVersionUID = 1;
 
     private final UUID id;

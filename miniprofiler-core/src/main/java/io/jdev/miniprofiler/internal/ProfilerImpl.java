@@ -18,6 +18,7 @@ package io.jdev.miniprofiler.internal;
 
 import io.jdev.miniprofiler.*;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.Callable;
 
@@ -36,7 +37,7 @@ import java.util.concurrent.Callable;
  * need to construct a new profiler by calling
  * {@link #ProfilerImpl(String, ProfileLevel, ProfilerProvider)}.</p>
  */
-public class ProfilerImpl implements Profiler, Jsonable {
+public class ProfilerImpl implements Profiler, Serializable, Jsonable {
     private static final long serialVersionUID = 1;
 
     private final UUID id;

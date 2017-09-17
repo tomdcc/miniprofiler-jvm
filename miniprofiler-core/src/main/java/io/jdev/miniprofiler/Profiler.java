@@ -17,7 +17,6 @@
 package io.jdev.miniprofiler;
 
 import java.io.Closeable;
-import java.io.Serializable;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
@@ -71,7 +70,7 @@ import java.util.concurrent.Callable;
  * }
  * </pre></blockquote>
  */
-public interface Profiler extends Serializable, Closeable {
+public interface Profiler extends Closeable {
 
     /**
      * Start a new profiling step with the default {@link ProfileLevel#Info} level;

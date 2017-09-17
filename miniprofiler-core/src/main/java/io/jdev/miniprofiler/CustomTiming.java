@@ -17,9 +17,11 @@
 package io.jdev.miniprofiler;
 
 import java.io.Closeable;
-import java.io.Serializable;
 
-public interface CustomTiming extends Serializable, Closeable {
+/**
+ * A class representing a custom timing on a step, like a SQL query.
+ */
+public interface CustomTiming extends Closeable {
 
     String getExecuteType();
 
