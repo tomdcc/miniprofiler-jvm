@@ -190,6 +190,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
      * @param storage the storage option to use
      * @see Storage
      */
+    @Override
     public void setStorage(Storage storage) {
         this.storage = storage;
     }
@@ -199,6 +200,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
      *
      * @return current storage
      */
+    @Override
     public Storage getStorage() {
         return storage;
     }
