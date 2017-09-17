@@ -29,7 +29,7 @@ import java.util.UUID;
  * <p>If your system uses any form of dependency injection, the usual
  * way to do things is to inject a ProfilerProvider instance into
  * anything that need to be profiled, which can then call
- * {@link #getCurrentProfiler()} to get a handle on the current
+ * {@link #getCurrent()} to get a handle on the current
  * provider and add timing steps.</p>
  *
  * <p>The profiler provider would also need to be injected into an
@@ -39,7 +39,7 @@ import java.util.UUID;
  *
  * <p>If your system doesn't use dependency injection, then code starting
  * a new session should call {@link MiniProfiler#start(String)} and
- * {@link io.jdev.miniprofiler.MiniProfiler#getCurrentProfiler()},
+ * {@link io.jdev.miniprofiler.MiniProfiler#current()},
  * which defers to a static profiler provider instance. That
  * instance can be set using
  * {@link MiniProfiler#setProfilerProvider(ProfilerProvider)}.</p>
@@ -115,14 +115,21 @@ public interface ProfilerProvider {
      *
      * @return the current profiler
      */
-    Profiler getCurrentProfiler();
+    Profiler current();
+
+    /**
+     * A properties-friendly version of {@link #current()}.
+     *
+     * @return the current profiler
+     */
+    Profiler getCurrent();
 
     /**
      * Return true if there is a current profiler.
      *
      * @return true if there is a current profiler
      */
-    boolean hasCurrentProfiler();
+    boolean hasCurrent();
 
     /**
      * Returns the {@link Storage} associated with this provider.

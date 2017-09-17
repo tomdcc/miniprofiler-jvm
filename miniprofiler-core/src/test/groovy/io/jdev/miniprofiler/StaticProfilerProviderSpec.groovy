@@ -40,8 +40,8 @@ class StaticProfilerProviderSpec extends Specification {
         def profiler = provider.start("foo")
 
         then:
-        MiniProfiler.profilerProvider.currentProfiler == profiler
-        MiniProfiler.profilerProvider.currentProfiler.head.name == 'foo'
+        MiniProfiler.profilerProvider.current == profiler
+        MiniProfiler.profilerProvider.current.head.name == 'foo'
     }
 
     void "provider delegates to static miniprofiler provider and uses created one when none set"() {
@@ -56,7 +56,7 @@ class StaticProfilerProviderSpec extends Specification {
         MiniProfiler.profilerProvider
 
         and: 'being used'
-        MiniProfiler.profilerProvider.currentProfiler == profiler
-        MiniProfiler.profilerProvider.currentProfiler.head.name == 'foo'
+        MiniProfiler.profilerProvider.current == profiler
+        MiniProfiler.profilerProvider.current.head.name == 'foo'
     }
 }

@@ -27,12 +27,12 @@ import java.util.concurrent.Callable;
 
 /**
  * A timing implementation which does nothing. Mainly exists
- * so that {@link io.jdev.miniprofiler.ProfilerProvider#getCurrentProfiler()}
+ * so that {@link io.jdev.miniprofiler.ProfilerProvider#current()}
  * won't ever have to return null.
  *
  * <p>This makes it possible to call:</p>
  * <blockquote><pre>
- * try (Timing t = profilerProvider.getCurrentProfiler().step("do my thing")) {
+ * try (Timing t = profilerProvider.current().step("do my thing")) {
  *     // do stuff here
  * }
  * </pre></blockquote>

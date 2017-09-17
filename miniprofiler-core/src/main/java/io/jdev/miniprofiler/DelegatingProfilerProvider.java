@@ -59,13 +59,18 @@ public abstract class DelegatingProfilerProvider implements ProfilerProvider {
     }
 
     @Override
-    public Profiler getCurrentProfiler() {
-        return getDelegate().getCurrentProfiler();
+    public Profiler current() {
+        return getDelegate().current();
     }
 
     @Override
-    public boolean hasCurrentProfiler() {
-        return getDelegate().hasCurrentProfiler();
+    public Profiler getCurrent() {
+        return getDelegate().getCurrent();
+    }
+
+    @Override
+    public boolean hasCurrent() {
+        return getDelegate().hasCurrent();
     }
 
     @Override

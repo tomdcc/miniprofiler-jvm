@@ -55,7 +55,7 @@ public class ProfilingDecoratorMapper implements DecoratorMapper {
         if (decorator == null) {
             return null;
         } else {
-            return new ProfilingDecorator(decorator, profilerProvider.getCurrentProfiler());
+            return new ProfilingDecorator(decorator, profilerProvider.current());
         }
     }
 }

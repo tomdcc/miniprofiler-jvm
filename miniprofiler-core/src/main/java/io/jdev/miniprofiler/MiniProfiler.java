@@ -65,8 +65,17 @@ public class MiniProfiler {
      *
      * @return the current profiler, or a NullProfiler instance if there isn't one
      */
-    public static Profiler getCurrentProfiler() {
-        return profilerProvider != null ? profilerProvider.getCurrentProfiler() : NullProfiler.INSTANCE;
+    public static Profiler current() {
+        return profilerProvider != null ? profilerProvider.getCurrent() : NullProfiler.INSTANCE;
+    }
+
+    /**
+     * A properties-friendly version of {@link #current()}.
+     *
+     * @return the current profiler, or a NullProfiler instance if there isn't one
+     */
+    public static Profiler getCurrent() {
+        return current();
     }
 
     static ProfilerProvider getOrCreateProfilerProvider() {

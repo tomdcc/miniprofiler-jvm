@@ -28,9 +28,9 @@ import java.util.concurrent.Callable;
  * <p>Generally users of the library will not need to
  * interact directly with this class, instead getting references to the current
  * profiler through {@link io.jdev.miniprofiler.MiniProfiler#start(String)},
- * {@link io.jdev.miniprofiler.MiniProfiler#getCurrentProfiler()},
+ * {@link io.jdev.miniprofiler.MiniProfiler#current()},
  * {@link io.jdev.miniprofiler.ProfilerProvider#start(String)} and
- * {@link io.jdev.miniprofiler.MiniProfiler#getCurrentProfiler()}, and then
+ * {@link io.jdev.miniprofiler.MiniProfiler#current()}, and then
  * just treating it as a {@link Profiler}.</p>
  *
  * <p>However, writers of custom {@link ProfilerProvider} implementations may

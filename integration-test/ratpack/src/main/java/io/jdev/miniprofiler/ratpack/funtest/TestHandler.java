@@ -46,7 +46,7 @@ public class TestHandler implements Handler {
 
     @Override
     public void handle(Context ctx) throws Exception {
-        profilerProvider.getCurrentProfiler().step("TestHandler.handle", () -> {
+        profilerProvider.current().step("TestHandler.handle", () -> {
             Blocking.get(() -> getData(ctx)).then(data -> {
                 ctx.byContent(spr -> {
                     spr.json(() -> ctx.render(Jackson.json(data)));
@@ -57,7 +57,7 @@ public class TestHandler implements Handler {
     }
 
     private List<Map<String, String>> getData(Context ctx) throws Exception {
-        return profilerProvider.getCurrentProfiler().step("TestHandler.getData", () -> {
+        return profilerProvider.current().step("TestHandler.getData", () -> {
             List<Map<String, String>> results = new ArrayList<>();
             try (Connection con = ctx.get(DataSource.class).getConnection(); Statement st = con.createStatement()) {
                 try (ResultSet rs = st.executeQuery("select * from people")) {

@@ -41,9 +41,9 @@ class EagerMiniProfilerExecInterceptorSpec extends Specification {
         }
 
         then: 'profiler created and was stoped but not discarded'
-        provider.currentProfiler
-        provider.currentProfiler.stopped
-        !(provider.currentProfiler instanceof NullProfiler)
+        provider.current
+        provider.current.stopped
+        !(provider.current instanceof NullProfiler)
         !provider.wasDiscarded()
     }
 
@@ -58,7 +58,7 @@ class EagerMiniProfilerExecInterceptorSpec extends Specification {
         } as Action)
 
         then: "current profiler is the original one"
-        provider.currentProfiler == profiler
+        provider.current == profiler
     }
 
 

@@ -54,25 +54,25 @@ class DefaultProfilerProviderSpec extends Specification {
         Profiler profiler = profilerProvider.start('asd')
 
         then: 'current profiler is the one returned'
-        profilerProvider.currentProfiler == profiler
+        profilerProvider.current == profiler
 
         and: 'other thread has no current profiler'
-        executorService.submit({ profilerProvider.currentProfiler }).get() == null
+        executorService.submit({ profilerProvider.current }).get() == null
 
         when: 'call stop'
         profilerProvider.stopCurrentSession(false)
 
         then: 'no longer available'
-        profilerProvider.currentProfiler == NullProfiler.INSTANCE
+        profilerProvider.current == NullProfiler.INSTANCE
 
         when: 'other thread creates profiler'
         def otherProfiler = executorService.submit({ profilerProvider.start('lkj') }).get()
 
         then: 'not set in this thread'
-        profilerProvider.currentProfiler == NullProfiler.INSTANCE
+        profilerProvider.current == NullProfiler.INSTANCE
 
         and: 'still current in that thread'
-        otherProfiler == executorService.submit({ profilerProvider.currentProfiler }).get()
+        otherProfiler == executorService.submit({ profilerProvider.current }).get()
     }
 
 }

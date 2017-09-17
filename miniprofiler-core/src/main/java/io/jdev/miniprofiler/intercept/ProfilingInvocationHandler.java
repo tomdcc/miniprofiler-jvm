@@ -45,7 +45,7 @@ public class ProfilingInvocationHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        Timing timing = profilerProvider.getCurrentProfiler().step(method.getDeclaringClass().getSimpleName() + "." + method.getName());
+        Timing timing = profilerProvider.current().step(method.getDeclaringClass().getSimpleName() + "." + method.getName());
         try {
             return method.invoke(target, args);
         } finally {

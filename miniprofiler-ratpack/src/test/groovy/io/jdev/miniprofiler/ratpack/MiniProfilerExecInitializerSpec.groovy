@@ -61,7 +61,7 @@ class MiniProfilerExecInitializerSpec extends Specification {
         handle(Handlers.next(), this.&addToRegistry)
 
         then: 'no profiler created'
-        !provider.hasCurrentProfiler()
+        !provider.hasCurrent()
     }
 
     @Ignore("See https://github.com/ratpack/ratpack/issues/1110")
@@ -70,9 +70,9 @@ class MiniProfilerExecInitializerSpec extends Specification {
         handle(startProfilerHandler, this.&addToRegistry)
 
         then: 'profiler created and was stoped but not discarded'
-        provider.currentProfiler
-        provider.currentProfiler.stopped
-        !(provider.currentProfiler instanceof NullProfiler)
+        provider.current
+        provider.current.stopped
+        !(provider.current instanceof NullProfiler)
         !provider.wasDiscarded()
     }
 
@@ -83,9 +83,9 @@ class MiniProfilerExecInitializerSpec extends Specification {
         }
 
         then: 'profiler created and was stoped but not discarded'
-        provider.currentProfiler
-        provider.currentProfiler.stopped
-        !(provider.currentProfiler instanceof NullProfiler)
+        provider.current
+        provider.current.stopped
+        !(provider.current instanceof NullProfiler)
         !provider.wasDiscarded()
     }
 
@@ -96,9 +96,9 @@ class MiniProfilerExecInitializerSpec extends Specification {
         }
 
         then: 'profiler created but was discarded'
-        provider.currentProfiler
-        provider.currentProfiler.stopped
-        !(provider.currentProfiler instanceof NullProfiler)
+        provider.current
+        provider.current.stopped
+        !(provider.current instanceof NullProfiler)
         provider.wasDiscarded()
     }
 
@@ -112,7 +112,7 @@ class MiniProfilerExecInitializerSpec extends Specification {
         }
 
         then: "current profiler is the original one"
-        provider.currentProfiler == profiler
+        provider.current == profiler
     }
 
     void "initializer cleans up profiler exactly once per request"() {

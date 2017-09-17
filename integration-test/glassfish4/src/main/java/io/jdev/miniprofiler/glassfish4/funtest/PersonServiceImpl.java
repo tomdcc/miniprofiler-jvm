@@ -38,7 +38,7 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public List<Person> getAllPeople() {
-        try (Timing timing = profilerProvider.getCurrentProfiler().step("First thing")) {
+        try (Timing timing = profilerProvider.current().step("First thing")) {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
@@ -46,7 +46,7 @@ public class PersonServiceImpl implements PersonService {
             }
         }
 
-        try (Timing timing = profilerProvider.getCurrentProfiler().step("Second thing")) {
+        try (Timing timing = profilerProvider.current().step("Second thing")) {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {

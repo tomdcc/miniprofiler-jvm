@@ -30,7 +30,7 @@ Once installed, start using the profiler thusly:
 
 To profile individual parts of your program, create and stop individual timings:
 
-    Timing t = MiniProfiler.getCurrentProfiler().step("My complicated step");
+    Timing t = MiniProfiler.current().step("My complicated step");
     try {
         // stuff
     } finally {
@@ -39,18 +39,18 @@ To profile individual parts of your program, create and stop individual timings:
 
 If you are using Java 7, you can use Java 7 auto-closable resource blocks for even cleaner code:
 
-    try (Timing t = MiniProfiler.getCurrentProfiler().step("My complicated step")) {
+    try (Timing t = MiniProfiler.current().step("My complicated step")) {
         // stuff
     }
 
 Steps are nestable, and will appear nested in profiler output:
 
-    try (Timing t = MiniProfiler.getCurrentProfiler().step("My complicated step")) {
+    try (Timing t = MiniProfiler.current().step("My complicated step")) {
         // stuff
-	    try (Timing t1 = MiniProfiler.getCurrentProfiler().step("A sub-part of the complicated step")) {
+	    try (Timing t1 = MiniProfiler.current().step("A sub-part of the complicated step")) {
 	        // sub-stuff 1
 	    }
-	    try (Timing t2 = MiniProfiler.getCurrentProfiler().step("A second, sibling sub-part of the complicated step")) {
+	    try (Timing t2 = MiniProfiler.current().step("A second, sibling sub-part of the complicated step")) {
 	        // sub-stuff 2
 	    }
     }
@@ -69,7 +69,7 @@ The default code above uses a static reference to a global ProfilerProvider obje
 
 
     // further in where stuff is happening
-    Timing t = profilerProvider.getCurrentProfiler().step("My complicated step");
+    Timing t = profilerProvider.current().step("My complicated step");
     try {
         // stuff
     } finally {
@@ -86,7 +86,7 @@ Seeing the output
 -----------------
 To see the output of the profiled request on your web page, add a script tag to the bottom of your HTML page, just inside the body tag. The library comes with a `ScriptTagWriter` class to help with this:
 
-    <%= new ScriptTagWriter().printScriptTag(MiniProfiler.getCurrentProfiler(), request.getContextPath() + "/miniprofiler")%>
+    <%= new ScriptTagWriter().printScriptTag(MiniProfiler.current(), request.getContextPath() + "/miniprofiler")%>
 
 This will output a javascript script tag which will load the necessary javascript, css and data from under `/miniprofiler` in your web app.
 

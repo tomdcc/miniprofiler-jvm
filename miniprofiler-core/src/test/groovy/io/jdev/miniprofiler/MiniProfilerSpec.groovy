@@ -40,7 +40,7 @@ class MiniProfilerSpec extends Specification {
         MiniProfiler.profilerProvider instanceof DefaultProfilerProvider
 
         and:
-        MiniProfiler.currentProfiler == profiler
+        MiniProfiler.current == profiler
     }
 
     void "returns null profiler as current profiler when no profiler provider set"() {
@@ -48,7 +48,7 @@ class MiniProfilerSpec extends Specification {
         MiniProfiler.profilerProvider = null
 
         when:
-        def profiler = MiniProfiler.currentProfiler
+        def profiler = MiniProfiler.current
 
         then:
         profiler instanceof NullProfiler
@@ -61,10 +61,10 @@ class MiniProfilerSpec extends Specification {
         def profiler = Mock(Profiler)
 
         when:
-        def result = MiniProfiler.currentProfiler
+        def result = MiniProfiler.current
 
         then:
-        1 * MiniProfiler.profilerProvider.getCurrentProfiler() >> profiler
+        1 * MiniProfiler.profilerProvider.getCurrent() >> profiler
 
         and:
         result == profiler

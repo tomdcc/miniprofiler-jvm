@@ -50,11 +50,11 @@ import java.util.concurrent.Callable;
  * <p>Individual profiling steps can then be added by calling
  * {@link #step(String, ProfileLevel)}. Usually it would be necessary
  * to get a handle on the current profiler first, using either
- * {@link io.jdev.miniprofiler.ProfilerProvider#getCurrentProfiler()}
- * or {@link io.jdev.miniprofiler.MiniProfiler#getCurrentProfiler()}.
+ * {@link io.jdev.miniprofiler.ProfilerProvider#current()}
+ * or {@link io.jdev.miniprofiler.MiniProfiler#current()}.
  * </p>
  * <blockquote><pre>
- * try(Timing profiler = profilerProvider.getCurrentProfiler().step("Some complicated step", Info)) {
+ * try(Timing profiler = profilerProvider.current().step("Some complicated step", Info)) {
  *     // do stuff here
  * }
  * </pre></blockquote>
@@ -62,9 +62,9 @@ import java.util.concurrent.Callable;
  * <p>Calls can be nested, and nested steps will be displayed indented in
  * the UI.</p>
  * <blockquote><pre>
- * try(Timing profiler = profilerProvider.getCurrentProfiler().step("Some complicated step", Info)) {
+ * try(Timing profiler = profilerProvider.current().step("Some complicated step", Info)) {
  *     // do stuff here
- *     try(Timing profiler = profilerProvider.getCurrentProfiler().step("Another step inside that one!", Info)) {
+ *     try(Timing profiler = profilerProvider.current().step("Another step inside that one!", Info)) {
  *         // do stuff here
  *     }
  * }

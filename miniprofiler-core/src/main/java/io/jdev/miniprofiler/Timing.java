@@ -30,7 +30,7 @@ import java.util.concurrent.Callable;
  * after the creation of the timing like so:
  * </p>
  * <blockquote><pre>
- * Timing timing = profilerProvider.getCurrentProfiler().step("some thing");
+ * Timing timing = profilerProvider.current().step("some thing");
  * try {
  *     // do stuff here
  * } finally {
@@ -42,7 +42,7 @@ import java.util.concurrent.Callable;
  * Java 7 ARM blocks:</p>
  *
  * <blockquote><pre>
- * try(Timing timing = profilerProvider.getCurrentProfiler().step("some thing")) {
+ * try(Timing timing = profilerProvider.current().step("some thing")) {
  *     // do stuff here
  * }
  * // automatically closed!

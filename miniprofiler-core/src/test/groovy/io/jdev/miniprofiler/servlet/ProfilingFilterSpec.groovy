@@ -187,6 +187,6 @@ class MockFilterChain implements FilterChain {
     @Override
     void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) throws IOException, ServletException {
         invoked = true
-        profilerProvider.getCurrentProfiler().step("MockFilterChain").close()
+        profilerProvider.current().step("MockFilterChain").close()
     }
 }

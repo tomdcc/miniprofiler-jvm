@@ -19,7 +19,6 @@ package grails.plugin.miniprofiler.sitemesh.grails20;
 import com.opensymphony.module.sitemesh.DecoratorMapper;
 import com.opensymphony.sitemesh.DecoratorSelector;
 import com.opensymphony.sitemesh.webapp.SiteMeshWebAppContext;
-import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import org.codehaus.groovy.grails.web.sitemesh.GrailsPageFilter;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -51,8 +50,11 @@ public class ProfilingGrailsPageFilter extends GrailsPageFilter {
 
     @Override
     protected DecoratorSelector initDecoratorSelector(SiteMeshWebAppContext webAppContext) {
-        Profiler profiler = profilerProvider.getCurrentProfiler();
-        DecoratorSelector realDecoratorSelector = super.initDecoratorSelector(webAppContext);
-        return profiler != null ? new ProfilingGrailsDecoratorSelector(realDecoratorSelector, profiler) : realDecoratorSelector;
+        DecoratorSelector selector = super.initDecoratorSelector(webAppContext);
+        if (profilerProvider.hasCurrent()) {
+            return new ProfilingGrailsDecoratorSelector(selector, profilerProvider.current());
+        } else {
+            return selector;
+        }
     }
 }

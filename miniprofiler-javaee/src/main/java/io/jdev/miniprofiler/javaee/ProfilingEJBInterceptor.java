@@ -34,7 +34,7 @@ public class ProfilingEJBInterceptor {
 
     @AroundInvoke
     public Object profile(InvocationContext ctx) throws Exception {
-        Profiler profiler = profilerProvider.getCurrentProfiler();
+        Profiler profiler = profilerProvider.current();
         String stepName = String.format("%s.%s", ctx.getTarget().getClass().getSimpleName(), ctx.getMethod().getName());
         Timing timing = profiler.step(stepName);
         try {

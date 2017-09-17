@@ -16,8 +16,6 @@
 
 package io.jdev.miniprofiler.sql;
 
-import io.jdev.miniprofiler.MiniProfiler;
-import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.StaticProfilerProvider;
 import io.jdev.miniprofiler.sql.log4jdbc.Spy;
@@ -25,14 +23,14 @@ import io.jdev.miniprofiler.sql.log4jdbc.SpyLogDelegator;
 
 public class ProfilingSpyLogDelegator implements SpyLogDelegator {
 
-    private ProfilerProvider profilerProvider;
+    private final ProfilerProvider profilerProvider;
 
     public ProfilingSpyLogDelegator() {
-        this(new StaticProfilerProvider());
+        this(null);
     }
 
     public ProfilingSpyLogDelegator(ProfilerProvider profilerProvider) {
-        this.profilerProvider = profilerProvider;
+        this.profilerProvider = profilerProvider == null ? new StaticProfilerProvider() : profilerProvider;
     }
 
     public boolean isJdbcLoggingEnabled() {
@@ -52,9 +50,8 @@ public class ProfilingSpyLogDelegator implements SpyLogDelegator {
     }
 
     public void sqlTimingOccured(Spy spy, long time, String method, String sql) {
-        Profiler profiler = profilerProvider != null ? profilerProvider.getCurrentProfiler() : MiniProfiler.getCurrentProfiler();
         // TODO work out more specific execute type based on sql command
-        profiler.addCustomTiming("sql", "query", sql, time);
+        profilerProvider.current().addCustomTiming("sql", "query", sql, time);
     }
 
     public void connectionOpened(Spy spy) {

@@ -81,7 +81,7 @@ public class MiniProfilerExecInitializer implements ExecInitializer {
     @Override
     public void init(Execution execution) {
         // create a profiler if there isn't one already
-        if (shouldCreateProfilerOnExecutionStart(execution) && !provider.hasCurrentProfiler()) {
+        if (shouldCreateProfilerOnExecutionStart(execution) && !provider.hasCurrent()) {
             provider.start(getProfilerName(execution));
         }
         Completion completion = new Completion(execution);
@@ -91,8 +91,8 @@ public class MiniProfilerExecInitializer implements ExecInitializer {
     }
 
     protected void executionComplete(Execution execution) {
-        if (provider.hasCurrentProfiler()) {
-            Profiler profiler = provider.getCurrentProfiler();
+        if (provider.hasCurrent()) {
+            Profiler profiler = provider.current();
             ProfilerStoreOption store = execution.maybeGet(ProfilerStoreOption.class).orElse(defaultProfilerStoreOption);
             profiler.stop(store == ProfilerStoreOption.DISCARD_RESULTS);
         }

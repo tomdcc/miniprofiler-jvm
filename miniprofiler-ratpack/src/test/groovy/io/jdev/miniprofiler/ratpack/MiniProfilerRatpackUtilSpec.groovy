@@ -104,7 +104,7 @@ class MiniProfilerRatpackUtilSpec extends Specification {
         def profiler
         handle({ ctx ->
             profiler = provider.start("request")
-            provider.currentProfiler.step('handler') {
+            provider.current.step('handler') {
                 MiniProfilerRatpackUtil.forkChildProfiler(Execution.fork(), "forked execution").start{ execution ->
                     execution.get(Profiler).step('forked') {
                         ctx.next()
@@ -134,9 +134,9 @@ class MiniProfilerRatpackUtilSpec extends Specification {
         def composedOnStart = { composedOnStartCalled = true } as Action<Execution>
         handle({ ctx ->
             profiler = provider.start("request")
-            provider.currentProfiler.step('handler') {
+            provider.current.step('handler') {
                 MiniProfilerRatpackUtil.forkChildProfiler(Execution.fork(), "forked execution", composedOnStart).start(Operation.of {
-                    provider.currentProfiler.step('forked') {
+                    provider.current.step('forked') {
                         ctx.next()
                     }
                 })

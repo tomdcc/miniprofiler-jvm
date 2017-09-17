@@ -65,10 +65,10 @@ class MiniProfilerIntegrationSpec extends Specification {
         Profiler profiler = pp.start(name, ProfileLevel.Verbose)
 
         then: 'current profiler is the one returned'
-        pp.currentProfiler == profiler
+        pp.current == profiler
 
         and: 'other thread has no current profiler'
-        executorService.submit({ pp.currentProfiler }).get() == null
+        executorService.submit({ pp.current }).get() == null
 
         when: 'add some stuff'
         Timing firstTiming = profiler.step("fooService.whatever")
@@ -84,7 +84,7 @@ class MiniProfilerIntegrationSpec extends Specification {
         profiler.stop()
 
         then: 'no current profiler anymore'
-        pp.currentProfiler == NullProfiler.INSTANCE
+        pp.current == NullProfiler.INSTANCE
 
         and: 'ask for some data'
         def saved = storage.load(profiler.id)

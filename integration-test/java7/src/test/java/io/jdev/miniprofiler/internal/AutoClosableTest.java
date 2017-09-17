@@ -57,7 +57,7 @@ public class AutoClosableTest {
 
     @Test
     public void testAutoClosingSafetyForNullProfiler() {
-        Profiler profiler = new DefaultProfilerProvider().getCurrentProfiler();
+        Profiler profiler = new DefaultProfilerProvider().current();
         Assert.assertTrue(profiler instanceof NullProfiler);
         try(Profiler p = profiler) {
             doStuffWithAutoClosables(p);

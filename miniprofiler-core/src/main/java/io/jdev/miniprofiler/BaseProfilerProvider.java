@@ -40,7 +40,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
     /**
      * Called after a new profiler is created. Subclasses should
      * store the passed-in profiler for later retrieval in calls
-     * to {@link #getCurrentProfiler()}.
+     * to {@link #current()}.
      *
      * @param profiler the newly created profiler
      */
@@ -48,7 +48,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 
     /**
      * Called after a profiler has been stopped. Subsequent calls
-     * to {@link #getCurrentProfiler()} should return null.
+     * to {@link #current()} should return null.
      *
      * @param profiler the stopped profiler
      */
@@ -66,9 +66,17 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
      * Returns the current MiniProfiler.
      */
     @Override
-    public final Profiler getCurrentProfiler() {
+    public final Profiler current() {
         Profiler p = lookupCurrentProfiler();
         return p != null ? p : NullProfiler.INSTANCE;
+    }
+
+    /**
+     * Returns the current MiniProfiler.
+     */
+    @Override
+    public final Profiler getCurrent() {
+        return current();
     }
 
     /**
@@ -76,7 +84,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
      * @return true if there is a profiler currently running
      */
     @Override
-    public boolean hasCurrentProfiler() {
+    public boolean hasCurrent() {
         return lookupCurrentProfiler() != null;
     }
 
@@ -148,7 +156,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
      */
     @Override
     public void stopCurrentSession(boolean discardResults) {
-        Profiler currentProfiler = getCurrentProfiler();
+        Profiler currentProfiler = current();
         if (currentProfiler != null) {
             currentProfiler.stop(discardResults);
         }

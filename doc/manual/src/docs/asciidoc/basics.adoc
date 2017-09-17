@@ -20,7 +20,7 @@ Profiler profiler = pp.start("profiler name");
 
 A common convention is to use the request URI as the profiler name.
 
-Once a profiler has been started, it's also possible to get the current profiler from the ProfilerProvider by calling `getCurrentProfiler()` (javadoc). This means that it is not necessary to pass the current profiler through your API calls.
+Once a profiler has been started, it's also possible to get the current profiler from the ProfilerProvider by calling `current()` (javadoc). This means that it is not necessary to pass the current profiler through your API calls.
 
 The default profiler provider tracks the current profiler by attaching it to the current thread. If your framework uses multiple threads for a single request, a more sophisticated mechnism will be required. The Ratpack integration (link) is an example of a different implementation.
 
@@ -33,7 +33,7 @@ In the profiler, your program is modeled as a tree of steps.
 Each profiler is started with a root step, but you can add more in a variety of ways.
 
 ```java
-Timing t = profilerProvider.getCurrentProfiler().step("My complicated step");
+Timing t = profilerProvider.current().step("My complicated step");
 try {
     // stuff
 } finally {
@@ -44,7 +44,7 @@ try {
 `Timing` objects (javadoc) implement `Closeable` (javadoc), so you can use them in Java try-with-resources blocks:
 
 ```java
-try (Timing t = profilerProvider.getCurrentProfiler().step("My complicated step")) {
+try (Timing t = profilerProvider.current().step("My complicated step")) {
     // stuff
 }
 
@@ -53,13 +53,13 @@ try (Timing t = profilerProvider.getCurrentProfiler().step("My complicated step"
 It's also possible to add timings by passing a `Runnable` (javadoc) or `Callable` (javadoc). This is particularly convenient if your code is in a language with closures such as Java 8 or Groovy:
 
 ```java
-profilerProvider.getCurrentProfiler().step("My complicated step", () -> {
+profilerProvider.current().step("My complicated step", () -> {
     // stuff
 });
 
 // or
 
-myValue = profilerProvider.getCurrentProfiler().step("My complicated step", () -> {
+myValue = profilerProvider.current().step("My complicated step", () -> {
     // stuff that returns something
 });
 ```
@@ -91,7 +91,7 @@ The built-in database layer integrations handle this for you (links), so it's ty
 Often code such as integration layers that would add custom timings does not have access to the current `Timing` step to attach the timing to. In this case, it's possible to add the custom timing to the current step by calling `addCustomTiming()` on the current `Profiler`:
 
 ```java
-profilerProvider.getCurrentProfiler().addCustomTiming("sql", "query", "select * from foo", 15);
+profilerProvider.current().addCustomTiming("sql", "query", "select * from foo", 15);
 ```
 
 === Stopping profiling sessions
@@ -111,20 +111,20 @@ Profiler p = MiniProfiler.start("the request");
 Getting a handle on the current profiler:
 
 ```java
-Profiler p = MiniProfiler.getCurrentProfiler();
+Profiler p = MiniProfiler.current();
 ```
 
 By default, the `MiniProfiler` class will instantiate a new `DefaultProfilerProvider` if it hasn't had another one configured by calling `MiniProfiler.setProfilerProvider()` (javadoc).
 
 === Null profilers and null-safety
 
-`ProfilerProvider` instances and the `MiniProfiler` helper class will never return a `null` reference when calling `getCurrentProfiler()`. If there is no current profiling session they will instead return an instance of a `NullProfiler` (javadoc). This instance is safe to call `step()` (javadoc), `getHead()` (javadoc) and other methods on - all timings will be ignored.
+`ProfilerProvider` instances and the `MiniProfiler` helper class will never return a `null` reference when calling `current()`. If there is no current profiling session they will instead return an instance of a `NullProfiler` (javadoc). This instance is safe to call `step()` (javadoc), `getHead()` (javadoc) and other methods on - all timings will be ignored.
 
 This means that the following code is completely safe from `NullPointerException` throws, even if there is no current profiler:
 
 ```java
 profilerProvider
-    .getCurrentProfiler()
+    .current()
     .step("my complex step")
     .addCustomTiming("sql", "query", "select * from foo", 15);
 ```

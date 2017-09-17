@@ -47,7 +47,7 @@ public class ScriptTagWriter {
      * @return script html tag
      */
     public String printScriptTag() {
-        return printScriptTag(provider.getCurrentProfiler(), provider.getUiConfig());
+        return printScriptTag(provider.current(), provider.getUiConfig());
     }
 
     /**
@@ -60,7 +60,7 @@ public class ScriptTagWriter {
      * @return script html tag
      */
     public String printScriptTag(ProfilerUiConfig config) {
-        return printScriptTag(provider.getCurrentProfiler(), config);
+        return printScriptTag(provider.current(), config);
     }
 
     /**
@@ -71,7 +71,7 @@ public class ScriptTagWriter {
      * @return script html tag
      */
     public String printScriptTag(String path) {
-        return printScriptTag(provider.getCurrentProfiler(), path);
+        return printScriptTag(provider.current(), path);
     }
 
     /**

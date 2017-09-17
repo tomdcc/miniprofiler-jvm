@@ -59,7 +59,7 @@ public class MiniProfilerExecuteListener extends DefaultExecuteListener {
 
     @Override
     public void end(ExecuteContext ctx) {
-        if (provider.hasCurrentProfiler()) {
+        if (provider.hasCurrent()) {
             long duration = System.currentTimeMillis() - start;
             addTiming(ctx, duration);
         }
@@ -91,7 +91,7 @@ public class MiniProfilerExecuteListener extends DefaultExecuteListener {
         }
 
         if (query != null) {
-            provider.getCurrentProfiler().addCustomTiming("sql", "query", query, duration);
+            provider.current().addCustomTiming("sql", "query", query, duration);
         }
     }
 
