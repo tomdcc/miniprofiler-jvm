@@ -144,7 +144,7 @@ public interface Timing extends Closeable {
      * @param command e.g. "select * from foo"
      * @return the custom timing created
      */
-    CustomTiming startCustomTiming(String type, String executeType, String command);
+    CustomTiming customTiming(String type, String executeType, String command);
 
     /**
      * Adds a child profiler under this step

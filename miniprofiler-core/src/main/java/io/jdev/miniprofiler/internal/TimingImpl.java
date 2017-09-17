@@ -80,7 +80,7 @@ public class TimingImpl implements Timing, Serializable, Jsonable {
     }
 
     @Override
-    public CustomTiming startCustomTiming(String type, String executeType, String command) {
+    public CustomTiming customTiming(String type, String executeType, String command) {
         return addCustomTiming(type, CustomTimingImpl.fromNow(this, executeType, command));
     }
 

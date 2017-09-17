@@ -16,10 +16,7 @@
 
 package io.jdev.miniprofiler.internal;
 
-import io.jdev.miniprofiler.CustomTiming;
-import io.jdev.miniprofiler.DefaultProfilerProvider;
-import io.jdev.miniprofiler.ProfileLevel;
-import io.jdev.miniprofiler.Timing;
+import io.jdev.miniprofiler.*;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,21 +29,7 @@ public class AutoClosableTest {
     public void testAutoClosing() {
         String name = "My Function";
         ProfilerImpl profiler = new ProfilerImpl(name, ProfileLevel.Verbose, new DefaultProfilerProvider());
-
-        // add some stuff
-        try (Timing firstTiming = profiler.step("fooService.whatever")) {
-            try (Timing childTiming = profiler.step("child")) {
-                profiler.addCustomTiming("sql", "query", "select * from foo", 5L);
-            }
-        }
-        try (Timing lastTiming = profiler.step("again")) {
-            lastTiming.addCustomTiming("sql", "query", "select * from bar", 5L);
-            try (CustomTiming ct = lastTiming.startCustomTiming("sql", "query", "select * from baz")) {
-                System.currentTimeMillis(); // just here so we don't have an empty block
-            }
-        }
-
-        profiler.stop();
+        doStuffWithAutoClosables(profiler);
 
         Timing rootTiming = profiler.getRoot();
         Assert.assertEquals(name, rootTiming.getName());
@@ -71,4 +54,30 @@ public class AutoClosableTest {
         Assert.assertEquals("select * from bar", secondChildQueries.get(0).getCommandString());
         Assert.assertEquals("select * from baz", secondChildQueries.get(1).getCommandString());
     }
+
+    @Test
+    public void testAutoClosingSafetyForNullProfiler() {
+        Profiler profiler = new DefaultProfilerProvider().getCurrentProfiler();
+        Assert.assertTrue(profiler instanceof NullProfiler);
+        try(Profiler p = profiler) {
+            doStuffWithAutoClosables(p);
+        }
+    }
+
+    private void doStuffWithAutoClosables(Profiler profiler) {
+        try (Timing firstTiming = profiler.step("fooService.whatever")) {
+            try (Timing childTiming = profiler.step("child")) {
+                profiler.addCustomTiming("sql", "query", "select * from foo", 5L);
+            }
+        }
+        try (Timing lastTiming = profiler.step("again")) {
+            lastTiming.addCustomTiming("sql", "query", "select * from bar", 5L);
+            try (CustomTiming ct = lastTiming.customTiming("sql", "query", "select * from baz")) {
+                System.currentTimeMillis(); // just here so we don't have an empty block
+            }
+        }
+        profiler.stop();
+    }
+
+
 }

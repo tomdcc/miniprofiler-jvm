@@ -100,7 +100,7 @@ class NullTiming implements Timing {
     }
 
     @Override
-    public CustomTiming startCustomTiming(String type, String executeType, String comman) {
+    public CustomTiming customTiming(String type, String executeType, String comman) {
         return NullCustomTiming.INSTANCE;
     }
 

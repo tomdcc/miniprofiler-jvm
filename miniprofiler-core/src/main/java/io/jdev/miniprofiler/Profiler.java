@@ -141,6 +141,20 @@ public interface Profiler extends Closeable {
     void addCustomTiming(String type, String executeType, String command, long duration);
 
     /**
+     * Starts a custom timing under this timing.
+     *
+     * <p>
+     *     The custom timing will not have a duration until {@link CustomTiming#stop()} is called on the returned object.
+     * </p>
+     *
+     * @param type type of timing, e.g. "sql"
+     * @param executeType what type of execution, e.g. "query"
+     * @param command e.g. "select * from foo"
+     * @return the custom timing created
+     */
+    CustomTiming customTiming(String type, String executeType, String command);
+
+    /**
      * Stop the current timing session.
      */
     void stop();

@@ -203,6 +203,14 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         }
     }
 
+    public CustomTiming customTiming(String type, String executeType, String command) {
+        if (head != null) {
+            return head.customTiming(type, executeType, command);
+        } else {
+            return NullCustomTiming.INSTANCE;
+        }
+    }
+
     public LinkedHashMap<String, Object> toMap() {
         LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(11);
         map.put("Id", id.toString());

@@ -134,9 +134,12 @@ class MiniProfilerIntegrationSpec extends Specification {
 
         when: 'add custom timings'
         Profiler profiler = pp.start('ignored name', ProfileLevel.Verbose)
-        def ct1 = profiler.head.startCustomTiming('the type', 'the execute type', 'the command')
+        def ct1 = profiler.head.customTiming('the type', 'the execute type', 'the command')
         Thread.sleep(5)
         ct1.stop()
+        def ct2 = profiler.customTiming('the type', 'the execute type 2', 'the command 2')
+        Thread.sleep(5)
+        ct2.stop()
         profiler.stop()
 
         then: 'has correct custom timings'
@@ -144,8 +147,8 @@ class MiniProfilerIntegrationSpec extends Specification {
         def json = new JsonSlurper().parseText(jsonString)
         def customTimings = json.Root.CustomTimings
         customTimings.keySet() == ['the type'] as Set
-        def timing1 = customTimings['the type'][0]
-        verifyCustomTiming(timing1, [CommandString: '\n    the command', ExecuteType: 'the execute type'])
+        verifyCustomTiming(customTimings['the type'][0], [CommandString: '\n    the command', ExecuteType: 'the execute type'])
+        verifyCustomTiming(customTimings['the type'][1], [CommandString: '\n    the command 2', ExecuteType: 'the execute type 2'])
 
         where:
         passedIn << [true, false]
