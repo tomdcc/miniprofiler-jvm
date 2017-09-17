@@ -16,6 +16,7 @@
 
 package io.jdev.miniprofiler.internal;
 
+import io.jdev.miniprofiler.CustomTiming;
 import io.jdev.miniprofiler.DefaultProfilerProvider;
 import io.jdev.miniprofiler.ProfileLevel;
 import io.jdev.miniprofiler.Timing;

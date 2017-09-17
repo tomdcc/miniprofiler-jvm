@@ -16,6 +16,7 @@
 
 package io.jdev.miniprofiler.internal;
 
+import io.jdev.miniprofiler.CustomTiming;
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.Timing;
 
@@ -94,13 +95,8 @@ class NullTiming implements Timing {
     }
 
     @Override
-    public void addCustomTiming(String type, String executeType, String command, long duration) {
-
-    }
-
-    @Override
-    public void addCustomTiming(String type, CustomTiming qt) {
-
+    public CustomTiming addCustomTiming(String type, String executeType, String command, long duration) {
+        return  NullCustomTiming.INSTANCE;
     }
 
     @Override

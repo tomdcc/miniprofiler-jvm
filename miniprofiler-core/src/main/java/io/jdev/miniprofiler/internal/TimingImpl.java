@@ -16,6 +16,7 @@
 
 package io.jdev.miniprofiler.internal;
 
+import io.jdev.miniprofiler.CustomTiming;
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.Timing;
 
@@ -65,7 +66,7 @@ public class TimingImpl implements Timing, Jsonable {
         profiler.setHead(parent);
     }
 
-    public void addChild(TimingImpl child) {
+    private void addChild(TimingImpl child) {
         if (children == null) {
             children = new ArrayList<TimingImpl>();
         }
@@ -73,11 +74,11 @@ public class TimingImpl implements Timing, Jsonable {
         children.add(child);
     }
 
-    public void addCustomTiming(String type, String executeType, String command, long duration) {
-        addCustomTiming(type, new CustomTiming(executeType, command, duration));
+    public CustomTiming addCustomTiming(String type, String executeType, String command, long duration) {
+        return addCustomTiming(type, CustomTimingImpl.forDuration(this, executeType, command, duration));
     }
 
-    public void addCustomTiming(String type, CustomTiming qt) {
+    private CustomTiming addCustomTiming(String type, CustomTimingImpl ct) {
         if (customTimings == null) {
             customTimings = new LinkedHashMap<String, List<CustomTiming>>();
         }
@@ -86,8 +87,8 @@ public class TimingImpl implements Timing, Jsonable {
             timingsForType = new ArrayList<CustomTiming>();
             customTimings.put(type, timingsForType);
         }
-        timingsForType.add(qt);
-        qt.setParentTiming(this);
+        timingsForType.add(ct);
+        return ct;
     }
 
     public Map<String, Object> toMap() {
@@ -136,10 +137,6 @@ public class TimingImpl implements Timing, Jsonable {
 
     public Long getDurationMilliseconds() {
         return durationMilliseconds;
-    }
-
-    public void setDurationMilliseconds(long durationMilliseconds) {
-        this.durationMilliseconds = durationMilliseconds;
     }
 
     public long getStartMilliseconds() {

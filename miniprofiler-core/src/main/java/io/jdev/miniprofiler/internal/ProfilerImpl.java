@@ -197,12 +197,8 @@ public class ProfilerImpl implements Profiler, Jsonable {
     }
 
     public void addCustomTiming(String type, String executeType, String command, long duration) {
-        addCustomTiming(type, new CustomTiming(executeType, command, duration));
-    }
-
-    public void addCustomTiming(String type, CustomTiming customTiming) {
         if (head != null) {
-            head.addCustomTiming(type, customTiming);
+            head.addCustomTiming(type, executeType, command, duration);
         }
     }
 

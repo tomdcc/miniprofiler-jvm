@@ -16,8 +16,6 @@
 
 package io.jdev.miniprofiler;
 
-import io.jdev.miniprofiler.internal.CustomTiming;
-
 import java.io.Closeable;
 import java.io.Serializable;
 import java.util.List;
@@ -124,21 +122,13 @@ public interface Timing extends Serializable, Closeable {
 
     /**
      * Add a custom timing to this timing
-     *
      * @param type type of timing, e.g. "sql"
      * @param executeType what type of execution, e.g. "query"
      * @param command e.g. "select * from foo"
      * @param duration how long the command took
+     * @return the custom timing created
      */
-    void addCustomTiming(String type, String executeType, String command, long duration);
-
-    /**
-     * Add a custom timing to this timing
-     *
-     * @param type type of timing, e.g. "sql"
-     * @param ct the custom timing
-     */
-    void addCustomTiming(String type, CustomTiming ct);
+    CustomTiming addCustomTiming(String type, String executeType, String command, long duration);
 
     /**
      * Adds a child profiler under this step
