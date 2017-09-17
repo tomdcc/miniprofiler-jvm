@@ -21,5 +21,6 @@ import io.jdev.miniprofiler.Timing;
 interface TimingInternal extends Timing {
 
     void addChild(TimingInternal child);
+    ProfilerImpl getProfiler();
 
 }

@@ -71,7 +71,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
      * @param level            the level of the profiler
      * @param profilerProvider the profiler provider constructing the
      */
-    public ProfilerImpl(String name, ProfileLevel level, ProfilerProvider profilerProvider) {
+    ProfilerImpl(String name, ProfileLevel level, ProfilerProvider profilerProvider) {
         this(name, name, level, profilerProvider);
     }
 
@@ -95,7 +95,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
      * @param level            the level of the profiler
      * @param profilerProvider the profiler provider constructing the
      */
-    public ProfilerImpl(String name, String rootName, ProfileLevel level, ProfilerProvider profilerProvider) {
+    ProfilerImpl(String name, String rootName, ProfileLevel level, ProfilerProvider profilerProvider) {
         this(null, name, rootName, level, profilerProvider);
     }
 
@@ -130,6 +130,9 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         head = root;
     }
 
+    /**
+     * Used to add a child profiler.
+     */
     ProfilerImpl(String rootName, ProfileLevel level, long started) {
         this.id = null;
         this.name = rootName;
@@ -140,15 +143,17 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         head = root;
     }
 
-    public long getDurationMilliseconds() {
+    private long getDurationMilliseconds() {
         Long milliseconds = root.getDurationMilliseconds();
         return milliseconds != null ? milliseconds : System.currentTimeMillis() - started;
     }
 
+    @Override
     public void stop() {
         stop(false);
     }
 
+    @Override
     public void stop(boolean discardResults) {
         if (!stopped) {
             stopped = true;
@@ -159,6 +164,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         }
     }
 
+    @Override
     public Timing step(String name, ProfileLevel level) {
         if (level.ordinal() > this.level.ordinal()) {
             return NullTiming.INSTANCE;
@@ -167,10 +173,12 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         }
     }
 
+    @Override
     public Timing step(String name) {
         return step(name, ProfileLevel.Info);
     }
 
+    @Override
     public void step(String name, ProfileLevel level, Runnable block) {
         Timing timing = step(name, level);
         try {
@@ -180,10 +188,12 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         }
     }
 
+    @Override
     public void step(String name, Runnable block) {
         step(name, ProfileLevel.Info, block);
     }
 
+    @Override
     public <T> T step(String name, ProfileLevel level, Callable<T> function) throws Exception {
         Timing timing = step(name, level);
         try {
@@ -193,16 +203,19 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         }
     }
 
+    @Override
     public <T> T step(String name, Callable<T> function) throws Exception {
         return step(name, ProfileLevel.Info, function);
     }
 
+    @Override
     public void addCustomTiming(String type, String executeType, String command, long duration) {
         if (head != null) {
             head.addCustomTiming(type, executeType, command, duration);
         }
     }
 
+    @Override
     public CustomTiming customTiming(String type, String executeType, String command) {
         if (head != null) {
             return head.customTiming(type, executeType, command);
@@ -211,6 +224,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         }
     }
 
+    @Override
     public void customTiming(String type, String executeType, String command, Runnable block) {
         if (head != null) {
             head.customTiming(type, executeType, command, block);
@@ -219,6 +233,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         }
     }
 
+    @Override
     public <T> T customTiming(String type, String executeType, String command, Callable<T> function) throws Exception {
         if (head != null) {
             return head.customTiming(type, executeType, command, function);
@@ -227,6 +242,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         }
     }
 
+    @Override
     public LinkedHashMap<String, Object> toMap() {
         LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(11);
         map.put("Id", id.toString());
@@ -300,6 +316,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         }
     }
 
+    @Override
     public UUID getId() {
         return id;
     }
@@ -316,6 +333,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         return level;
     }
 
+    @Override
     public Timing getRoot() {
         return root;
     }
@@ -324,6 +342,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         return hasQueryTimings;
     }
 
+    @Override
     public Timing getHead() {
         return head;
     }
@@ -332,7 +351,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         this.head = head;
     }
 
-    public long getStarted() {
+    long getStarted() {
         return started;
     }
 

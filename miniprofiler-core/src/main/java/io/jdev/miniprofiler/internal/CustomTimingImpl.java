@@ -27,7 +27,7 @@ import java.util.UUID;
 class CustomTimingImpl implements CustomTiming, Serializable, Jsonable {
     private static final long serialVersionUID = 1;
 
-    private final TimingImpl parentTiming;
+    private final TimingInternal parentTiming;
     private final UUID id;
     private final String executeType;
     private final String commandString;
@@ -36,7 +36,7 @@ class CustomTimingImpl implements CustomTiming, Serializable, Jsonable {
     // TODO: stack traces
     // TODO FirstFetchDurationMilliseconds
 
-    private CustomTimingImpl(TimingImpl parentTiming, String executeType, String commandString, long startMilliseconds, Long durationMilliseconds) {
+    private CustomTimingImpl(TimingInternal parentTiming, String executeType, String commandString, long startMilliseconds, Long durationMilliseconds) {
         id = UUID.randomUUID();
         this.executeType = executeType;
         this.commandString = commandString;
@@ -61,7 +61,7 @@ class CustomTimingImpl implements CustomTiming, Serializable, Jsonable {
         return new CustomTimingImpl(parentTiming, executeType, command, relativeToProfilerStart(parentTiming, start), null);
     }
 
-    private static long relativeToProfilerStart(TimingImpl parentTiming, long time) {
+    private static long relativeToProfilerStart(TimingInternal parentTiming, long time) {
         return time - parentTiming.getProfiler().getStarted();
     }
 

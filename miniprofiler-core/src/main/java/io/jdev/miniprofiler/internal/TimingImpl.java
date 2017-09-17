@@ -42,7 +42,7 @@ public class TimingImpl implements TimingInternal, Serializable, Jsonable {
     private List<Profiler> childProfilers;
 
 
-    public TimingImpl(ProfilerImpl profiler, TimingInternal parent, String name) {
+    TimingImpl(ProfilerImpl profiler, TimingInternal parent, String name) {
         this.id = UUID.randomUUID();
         this.profiler = profiler;
         this.name = name;
@@ -60,6 +60,7 @@ public class TimingImpl implements TimingInternal, Serializable, Jsonable {
         profiler.setHead(this);
     }
 
+    @Override
     public void stop() {
         if (durationMilliseconds == null) {
             durationMilliseconds = System.currentTimeMillis() - startMilliseconds - profiler.getStarted();
@@ -68,6 +69,7 @@ public class TimingImpl implements TimingInternal, Serializable, Jsonable {
         profiler.setHead(parent);
     }
 
+    @Override
     public void addChild(TimingInternal child) {
         if (children == null) {
             children = new ArrayList<TimingInternal>();
@@ -76,6 +78,7 @@ public class TimingImpl implements TimingInternal, Serializable, Jsonable {
         children.add(child);
     }
 
+    @Override
     public void addCustomTiming(String type, String executeType, String command, long duration) {
         addCustomTiming(type, CustomTimingImpl.forDuration(this, executeType, command, duration));
     }
@@ -118,6 +121,7 @@ public class TimingImpl implements TimingInternal, Serializable, Jsonable {
         return ct;
     }
 
+    @Override
     public Map<String, Object> toMap() {
         LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(13);
         map.put("Id", id.toString());
@@ -150,42 +154,47 @@ public class TimingImpl implements TimingInternal, Serializable, Jsonable {
         return kids;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public Long getDurationMilliseconds() {
         return durationMilliseconds;
     }
 
+    @Override
     public long getStartMilliseconds() {
         return startMilliseconds;
     }
 
+    @Override
     public List<Timing> getChildren() {
         return children != null ? new ArrayList<Timing>(children) : Collections.<Timing>emptyList();
     }
 
+    @Override
     public Map<String, List<CustomTiming>> getCustomTimings() {
         return customTimings;
     }
 
+    @Override
     public ProfilerImpl getProfiler() {
         return profiler;
     }
 
+    @Override
     public Timing getParent() {
         return parent;
     }
 
+    @Override
     public int getDepth() {
         return depth;
     }
