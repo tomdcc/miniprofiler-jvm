@@ -41,7 +41,7 @@ import org.jooq.tools.StringUtils;
  */
 public class MiniProfilerExecuteListener extends DefaultExecuteListener {
 
-    private final ProfilerProvider provider;
+    protected final ProfilerProvider provider;
     private long start;
 
     /**
@@ -61,11 +61,11 @@ public class MiniProfilerExecuteListener extends DefaultExecuteListener {
     public void end(ExecuteContext ctx) {
         if (provider.hasCurrent()) {
             long duration = System.currentTimeMillis() - start;
-            addTiming(ctx, duration);
+            maybeAddTiming(ctx, duration);
         }
     }
 
-    private void addTiming(ExecuteContext ctx, long duration) {
+    protected void maybeAddTiming(ExecuteContext ctx, long duration) {
         Configuration configuration = ctx.configuration();
 
         String query = null;
@@ -91,8 +91,12 @@ public class MiniProfilerExecuteListener extends DefaultExecuteListener {
         }
 
         if (query != null) {
-            provider.current().addCustomTiming("sql", "query", query, duration);
+            addTiming(ctx, query, duration);
         }
+    }
+
+    protected void addTiming(ExecuteContext ctx, String query, long duration) {
+        provider.current().addCustomTiming("sql", "query", query, duration);
     }
 
 }

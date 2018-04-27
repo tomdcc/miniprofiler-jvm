@@ -35,7 +35,7 @@ import org.jooq.ExecuteListenerProvider;
  */
 public class MiniProfilerExecuteListenerProvider implements ExecuteListenerProvider {
 
-    private final ProfilerProvider provider;
+    protected final ProfilerProvider provider;
 
     /**
      * Construct a listener that gets the current profiler from the provided {@link ProfilerProvider}.
