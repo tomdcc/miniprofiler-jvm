@@ -20,6 +20,8 @@ import io.jdev.miniprofiler.ProfilerProvider;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
 
+import static io.jdev.miniprofiler.ratpack.internal.MiniProfilerRatpackUtilInternal.getUUIDRequestId;
+
 /**
  * A handler that starts a new profiler for the current execution.
  *
@@ -37,7 +39,7 @@ public class MiniProfilerStartProfilingHandler implements Handler {
     @Override
     public void handle(Context ctx) throws Exception {
         if (shouldStartProfiler(ctx)) {
-            profilerProvider.start(ctx.getRequest().getUri());
+            profilerProvider.start(getUUIDRequestId(ctx), ctx.getRequest().getUri());
         }
         ctx.next();
     }

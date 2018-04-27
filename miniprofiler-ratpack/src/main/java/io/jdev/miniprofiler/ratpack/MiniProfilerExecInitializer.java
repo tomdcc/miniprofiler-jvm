@@ -27,6 +27,8 @@ import ratpack.http.Response;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static io.jdev.miniprofiler.ratpack.internal.MiniProfilerRatpackUtilInternal.getUUIDRequestId;
+
 /**
  * A Ratpack `ExecInitializer` that provides MiniProfiler support.
  *
@@ -82,7 +84,7 @@ public class MiniProfilerExecInitializer implements ExecInitializer {
     public void init(Execution execution) {
         // create a profiler if there isn't one already
         if (shouldCreateProfilerOnExecutionStart(execution) && !provider.hasCurrent()) {
-            provider.start(getProfilerName(execution));
+            provider.start(getUUIDRequestId(execution), getProfilerName(execution));
         }
         Completion completion = new Completion(execution);
         execution.onComplete(completion);

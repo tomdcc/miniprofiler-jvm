@@ -107,9 +107,7 @@ class MiniProfilerExecInitializerSpec extends Specification {
         def profiler = provider.start("already running")
 
         when: "run handler with initializer on execution which already has a provider"
-        handle(Handlers.next()) {
-            registry.add(new MiniProfilerExecInitializer(provider))
-        }
+        handle(Handlers.next(), this.&addToRegistry)
 
         then: "current profiler is the original one"
         provider.current == profiler

@@ -18,24 +18,26 @@ package io.jdev.miniprofiler.ratpack
 
 import io.jdev.miniprofiler.MiniProfiler
 import io.jdev.miniprofiler.Profiler
-import io.jdev.miniprofiler.internal.ProfilerImpl
 import io.jdev.miniprofiler.ProfilerProvider
+import io.jdev.miniprofiler.internal.ProfilerImpl
 import ratpack.exec.Blocking
 import ratpack.func.Action
 import ratpack.handling.Chain
 import ratpack.handling.Context
 import ratpack.handling.Handler
-import ratpack.test.handling.RequestFixture
+import ratpack.handling.RequestId
 import spock.lang.Ignore
 import spock.lang.Specification
 
-@Ignore("See https://github.com/ratpack/ratpack/issues/1110 - relying on integ-test/ratpack in the meantime")
+import static ratpack.groovy.test.handling.GroovyRequestFixture.handle
+
 class RatpackIntegSpec extends Specification {
 
     void cleanup() {
         MiniProfiler.setProfilerProvider(null)
     }
 
+    @Ignore("See https://github.com/ratpack/ratpack/issues/1110 - relying on integ-test/ratpack in the meantime")
     void "profiler is bound to current execution context and is available statically"() {
         given: 'provider and interceptor'
         RatpackContextProfilerProvider provider = new RatpackContextProfilerProvider()
@@ -50,9 +52,11 @@ class RatpackIntegSpec extends Specification {
         } as Action<Chain>
 
         when: 'call handler'
-        def result = RequestFixture.handle(handlerChain, { RequestFixture req ->
-            req.registry.add(interceptor)
-        } as Action)
+        def result = handle(handlerChain) {
+            registry {
+                add(interceptor)
+            }
+        }
 
         then: "all good"
         result.calledNext
@@ -68,6 +72,30 @@ class RatpackIntegSpec extends Specification {
 
         and: 'was propertly cleaned up'
         profiler.head == null
+    }
+
+    void "profiler id can be a uuid-formatted request id"() {
+        given: 'provider and interceptor'
+        RatpackContextProfilerProvider provider = new RatpackContextProfilerProvider()
+        MiniProfiler.setProfilerProvider(provider)
+        def id = UUID.randomUUID()
+
+        when: 'call handler'
+        def result = handle(new MiniProfilerStartProfilingHandler(provider)) {
+            header('X-Request-Id', id.toString())
+            registry {
+                add(RequestId.Generator, RequestId.Generator.header("X-Request-Id"))
+            }
+        }
+
+        then: "all good"
+        result.calledNext
+
+        and: 'execution has profiler'
+        def profiler = result.registry.get(Profiler)
+
+        and: 'has provided id'
+        profiler.id == id
     }
 
 }
