@@ -17,7 +17,7 @@ subprojects {
     apply plugin: 'idea'
 
 	group = 'io.jdev.miniprofiler'
-    version = '0.8'
+    version = '0.8.1-SNAPSHOT'
 
 	repositories {
         jcenter()
