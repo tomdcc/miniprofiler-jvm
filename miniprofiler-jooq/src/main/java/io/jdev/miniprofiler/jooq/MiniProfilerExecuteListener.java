@@ -17,12 +17,10 @@
 package io.jdev.miniprofiler.jooq;
 
 import io.jdev.miniprofiler.ProfilerProvider;
-import org.jooq.Configuration;
 import org.jooq.ExecuteContext;
-import org.jooq.ExecuteType;
-import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultExecuteListener;
-import org.jooq.tools.StringUtils;
+
+import static io.jdev.miniprofiler.jooq.MiniProfilerJooqUtil.renderInlined;
 
 /**
  * Captures sql statements from jOOQ during profiling.
@@ -39,6 +37,7 @@ import org.jooq.tools.StringUtils;
  * @see MiniProfilerExecuteListenerProvider
  * @see org.jooq.ExecuteListener
  */
+@SuppressWarnings("WeakerAccess")
 public class MiniProfilerExecuteListener extends DefaultExecuteListener {
 
     protected final ProfilerProvider provider;
@@ -66,35 +65,13 @@ public class MiniProfilerExecuteListener extends DefaultExecuteListener {
     }
 
     protected void maybeAddTiming(ExecuteContext ctx, long duration) {
-        Configuration configuration = ctx.configuration();
-
-        String query = null;
-        if (ctx.query() != null) {
-            query = DSL.using(configuration).renderInlined(ctx.query());
-        } else if (ctx.routine() != null) {
-            query = DSL.using(configuration).renderInlined(ctx.routine());
-        } else if (!StringUtils.isBlank(ctx.sql())) {
-            query = ctx.sql();
-        } else if(ctx.type() == ExecuteType.BATCH) {
-            String[] statements = ctx.batchSQL();
-            if (statements != null && statements.length > 0) {
-                StringBuilder queries = new StringBuilder();
-                for (String sql : statements) {
-                    if (queries.length() > 0) {
-                        queries.append(";\n");
-                    }
-                    queries.append(sql);
-                }
-                query = queries.toString();
-            }
-
-        }
-
+        String query = renderInlined(ctx);
         if (query != null) {
             addTiming(ctx, query, duration);
         }
     }
 
+    @SuppressWarnings("unused")
     protected void addTiming(ExecuteContext ctx, String query, long duration) {
         provider.current().addCustomTiming("sql", "query", query, duration);
     }
