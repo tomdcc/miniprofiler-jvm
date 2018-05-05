@@ -13,7 +13,7 @@ The JVM MiniProfiler is deployed to Maven Central and can be added to your proje
 
     groupId: io.jdev.miniprofiler
     artifactId: miniprofiler-core
-    version: 0.7
+    version: 0.8.2
 
 Or just download the jar from http://search.maven.org/ if your build system is a bit less connected.
 
@@ -121,7 +121,7 @@ There are a couple of extra pieces of support for modern Java EE applications. S
 
     groupId: io.jdev.miniprofiler
     artifactId: miniprofiler-javaee
-    version: 0.7
+    version: 0.8.2
 
 That module contains a `DefaultCDIProfilerProvider` which is a `ProfilerProvider` instance ready to be injected into your CDI-managed beans.
 
