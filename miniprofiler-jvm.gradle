@@ -38,76 +38,37 @@ allprojects {
     version = '0.9-SNAPSHOT'
 }
 
-subprojects {
+ext {
+    isSnapshot = version.endsWith("-SNAPSHOT")
 
-	ext {
-		isSnapshot = version.endsWith("-SNAPSHOT")
-
-		publishedModules = [
-			':miniprofiler-core',
-			':miniprofiler-servlet',
-			':miniprofiler-javaee',
-			':miniprofiler-grails',
-			':miniprofiler-ratpack',
-			':miniprofiler-jooq',
-			':miniprofiler-test-support',
-			':doc:manual'
-		]
-	}
-
-	if (path in publishedModules) {
-		apply plugin: "base"
-		apply plugin: "maven"
-		apply plugin: "signing"
-
-		signing {
-			sign configurations.archives
-			required { !isSnapshot && gradle.taskGraph.hasTask(uploadArchives) }
-		}
-
-		apply from: "$rootDir/gradle/pom.gradle"
-
-		uploadArchives { task ->
-			repositories.mavenDeployer {
-				if(!isSnapshot) {
-					beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-				}
-				gradle.taskGraph.whenReady { taskGraph ->
-					if (taskGraph.hasTask(task)) {
-						repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-							authentication(userName: sonatypeOssUsername, password: sonatypeOssPassword)
-						}
-						snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-							authentication(userName: sonatypeOssUsername, password: sonatypeOssPassword)
-						}
-					}
-				}
-			}
-		}
-
-		task uploadSnapshots {
-            doLast {
-                if (!isSnapshot) {
-                    println "Not uploading snapshot as not a snapshot version"
-                }
-            }
-		}
-		if(isSnapshot) {
-			uploadSnapshots.dependsOn(uploadArchives)
-		}
-	}
+    publishedModules = [
+        ':miniprofiler-core',
+        ':miniprofiler-servlet',
+        ':miniprofiler-javaee',
+        ':miniprofiler-grails',
+        ':miniprofiler-ratpack',
+        ':miniprofiler-jooq',
+        ':miniprofiler-test-support',
+        ':doc:manual'
+    ]
 }
 
-allprojects {
-	task resolveAllDependencies {
-		doLast {
-			configurations.all {
-                if (it.canBeResolved) {
-                    it.resolve()
+subprojects {
+    if (path in publishedModules) {
+        apply from: "$rootDir/gradle/publish.gradle"
+    }
+}
+
+task resolveAllDependencies {
+    doLast {
+        gradle.allprojects { project ->
+            project.configurations.all { c ->
+                if (c.canBeResolved && (!c.name.startsWith('gretty') || c.name == 'grettyRunnerJetty7')) {
+                    c.resolve()
                 }
             }
-		}
-	}
+        }
+    }
 }
 
 def isCI = System.getenv("CI")
