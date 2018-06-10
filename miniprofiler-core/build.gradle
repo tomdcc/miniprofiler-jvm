@@ -19,8 +19,6 @@ dependencies {
 		transitive false
 	}
 
-	testCompile 'org.springframework:spring-test:3.2.4.RELEASE'
-
     testRuntime "org.slf4j:slf4j-api:1.7.4"
 
 	// needed since we're excluding ehcache's deps and spock falls over otherwise

@@ -32,11 +32,6 @@ import java.util.UUID;
  * {@link #getCurrent()} to get a handle on the current
  * provider and add timing steps.</p>
  *
- * <p>The profiler provider would also need to be injected into an
- * entry point in the program - in a servlet environment this would
- * usually be a servlet filter. An example is the provided
- * {@link io.jdev.miniprofiler.servlet.ProfilingFilter}.</p>
- *
  * <p>If your system doesn't use dependency injection, then code starting
  * a new session should call {@link MiniProfiler#start(String)} and
  * {@link io.jdev.miniprofiler.MiniProfiler#current()},

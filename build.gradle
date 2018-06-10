@@ -43,6 +43,7 @@ subprojects {
 
 		publishedModules = [
 			':miniprofiler-core',
+			':miniprofiler-servlet',
 			':miniprofiler-javaee',
 			':miniprofiler-grails',
 			':miniprofiler-ratpack',

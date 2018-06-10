@@ -1,5 +1,6 @@
 include "miniprofiler-core"
 include "miniprofiler-javaee"
+include "miniprofiler-servlet"
 include "miniprofiler-test-support"
 include "miniprofiler-grails"
 include "miniprofiler-ratpack"

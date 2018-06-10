@@ -15,6 +15,7 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 dependencies {
+    compile project(':miniprofiler-servlet')
     compileOnly 'javax:javaee-api:7.0'
 
 	def cargoVersion = '1.4.8'

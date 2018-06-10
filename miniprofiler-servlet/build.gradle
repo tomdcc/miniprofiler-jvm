@@ -3,9 +3,9 @@ targetCompatibility = 1.6
 
 dependencies {
 	compile project(':miniprofiler-core')
-    compileOnly 'javax:javaee-api:7.0'
+    compileOnly 'javax.servlet:servlet-api:2.3'
 
-    testRuntime project(':miniprofiler-servlet')
+    testCompile 'org.springframework:spring-test:3.2.4.RELEASE'
 }
 
 sourceSets {
@@ -17,7 +17,7 @@ sourceSets {
 
 modifyPom { pom ->
 	pom.project {
-		name "MiniProfiler Java EE Module"
-		description "Support classes for getting the MiniProfiler working out of the box in modern Java EE containers."
+		name "MiniProfiler Java Servlet Module"
+		description "Support classes for getting the MiniProfiler working in servlet environments."
 	}
 }
