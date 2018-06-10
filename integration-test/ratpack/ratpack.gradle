@@ -14,28 +14,18 @@
  * limitations under the License.
  */
 
-buildscript {
-	repositories {
-		jcenter()
-    }
-	dependencies {
-		classpath "io.ratpack:ratpack-gradle:1.5.0-rc-2"
-	}
-}
-
-apply plugin: "io.ratpack.ratpack-java"
-apply plugin: "idea"
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+apply from: "$rootDir/gradle/javaModule.gradle"
+apply from: "$rootDir/gradle/targetJdk8.gradle"
+apply from: "$rootDir/gradle/browserTest.gradle"
+apply plugin: 'io.ratpack.ratpack-java'
 
 mainClassName = "io.jdev.miniprofiler.ratpack.funtest.Main"
 
 dependencies {
 	compile project(":miniprofiler-ratpack")
-	compile ratpack.dependency("hikari")
-	compile ratpack.dependency("groovy")
-	compile 'com.h2database:h2:1.3.173'
+    compile "io.ratpack:ratpack-hikari:${commonVersions.ratpack}"
+    compile "io.ratpack:ratpack-groovy:${commonVersions.ratpack}"
+	compile commonDependencies.h2
 
-	testCompile ratpack.dependency("test")
+    testCompile "io.ratpack:ratpack-test:${commonVersions.ratpack}"
 }

@@ -1,44 +1,46 @@
+/*
+ * Copyright 2018 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+buildscript {
+    apply from: "$rootDir/gradle/dependencies.gradle"
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.bmuschko:gradle-cargo-plugin:2.1.1'
+        classpath "io.ratpack:ratpack-gradle:${commonVersions.ratpack}"
+    }
+}
+
 plugins {
     id 'com.gradle.build-scan' version '1.13.1'
 }
 
-apply plugin: 'idea'
-subprojects {
+apply from: 'gradle/dependencies.gradle'
 
-    boolean javaProject = it.name != 'manual'
-    if (javaProject) {
-        apply plugin: 'java'
-        apply plugin: 'groovy'
-        apply from: "$rootDir/gradle/checkstyle.gradle"
-        apply from: "$rootDir/gradle/codenarc.gradle"
-    }
-
-	// IDE support
+allprojects {
     apply plugin: 'idea'
 
-	group = 'io.jdev.miniprofiler'
+    group = 'io.jdev.miniprofiler'
     version = '0.9-SNAPSHOT'
+}
 
-	repositories {
-        jcenter()
-    }
-
-    project.tasks.findByName('test')?.with {
-        systemProperty "geb.build.reportsDir", "$reporting.baseDir/geb"
-        if (project.hasProperty('webdriverFirefoxBin')) {
-            systemProperty "webdriver.firefox.bin", project.property('webdriverFirefoxBin')
-        }
-        testLogging {
-            exceptionFormat = 'full'
-        }
-    }
+subprojects {
 
 	ext {
-		groovyVersion = "2.4.10"
-		gebVersion = '1.1.1'
-		seleniumVersion = "3.4.0"
-		spockVersion = "1.0-groovy-2.4"
-
 		isSnapshot = version.endsWith("-SNAPSHOT")
 
 		publishedModules = [
@@ -51,17 +53,7 @@ subprojects {
 			':miniprofiler-test-support',
 			':doc:manual'
 		]
-		javaeeTestModules = ['glassfish4', 'wildfly8']
 	}
-
-    if (javaProject) {
-        dependencies {
-            testCompile "org.codehaus.groovy:groovy-all:$groovyVersion"
-            testCompile("org.spockframework:spock-core:$spockVersion") {
-                exclude group: "org.codehaus.groovy"
-            }
-        }
-    }
 
 	if (path in publishedModules) {
 		apply plugin: "base"
@@ -72,24 +64,6 @@ subprojects {
 			sign configurations.archives
 			required { !isSnapshot && gradle.taskGraph.hasTask(uploadArchives) }
 		}
-
-        if (javaProject) {
-            task javadocJar(type: Jar, dependsOn: javadoc) {
-                classifier = 'javadoc'
-                from 'build/docs/javadoc'
-            }
-
-            task sourcesJar(type: Jar) {
-                from sourceSets.main.allSource
-                classifier = 'sources'
-            }
-
-            artifacts {
-                archives jar
-                archives javadocJar
-                archives sourcesJar
-            }
-        }
 
 		apply from: "$rootDir/gradle/pom.gradle"
 
@@ -120,27 +94,6 @@ subprojects {
 		}
 		if(isSnapshot) {
 			uploadSnapshots.dependsOn(uploadArchives)
-		}
-
-	}
-
-	if(path.startsWith(':integration-test')) {
-		dependencies {
-			compile project(':miniprofiler-core')
-			testCompile project(':miniprofiler-test-support')
-
-			// If using Spock, need to depend on geb-spock
-			testCompile "org.gebish:geb-spock:$gebVersion"
-
-			testCompile "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
-			testRuntime "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
-			// Need a driver implementation
-			testRuntime "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
-		}
-	}
-	if(name in javaeeTestModules) {
-		dependencies {
-			compile project(':miniprofiler-javaee')
 		}
 	}
 }

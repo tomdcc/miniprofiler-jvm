@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-def jooqCompileVersion = "3.0.0"
-def jooqTestVersion = "3.9.5"
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+apply from: "$rootDir/gradle/javaModule.gradle"
+apply from: "$rootDir/gradle/targetJdk8.gradle"
 
 dependencies {
-	compileOnly "org.jooq:jooq:$jooqCompileVersion"
+	compileOnly commonDependencies.jooqCompile
 	compile project(':miniprofiler-core')
 
-	testCompile "org.jooq:jooq:$jooqTestVersion"
-    testCompile 'com.h2database:h2:1.3.173'
+    testCompile commonDependencies.jooqTest
+    testCompile commonDependencies.h2
 }
 
 modifyPom { pom ->
