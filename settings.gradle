@@ -14,6 +14,17 @@ include "integration-test:glassfish4"
 include "integration-test:wildfly8"
 include "integration-test:ratpack"
 
+rootProject.name = 'miniprofiler-jvm'
+
+def setBuildFile(project) {
+    project.buildFileName = "${project.name}.gradle"
+    project.children.each {
+        setBuildFile(it)
+    }
+}
+
+setBuildFile(rootProject)
+
 def isCI = System.getenv("CI")
 buildCache {
     local {
