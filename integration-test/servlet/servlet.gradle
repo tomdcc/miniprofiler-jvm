@@ -24,13 +24,22 @@ apply from: "$rootDir/gradle/targetJdk7.gradle"
 apply from: "$rootDir/gradle/browserTest.gradle"
 
 dependencies {
-    compile project(":miniprofiler-servlet")
+    compile project(':miniprofiler-core')
+    // needs to be a jar to pick up tld automatically
+    compile project(path: ':miniprofiler-servlet', configuration: 'jars')
 	compileOnly commonDependencies.servletApi
 	compile commonDependencies.h2
 }
 
 gretty {
-    servletContainer = 'jetty7'
+    servletContainer = 'jetty9'
     integrationTestTask = 'test'
 }
 
+// task is only added by gretty in an afterEvaluate
+afterEvaluate {
+    tasks.appBeforeIntegrationTest.configure {
+        // needs to be a war to pick up tld automatically
+        inplace = false
+    }
+}

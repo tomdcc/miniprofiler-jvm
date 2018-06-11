@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<%@ taglib prefix="miniprofiler" uri="https://miniprofiler-jvm.jdev.io/1.0" %>
 <%@ page import="javax.sql.DataSource" %>
 <%@ page import="java.sql.Connection" %>
 <%@ page import="java.sql.Statement" %>
@@ -59,6 +60,6 @@
             </tbody>
         </table>
     </div>
-    <%= new ScriptTagWriter().printScriptTag(request.getContextPath() + "/miniprofiler")%>
+    <miniprofiler:script/>
 </body>
 </html>

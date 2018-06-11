@@ -20,9 +20,14 @@ apply from: "$rootDir/gradle/targetJdk7.gradle"
 dependencies {
 	compile project(':miniprofiler-core')
     compileOnly commonDependencies.servletApi
+    compileOnly commonDependencies.jspApi
 
     testCompile commonDependencies.springTest
 }
+
+// to allow deps on a jar, so that a tld will get picked up
+configurations { jars }
+artifacts { jars jar }
 
 modifyPom { pom ->
 	pom.project {
