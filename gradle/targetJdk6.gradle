@@ -19,6 +19,6 @@ sourceCompatibility = '1.6'
 
 idea {
     module {
-        jdkName = '1.6'
+        jdkName = '1.7' // some apis we compile against are in here
     }
 }
