@@ -28,14 +28,14 @@ import java.io.IOException;
 /**
  * JSP tag that writes out a HTML script tag to load MiniProfiler resources.
  */
+@SuppressWarnings("WeakerAccess")
 public class ScriptTag extends TagSupport {
 
     private ProfilerProvider profilerProvider;
     private ScriptTagWriter scriptTagWriter;
 
     public ScriptTag() {
-        profilerProvider = MiniProfiler.getProfilerProvider();
-        scriptTagWriter = new ScriptTagWriter(profilerProvider);
+        setProfilerProvider(MiniProfiler.getProfilerProvider());
     }
 
     // for testing
@@ -58,6 +58,11 @@ public class ScriptTag extends TagSupport {
     // for testing
     String getContent(String contextPath) {
         return scriptTagWriter.printScriptTag(contextPath + profilerProvider.getUiConfig().getPath());
+    }
+
+    public void setProfilerProvider(ProfilerProvider profilerProvider) {
+        this.profilerProvider = profilerProvider;
+        this.scriptTagWriter = new ScriptTagWriter(profilerProvider);
     }
 
 }

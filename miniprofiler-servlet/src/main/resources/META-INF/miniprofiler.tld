@@ -30,6 +30,13 @@
 		<name>script</name>
 		<tag-class>io.jdev.miniprofiler.servlet.jsp.ScriptTag</tag-class>
 		<body-content>empty</body-content>
+
+		<attribute>
+			<name>profilerProvider</name>
+			<type>io.jdev.miniprofiler.ProfilerProvider</type>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
 	</tag>
 
 </taglib>

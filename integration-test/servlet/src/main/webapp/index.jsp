@@ -6,7 +6,7 @@
 <%@ page import="java.sql.ResultSet" %>
 <%@ page import="java.util.*" %>
 <%@ page import="java.sql.SQLException" %>
-<%@ page import="io.jdev.miniprofiler.ScriptTagWriter" %>
+<%@ page import="io.jdev.miniprofiler.MiniProfiler" %>
 <%
     DataSource ds = (DataSource) application.getAttribute("dataSource");
     List<Map<String,String>> results = new ArrayList<Map<String,String>>();
@@ -60,6 +60,10 @@
             </tbody>
         </table>
     </div>
-    <miniprofiler:script/>
+    <% if ("true".equals(request.getParameter("override"))) { %>
+        <miniprofiler:script profilerProvider="<%= MiniProfiler.getProfilerProvider() %>"/>
+    <% } else { %>
+        <miniprofiler:script/>
+    <% } %>
 </body>
 </html>
