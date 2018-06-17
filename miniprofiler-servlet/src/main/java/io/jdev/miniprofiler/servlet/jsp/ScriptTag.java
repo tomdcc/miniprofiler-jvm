@@ -34,6 +34,8 @@ public class ScriptTag extends TagSupport {
     private ProfilerProvider profilerProvider;
     private ScriptTagWriter scriptTagWriter;
 
+    private String path;
+
     public ScriptTag() {
         setProfilerProvider(MiniProfiler.getProfilerProvider());
     }
@@ -57,7 +59,8 @@ public class ScriptTag extends TagSupport {
 
     // for testing
     String getContent(String contextPath) {
-        return scriptTagWriter.printScriptTag(contextPath + profilerProvider.getUiConfig().getPath());
+        String path = this.path != null ? this.path : contextPath + profilerProvider.getUiConfig().getPath();
+        return scriptTagWriter.printScriptTag(path);
     }
 
     public void setProfilerProvider(ProfilerProvider profilerProvider) {
@@ -65,4 +68,7 @@ public class ScriptTag extends TagSupport {
         this.scriptTagWriter = new ScriptTagWriter(profilerProvider);
     }
 
+    public void setPath(String path) {
+        this.path = path;
+    }
 }

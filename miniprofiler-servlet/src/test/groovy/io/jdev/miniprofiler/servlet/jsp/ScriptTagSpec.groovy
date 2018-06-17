@@ -53,6 +53,18 @@ class ScriptTagSpec extends Specification {
         '/ui'  | '/ctx'      | '/ctx/ui'
     }
 
+    void 'path can be explicitly set'() {
+        given:
+        profilerProvider.uiConfig.path = '/uipath'
+        tag.path = '/set-path'
+
+        when:
+        def result = tag.getContent('ignoredContextPath')
+
+        then:
+        verify(result, path: '/set-path')
+    }
+
     private void verify(Map<String, Object> expectedValues, String result) {
         assert result == tagContent
         def expectedPath = expectedValues.remove('path')
