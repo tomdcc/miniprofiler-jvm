@@ -30,17 +30,34 @@ import java.io.IOException;
  */
 public class ScriptTag extends TagSupport {
 
-    private final ProfilerProvider profilerProvider = MiniProfiler.getProfilerProvider();
+    private ProfilerProvider profilerProvider;
+    private ScriptTagWriter scriptTagWriter;
+
+    public ScriptTag() {
+        profilerProvider = MiniProfiler.getProfilerProvider();
+        scriptTagWriter = new ScriptTagWriter(profilerProvider);
+    }
+
+    // for testing
+    ScriptTag(ProfilerProvider profilerProvider, ScriptTagWriter scriptTagWriter) {
+        this.profilerProvider = profilerProvider;
+        this.scriptTagWriter = scriptTagWriter;
+    }
 
     @Override
     public int doEndTag() throws JspException {
         String contextPath = ((HttpServletRequest) pageContext.getRequest()).getContextPath();
         try {
-            pageContext.getOut().write(new ScriptTagWriter(profilerProvider).printScriptTag(contextPath + profilerProvider.getUiConfig().getPath()));
+            pageContext.getOut().write(getContent(contextPath));
         } catch (IOException e) {
             throw new JspException(e);
         }
         return EVAL_PAGE;
+    }
+
+    // for testing
+    String getContent(String contextPath) {
+        return scriptTagWriter.printScriptTag(contextPath + profilerProvider.getUiConfig().getPath());
     }
 
 }

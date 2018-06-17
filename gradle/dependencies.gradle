@@ -17,6 +17,7 @@
 ext {
     commonVersions = [
         cargo: '1.4.15',
+        cglib: "3.2.4",
         eclipselink: '2.5.0',
         ehcache: '2.7.2',
         groovy: '2.4.10',
@@ -42,7 +43,7 @@ ext {
             dependencies.create( "org.codehaus.cargo:cargo-core-uberjar:${commonVersions.cargo}"),
             dependencies.create("org.codehaus.cargo:cargo-ant:${commonVersions.cargo}")
         ],
-        eclipselink: dependencies.create("org.eclipse.persistence:eclipselink:${commonVersions.eclipselink}") {
+        cglib: "cglib:cglib-nodep:${commonVersions.cglib}",        eclipselink: dependencies.create("org.eclipse.persistence:eclipselink:${commonVersions.eclipselink}") {
             transitive false
         },
         ehcache: dependencies.create("net.sf.ehcache:ehcache:${commonVersions.ehcache}") {
@@ -64,9 +65,12 @@ ext {
         servletApi: "javax.servlet:servlet-api:${commonVersions.servletApi}",
 
         slf4jApi: "org.slf4j:slf4j-api:${commonVersions.slf4j}",
-        spock: dependencies.create("org.spockframework:spock-core:${commonVersions.spock}", {
-            exclude group: "org.codehaus.groovy", module: "groovy-all"
-        }),
+        spock: [
+            dependencies.create("org.spockframework:spock-core:${commonVersions.spock}", {
+                exclude group: "org.codehaus.groovy", module: "groovy-all"
+            }),
+            dependencies.create("cglib:cglib-nodep:${commonVersions.cglib}")
+        ],
         springTest: "org.springframework:spring-test:${commonVersions.spring}"
     ]
 }
