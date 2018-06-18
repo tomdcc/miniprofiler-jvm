@@ -16,21 +16,26 @@
 
 package io.jdev.miniprofiler.servlet.jsp
 
+import io.jdev.miniprofiler.ProfilerUiConfig
 import io.jdev.miniprofiler.ScriptTagWriter
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import spock.lang.Specification
+import spock.lang.Unroll
 
+@Unroll
 class ScriptTagSpec extends Specification {
+
+    private static final String CONTENT = '<script />'
 
     def profilerProvider = new TestProfilerProvider()
 
     String providedPath
-    String tagContent
-    def writer = new ScriptTagWriter() {
-        String printScriptTag(String path) {
+    ProfilerUiConfig providedConfig
+    def writer = Spy(ScriptTagWriter) {
+        _ * printScriptTag(_, _, _) >> { profiler, config, path ->
             providedPath = path
-            tagContent = super.printScriptTag(path)
-            tagContent
+            providedConfig = config
+            CONTENT
         }
     }
     def tag = new ScriptTag(profilerProvider, writer)
@@ -65,11 +70,37 @@ class ScriptTagSpec extends Specification {
         verify(result, path: '/set-path')
     }
 
+    void '#prop can be set'(String prop, Object value, Object expectedValue) {
+        given:
+        tag."$prop" = value
+
+        when:
+        def result = tag.getContent('/ctx')
+
+        then:
+        verify(result, (prop): expectedValue)
+
+        where:
+        prop                  | value        | expectedValue
+        'position'            | 'bottomleft' | ProfilerUiConfig.Position.BOTTOMLEFT
+        'toggleShortcut'      | 'foo'        | 'foo'
+        'maxTraces'           | 99           | 99
+        'trivialMilliseconds' | 66           | 66
+        'trivial'             | true         | true
+        'children'            | true         | true
+        'controls'            | true         | true
+        'authorized'          | false        | false
+        'startHidden'         | true         | true
+    }
+
     private void verify(Map<String, Object> expectedValues, String result) {
-        assert result == tagContent
+        assert result == CONTENT
         def expectedPath = expectedValues.remove('path')
         if (expectedPath) {
             assert providedPath == expectedPath
+        }
+        expectedValues.each { key, expectedValue ->
+            assert providedConfig."$key" == expectedValue
         }
     }
 

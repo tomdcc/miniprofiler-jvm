@@ -18,6 +18,7 @@ package io.jdev.miniprofiler.servlet.jsp;
 
 import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.ProfilerProvider;
+import io.jdev.miniprofiler.ProfilerUiConfig;
 import io.jdev.miniprofiler.ScriptTagWriter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +36,16 @@ public class ScriptTag extends TagSupport {
     private ScriptTagWriter scriptTagWriter;
 
     private String path;
+
+    private ProfilerUiConfig.Position position;
+    private String toggleShortcut;
+    private Integer maxTraces;
+    private Integer trivialMilliseconds;
+    private Boolean trivial;
+    private Boolean children;
+    private Boolean controls;
+    private Boolean authorized;
+    private Boolean startHidden;
 
     public ScriptTag() {
         setProfilerProvider(MiniProfiler.getProfilerProvider());
@@ -59,8 +70,43 @@ public class ScriptTag extends TagSupport {
 
     // for testing
     String getContent(String contextPath) {
-        String path = this.path != null ? this.path : contextPath + profilerProvider.getUiConfig().getPath();
-        return scriptTagWriter.printScriptTag(path);
+        return scriptTagWriter.printScriptTag(profilerProvider.current(), config(), path(contextPath));
+    }
+
+    private String path(String contextPath) {
+        return this.path != null ? this.path : contextPath + profilerProvider.getUiConfig().getPath();
+    }
+
+    private ProfilerUiConfig config() {
+        ProfilerUiConfig config = profilerProvider.getUiConfig().copy();
+        if (position != null) {
+            config.setPosition(position);
+        }
+        if (toggleShortcut != null) {
+            config.setToggleShortcut(toggleShortcut);
+        }
+        if (maxTraces != null) {
+            config.setMaxTraces(maxTraces);
+        }
+        if (trivialMilliseconds != null) {
+            config.setTrivialMilliseconds(trivialMilliseconds);
+        }
+        if (trivial != null) {
+            config.setTrivial(trivial);
+        }
+        if (children != null) {
+            config.setChildren(children);
+        }
+        if (controls != null) {
+            config.setControls(controls);
+        }
+        if (authorized != null) {
+            config.setAuthorized(authorized);
+        }
+        if (startHidden != null) {
+            config.setStartHidden(startHidden);
+        }
+        return config;
     }
 
     public void setProfilerProvider(ProfilerProvider profilerProvider) {
@@ -71,4 +117,41 @@ public class ScriptTag extends TagSupport {
     public void setPath(String path) {
         this.path = path;
     }
+
+    public void setPosition(String position) {
+        this.position = position == null ? null : ProfilerUiConfig.Position.valueOf(position.toUpperCase());
+    }
+
+    public void setToggleShortcut(String toggleShortcut) {
+        this.toggleShortcut = toggleShortcut;
+    }
+
+    public void setMaxTraces(Integer maxTraces) {
+        this.maxTraces = maxTraces;
+    }
+
+    public void setTrivialMilliseconds(Integer trivialMilliseconds) {
+        this.trivialMilliseconds = trivialMilliseconds;
+    }
+
+    public void setTrivial(boolean trivial) {
+        this.trivial = trivial;
+    }
+
+    public void setChildren(boolean children) {
+        this.children = children;
+    }
+
+    public void setControls(boolean controls) {
+        this.controls = controls;
+    }
+
+    public void setAuthorized(boolean authorized) {
+        this.authorized = authorized;
+    }
+
+    public void setStartHidden(boolean startHidden) {
+        this.startHidden = startHidden;
+    }
+
 }

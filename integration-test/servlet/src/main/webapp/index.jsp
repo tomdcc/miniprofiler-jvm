@@ -61,7 +61,16 @@
         </table>
     </div>
     <% if ("true".equals(request.getParameter("override"))) { %>
-        <miniprofiler:script profilerProvider="<%= MiniProfiler.getProfilerProvider() %>"/>
+        <miniprofiler:script
+                profilerProvider="<%= MiniProfiler.getProfilerProvider() %>"
+                position="left"
+                toggleShortcut="none"
+                maxTraces="99"
+                trivialMilliseconds="66"
+                trivial="true"
+                children="true"
+                controls="true"
+        />
     <% } else { %>
         <miniprofiler:script/>
     <% } %>

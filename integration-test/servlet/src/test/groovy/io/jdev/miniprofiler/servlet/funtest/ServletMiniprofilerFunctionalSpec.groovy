@@ -22,9 +22,9 @@ import io.jdev.miniprofiler.test.pages.MiniProfilerQueryModule
 
 class ServletMiniprofilerFunctionalSpec extends GebReportingSpec {
 
-    void "can see miniprofiler"(boolean override) {
+    void "can see miniprofiler"() {
         when:
-        to HomePage, override: override
+        to HomePage
 
         then: 'mini profiler visible with single timing info'
         miniProfiler
@@ -77,8 +77,5 @@ class ServletMiniprofilerFunctionalSpec extends GebReportingSpec {
         queries[1].timeFromStart ==~ ~/T\+\d+.\d ms/
         queries[1].duration ==~ ~/\d+.\d ms/
         queries[1].query ==~ ~/select\s+\*\s+from\s+people/
-
-        where:
-        override << [true, false]
     }
 }

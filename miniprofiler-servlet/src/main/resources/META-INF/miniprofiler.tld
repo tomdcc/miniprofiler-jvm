@@ -32,18 +32,93 @@
 		<body-content>empty</body-content>
 
 		<attribute>
+			<description>Sets the profiler provider to use</description>
 			<name>profilerProvider</name>
-			<type>io.jdev.miniprofiler.ProfilerProvider</type>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<type>io.jdev.miniprofiler.ProfilerProvider</type>
 		</attribute>
 
 		<attribute>
+			<description>Sets the path to the UI resources</description>
 			<name>path</name>
-			<type>java.lang.String</type>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
 		</attribute>
+
+		<attribute>
+			<description>Sets the position of the miniprofiler UI</description>
+			<name>position</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>
+
+		<attribute>
+			<description>Sets the toggle shortcut for the UI</description>
+			<name>toggleShortcut</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>
+
+		<attribute>
+			<description>Sets the maximum number of traces to show</description>
+			<name>maxTraces</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Integer</type>
+		</attribute>
+
+		<attribute>
+			<description>Sets the millisecond threshold for trivial timings</description>
+			<name>trivialMilliseconds</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Integer</type>
+		</attribute>
+
+		<attribute>
+			<description>Sets whether to show trivial timings by default</description>
+			<name>trivial</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
+
+		<attribute>
+			<description>Sets whether to show child timings by default</description>
+			<name>children</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
+
+		<attribute>
+			<description>Sets whether to show controls by default</description>
+			<name>controls</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
+
+		<attribute>
+			<description>Sets whether the request is authorized view profiling results</description>
+			<name>authorized</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
+
+		<attribute>
+			<description>Sets whether to hide the UI by default</description>
+			<name>startHidden</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
+
 	</tag>
 
 </taglib>
