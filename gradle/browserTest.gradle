@@ -27,8 +27,7 @@ project.tasks.findByName('test')?.with {
 dependencies {
     testCompile project(':miniprofiler-test-support')
     testCompile commonDependencies.geb
-    testCompile "org.gebish:geb-spock:${commonVersions.geb}"
-    testCompile commonDependencies.seleniumApi
-    testRuntime "org.seleniumhq.selenium:selenium-support:${commonVersions.selenium}"
-    testRuntime "org.seleniumhq.selenium:selenium-firefox-driver:${commonVersions.selenium}"
+    testCompile commonDependencies.gebSpock
+    testCompileOnly commonDependencies.seleniumApi
+    testRuntime commonDependencies.seleniumRuntime
 }

@@ -20,7 +20,7 @@ ext {
         cglib: "3.2.4",
         eclipselink: '2.5.0',
         ehcache: '2.7.2',
-        groovy: '2.4.10',
+        groovy: '2.4.15',
         geb: '1.1.1',
         jooqCompile: '3.0.0',
         jooqTest: '3.9.5',
@@ -31,7 +31,8 @@ ext {
         jta: '1.1',
         junit: '4.11',
         ratpack: '1.5.0',
-        selenium: '3.4.0',
+        seleniumRuntime: '3.12.0',
+        seleniumApi: '2.53.1', // last java 7 compatible version
         servletApi: '2.3',
         slf4j: '1.7.4',
         spock: '1.0-groovy-2.4',
@@ -43,13 +44,14 @@ ext {
             dependencies.create( "org.codehaus.cargo:cargo-core-uberjar:${commonVersions.cargo}"),
             dependencies.create("org.codehaus.cargo:cargo-ant:${commonVersions.cargo}")
         ],
-        cglib: "cglib:cglib-nodep:${commonVersions.cglib}",        eclipselink: dependencies.create("org.eclipse.persistence:eclipselink:${commonVersions.eclipselink}") {
+        eclipselink: dependencies.create("org.eclipse.persistence:eclipselink:${commonVersions.eclipselink}") {
             transitive false
         },
         ehcache: dependencies.create("net.sf.ehcache:ehcache:${commonVersions.ehcache}") {
             transitive false
         },
         geb: "org.gebish:geb-core:${commonVersions.geb}",
+        gebSpock: "org.gebish:geb-spock:${commonVersions.geb}",
         groovy: "org.codehaus.groovy:groovy-all:${commonVersions.groovy}",
         h2: "com.h2database:h2:${commonVersions.h2}",
         hibernate: dependencies.create("org.hibernate:hibernate-core:${commonVersions.hibernate}") {
@@ -61,7 +63,11 @@ ext {
         junit:  "junit:junit:${commonVersions.junit}",
         jooqCompile: "org.jooq:jooq:${commonVersions.jooqCompile}",
         jooqTest: "org.jooq:jooq:${commonVersions.jooqTest}",
-        seleniumApi: "org.seleniumhq.selenium:selenium-api:${commonVersions.selenium}",
+        seleniumApi: "org.seleniumhq.selenium:selenium-api:${commonVersions.seleniumApi}",
+        seleniumRuntime: [
+            dependencies.create("org.seleniumhq.selenium:selenium-support:${commonVersions.seleniumRuntime}"),
+            dependencies.create("org.seleniumhq.selenium:selenium-firefox-driver:${commonVersions.seleniumRuntime}")
+        ],
         servletApi: "javax.servlet:servlet-api:${commonVersions.servletApi}",
 
         slf4jApi: "org.slf4j:slf4j-api:${commonVersions.slf4j}",
