@@ -15,7 +15,7 @@
  */
 
 apply from: "$rootDir/gradle/javaModule.gradle"
-apply from: "$rootDir/gradle/targetJdk7.gradle"
+apply from: "$rootDir/gradle/targetJdk8.gradle"
 apply from: "$rootDir/gradle/browserTest.gradle"
 apply from: "$rootDir/gradle/cargoTest.gradle"
 
