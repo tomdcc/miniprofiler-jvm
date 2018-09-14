@@ -16,7 +16,7 @@
 
 ext {
     commonVersions = [
-        cargo: '1.4.15',
+        cargo: '1.6.10',
         cglib: "3.2.4",
         eclipselink: '2.5.0',
         ehcache: '2.7.2',

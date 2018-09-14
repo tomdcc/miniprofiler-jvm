@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
+plugins {
+    id 'io.ratpack.ratpack-java'
+}
+
 apply from: "$rootDir/gradle/javaModule.gradle"
 apply from: "$rootDir/gradle/targetJdk8.gradle"
 apply from: "$rootDir/gradle/browserTest.gradle"
-apply plugin: 'io.ratpack.ratpack-java'
 
 mainClassName = "io.jdev.miniprofiler.ratpack.funtest.Main"
 
 dependencies {
 	compile project(":miniprofiler-ratpack")
-    compile "io.ratpack:ratpack-hikari:${commonVersions.ratpack}"
-    compile "io.ratpack:ratpack-groovy:${commonVersions.ratpack}"
+    compile ratpack.dependency("hikari")
+    compile ratpack.dependency("groovy")
 	compile commonDependencies.h2
 
-    testCompile "io.ratpack:ratpack-test:${commonVersions.ratpack}"
+    testCompile "io.ratpack:ratpack-test"
 }

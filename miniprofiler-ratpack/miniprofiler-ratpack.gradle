@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
+plugins {
+    id 'io.ratpack.ratpack-base'
+}
+
 apply from: "$rootDir/gradle/javaModule.gradle"
 apply from: "$rootDir/gradle/targetJdk8.gradle"
 
 dependencies {
 	compile project(":miniprofiler-core")
-    compileOnly "io.ratpack:ratpack-core:${commonVersions.ratpack}"
-    compileOnly "io.ratpack:ratpack-guice:${commonVersions.ratpack}"
-    compileOnly "io.ratpack:ratpack-hikari:${commonVersions.ratpack}"
-    compileOnly "io.ratpack:ratpack-h2:${commonVersions.ratpack}"
+    compileOnly ratpack.dependency("core")
+    compileOnly ratpack.dependency("guice")
+    compileOnly ratpack.dependency("hikari")
+    compileOnly ratpack.dependency("h2")
 
-	testCompile "io.ratpack:ratpack-test:${commonVersions.ratpack}"
-	testCompile "io.ratpack:ratpack-groovy-test:${commonVersions.ratpack}"
+	testCompile ratpack.dependency("test")
+	testCompile ratpack.dependency("groovy-test")
 }
 
 modifyPom { pom ->

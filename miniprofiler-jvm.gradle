@@ -14,26 +14,15 @@
  * limitations under the License.
  */
 
-buildscript {
-    apply from: "$rootDir/gradle/dependencies.gradle"
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.bmuschko:gradle-cargo-plugin:2.1.1'
-        classpath "io.ratpack:ratpack-gradle:${commonVersions.ratpack}"
-    }
-}
-
 plugins {
     id 'com.gradle.build-scan' version '1.16'
+    id "com.bmuschko.cargo" version "2.4" apply false
+    id "io.ratpack.ratpack-java" version "1.5.4" apply false
 }
 
 apply from: 'gradle/dependencies.gradle'
 
 allprojects {
-    apply plugin: 'idea'
-
     group = 'io.jdev.miniprofiler'
     version = '0.9-SNAPSHOT'
 }
