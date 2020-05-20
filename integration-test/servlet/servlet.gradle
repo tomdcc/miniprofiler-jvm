@@ -22,24 +22,18 @@ plugins {
 apply from: "$rootDir/gradle/javaModule.gradle"
 //apply from: "$rootDir/gradle/targetJdk8.gradle"
 apply from: "$rootDir/gradle/browserTest.gradle"
+apply from: "$rootDir/gradle/cargoTest.gradle"
 
 dependencies {
     compile project(':miniprofiler-core')
-    // needs to be a jar to pick up tld automatically
-    compile project(path: ':miniprofiler-servlet', configuration: 'jars')
+    compile project(':miniprofiler-servlet')
 	compileOnly commonDependencies.servletApi
 	compile commonDependencies.h2
 }
 
-gretty {
-    servletContainer = 'jetty9'
-    integrationTestTask = 'test'
-}
-
-// task is only added by gretty in an afterEvaluate
-afterEvaluate {
-    tasks.appBeforeIntegrationTest.configure {
-        // needs to be a war to pick up tld automatically
-        inplace = false
-    }
+test {
+    systemProperty "testContext.cargoTest.containerId", "jetty9x"
+    systemProperty "testContext.cargoTest.downloadUrl", 'https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-distribution/9.4.28.v20200408/jetty-distribution-9.4.28.v20200408.zip'
+    systemProperty "testContext.cargoTest.port", '8080'
+    systemProperty "testContext.cargoTest.contextPath", '/servlet'
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'groovy'
 apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/codenarc.gradle"
@@ -28,12 +28,13 @@ repositories {
 dependencies {
     testCompile commonDependencies.groovy
     testCompile commonDependencies.spock
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${commonVersions.junit5}"
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     testRuntimeOnly 'org.junit.vintage:junit-vintage-engine'
 }
 
-project.tasks.findByName('test')?.with {
+tasks.named('test', Test).configure {
+    useJUnitPlatform()
     testLogging {
         exceptionFormat = 'full'
     }
@@ -69,7 +70,7 @@ if (project.path in publishedModules) {
 test {
     distribution {
         useJUnitPlatform()
-        enabled = true
+        enabled = java.util.Optional.ofNullable(project.findProperty('no.test.distribution')).map { false }.orElse(true)
         requirements = ["group1"]
     }
     outputs.upToDateWhen { false } // TMP

@@ -15,7 +15,6 @@
  */
 
 plugins {
-    id "com.bmuschko.cargo" version "2.7.1" apply false
     id "io.ratpack.ratpack-java" version "1.5.4" apply false
     id "com.gradle.enterprise.test-distribution" version "1.0.1" apply false
 }

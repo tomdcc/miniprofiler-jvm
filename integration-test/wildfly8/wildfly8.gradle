@@ -25,35 +25,13 @@ dependencies {
 }
 
 
-def wildflyBaseDir = file("$buildDir/wildfly")
-task wildflyDir {
-    doLast {
-	    wildflyBaseDir.mkdirs()
-    }
-}
-[cargoRunLocal, cargoStartLocal]*.dependsOn(wildflyDir)
-
-
-cargo {
-	containerId = 'wildfly8x'
-	port = 8081
-	deployable {
-		context = '/'
-	}
-
-	local {
-		installer {
-			installUrl = 'https://download.jboss.org/wildfly/8.1.0.Final/wildfly-8.1.0.Final.tar.gz'
-			downloadDir = rootProject.file(".gradle/cache/cargo")
-			extractDir = buildDir
-		}
-
-		configHomeDir = wildflyBaseDir
-		homeDir = wildflyBaseDir
-
-		file {
-			file = configurations.cargo.files.find { it.name.startsWith('h2-') }
-			toDir = new File("lib")
-		}
-	}
+test {
+//	systemProperty "testContext.cargo.containerId", "wildfly8x"
+//	systemProperty "testContext.cargo.downloadUrl", 'https://download.jboss.org/wildfly/8.1.0.Final/wildfly-8.1.0.Final.tar.gz'
+	// wildfly 15 first version to support java 11 properly
+	systemProperty "testContext.cargoTest.containerId", "wildfly15x"
+	systemProperty "testContext.cargoTest.downloadUrl", 'https://download.jboss.org/wildfly/15.0.1.Final/wildfly-15.0.1.Final.zip'
+	systemProperty "testContext.cargoTest.port", '8081'
+	systemProperty "testContext.cargoTest.contextPath", '/'
+	testLogging.showStandardStreams = true
 }

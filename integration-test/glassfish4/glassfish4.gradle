@@ -26,44 +26,10 @@ dependencies {
     testCompile project(':miniprofiler-test-support')
 }
 
-def glassfishBaseDir = file("$buildDir/glassfish")
-task glassfishDir {
-    doLast {
-        glassfishBaseDir.mkdirs()
-    }
-}
-[cargoRunLocal, cargoStartLocal]*.dependsOn(glassfishDir)
-
-// this sometimes hasn't cleaned up a process that uses the same port in time
-cargoStartLocal.shouldRunAfter(':integration-test:servlet:test')
-
-cargo {
-	containerId = 'glassfish4x'
-	port = 8081
-	deployable {
-		context = '/'
-	}
-
-	local {
-		installer {
-			installUrl = 'https://download.java.net/glassfish/4.1.1/release/glassfish-4.1.1.zip'
-			downloadDir = rootProject.file(".gradle/cache/cargo")
-			extractDir = buildDir
-		}
-
-		configHomeDir = buildDir
-		homeDir = glassfishBaseDir
-
-		containerProperties {
-			property 'cargo.datasource.datasource1', 'cargo.datasource.jndi=jdbc/DataSource|cargo.datasource.url=jdbc:h2:mem:miniprofiler;DB_CLOSE_DELAY=-1|cargo.datasource.driver=org.h2.Driver|cargo.datasource.username=sa|cargo.datasource.password=sa'
-			if(project.hasProperty('debugCargo')) {
-				property 'cargo.glassfish.domain.debug', 'true'
-			}
-		}
-
-		file {
-			file = configurations.cargo.files.find { it.name.startsWith('h2-') }
-			toDir = new File("cargo-domain/lib")
-		}
-	}
+test {
+    systemProperty "testContext.cargoTest.containerId", "glassfish4x"
+    systemProperty "testContext.cargoTest.downloadUrl", 'https://download.java.net/glassfish/4.1.1/release/glassfish-4.1.1.zip'
+    // TODO
+    // pass through container property: property 'cargo.datasource.datasource1', 'cargo.datasource.jndi=jdbc/DataSource|cargo.datasource.url=jdbc:h2:mem:miniprofiler;DB_CLOSE_DELAY=-1|cargo.datasource.driver=org.h2.Driver|cargo.datasource.username=sa|cargo.datasource.password=sa'
+    // add h2 jar to domain ("cargo-domain/lib")
 }

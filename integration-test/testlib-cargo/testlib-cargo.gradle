@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-apply plugin: 'war'
+apply from: "$rootDir/gradle/javaModule.gradle"
 
 dependencies {
-    compileOnly commonDependencies.javaee
-    testRuntime project(':integration-test:testlib-cargo')
-}
-
-test {
-    inputs.file(war.archiveFile)
-    systemProperty "testContext.cargoTest.warPath", war.archiveFile.get().asFile.absolutePath
-    testLogging.showStandardStreams = true // temp
+    api(platform("org.junit:junit-bom:${commonVersions.junit5}"))
+    api("org.junit.platform:junit-platform-launcher")
+    implementation(commonDependencies.cargo)
 }
