@@ -14,23 +14,12 @@
  * limitations under the License.
  */
 
-buildscript {
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath "com.gradle.enterprise:test-distribution-gradle-plugin:1.0.1"
-    }
-}
-
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/codenarc.gradle"
 apply plugin: 'idea'
-apply plugin: com.gradle.enterprise.gradleplugin.testdistribution.TestDistributionPlugin
+apply plugin: 'com.gradle.enterprise.test-distribution'
 
 repositories {
     jcenter()
