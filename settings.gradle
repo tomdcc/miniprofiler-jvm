@@ -1,3 +1,7 @@
+plugins {
+    id "com.gradle.enterprise" version "3.2.1"
+}
+
 include "miniprofiler-core"
 include "miniprofiler-javaee"
 include "miniprofiler-servlet"
@@ -29,5 +33,12 @@ def isCI = System.getenv("CI")
 buildCache {
     local {
         enabled = !isCI
+    }
+}
+
+gradleEnterprise {
+    server = "https://ge-experiment.grdev.net"
+    buildScan {
+        publishAlways()
     }
 }
