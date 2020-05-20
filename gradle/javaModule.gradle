@@ -81,5 +81,6 @@ test {
     distribution {
         useJUnitPlatform()
         enabled = true
+        requirements = ["group1"]
     }
 }
