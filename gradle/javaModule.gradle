@@ -83,4 +83,5 @@ test {
         enabled = true
         requirements = ["group1"]
     }
+    outputs.upToDateWhen { false } // TMP
 }
