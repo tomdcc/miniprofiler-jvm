@@ -19,7 +19,6 @@ package io.jdev.miniprofiler.ratpack.funtest
 import geb.spock.GebReportingSpec
 import io.jdev.miniprofiler.test.pages.MiniProfilerGapModule
 import io.jdev.miniprofiler.test.pages.MiniProfilerQueryModule
-import org.openqa.selenium.Keys
 import ratpack.test.MainClassApplicationUnderTest
 import ratpack.test.ServerBackedApplicationUnderTest
 
@@ -60,9 +59,9 @@ class RatpackMiniprofilerFunctionalSpec extends GebReportingSpec {
     private void closeResultPopup(result) {
         if (result.popup.displayed) {
             if (result.queriesPopup.displayed) {
-                result.queriesPopup.firstElement().sendKeys(Keys.ESCAPE)
+                result.queriesPopup.click()
             }
-            result.popup.firstElement().sendKeys(Keys.ESCAPE)
+            result.click()
         }
     }
 

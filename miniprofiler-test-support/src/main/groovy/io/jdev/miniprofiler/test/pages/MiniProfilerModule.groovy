@@ -41,6 +41,7 @@ class MiniProfilerButtonModule extends Module {
 
 class MiniProfilerPopupModule extends Module {
     static content = {
+        name { $('.profiler-name') }
         timings { $('.profiler-output .profiler-timings tbody tr')*.module(MiniProfilerTimingRowModule) }
         toggleChildTimingLink { $('.profiler-toggle-hidden-columns') }
     }
