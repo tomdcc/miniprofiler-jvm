@@ -43,7 +43,7 @@ cargo {
 
 	local {
 		installer {
-			installUrl = 'http://download.jboss.org/wildfly/8.1.0.Final/wildfly-8.1.0.Final.tar.gz'
+			installUrl = 'https://download.jboss.org/wildfly/8.1.0.Final/wildfly-8.1.0.Final.tar.gz'
 			downloadDir = rootProject.file(".gradle/cache/cargo")
 			extractDir = buildDir
 		}

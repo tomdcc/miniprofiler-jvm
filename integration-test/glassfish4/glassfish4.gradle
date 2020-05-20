@@ -46,7 +46,7 @@ cargo {
 
 	local {
 		installer {
-			installUrl = 'http://download.java.net/glassfish/4.1.1/release/glassfish-4.1.1.zip'
+			installUrl = 'https://download.java.net/glassfish/4.1.1/release/glassfish-4.1.1.zip'
 			downloadDir = rootProject.file(".gradle/cache/cargo")
 			extractDir = buildDir
 		}
