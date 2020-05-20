@@ -14,11 +14,23 @@
  * limitations under the License.
  */
 
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.gradle.enterprise:test-distribution-gradle-plugin:1.0.1"
+    }
+}
+
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/codenarc.gradle"
 apply plugin: 'idea'
+apply plugin: com.gradle.enterprise.gradleplugin.testdistribution.TestDistributionPlugin
 
 repositories {
     jcenter()
@@ -27,6 +39,9 @@ repositories {
 dependencies {
     testCompile commonDependencies.groovy
     testCompile commonDependencies.spock
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine'
 }
 
 project.tasks.findByName('test')?.with {
@@ -60,4 +75,11 @@ if (project.path in publishedModules) {
         archives sourcesJar
     }
 
+}
+
+test {
+    distribution {
+        useJUnitPlatform()
+        enabled = true
+    }
 }
