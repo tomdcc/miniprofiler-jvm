@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-plugins {
-    id 'war'
-    id "org.akhikhl.gretty" version "2.0.0"
-}
-
 apply from: "$rootDir/gradle/javaModule.gradle"
 //apply from: "$rootDir/gradle/targetJdk8.gradle"
 apply from: "$rootDir/gradle/browserTest.gradle"
