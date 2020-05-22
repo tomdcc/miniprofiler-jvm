@@ -30,4 +30,7 @@ dependencies {
     testCompile commonDependencies.gebSpock
     testCompileOnly commonDependencies.seleniumApi
     testRuntime commonDependencies.seleniumRuntime
+    testCompile "org.testcontainers:selenium:1.14.1"
+    testCompile "org.seleniumhq.selenium:selenium-chrome-driver:2.53.1"
+
 }

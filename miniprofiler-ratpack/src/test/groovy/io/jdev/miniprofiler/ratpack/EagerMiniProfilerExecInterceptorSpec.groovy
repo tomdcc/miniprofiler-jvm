@@ -26,7 +26,7 @@ import spock.lang.Specification
 
 class EagerMiniProfilerExecInterceptorSpec extends Specification {
 
-    final String requestUri = "/foo"
+    String requestUri = "/foo"
 
     TestProfilerProvider provider
 

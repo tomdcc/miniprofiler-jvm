@@ -40,7 +40,7 @@ class ModuleSpecs extends Specification {
         }
     }
 
-    final JdbcDataSource ds = new JdbcDataSource(url: "jdbc:h2:mem:dev")
+    JdbcDataSource ds = new JdbcDataSource(url: "jdbc:h2:mem:dev")
 
     void "hikari module provides wrapped ds"() {
         given:

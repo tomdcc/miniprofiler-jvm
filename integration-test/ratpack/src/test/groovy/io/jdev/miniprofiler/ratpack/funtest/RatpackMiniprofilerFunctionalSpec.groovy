@@ -28,7 +28,7 @@ class RatpackMiniprofilerFunctionalSpec extends GebReportingSpec {
 
     void setup() {
         aut = new MainClassApplicationUnderTest(Main)
-        browser.baseUrl = aut.address.toString()
+        browser.baseUrl = "http://${guessHostIp()}:$aut.address.port/"
 
         // Go here first as th`ere's an issue in the ui js the very first time it's loaded, related to something
         // being in localStorage I think. Basically the first miniprofiler load on the page is ok, but the second
@@ -109,4 +109,38 @@ class RatpackMiniprofilerFunctionalSpec extends GebReportingSpec {
 
         true
     }
+
+    static String guessHostIp() {
+        // For the dev.gradle TC boxes, we can grab the eth0 address
+        def eth0 = NetworkInterface.getByName('eth0')
+        if (eth0) {
+            def ipAddress = eth0.inetAddresses.find { it instanceof Inet4Address }.hostAddress
+            return ipAddress
+        }
+
+        // On mac we can't use this, so find the first siteLocal address
+        InetAddress siteLocalInterface = NetworkInterface.networkInterfaces
+            .toList()
+            .collectMany {
+                it.inetAddresses.findAll { it.siteLocalAddress }
+            }
+            .head()
+
+        if (siteLocalInterface) {
+            def ipAddress = siteLocalInterface.hostAddress
+            return ipAddress
+        }
+
+        // Otherwise, we can try to find it in the container
+        def dockerIpAdress = ['docker', 'run', '--network', 'host', '--rm', 'alpine', '/bin/sh', '-c', 'getent ahosts \\$HOSTNAME']
+            .execute()
+            .text
+            .readLines()
+            .find {
+                it ==~ /[0-9]{3}\..+/
+            }
+            .split(/\s+/)[0]
+        return dockerIpAdress
+    }
+
 }

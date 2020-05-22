@@ -13,8 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import org.openqa.selenium.chrome.ChromeOptions
+import org.openqa.selenium.remote.DesiredCapabilities
+import org.testcontainers.containers.BrowserWebDriverContainer
 
 if(!System.getProperty("geb.build.reportsDir")) {
 	// probably running in IDE
 	reportsDir = 'build/reports/geb'
+}
+
+driver =  {
+    try {
+
+    def container = new BrowserWebDriverContainer()
+        .withCapabilities(DesiredCapabilities.chrome())
+        container.setNetworkMode("host")
+    container.start()
+    container.getWebDriver()
+    } catch (any) {
+        any.printStackTrace()
+        throw any
+    }
 }

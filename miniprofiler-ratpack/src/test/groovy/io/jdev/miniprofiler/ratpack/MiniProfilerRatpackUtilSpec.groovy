@@ -106,7 +106,9 @@ class MiniProfilerRatpackUtilSpec extends Specification {
             profiler = provider.start("request")
             provider.current.step('handler') {
                 MiniProfilerRatpackUtil.forkChildProfiler(Execution.fork(), "forked execution").start{ execution ->
+
                     execution.get(Profiler).step('forked') {
+                        println execution.get(Profiler).asPlainText()
                         ctx.next()
                     }
                 }
