@@ -28,4 +28,5 @@ jobs:
 
       - name: Run tests
         uses: GabrielBB/xvfb-action@v1
-        run: ./gradlew check
+        with:
+          run: ./gradlew check
