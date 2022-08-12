@@ -17,13 +17,11 @@ jobs:
         uses: browser-actions/setup-firefox@v0.0.0
         with:
           firefox-version: 68.8.0esr
-        run: firefox --version
 
       - name: Setup Geckodriver
-      - uses: browser-actions/setup-geckodriver@v0.0.0
+        uses: browser-actions/setup-geckodriver@v0.0.0
         with:
           geckodriver-version: 0.26.0
-      - run: geckodriver --version
 
       - name: Build
         run: ./gradlew build
