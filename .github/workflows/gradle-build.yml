@@ -1,0 +1,33 @@
+name: "Build Gradle project"
+on: [ push, pull_request ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 8
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Setup Firefox
+        uses: browser-actions/setup-firefox@v0.0.0
+        with:
+          firefox-version: 68.8.0esr
+        run: firefox --version
+
+      - name: Setup Geckodriver
+      - uses: browser-actions/setup-geckodriver@v0.0.0
+        with:
+          geckodriver-version: 0.26.0
+      - run: geckodriver --version
+
+      - name: Build
+        run: ./gradlew build
+
+      - name: Run tests
+        uses: GabrielBB/xvfb-action@v1
+        run: ./gradlew check
