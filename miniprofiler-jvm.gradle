@@ -15,7 +15,6 @@
  */
 
 plugins {
-    id 'com.gradle.build-scan' version '1.16'
     id "com.bmuschko.cargo" version "2.4" apply false
     id "io.ratpack.ratpack-java" version "1.5.4" apply false
 }
@@ -64,8 +63,8 @@ task resolveAllDependencies {
 def buildScansEnabled = isCI || project.hasProperty('enableBuildScans') && project.property('enableBuildScans') == 'true'
 if (buildScansEnabled) {
     buildScan {
-        licenseAgreementUrl = 'https://gradle.com/terms-of-service'
-        licenseAgree = 'yes'
+        termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+        termsOfServiceAgree = 'yes'
 
         publishAlwaysIf(project.hasProperty('alwaysPublishBuildScans') && project.property('alwaysPublishBuildScans') == 'true')
 
