@@ -17,7 +17,6 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 apply from: "$rootDir/gradle/javaModule.gradle"
-apply from: "$rootDir/gradle/targetJdk6.gradle"
 
 dependencies {
     compileOnly commonDependencies.servletApi

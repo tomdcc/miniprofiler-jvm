@@ -15,7 +15,6 @@
  */
 
 apply from: "$rootDir/gradle/javaModule.gradle"
-apply from: "$rootDir/gradle/targetJdk8.gradle"
 
 dependencies {
 	compileOnly commonDependencies.jooqCompile

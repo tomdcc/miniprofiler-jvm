@@ -20,6 +20,15 @@ apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/codenarc.gradle"
 apply plugin: 'idea'
 
+targetCompatibility = '1.8'
+sourceCompatibility = '1.8'
+
+idea {
+    module {
+        jdkName = '1.8'
+    }
+}
+
 repositories {
     jcenter()
 }

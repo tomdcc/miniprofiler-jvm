@@ -15,7 +15,6 @@
  */
 
 apply from: "$rootDir/gradle/javaModule.gradle"
-apply from: "$rootDir/gradle/targetJdk7.gradle"
 
 dependencies {
 	compile project(':miniprofiler-core')

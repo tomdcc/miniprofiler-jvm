@@ -19,7 +19,6 @@ plugins {
 }
 
 apply from: "$rootDir/gradle/javaModule.gradle"
-apply from: "$rootDir/gradle/targetJdk8.gradle"
 apply from: "$rootDir/gradle/browserTest.gradle"
 
 mainClassName = "io.jdev.miniprofiler.ratpack.funtest.Main"
