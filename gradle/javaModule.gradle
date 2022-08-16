@@ -45,6 +45,12 @@ project.tasks.withType(Test).configureEach {
     testLogging {
         exceptionFormat = 'full'
     }
+
+    // Always run tests in the IDE
+    if (Boolean.getBoolean('idea.active')) {
+        outputs.upToDateWhen { false }
+        outputs.doNotCacheIf('Running in IDE') { true }
+    }
 }
 
 sourceSets {
