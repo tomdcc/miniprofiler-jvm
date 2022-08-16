@@ -56,7 +56,7 @@ class MiniProfilerExecInitializerSpec extends Specification {
         spec.add(new MiniProfilerExecInitializer(provider))
     }
 
-    void "by default initializer does not create a new profiler on execuiton start"() {
+    void "by default initializer does not create a new profiler on execution start"() {
         when: "run handler with initializer"
         handle(Handlers.next(), this.&addToRegistry)
 
