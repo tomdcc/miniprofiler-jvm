@@ -36,9 +36,12 @@ repositories {
 dependencies {
     testCompile commonDependencies.groovy
     testCompile commonDependencies.spock
+    testImplementation commonDependencies.junitJupiter
 }
 
-project.tasks.findByName('test')?.with {
+project.tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+
     testLogging {
         exceptionFormat = 'full'
     }

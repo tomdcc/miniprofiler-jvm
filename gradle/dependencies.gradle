@@ -29,7 +29,7 @@ ext {
         javaee: '7.0',
         jspApi: '2.3.0',
         jta: '1.1',
-        junit: '4.11',
+        junitJupiter: '5.9.0',
         ratpack: '1.5.0',
         seleniumRuntime: '3.141.59', // 4.x not supported until Geb 6
         seleniumApi: '3.0.0',
@@ -60,7 +60,7 @@ ext {
         javaee: "javax:javaee-api:${commonVersions.javaee}",
         jspApi: "javax.servlet.jsp:javax.servlet.jsp-api:${commonVersions.jspApi}",
         jta: "javax.transaction:jta:${commonVersions.jta}",
-        junit:  "junit:junit:${commonVersions.junit}",
+        junitJupiter:  "org.junit.jupiter:junit-jupiter:${commonVersions.junitJupiter}",
         jooqCompile: "org.jooq:jooq:${commonVersions.jooqCompile}",
         jooqTest: "org.jooq:jooq:${commonVersions.jooqTest}",
         seleniumApi: "org.seleniumhq.selenium:selenium-api:${commonVersions.seleniumApi}",
