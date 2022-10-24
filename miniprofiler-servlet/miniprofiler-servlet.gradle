@@ -28,9 +28,14 @@ dependencies {
 configurations { jars }
 artifacts { jars jar }
 
-modifyPom { pom ->
-	pom.project {
-		name "MiniProfiler Java Servlet Module"
-		description "Support classes for getting the MiniProfiler working in servlet environments."
-	}
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            pom {
+                name = 'MiniProfiler Java Servlet Module'
+                description = 'Support classes for getting the MiniProfiler working in servlet environments.'
+            }
+        }
+    }
 }

@@ -22,9 +22,14 @@ dependencies {
     compileOnly 'org.grails:grails-web:2.2.0'
 }
 
-modifyPom { pom ->
-	pom.project {
-		name "MiniProfiler Grails Support"
-		description "Support classes for getting the MiniProfiler working out of the box in Grails."
-	}
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            pom {
+                name = 'MiniProfiler Grails Support'
+                description = 'Support classes for getting the MiniProfiler working out of the box in Grails.'
+            }
+        }
+    }
 }

@@ -24,9 +24,14 @@ dependencies {
     compileOnly commonDependencies.seleniumApi
 }
 
-modifyPom { pom ->
-	pom.project {
-		name "MiniProfiler Test Support Classes"
-		description "Contains Geb modules modelling the MiniProfiler UI for easy functional testing"
-	}
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            pom {
+                name = 'MiniProfiler Test Support Classes'
+                description = 'Contains Geb modules modelling the MiniProfiler UI for easy functional testing'
+            }
+        }
+    }
 }

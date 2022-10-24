@@ -15,41 +15,51 @@
  */
 
 apply plugin: 'base'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-signing {
-    sign configurations.archives
-    required { !isSnapshot && gradle.taskGraph.hasTask(uploadArchives) }
-}
-
-apply from: "$rootDir/gradle/pom.gradle"
-
-uploadArchives { task ->
-    repositories.mavenDeployer {
-        if(!isSnapshot) {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+publishing {
+    repositories {
+        maven {
+            name = "sonatypeStaging"
+            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials(PasswordCredentials)
         }
-        gradle.taskGraph.whenReady { taskGraph ->
-            if (taskGraph.hasTask(task)) {
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: sonatypeOssUsername, password: sonatypeOssPassword)
+        maven {
+            name = "sonatypeSnapshots"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+            credentials(PasswordCredentials)
+        }
+    }
+
+    publications {
+        maven(MavenPublication) {
+            pom {
+                url = 'https://github.com/tomdcc/miniprofiler-jvm/'
+                inceptionYear = '2013'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution = 'repo'
+                    }
                 }
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: sonatypeOssUsername, password: sonatypeOssPassword)
+                developers {
+                    developer {
+                        id = 'tomdcc'
+                        name = 'Tom Dunstan'
+                    }
+                }
+                scm {
+                    url = 'https://github.com/tomdcc/miniprofiler-jvm/'
                 }
             }
         }
     }
 }
 
-task uploadSnapshots {
-    doLast {
-        if (!isSnapshot) {
-            println "Not uploading snapshot as not a snapshot version"
-        }
-    }
+signing {
+    sign publishing.publications.maven
+    required { project.hasProperty('forceSigning') || !isSnapshot && gradle.taskGraph.hasTask('publishMavenPublicationToSonatypeStagingRepository') }
 }
-if(isSnapshot) {
-    uploadSnapshots.dependsOn(uploadArchives)
-}
+

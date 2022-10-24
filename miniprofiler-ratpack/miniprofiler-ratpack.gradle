@@ -31,9 +31,14 @@ dependencies {
 	testCompile ratpack.dependency("groovy-test")
 }
 
-modifyPom { pom ->
-	pom.project {
-		name "MiniProfiler Ratpack Support"
-		description "Support classes for getting the MiniProfiler working out of the box in Ratpack."
-	}
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            pom {
+                name = 'MiniProfiler Ratpack Support'
+                description = 'Support classes for getting the MiniProfiler working out of the box in Ratpack.'
+            }
+        }
+    }
 }

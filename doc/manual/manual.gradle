@@ -82,10 +82,14 @@ artifacts {
     archives manualZip
 }
 
-modifyPom { pom ->
-    pom.artifactId = 'miniprofiler-manual'
-    pom.project {
-        name "MiniProfiler Manual"
-        description "The manual for MiniProfiler JVM"
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifactId = 'miniprofiler-manual'
+            pom {
+                name = 'MiniProfiler Manual'
+                description = 'The manual for MiniProfiler JVM'
+            }
+        }
     }
 }

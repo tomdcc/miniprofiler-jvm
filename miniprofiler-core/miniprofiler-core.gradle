@@ -16,6 +16,10 @@
 
 import org.apache.tools.ant.filters.ReplaceTokens
 
+plugins {
+    id "com.github.johnrengelman.shadow" version "6.1.0"
+}
+
 apply from: "$rootDir/gradle/javaModule.gradle"
 
 dependencies {
@@ -50,10 +54,14 @@ jar {
 	from(sourceSets.main.allJava) { include 'io/jdev/miniprofiler/sql/hibernate/*' }
 }
 
-
-modifyPom { pom ->
-	pom.project {
-		name "MiniProfiler JVM Core"
-		description "MiniProfiler JVM is an implementation of the StackExchange MiniProfiler for the JVM. It provides easily accessible profiling information while developing a web-based app."
-	}
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            pom {
+                name = 'MiniProfiler JVM Core'
+                description = 'MiniProfiler JVM is an implementation of the StackExchange MiniProfiler for the JVM. It provides easily accessible profiling information while developing a web-based app.'
+            }
+        }
+    }
 }

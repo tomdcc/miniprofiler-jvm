@@ -24,9 +24,14 @@ dependencies {
     testCompile commonDependencies.h2
 }
 
-modifyPom { pom ->
-	pom.project {
-		name "MiniProfiler jOOQ Support"
-		description "Support classes for getting SQL statements profiled in the MiniProfiler using jOOQ."
-	}
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            pom {
+                name = 'MiniProfiler jOOQ Support'
+                description = 'Support classes for getting SQL statements profiled in the MiniProfiler using jOOQ.'
+            }
+        }
+    }
 }

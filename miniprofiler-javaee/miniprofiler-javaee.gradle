@@ -23,9 +23,14 @@ dependencies {
     testRuntime project(':miniprofiler-servlet')
 }
 
-modifyPom { pom ->
-	pom.project {
-		name "MiniProfiler Java EE Module"
-		description "Support classes for getting the MiniProfiler working out of the box in modern Java EE containers."
-	}
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            pom {
+                name = 'MiniProfiler Java EE Module'
+                description = 'Support classes for getting the MiniProfiler working out of the box in modern Java EE containers.'
+            }
+        }
+    }
 }
