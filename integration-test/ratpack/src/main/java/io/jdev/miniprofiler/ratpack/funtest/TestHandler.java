@@ -38,16 +38,18 @@ import static ratpack.groovy.Groovy.groovyTemplate;
 public class TestHandler implements Handler {
 
     private final ProfilerProvider profilerProvider;
+    private final DataSource dataSource;
 
     @Inject
-    public TestHandler(ProfilerProvider profilerProvider) {
+    public TestHandler(ProfilerProvider profilerProvider, DataSource dataSource) {
         this.profilerProvider = profilerProvider;
+        this.dataSource = dataSource;
     }
 
     @Override
-    public void handle(Context ctx) throws Exception {
+    public void handle(Context ctx) {
         profilerProvider.current().step("TestHandler.handle", () -> {
-            Blocking.get(() -> getData(ctx)).then(data -> {
+            Blocking.get(this::getData).then(data -> {
                 ctx.byContent(spr -> {
                     spr.json(() -> ctx.render(Jackson.json(data)));
                     spr.html(() -> ctx.render(groovyTemplate(ImmutableMap.of("people", data), "index.html")));
@@ -56,10 +58,10 @@ public class TestHandler implements Handler {
         });
     }
 
-    private List<Map<String, String>> getData(Context ctx) throws Exception {
+    private List<Map<String, String>> getData() throws Exception {
         return profilerProvider.current().step("TestHandler.getData", () -> {
             List<Map<String, String>> results = new ArrayList<>();
-            try (Connection con = ctx.get(DataSource.class).getConnection(); Statement st = con.createStatement()) {
+            try (Connection con = dataSource.getConnection(); Statement st = con.createStatement()) {
                 try (ResultSet rs = st.executeQuery("select * from people")) {
                     while (rs.next()) {
                         Map<String, String> row = new HashMap<String, String>();
