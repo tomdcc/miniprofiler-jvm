@@ -16,24 +16,26 @@
 
 package io.jdev.miniprofiler.ratpack
 
-import io.jdev.miniprofiler.internal.NullProfiler
 import io.jdev.miniprofiler.ProfileLevel
 import io.jdev.miniprofiler.Profiler
+import io.jdev.miniprofiler.internal.NullProfiler
 import io.jdev.miniprofiler.internal.ProfilerImpl
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import ratpack.exec.Execution
-import ratpack.exec.Operation
 import ratpack.exec.Promise
 import ratpack.func.Action
-import ratpack.handling.Handler
+import ratpack.groovy.test.embed.GroovyEmbeddedApp
+import ratpack.test.ApplicationUnderTest
 import ratpack.test.exec.ExecHarness
+import spock.lang.AutoCleanup
 import spock.lang.Specification
-
-import static ratpack.groovy.test.handling.GroovyRequestFixture.handle
 
 class MiniProfilerRatpackUtilSpec extends Specification {
 
     def provider = new TestProfilerProvider()
+
+    @AutoCleanup
+    ApplicationUnderTest app
 
     void "can profile promises from subscription"() {
         given:
@@ -100,58 +102,86 @@ class MiniProfilerRatpackUtilSpec extends Specification {
         given:
         def provider = new RatpackContextProfilerProvider()
 
-        when: "run handler with initializer on handler which forks execution"
+        and: "handler with initializer on handler which forks execution"
         def profiler
-        handle({ ctx ->
-            profiler = provider.start("request")
-            provider.current.step('handler') {
-                MiniProfilerRatpackUtil.forkChildProfiler(Execution.fork(), "forked execution").start{ execution ->
-                    execution.get(Profiler).step('forked') {
-                        ctx.next()
+        app = GroovyEmbeddedApp.of {
+            registryOf {
+                add(new MiniProfilerExecInitializer(provider))
+            }
+            handlers {
+                get { ctx ->
+                    profiler = provider.start("request")
+                    provider.current.step('handler') {
+                        MiniProfilerRatpackUtil.forkChildProfiler(Execution.fork(), "forked execution").start { execution ->
+                            execution.get(Profiler).step('forked') {
+                            }
+                        }
                     }
+                    ctx.render("ok")
                 }
             }
-        } as Handler, { registry.add(new MiniProfilerExecInitializer(provider)) })
+        }
 
-        then: 'profiler worked as expected'
+        when:
+        def response = app.httpClient.get()
+
+        then:
+        response.status.'2xx'
+
+        and:
         profiler.stopped
         !(profiler instanceof NullProfiler)
 
         and: 'child profilers are attached'
         profiler.root.name == 'request'
         profiler.root.children.name == ['handler']
-        profiler.root.childProfilers.root.name == ['⑃ forked execution']
-        profiler.root.childProfilers.root.children.name == [['forked']]
+        def handlerTiming = profiler.root.children[0]
+        handlerTiming.childProfilers.root.name == ['⑃ forked execution']
+        handlerTiming.childProfilers.root.children.name == [['forked']]
     }
 
     void "can attach child profilers on fork with composed exec starter"() {
         given:
         def provider = new RatpackContextProfilerProvider()
 
-        when: "run handler with initializer on handler which forks execution"
+        and: "handler with initializer on handler which forks execution"
         def profiler
         def composedOnStartCalled = false
         def composedOnStart = { composedOnStartCalled = true } as Action<Execution>
-        handle({ ctx ->
-            profiler = provider.start("request")
-            provider.current.step('handler') {
-                MiniProfilerRatpackUtil.forkChildProfiler(Execution.fork(), "forked execution", composedOnStart).start(Operation.of {
-                    provider.current.step('forked') {
-                        ctx.next()
-                    }
-                })
+        app = GroovyEmbeddedApp.of {
+            registryOf {
+                add(new MiniProfilerExecInitializer(provider))
             }
-        } as Handler, { registry.add(new MiniProfilerExecInitializer(provider)) })
+            handlers {
+                get { ctx ->
+                    profiler = provider.start("request")
+                    provider.current.step('handler') {
+                        MiniProfilerRatpackUtil.forkChildProfiler(Execution.fork(), "forked execution", composedOnStart).start { execution ->
+                            provider.current.step('forked') {
+                            }
+                        }
+                    }
+                    ctx.render("ok")
+                }
+            }
+        }
 
-        then: 'profiler worked as expected'
+        when:
+        def response = app.httpClient.get()
+
+        then:
+        response.status.'2xx'
+
+        and:
         profiler.stopped
         !(profiler instanceof NullProfiler)
 
         and: 'child profilers are attached'
         profiler.root.name == 'request'
         profiler.root.children.name == ['handler']
-        profiler.root.childProfilers.root.name == ['⑃ forked execution']
-        profiler.root.childProfilers.root.children.name == [['forked']]
+        def handlerTiming = profiler.root.children[0]
+        handlerTiming.childProfilers.root.name == ['⑃ forked execution']
+        handlerTiming.childProfilers.root.children.name == [['forked']]
 
         and: 'composed onStart called'
         composedOnStartCalled
