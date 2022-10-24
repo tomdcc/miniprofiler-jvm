@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'groovy'
 apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/codenarc.gradle"
@@ -34,10 +34,10 @@ repositories {
 }
 
 dependencies {
-    testCompile commonDependencies.groovy
-    testCompile commonDependencies.spock
+    testImplementation commonDependencies.groovy
+    testImplementation commonDependencies.spock
     testImplementation commonDependencies.junitJupiter
-    testRuntime commonDependencies.logback
+    testRuntimeOnly commonDependencies.logback
 }
 
 project.tasks.withType(Test).configureEach {
@@ -54,10 +54,12 @@ project.tasks.withType(Test).configureEach {
     }
 }
 
-sourceSets {
-    test {
-        compileClasspath += configurations.compileOnly
-        runtimeClasspath += configurations.compileOnly
+if (!project.path.startsWith(':integration-test:')) {
+    sourceSets {
+        test {
+            compileClasspath += configurations.compileClasspath
+            runtimeClasspath += configurations.compileClasspath
+        }
     }
 }
 

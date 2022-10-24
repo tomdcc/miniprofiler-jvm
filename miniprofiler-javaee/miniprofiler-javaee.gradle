@@ -17,10 +17,10 @@
 apply from: "$rootDir/gradle/javaModule.gradle"
 
 dependencies {
-	compile project(':miniprofiler-core')
+	api project(':miniprofiler-core')
     compileOnly commonDependencies.javaee
 
-    testRuntime project(':miniprofiler-servlet')
+    testRuntimeOnly project(':miniprofiler-servlet')
 }
 
 publishing {

@@ -19,8 +19,8 @@ apply from: "$rootDir/gradle/browserTest.gradle"
 apply from: "$rootDir/gradle/cargoTest.gradle"
 
 dependencies {
-    compile project(':miniprofiler-javaee')
-    compile project(':miniprofiler-servlet')
+    implementation project(':miniprofiler-javaee')
+    implementation project(':miniprofiler-servlet')
 }
 
 

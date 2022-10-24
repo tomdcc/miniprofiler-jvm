@@ -24,10 +24,10 @@ apply from: "$rootDir/gradle/browserTest.gradle"
 mainClassName = "io.jdev.miniprofiler.ratpack.funtest.Main"
 
 dependencies {
-	compile project(":miniprofiler-ratpack")
-    compile ratpack.dependency("hikari")
-    compile ratpack.dependency("groovy")
-	compile commonDependencies.h2
+    implementation project(":miniprofiler-ratpack")
+    implementation ratpack.dependency("hikari")
+    implementation ratpack.dependency("groovy")
+    implementation commonDependencies.h2
 
-    testCompile "io.ratpack:ratpack-test"
+    testImplementation "io.ratpack:ratpack-test"
 }

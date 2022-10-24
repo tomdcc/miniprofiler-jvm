@@ -21,14 +21,14 @@ plugins {
 apply from: "$rootDir/gradle/javaModule.gradle"
 
 dependencies {
-	compile project(":miniprofiler-core")
+    api project(":miniprofiler-core")
     compileOnly ratpack.dependency("core")
     compileOnly ratpack.dependency("guice")
     compileOnly ratpack.dependency("hikari")
     compileOnly ratpack.dependency("h2")
 
-	testCompile ratpack.dependency("test")
-	testCompile ratpack.dependency("groovy-test")
+    testImplementation ratpack.dependency("test")
+    testImplementation ratpack.dependency("groovy-test")
 }
 
 publishing {

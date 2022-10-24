@@ -17,11 +17,11 @@
 apply from: "$rootDir/gradle/javaModule.gradle"
 
 dependencies {
-	compile project(':miniprofiler-core')
+    api project(':miniprofiler-core')
     compileOnly commonDependencies.servletApi
     compileOnly commonDependencies.jspApi
 
-    testCompile commonDependencies.springTest
+    testImplementation commonDependencies.springTest
 }
 
 // to allow deps on a jar, so that a tld will get picked up

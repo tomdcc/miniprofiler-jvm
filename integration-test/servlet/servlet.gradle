@@ -23,11 +23,11 @@ apply from: "$rootDir/gradle/javaModule.gradle"
 apply from: "$rootDir/gradle/browserTest.gradle"
 
 dependencies {
-    compile project(':miniprofiler-core')
+    implementation project(':miniprofiler-core')
     // needs to be a jar to pick up tld automatically
-    compile project(path: ':miniprofiler-servlet', configuration: 'jars')
+    implementation project(path: ':miniprofiler-servlet', configuration: 'jars')
+    implementation commonDependencies.h2
 	compileOnly commonDependencies.servletApi
-	compile commonDependencies.h2
 }
 
 gretty {

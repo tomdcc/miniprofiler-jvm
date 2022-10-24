@@ -32,10 +32,10 @@ dependencies {
 	// for profiling hibernate-generated sql
     compileOnly commonDependencies.hibernate
 
-    testRuntime commonDependencies.slf4jApi
+    testRuntimeOnly commonDependencies.slf4jApi
 
 	// needed since we're excluding ehcache's deps and spock falls over otherwise
-    testRuntime commonDependencies.jta
+    testRuntimeOnly commonDependencies.jta
 }
 
 processResources {
