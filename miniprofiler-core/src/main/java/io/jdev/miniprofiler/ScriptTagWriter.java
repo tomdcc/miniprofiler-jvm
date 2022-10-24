@@ -157,6 +157,7 @@ public class ScriptTagWriter {
         appendAttribute(sb, "data-controls", config.isControls());
         appendAttribute(sb, "data-authorized", config.isAuthorized());
         appendAttribute(sb, "data-start-hidden", config.isStartHidden());
+        appendAttribute(sb, "data-scheme", "light");
         sb.append("></script>");
         return sb.toString();
     }
