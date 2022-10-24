@@ -20,8 +20,10 @@ apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/codenarc.gradle"
 apply plugin: 'idea'
 
-targetCompatibility = '1.8'
-sourceCompatibility = '1.8'
+java {
+    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_1_8
+}
 
 idea {
     module {
@@ -64,21 +66,8 @@ if (!project.path.startsWith(':integration-test:')) {
 }
 
 if (project.path in publishedModules) {
-
-    task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
-        from 'build/docs/javadoc'
+    java {
+        withJavadocJar()
+        withSourcesJar()
     }
-
-    task sourcesJar(type: Jar) {
-        from sourceSets.main.allSource
-        classifier = 'sources'
-    }
-
-    artifacts {
-        archives jar
-        archives javadocJar
-        archives sourcesJar
-    }
-
 }
