@@ -130,11 +130,11 @@ class ProfilingFilterSpec extends Specification {
         }
 
         where:
-        configuredResourcePath | requestedResource           | chainCalled | expectedResource
-        null                   | '/miniprofiler/README.md'   | false       | 'io/jdev/miniprofiler/ui/README.md'
-        null                   | '/README.md'                | true        | null
-        '/admin/miniprof'      | '/admin/miniprof/README.md' | false       | 'io/jdev/miniprofiler/ui/README.md'
-        '/admin/miniprof'      | '/miniprofiler/README.md'   | true        | null
+        configuredResourcePath | requestedResource             | chainCalled | expectedResource
+        null                   | '/miniprofiler/includes.js'   | false       | 'io/jdev/miniprofiler/ui/includes.js'
+        null                   | '/includes.js'                | true        | null
+        '/admin/miniprof'      | '/admin/miniprof/includes.js' | false       | 'io/jdev/miniprofiler/ui/includes.js'
+        '/admin/miniprof'      | '/miniprofiler/includes.js'   | true        | null
     }
 
     void "cors host header added to results and resources served"() {
