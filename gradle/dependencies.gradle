@@ -33,7 +33,7 @@ ext {
         // Ratpack looks for org.slf4j.impl.StaticLoggerBinder which is the old discovery mechnanism for slf4j 1.x,
         // so we stay on the old version (and this corresponding logback version) to make it be quiet
         logback: '1.2.11',
-        ratpack: '1.9.0',
+        ratpack: '1.10.0-milestone-8',
         seleniumRuntime: '3.141.59', // 4.x not supported until Geb 6
         seleniumApi: '3.0.0',
         servletApi: '2.3',

@@ -19,6 +19,7 @@ package io.jdev.miniprofiler.ratpack;
 import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
+import com.google.inject.multibindings.ProvidesIntoSet;
 import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.ProfilerUiConfig;
@@ -51,9 +52,6 @@ public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Co
 
         requestStaticInjection(MiniProfilerModule.class);
 
-        // these just here to enable someone to bind a handler etc to the class rather than
-        // a new instance if they want to do that
-        bind(ExecInitializer.class).to(MiniProfilerExecInitializer.class).in(Scopes.SINGLETON);
         bind(MiniProfilerAjaxHeaderHandler.class).in(Scopes.SINGLETON);
         bind(MiniProfilerHandlerChain.class).in(Scopes.SINGLETON);
         bind(MiniProfilerStartProfilingHandlers.class).in(Scopes.SINGLETON);
@@ -74,9 +72,9 @@ public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Co
         return true;
     }
 
-    @Provides
+    @ProvidesIntoSet
     @Singleton
-    public MiniProfilerExecInitializer initializer(ProfilerProvider provider, Config config) {
+    public ExecInitializer initializer(ProfilerProvider provider, Config config) {
         return createInitializer(provider, config);
     }
 
