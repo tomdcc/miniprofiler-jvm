@@ -1,3 +1,0 @@
-[submodule "ui"]
-	path = miniprofiler-core/src/main/resources/io/jdev/miniprofiler/ui
-	url = https://github.com/MiniProfiler/ui.git
