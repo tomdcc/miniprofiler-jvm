@@ -23,12 +23,14 @@ import ratpack.exec.Execution
 import ratpack.exec.Promise
 import ratpack.exec.internal.DefaultExecController
 import ratpack.func.Action
+import ratpack.groovy.test.embed.GroovyEmbeddedApp
 import ratpack.groovy.test.handling.GroovyRequestFixture
 import ratpack.handling.Handlers
 import ratpack.registry.RegistrySpec
+import ratpack.test.ApplicationUnderTest
 import ratpack.test.exec.ExecHarness
 import ratpack.test.exec.internal.DefaultExecHarness
-import spock.lang.Ignore
+import spock.lang.AutoCleanup
 import spock.lang.Specification
 
 import java.util.concurrent.ConcurrentHashMap
@@ -42,6 +44,9 @@ class MiniProfilerExecInitializerSpec extends Specification {
 
     TestProfilerProvider provider
     MiniProfilerStartProfilingHandler startProfilerHandler
+
+    @AutoCleanup
+    ApplicationUnderTest app
 
     void setup() {
         provider = new TestProfilerProvider()
@@ -64,12 +69,21 @@ class MiniProfilerExecInitializerSpec extends Specification {
         !provider.hasCurrent()
     }
 
-    @Ignore("See https://github.com/ratpack/ratpack/issues/1110")
-    void "initializer stops any bound profiler on response send"() {
+    void "initializer stops any bound profiler on context close"() {
         when: "run handler with initializer"
-        handle(startProfilerHandler, this.&addToRegistry)
+        app = GroovyEmbeddedApp.of {
+            registryOf(this.&addToRegistry)
+            handlers {
+                all(startProfilerHandler)
+                get { ctx -> ctx.render("ok") }
+            }
+        }
+        def response = app.httpClient.get()
 
-        then: 'profiler created and was stoped but not discarded'
+        then:
+        response.status.'2xx'
+
+        and: 'profiler created and was stopped but not discarded'
         provider.current
         provider.current.stopped
         !(provider.current instanceof NullProfiler)

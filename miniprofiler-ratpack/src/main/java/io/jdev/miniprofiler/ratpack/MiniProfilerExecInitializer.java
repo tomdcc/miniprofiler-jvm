@@ -21,8 +21,9 @@ import io.jdev.miniprofiler.ProfilerProvider;
 import ratpack.exec.ExecInitializer;
 import ratpack.exec.Execution;
 import ratpack.func.Action;
+import ratpack.handling.Context;
+import ratpack.handling.RequestOutcome;
 import ratpack.http.Request;
-import ratpack.http.Response;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -86,10 +87,28 @@ public class MiniProfilerExecInitializer implements ExecInitializer {
         if (shouldCreateProfilerOnExecutionStart(execution) && !provider.hasCurrent()) {
             provider.start(getUUIDRequestId(execution), getProfilerName(execution));
         }
+
+        // We always want to stop a profiler at the end of the original thing that started it
+        // so that it gets stored in a timely fashion so that subsequent requests for results
+        // are given something meaningful.
+
+        // When handling a request, the execution is completed, then rendering happens, then the
+        // request is finalised.
+
+        // We can't use Response.beforeSend() here as some apps will send response headers eagerly
+        // to work around response timeout issues but then not send the "real" body until later.
+
+        // We want a profile to include profiled rendering info if possible, so when a request
+        // context is present, we delay closing until that is closed. Otherwise we just register
+        // a handler for the completion of the execution.
+
         Completion completion = new Completion(execution);
-        execution.onComplete(completion);
-        // try to complete the profiler before the response is sent, if there is one
-        execution.maybeGet(Response.class).ifPresent(r -> r.beforeSend(completion));
+        Optional<Context> maybeContext = execution.maybeGet(Context.class);
+        if (maybeContext.isPresent()) {
+            maybeContext.get().onClose(completion);
+        } else {
+            execution.onComplete(completion);
+        }
     }
 
     protected void executionComplete(Execution execution) {
@@ -128,7 +147,7 @@ public class MiniProfilerExecInitializer implements ExecInitializer {
     }
 
 
-    private class Completion implements AutoCloseable, Action<Response> {
+    private class Completion implements AutoCloseable, Action<RequestOutcome> {
         private final Execution execution;
         private final AtomicBoolean completed = new AtomicBoolean(false);
 
@@ -143,12 +162,12 @@ public class MiniProfilerExecInitializer implements ExecInitializer {
         }
 
         @Override
-        public void close() throws Exception {
+        public void close() {
             complete();
         }
 
         @Override
-        public void execute(Response response) throws Exception {
+        public void execute(RequestOutcome outcome) {
             complete();
         }
     }
