@@ -30,6 +30,9 @@ ext {
         jspApi: '2.3.0',
         jta: '1.1',
         junitJupiter: '5.9.0',
+        // Ratpack looks for org.slf4j.impl.StaticLoggerBinder which is the old discovery mechnanism for slf4j 1.x,
+        // so we stay on the old version (and this corresponding logback version) to make it be quiet
+        logback: '1.2.11',
         ratpack: '1.5.0',
         seleniumRuntime: '3.141.59', // 4.x not supported until Geb 6
         seleniumApi: '3.0.0',
@@ -63,6 +66,7 @@ ext {
         junitJupiter:  "org.junit.jupiter:junit-jupiter:${commonVersions.junitJupiter}",
         jooqCompile: "org.jooq:jooq:${commonVersions.jooqCompile}",
         jooqTest: "org.jooq:jooq:${commonVersions.jooqTest}",
+        logback: "ch.qos.logback:logback-classic:${commonVersions.logback}",
         seleniumApi: "org.seleniumhq.selenium:selenium-api:${commonVersions.seleniumApi}",
         seleniumRuntime: [
             dependencies.create("org.seleniumhq.selenium:selenium-support:${commonVersions.seleniumRuntime}"),

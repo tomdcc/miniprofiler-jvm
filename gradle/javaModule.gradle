@@ -37,6 +37,7 @@ dependencies {
     testCompile commonDependencies.groovy
     testCompile commonDependencies.spock
     testImplementation commonDependencies.junitJupiter
+    testRuntime commonDependencies.logback
 }
 
 project.tasks.withType(Test).configureEach {
