@@ -27,9 +27,9 @@ jobs:
           geckodriver-version: 0.31.0
 
       - name: Build
-        run: ./gradlew build
+        run: ./gradlew assemble
 
       - name: Run tests
-        uses: GabrielBB/xvfb-action@v1
+        uses: GabrielBB/xvfb-action@v1.6
         with:
-          run: ./gradlew check
+          run: ./gradlew check --continue
