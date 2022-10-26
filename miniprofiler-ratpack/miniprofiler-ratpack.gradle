@@ -21,7 +21,7 @@ plugins {
 apply from: "$rootDir/gradle/javaModule.gradle"
 
 dependencies {
-    api project(":miniprofiler-core")
+    api project(path: ':miniprofiler-core', configuration: 'shadow')
     compileOnly ratpack.dependency("core")
     compileOnly ratpack.dependency("guice")
     compileOnly ratpack.dependency("hikari")

@@ -63,7 +63,9 @@ ext {
         },
         javaee: "javax:javaee-api:${commonVersions.javaee}",
         jspApi: "javax.servlet.jsp:javax.servlet.jsp-api:${commonVersions.jspApi}",
-        jsonSimple: "com.googlecode.json-simple:json-simple:${commonVersions.jsonSimple}",
+        jsonSimple: dependencies.create("com.googlecode.json-simple:json-simple:${commonVersions.jsonSimple}") {
+            exclude group: "junit", module: "junit"
+        },
         jta: "javax.transaction:jta:${commonVersions.jta}",
         junitJupiter:  "org.junit.jupiter:junit-jupiter:${commonVersions.junitJupiter}",
         jooqCompile: "org.jooq:jooq:${commonVersions.jooqCompile}",
