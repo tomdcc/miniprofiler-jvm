@@ -116,6 +116,7 @@ class ScriptTagWriterSpec extends Specification {
 
     private static void validateUiAttrs(Map<String, String> attrs, ProfilerUiConfig config) {
         assert attrs['data-position'] == config.position.name()
+        assert attrs['data-scheme'] == config.colorScheme.name()
         assert attrs['data-toggle-shortcut'] == config.toggleShortcut
         assert attrs['data-max-traces'] == config.maxTraces as String
         assert attrs['data-trivial'] == config.trivial as String

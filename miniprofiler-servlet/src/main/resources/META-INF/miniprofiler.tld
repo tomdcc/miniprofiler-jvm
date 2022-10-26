@@ -56,6 +56,14 @@
 		</attribute>
 
 		<attribute>
+			<description>Sets the color scheme of the miniprofiler UI. Allowed values: Light, Dark, Auto.</description>
+			<name>colorScheme</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>
+
+		<attribute>
 			<description>Sets the toggle shortcut for the UI</description>
 			<name>toggleShortcut</name>
 			<required>false</required>
