@@ -27,7 +27,7 @@ class ProfilerUiConfigSpec extends Specification {
         then:
         with(config) {
             path == '/miniprofiler'
-            position == ProfilerUiConfig.Position.RIGHT
+            position == ProfilerUiConfig.Position.Right
             toggleShortcut == null
             maxTraces == 15
             trivialMilliseconds == null
@@ -67,7 +67,7 @@ class ProfilerUiConfigSpec extends Specification {
         config.controls == false
 
         and: 'file only'
-        config.position == ProfilerUiConfig.Position.LEFT
+        config.position == ProfilerUiConfig.Position.Left
 
         and: 'setting to null'
         config.maxTraces == null
@@ -129,7 +129,7 @@ class ProfilerUiConfigSpec extends Specification {
     private static ProfilerUiConfig other() {
         ProfilerUiConfig.create().with {
             path = '/other-path'
-            position = ProfilerUiConfig.Position.BOTTOMLEFT
+            position = ProfilerUiConfig.Position.BottomLeft
             toggleShortcut = 'whatever'
             maxTraces = 99
             trivialMilliseconds = 95

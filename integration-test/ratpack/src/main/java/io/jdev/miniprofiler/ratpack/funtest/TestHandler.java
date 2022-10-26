@@ -59,6 +59,7 @@ public class TestHandler implements Handler {
     }
 
     private List<Map<String, String>> getData() throws Exception {
+        Thread.sleep(100); // to give predictable results in func test
         return profilerProvider.current().step("TestHandler.getData", () -> {
             List<Map<String, String>> results = new ArrayList<>();
             try (Connection con = dataSource.getConnection(); Statement st = con.createStatement()) {

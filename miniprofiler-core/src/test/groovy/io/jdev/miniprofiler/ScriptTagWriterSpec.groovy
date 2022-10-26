@@ -52,7 +52,7 @@ class ScriptTagWriterSpec extends Specification {
         given:
         ProfilerUiConfig override = config.copy().with {
             path = '/other-path'
-            position = ProfilerUiConfig.Position.BOTTOMLEFT
+            position = ProfilerUiConfig.Position.BottomLeft
             toggleShortcut = 'whatever'
             maxTraces = 99
             trivialMilliseconds = 95
@@ -115,7 +115,7 @@ class ScriptTagWriterSpec extends Specification {
     }
 
     private static void validateUiAttrs(Map<String, String> attrs, ProfilerUiConfig config) {
-        assert attrs['data-position'] == config.position.name().toLowerCase()
+        assert attrs['data-position'] == config.position.name()
         assert attrs['data-toggle-shortcut'] == config.toggleShortcut
         assert attrs['data-max-traces'] == config.maxTraces as String
         assert attrs['data-trivial'] == config.trivial as String

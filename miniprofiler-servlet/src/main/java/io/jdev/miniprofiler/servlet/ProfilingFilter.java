@@ -20,6 +20,7 @@ import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.StaticProfilerProvider;
+import io.jdev.miniprofiler.internal.ResultsRequest;
 import io.jdev.miniprofiler.sql.DriverUtil;
 import io.jdev.miniprofiler.storage.Storage;
 import io.jdev.miniprofiler.util.ResourceHelper;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -141,20 +143,16 @@ public class ProfilingFilter implements Filter {
     private static final Pattern UUID_PATTERN = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
 
     private void serveResults(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String id = request.getParameter("id");
-        if (id == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        ResultsRequest rr;
+        try {
+            rr = ResultsRequest.from(getBody(request));
+        } catch (IllegalArgumentException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
-        if (id.matches("\\[.+\\]")) {
-            id = id.substring(1, id.length() - 1);
-        }
-        if (!UUID_PATTERN.matcher(id).matches()) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
+
         Storage storage = profilerProvider.getStorage();
-        Profiler profiler = storage.load(UUID.fromString(id));
+        Profiler profiler = storage.load(rr.id);
         if (profiler == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
@@ -168,6 +166,15 @@ public class ProfilingFilter implements Filter {
             writer.write(profiler.asUiJson());
         } finally {
             writer.close();
+        }
+    }
+
+    private static String getBody(HttpServletRequest request) throws IOException {
+        int contentLength = request.getContentLength();
+        try (ServletInputStream is = request.getInputStream()) {
+            byte[] buf = new byte[contentLength == -1 ? 2048 : contentLength];
+            int size = is.read(buf);
+            return new String(buf, 0, size, StandardCharsets.UTF_8);
         }
     }
 

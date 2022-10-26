@@ -18,20 +18,18 @@ package io.jdev.miniprofiler.ratpack;
 
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.ProfilerProvider;
-import ratpack.form.Form;
+import io.jdev.miniprofiler.internal.ResultsRequest;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
 import ratpack.http.Response;
+import ratpack.http.TypedData;
 
 import javax.inject.Inject;
-import java.util.UUID;
-import java.util.regex.Pattern;
 
 /**
  * A Ratpack {@link Handler} that serves MiniProfiler results to the UI.
  */
 public class MiniProfilerResultsHandler implements Handler {
-    private static final Pattern UUID_PATTERN = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
 
     private final ProfilerProvider provider;
 
@@ -48,34 +46,25 @@ public class MiniProfilerResultsHandler implements Handler {
     @Override
     public void handle(Context ctx) throws Exception {
         Response response = ctx.getResponse();
-        ctx.parse(Form.class).onError(e -> {
-            // not a posted form
-            response.status(400).send();
-        }).then(form -> {
-            String id = form.get("id");
-            if (id == null) {
-                // not provided
-                response.status(400).send();
-                return;
-            }
-            if (id.matches("\\[.+\\]")) {
-                id = id.substring(1, id.length() - 1);
-            }
-            if (!UUID_PATTERN.matcher(id).matches()) {
-                // badly formed
-                response.status(400).send();
-                return;
-            }
 
-            UUID uuid = UUID.fromString(id);
+        ctx.getRequest().getBody()
+            .map(TypedData::getText)
+            .then(body -> {
+                ResultsRequest resultsRequest;
+                try {
+                    resultsRequest = ResultsRequest.from(body);
+                } catch (Exception e) {
+                    response.status(400).send();
+                    return;
+                }
 
-            Profiler profiler = provider.getStorage().load(uuid);
-            if (profiler != null) {
-                response.status(200).contentType("text/json").send(profiler.asUiJson());
-            } else {
-                // not there
-                response.status(404).send();
-            }
-        });
+                Profiler profiler = provider.getStorage().load(resultsRequest.id);
+                if (profiler != null) {
+                    response.status(200).contentType("text/json").send(profiler.asUiJson());
+                } else {
+                    // not there
+                    response.status(404).send();
+                }
+            });
     }
 }

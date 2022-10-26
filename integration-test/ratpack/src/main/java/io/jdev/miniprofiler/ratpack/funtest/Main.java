@@ -39,7 +39,7 @@ public class Main {
                         hikariConfig.addDataSourceProperty("URL", "jdbc:h2:mem:miniprofiler;DB_CLOSE_DELAY=-1");
                     });
                     bindings.module(MiniProfilerModule.class, profilerConfig -> {
-                        profilerConfig.uiConfig.setPosition(ProfilerUiConfig.Position.LEFT);
+                        profilerConfig.uiConfig.setPosition(ProfilerUiConfig.Position.Left);
                     });
                     bindings.add(new DataSetup());
                     bindings.bind(TestHandler.class);

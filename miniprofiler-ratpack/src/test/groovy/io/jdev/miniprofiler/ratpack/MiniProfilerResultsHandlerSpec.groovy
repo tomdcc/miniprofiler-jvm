@@ -19,7 +19,6 @@ package io.jdev.miniprofiler.ratpack
 import io.jdev.miniprofiler.ProfileLevel
 import io.jdev.miniprofiler.Profiler
 import io.jdev.miniprofiler.internal.ProfilerImpl
-import io.jdev.miniprofiler.internal.JsonUtil
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import ratpack.func.Action
 import ratpack.test.handling.RequestFixture
@@ -27,7 +26,7 @@ import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static ratpack.http.MediaType.APPLICATION_FORM
+import static ratpack.http.MediaType.APPLICATION_JSON
 
 class MiniProfilerResultsHandlerSpec extends Specification {
 
@@ -52,7 +51,7 @@ class MiniProfilerResultsHandlerSpec extends Specification {
     void "handler serves up result as json"() {
         when: 'ask for results'
         def result = RequestFixture.handle(handler, { RequestFixture req ->
-            req.body("id=$param", APPLICATION_FORM)
+            req.body("{\"Id\":$param}", APPLICATION_JSON)
         } as Action)
 
         then: 'response sent'
@@ -60,16 +59,16 @@ class MiniProfilerResultsHandlerSpec extends Specification {
         result.status.code == 200
 
         and: 'sent correct json'
-        JsonUtil.toJson(profiler) == result.bodyText
+        profiler.toJSONString() == result.bodyText
 
         where:
-        param << ["$profiler.id", "[$profiler.id]"]
+        param << ["\"$profiler.id\"", "\"[$profiler.id]\""]
     }
 
     void "handler serves up 404 for nonexistent result"() {
         when: 'ask for results'
         def result = RequestFixture.handle(handler, { RequestFixture req ->
-            req.body("id=${UUID.randomUUID()}", APPLICATION_FORM)
+            req.body("{\"Id\":\"${UUID.randomUUID()}\"}", APPLICATION_JSON)
         } as Action)
 
         then: '404 sent'
@@ -77,7 +76,7 @@ class MiniProfilerResultsHandlerSpec extends Specification {
         result.status.code == 404
     }
 
-    void "handler serves up 400 when no form"() {
+    void "handler serves up 400 when no body"() {
         when: 'ask for results'
         def result = RequestFixture.handle(handler, { RequestFixture req ->
         } as Action)
@@ -90,7 +89,7 @@ class MiniProfilerResultsHandlerSpec extends Specification {
     void "handler serves up 400 when no id"() {
         when: 'ask for results'
         def result = RequestFixture.handle(handler, { RequestFixture req ->
-            req.body("", APPLICATION_FORM)
+            req.body("{}", APPLICATION_JSON)
         } as Action)
 
         then: '400 sent'
@@ -101,7 +100,7 @@ class MiniProfilerResultsHandlerSpec extends Specification {
     void "handler serves up 400 when badly formed id"() {
         when: 'ask for results'
         def result = RequestFixture.handle(handler, { RequestFixture req ->
-            req.body("id=foo", APPLICATION_FORM)
+            req.body("{\"Id\":\"foo\"}", APPLICATION_JSON)
         } as Action)
 
         then: '400 sent'

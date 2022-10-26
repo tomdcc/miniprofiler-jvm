@@ -28,7 +28,7 @@ import static io.jdev.miniprofiler.internal.ConfigHelper.loadPropertiesFile;
 public class ProfilerUiConfig {
 
     public enum Position {
-        LEFT, RIGHT, BOTTOMLEFT, BOTTOMRIGHT
+        Left, Right, BottomLeft, BottomRight
     }
 
     private String path;
@@ -133,7 +133,7 @@ public class ProfilerUiConfig {
     public static ProfilerUiConfig defaults() {
         ProfilerUiConfig config = new ProfilerUiConfig();
         config.path = "/miniprofiler";
-        config.position = Position.RIGHT;
+        config.position = Position.Right;
         config.toggleShortcut = null;
         config.maxTraces = 15;
         config.trivialMilliseconds = null;

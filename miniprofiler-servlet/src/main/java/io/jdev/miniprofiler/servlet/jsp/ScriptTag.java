@@ -20,6 +20,7 @@ import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.ProfilerUiConfig;
 import io.jdev.miniprofiler.ScriptTagWriter;
+import io.jdev.miniprofiler.internal.ConfigHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -119,7 +120,7 @@ public class ScriptTag extends TagSupport {
     }
 
     public void setPosition(String position) {
-        this.position = position == null ? null : ProfilerUiConfig.Position.valueOf(position.toUpperCase());
+        this.position = position == null ? null : ConfigHelper.findEnum(ProfilerUiConfig.Position.class, position);
     }
 
     public void setToggleShortcut(String toggleShortcut) {

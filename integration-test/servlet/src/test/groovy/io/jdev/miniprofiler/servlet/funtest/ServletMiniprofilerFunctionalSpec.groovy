@@ -30,7 +30,7 @@ class ServletMiniprofilerFunctionalSpec extends GebReportingSpec {
         miniProfiler
         miniProfiler.results.size() == 1
         def result = miniProfiler.results[0]
-        result.button.time ==~ ~/\d+\.\d ms/
+        result.button.time ==~ ~/\d+\.\d+ ms/
 
         and: 'popup not visible'
         !result.popup.displayed
@@ -45,19 +45,19 @@ class ServletMiniprofilerFunctionalSpec extends GebReportingSpec {
         def timings = result.popup.timings
         timings.size() == 1
         timings[0].label == '/servlet/'
-        timings[0].duration.text() ==~ ~/\d+\.\d/
+        timings[0].duration.text() ==~ ~/\d+\.\d+/
         !timings[0].durationWithChildren.displayed
         !timings[0].timeFromStart.displayed
-        timings[0].queries.text() ==~ ~/\d+\.\d \(1\)/
+        timings[0].queries.text() ==~ ~/\d+\.\d+ \(1\)/
 
         when: 'toggle child timings'
         result.popup.toggleChildTimingLink.click()
 
         then: 'can see child timings column'
         waitFor { timings[0].timeFromStart.displayed }
-        timings[0].timeFromStart.text() ==~ ~/\+\d+\.\d/
+        timings[0].timeFromStart.text() ==~ ~/\+\d+\.\d+/
         timings[0].durationWithChildren.displayed
-        timings[0].durationWithChildren.text() ==~ ~/\d+\.\d/
+        timings[0].durationWithChildren.text() ==~ ~/\d+\.\d+/
 
         when: 'click sql link'
         timings[0].queries.click()
@@ -66,16 +66,12 @@ class ServletMiniprofilerFunctionalSpec extends GebReportingSpec {
         def queries = result.queriesPopup.queries
         queries.size() == 3
         queries[0] instanceof MiniProfilerGapModule
-        queries[0].displayed == !queries[0].trivial
         queries[1] instanceof MiniProfilerQueryModule
-        queries[1].displayed
         queries[2] instanceof MiniProfilerGapModule
-        queries[2].displayed == !queries[2].trivial
 
         and: 'query has correct info'
         queries[1].step == '/servlet/'
-        queries[1].timeFromStart ==~ ~/T\+\d+.\d ms/
-        queries[1].duration ==~ ~/\d+.\d ms/
+        queries[1].duration ==~ ~/\d+\.\d+ ms \(T\+\d+\.\d+ ms\)/
         queries[1].query ==~ ~/select\s+\*\s+from\s+people/
     }
 }

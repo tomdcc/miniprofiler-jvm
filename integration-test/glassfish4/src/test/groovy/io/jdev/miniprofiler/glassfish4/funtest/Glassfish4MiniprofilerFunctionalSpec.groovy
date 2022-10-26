@@ -30,7 +30,7 @@ class Glassfish4MiniprofilerFunctionalSpec extends GebReportingSpec {
         miniProfiler
         miniProfiler.results.size() == 1
         def result = miniProfiler.results[0]
-        result.button.time ==~ ~/\d+\.\d ms/
+        result.button.time ==~ ~/\d+\.\d+ ms/
 
         and: 'popup not visible'
         !result.popup.displayed
@@ -49,7 +49,7 @@ class Glassfish4MiniprofilerFunctionalSpec extends GebReportingSpec {
         timings[2].label == 'First thing'
         timings[3].label == 'Second thing'
         timings.each {
-            assert it.duration.text() ==~ ~/\d+\.\d/
+            assert it.duration.text() ==~ ~/\d+\.\d+/
             assert !it.durationWithChildren.displayed
             assert !it.timeFromStart.displayed
         }
@@ -60,14 +60,14 @@ class Glassfish4MiniprofilerFunctionalSpec extends GebReportingSpec {
         then: 'can see child timings column'
         waitFor { timings[0].timeFromStart.displayed }
         timings.each {
-            assert it.timeFromStart.text() ==~ ~/\+\d+\.\d/
+            assert it.timeFromStart.text() ==~ ~/\+\d+\.\d+/
             assert it.durationWithChildren.displayed
-            assert it.durationWithChildren.text() ==~ ~/\d+\.\d/
+            assert it.durationWithChildren.text() ==~ ~/\d+\.\d+/
         }
 
         and: 'Second thing has sql timing'
         def secondThingTiming = timings.find { it.label == 'Second thing' }
-        secondThingTiming.queries.text() ==~ ~/\d+\.\d \(1\)/
+        secondThingTiming.queries.text() ==~ ~/\d+\.\d+ \(1\)/
 
         when: 'click sql link'
         secondThingTiming.queries.click()
@@ -76,16 +76,12 @@ class Glassfish4MiniprofilerFunctionalSpec extends GebReportingSpec {
         def queries = result.queriesPopup.queries
         queries.size() == 3
         queries[0] instanceof MiniProfilerGapModule
-        queries[0].displayed == !queries[0].trivial
         queries[1] instanceof MiniProfilerQueryModule
-        queries[1].displayed
         queries[2] instanceof MiniProfilerGapModule
-        queries[2].displayed == !queries[2].trivial
 
         and: 'query has correct info'
         queries[1].step == 'Second thing'
-        queries[1].timeFromStart ==~ ~/T\+\d+.\d ms/
-        queries[1].duration ==~ ~/\d+.\d ms/
+        queries[1].duration ==~ ~/\d+\.\d+ ms \(T\+\d+\.\d+ ms\)/
         queries[1].query ==~ ~/SELECT\s+ID,\s*FIRSTNAME,\s*LASTNAME\s+FROM\s+PERSON/
     }
 }

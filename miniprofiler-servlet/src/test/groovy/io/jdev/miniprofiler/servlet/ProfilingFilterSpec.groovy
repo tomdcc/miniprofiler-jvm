@@ -33,6 +33,7 @@ import javax.servlet.FilterChain
 import javax.servlet.ServletException
 import javax.servlet.ServletRequest
 import javax.servlet.ServletResponse
+import java.nio.charset.StandardCharsets
 
 class ProfilingFilterSpec extends Specification {
 
@@ -85,7 +86,7 @@ class ProfilingFilterSpec extends Specification {
 
         when: 'ask for json'
         request = new MockHttpServletRequest('GET', '/miniprofiler/results')
-        request.addParameter("id", storage.profiler.id.toString())
+        request.content = "{\"Id\":\"${storage.profiler.id}\"}".getBytes(StandardCharsets.UTF_8)
         response = new MockHttpServletResponse()
         chain.invoked = false
         filter.doFilter(request, response, chain)
@@ -94,6 +95,7 @@ class ProfilingFilterSpec extends Specification {
         !chain.invoked
 
         and: 'serves up some json'
+        response.status == 200
         def json = new JsonSlurper().parseText(response.contentAsString)
 
         and: 'it looks about right'
@@ -148,7 +150,7 @@ class ProfilingFilterSpec extends Specification {
 
         when: 'ask for results'
         request.requestURI = '/miniprofiler/results'
-        request.addParameter("id", storage.profiler.id.toString())
+        request.content = "{\"Id\":\"${storage.profiler.id}\"}".getBytes(StandardCharsets.UTF_8)
         filter.doFilter(request, response, chain)
 
         then: 'results have correct header'
