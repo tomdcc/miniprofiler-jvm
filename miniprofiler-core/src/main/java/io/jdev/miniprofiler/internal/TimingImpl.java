@@ -19,6 +19,7 @@ package io.jdev.miniprofiler.internal;
 import io.jdev.miniprofiler.CustomTiming;
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.Timing;
+import org.json.simple.JSONObject;
 
 import java.io.Serializable;
 import java.util.*;
@@ -37,7 +38,7 @@ public class TimingImpl implements TimingInternal, Serializable, Jsonable {
     private final ProfilerImpl profiler;
     private final TimingInternal parent;
     private final int depth;
-    private List<TimingInternal> children;
+    private List<TimingImpl> children;
     private Map<String, List<CustomTiming>> customTimings;
     private List<Profiler> childProfilers;
 
@@ -72,10 +73,10 @@ public class TimingImpl implements TimingInternal, Serializable, Jsonable {
     @Override
     public void addChild(TimingInternal child) {
         if (children == null) {
-            children = new ArrayList<TimingInternal>();
+            children = new ArrayList<>();
         }
 
-        children.add(child);
+        children.add((TimingImpl) child);
     }
 
     @Override
@@ -121,9 +122,10 @@ public class TimingImpl implements TimingInternal, Serializable, Jsonable {
         return ct;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Map<String, Object> toMap() {
-        LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(13);
+    public JSONObject toJson() {
+        JSONObject map = new JSONObject();
         map.put("Id", id.toString());
         map.put("Name", name);
         map.put("StartMilliseconds", startMilliseconds);

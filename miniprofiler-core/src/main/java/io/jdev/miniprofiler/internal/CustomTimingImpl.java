@@ -18,10 +18,9 @@ package io.jdev.miniprofiler.internal;
 
 import io.jdev.miniprofiler.CustomTiming;
 import io.jdev.miniprofiler.sql.SqlFormatterFactory;
+import org.json.simple.JSONObject;
 
 import java.io.Serializable;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.UUID;
 
 class CustomTimingImpl implements CustomTiming, Serializable, Jsonable {
@@ -65,9 +64,10 @@ class CustomTimingImpl implements CustomTiming, Serializable, Jsonable {
         return time - parentTiming.getProfiler().getStarted();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Map<String, Object> toMap() {
-        LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(8);
+    public JSONObject toJson() {
+        JSONObject map = new JSONObject();
         map.put("Id", id.toString());
         if (executeType != null) {
             map.put("ExecuteType", executeType);

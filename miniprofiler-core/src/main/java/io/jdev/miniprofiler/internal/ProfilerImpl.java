@@ -17,8 +17,11 @@
 package io.jdev.miniprofiler.internal;
 
 import io.jdev.miniprofiler.*;
+import org.json.simple.JSONObject;
 
 import java.io.Serializable;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.concurrent.Callable;
 
@@ -242,15 +245,16 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public LinkedHashMap<String, Object> toMap() {
-        LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(11);
+    public JSONObject toJson() {
+        JSONObject map = new JSONObject();
         map.put("Id", id.toString());
         map.put("Name", name);
-        map.put("Started", started);
+        map.put("Started", Instant.ofEpochMilli(started).atOffset(ZoneOffset.UTC).toString());
         map.put("DurationMilliseconds", getDurationMilliseconds());
         map.put("MachineName", machineName);
-        map.put("Root", root.toMap());
+        map.put("Root", root);
         // TODO support ClientTimings and CustomLinks
         map.put("ClientTimings", null);
         return map;
@@ -258,7 +262,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
 
     @Override
     public String asUiJson() {
-        return JsonUtil.toJson(this);
+        return this.toJSONString();
     }
 
     /**
