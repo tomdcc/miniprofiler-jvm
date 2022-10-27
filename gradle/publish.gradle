@@ -64,6 +64,6 @@ signing {
 }
 
 // disable metadata publication, messes with using the shadow jar
-tasks.withType<GenerateModuleMetadata> {
+tasks.withType(GenerateModuleMetadata) {
     enabled = false
 }
