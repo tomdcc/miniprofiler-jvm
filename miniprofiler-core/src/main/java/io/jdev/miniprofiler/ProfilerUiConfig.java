@@ -28,11 +28,16 @@ import static io.jdev.miniprofiler.internal.ConfigHelper.loadPropertiesFile;
 public class ProfilerUiConfig {
 
     public enum Position {
-        LEFT, RIGHT, BOTTOMLEFT, BOTTOMRIGHT
+        Left, Right, BottomLeft, BottomRight
+    }
+
+    public enum ColorScheme {
+        Light, Dark, Auto
     }
 
     private String path;
     private Position position;
+    private ColorScheme colorScheme;
     private String toggleShortcut;
     private Integer maxTraces;
     private Integer trivialMilliseconds;
@@ -62,6 +67,17 @@ public class ProfilerUiConfig {
             throw new IllegalArgumentException((String) null);
         }
         this.position = position;
+    }
+
+    public ColorScheme getColorScheme() {
+        return colorScheme;
+    }
+
+    public void setColorScheme(ColorScheme colorScheme) {
+        if (colorScheme == null) {
+            throw new IllegalArgumentException((String) null);
+        }
+        this.colorScheme = colorScheme;
     }
 
     public String getToggleShortcut() {
@@ -133,7 +149,8 @@ public class ProfilerUiConfig {
     public static ProfilerUiConfig defaults() {
         ProfilerUiConfig config = new ProfilerUiConfig();
         config.path = "/miniprofiler";
-        config.position = Position.RIGHT;
+        config.position = Position.Right;
+        config.colorScheme = ColorScheme.Auto;
         config.toggleShortcut = null;
         config.maxTraces = 15;
         config.trivialMilliseconds = null;
@@ -162,6 +179,7 @@ public class ProfilerUiConfig {
         ProfilerUiConfig config = defaults();
         config.setPath(getProperty(propsList, "path", config.path));
         config.setPosition(getProperty(propsList, "position", Position.class, config.position));
+        config.setColorScheme(getProperty(propsList, "color.scheme", ColorScheme.class, config.colorScheme));
         config.toggleShortcut = getProperty(propsList, "toggle.shortcut", config.toggleShortcut);
         config.maxTraces = getProperty(propsList, "max.traces", config.maxTraces);
         config.trivialMilliseconds = getProperty(propsList, "trivial.milliseconds", config.trivialMilliseconds);
@@ -205,6 +223,9 @@ public class ProfilerUiConfig {
         if (position != that.position) {
             return false;
         }
+        if (colorScheme != that.colorScheme) {
+            return false;
+        }
         if (toggleShortcut != null ? !toggleShortcut.equals(that.toggleShortcut) : that.toggleShortcut != null) {
             return false;
         }
@@ -219,6 +240,7 @@ public class ProfilerUiConfig {
     public int hashCode() {
         int result = path.hashCode();
         result = 31 * result + position.hashCode();
+        result = 31 * result + colorScheme.hashCode();
         result = 31 * result + (toggleShortcut != null ? toggleShortcut.hashCode() : 0);
         result = 31 * result + (maxTraces != null ? maxTraces.hashCode() : 0);
         result = 31 * result + (trivialMilliseconds != null ? trivialMilliseconds.hashCode() : 0);
@@ -244,6 +266,7 @@ public class ProfilerUiConfig {
         ProfilerUiConfig copy = new ProfilerUiConfig();
         copy.path = this.path;
         copy.position = this.position;
+        copy.colorScheme = this.colorScheme;
         copy.toggleShortcut = this.toggleShortcut;
         copy.maxTraces = this.maxTraces;
         copy.trivialMilliseconds = this.trivialMilliseconds;

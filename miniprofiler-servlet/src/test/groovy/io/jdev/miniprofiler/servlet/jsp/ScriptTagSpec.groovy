@@ -82,7 +82,7 @@ class ScriptTagSpec extends Specification {
 
         where:
         prop                  | value        | expectedValue
-        'position'            | 'bottomleft' | ProfilerUiConfig.Position.BOTTOMLEFT
+        'position'            | 'bottomleft' | ProfilerUiConfig.Position.BottomLeft
         'toggleShortcut'      | 'foo'        | 'foo'
         'maxTraces'           | 99           | 99
         'trivialMilliseconds' | 66           | 66

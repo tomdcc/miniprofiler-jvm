@@ -23,6 +23,7 @@ import io.jdev.miniprofiler.user.UserProvider
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.time.OffsetDateTime
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -100,7 +101,7 @@ class MiniProfilerIntegrationSpec extends Specification {
         json.Id == profiler.id as String
         json.MachineName == 'super server'
         json.DurationMilliseconds instanceof Number
-        json.Started instanceof Number
+        OffsetDateTime.parse(json.Started)
 
         def root = json.Root
         verifyTiming(root, [Name: 'My Function'])

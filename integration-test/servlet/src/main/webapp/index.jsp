@@ -64,6 +64,7 @@
         <miniprofiler:script
                 profilerProvider="<%= MiniProfiler.getProfilerProvider() %>"
                 position="left"
+                colorScheme="dark"
                 toggleShortcut="none"
                 maxTraces="99"
                 trivialMilliseconds="66"

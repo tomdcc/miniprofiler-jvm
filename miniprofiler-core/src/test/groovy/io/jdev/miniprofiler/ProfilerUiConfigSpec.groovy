@@ -27,7 +27,7 @@ class ProfilerUiConfigSpec extends Specification {
         then:
         with(config) {
             path == '/miniprofiler'
-            position == ProfilerUiConfig.Position.RIGHT
+            position == ProfilerUiConfig.Position.Right
             toggleShortcut == null
             maxTraces == 15
             trivialMilliseconds == null
@@ -54,7 +54,8 @@ class ProfilerUiConfigSpec extends Specification {
         ] as Properties
         def fileProps = [
             'trivial.milliseconds': '77',
-            'position': 'left'
+            'position': 'left',
+            'color.scheme': 'dark'
         ] as Properties
 
         when:
@@ -67,7 +68,10 @@ class ProfilerUiConfigSpec extends Specification {
         config.controls == false
 
         and: 'file only'
-        config.position == ProfilerUiConfig.Position.LEFT
+        config.position == ProfilerUiConfig.Position.Left
+
+        and: 'file only'
+        config.colorScheme == ProfilerUiConfig.ColorScheme.Dark
 
         and: 'setting to null'
         config.maxTraces == null
@@ -88,6 +92,12 @@ class ProfilerUiConfigSpec extends Specification {
 
         then:
         thrown(IllegalArgumentException)
+
+        when:
+        config.colorScheme = null
+
+        then:
+        thrown(IllegalArgumentException)
     }
 
     void "cannot set non-nullable properties to null via props"() {
@@ -99,6 +109,12 @@ class ProfilerUiConfigSpec extends Specification {
 
         when:
         ProfilerUiConfig.create([:] as Properties, ['position': ''] as Properties)
+
+        then:
+        thrown(IllegalArgumentException)
+
+        when:
+        ProfilerUiConfig.create([:] as Properties, ['color.scheme': ''] as Properties)
 
         then:
         thrown(IllegalArgumentException)
@@ -115,6 +131,7 @@ class ProfilerUiConfigSpec extends Specification {
         with(copy) {
             path == config.path
             position == config.position
+            colorScheme == config.colorScheme
             toggleShortcut == config.toggleShortcut
             maxTraces == config.maxTraces
             trivialMilliseconds == config.trivialMilliseconds
@@ -129,7 +146,8 @@ class ProfilerUiConfigSpec extends Specification {
     private static ProfilerUiConfig other() {
         ProfilerUiConfig.create().with {
             path = '/other-path'
-            position = ProfilerUiConfig.Position.BOTTOMLEFT
+            position = ProfilerUiConfig.Position.BottomLeft
+            colorScheme = ProfilerUiConfig.ColorScheme.Dark
             toggleShortcut = 'whatever'
             maxTraces = 99
             trivialMilliseconds = 95

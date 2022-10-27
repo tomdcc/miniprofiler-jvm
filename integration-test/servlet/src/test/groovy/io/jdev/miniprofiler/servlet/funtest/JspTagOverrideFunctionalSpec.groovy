@@ -28,6 +28,6 @@ class JspTagOverrideFunctionalSpec extends GebReportingSpec {
         miniProfiler
         miniProfiler.results.size() == 1
         def result = miniProfiler.results[0]
-        result.button.time ==~ ~/\d+\.\d ms/
+        result.button.time ==~ ~/\d+\.\d+ ms/
     }
 }

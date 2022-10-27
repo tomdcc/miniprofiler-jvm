@@ -141,7 +141,7 @@ public class ScriptTagWriter {
         appendAttribute(sb, "data-current-id", currentId);
         appendAttribute(sb, "data-ids", ids.toString());
 
-        appendAttribute(sb, "data-position", config.getPosition().name().toLowerCase());
+        appendAttribute(sb, "data-position", config.getPosition().name());
         if (config.getToggleShortcut() != null) {
             appendAttribute(sb, "data-toggle-shortcut", config.getToggleShortcut());
         }
@@ -157,6 +157,7 @@ public class ScriptTagWriter {
         appendAttribute(sb, "data-controls", config.isControls());
         appendAttribute(sb, "data-authorized", config.isAuthorized());
         appendAttribute(sb, "data-start-hidden", config.isStartHidden());
+        appendAttribute(sb, "data-scheme", config.getColorScheme());
         sb.append("></script>");
         return sb.toString();
     }

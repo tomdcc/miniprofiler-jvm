@@ -20,6 +20,7 @@ import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.ProfilerUiConfig;
 import io.jdev.miniprofiler.ScriptTagWriter;
+import io.jdev.miniprofiler.internal.ConfigHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -38,6 +39,7 @@ public class ScriptTag extends TagSupport {
     private String path;
 
     private ProfilerUiConfig.Position position;
+    private ProfilerUiConfig.ColorScheme colorScheme;
     private String toggleShortcut;
     private Integer maxTraces;
     private Integer trivialMilliseconds;
@@ -82,6 +84,9 @@ public class ScriptTag extends TagSupport {
         if (position != null) {
             config.setPosition(position);
         }
+        if (colorScheme != null) {
+            config.setColorScheme(colorScheme);
+        }
         if (toggleShortcut != null) {
             config.setToggleShortcut(toggleShortcut);
         }
@@ -119,7 +124,11 @@ public class ScriptTag extends TagSupport {
     }
 
     public void setPosition(String position) {
-        this.position = position == null ? null : ProfilerUiConfig.Position.valueOf(position.toUpperCase());
+        this.position = position == null ? null : ConfigHelper.findEnum(ProfilerUiConfig.Position.class, position);
+    }
+
+    public void setColorScheme(String scheme) {
+        this.colorScheme = scheme == null ? null : ConfigHelper.findEnum(ProfilerUiConfig.ColorScheme.class, scheme);
     }
 
     public void setToggleShortcut(String toggleShortcut) {

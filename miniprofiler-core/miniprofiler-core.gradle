@@ -22,6 +22,16 @@ plugins {
 
 apply from: "$rootDir/gradle/javaModule.gradle"
 
+configurations {
+    bundled { }
+
+}
+
+project.sourceSets.all { sourceSet ->
+    sourceSet.compileClasspath += configurations.bundled
+    sourceSet.runtimeClasspath += configurations.bundled
+}
+
 dependencies {
     compileOnly commonDependencies.servletApi
     compileOnly commonDependencies.ehcache
@@ -31,6 +41,8 @@ dependencies {
 
 	// for profiling hibernate-generated sql
     compileOnly commonDependencies.hibernate
+
+    bundled commonDependencies.jsonSimple
 
     testRuntimeOnly commonDependencies.slf4jApi
 
@@ -52,6 +64,16 @@ processResources {
 // extra burden on people who might be bundling this library in
 jar {
 	from(sourceSets.main.allJava) { include 'io/jdev/miniprofiler/sql/hibernate/*' }
+    archiveClassifier.set('plain')
+}
+
+// remove plain jar form publishing
+configurations.runtime.artifacts.clear()
+
+shadowJar {
+    archiveClassifier.set('')
+    configurations = [project.configurations.bundled]
+    relocate 'org.json.simple', 'io.jdev.miniprofiler.shadowed.org.json.simple'
 }
 
 publishing {
@@ -65,3 +87,4 @@ publishing {
         }
     }
 }
+

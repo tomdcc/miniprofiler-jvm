@@ -17,7 +17,7 @@
 apply from: "$rootDir/gradle/javaModule.gradle"
 
 dependencies {
-    api project(':miniprofiler-core')
+    api project(path: ':miniprofiler-core', configuration: 'shadow')
     compileOnly commonDependencies.servletApi
     compileOnly commonDependencies.jspApi
 

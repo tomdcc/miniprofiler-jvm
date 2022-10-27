@@ -16,11 +16,26 @@
 
 package io.jdev.miniprofiler.internal;
 
-import java.util.Map;
+import org.json.simple.JSONAware;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONStreamAware;
+
+import java.io.IOException;
+import java.io.Writer;
 
 /**
  * Internal interface used by JSON serialization classes.
  */
-public interface Jsonable {
-    Map<String, Object> toMap();
+interface Jsonable extends JSONAware, JSONStreamAware {
+    JSONObject toJson();
+
+    @Override
+    default String toJSONString() {
+        return toJson().toJSONString();
+    }
+
+    @Override
+    default void writeJSONString(Writer out) throws IOException {
+        toJson().writeJSONString(out);
+    }
 }

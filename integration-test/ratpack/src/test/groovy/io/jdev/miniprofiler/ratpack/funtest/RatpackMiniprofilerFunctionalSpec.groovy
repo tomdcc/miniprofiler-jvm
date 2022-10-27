@@ -19,6 +19,7 @@ package io.jdev.miniprofiler.ratpack.funtest
 import geb.spock.GebReportingSpec
 import io.jdev.miniprofiler.test.pages.MiniProfilerGapModule
 import io.jdev.miniprofiler.test.pages.MiniProfilerQueryModule
+import org.openqa.selenium.Keys
 import ratpack.test.MainClassApplicationUnderTest
 import ratpack.test.ServerBackedApplicationUnderTest
 
@@ -59,14 +60,14 @@ class RatpackMiniprofilerFunctionalSpec extends GebReportingSpec {
     private void closeResultPopup(result) {
         if (result.popup.displayed) {
             if (result.queriesPopup.displayed) {
-                result.queriesPopup.click()
+                result.queriesPopup.firstElement().sendKeys(Keys.ESCAPE)
             }
-            result.click()
+            page.$('body').firstElement().sendKeys(Keys.ESCAPE)
         }
     }
 
     private boolean verifyResults(result) {
-        assert result.button.time ==~ ~/\d+\.\d ms/
+        assert result.button.time ==~ ~/\d+\.\d+ ms/
 
         assert !result.popup.displayed
 
@@ -76,34 +77,34 @@ class RatpackMiniprofilerFunctionalSpec extends GebReportingSpec {
         def timings = result.popup.timings
         assert timings.size() == 3
         assert timings.label == ['/page', 'TestHandler.handle', 'TestHandler.getData']
-        assert timings[0].duration.text() ==~ ~/\d+\.\d/
+        assert timings[0].duration.text() ==~ ~/\d+\.\d+/
         assert !timings[0].durationWithChildren.displayed
         assert !timings[0].timeFromStart.displayed
         assert !timings[0].queries
-        assert timings[2].queries.text() ==~ ~/\d+\.\d \(1\)/
+        assert timings[2].queries.text() ==~ ~/\d+\.\d+ \(1\)/
 
         result.popup.toggleChildTimingLink.click()
 
         assert waitFor { timings[0].timeFromStart.displayed }
-        assert timings[0].timeFromStart.text() ==~ ~/\+\d+\.\d/
+        assert timings[0].timeFromStart.text() ==~ ~/\+\d+\.\d+/
         assert timings[0].durationWithChildren.displayed
-        assert timings[0].durationWithChildren.text() ==~ ~/\d+\.\d/
+        assert timings[0].durationWithChildren.text() ==~ ~/\d+\.\d+/
 
         timings[2].queries.click()
 
         def queries = result.queriesPopup.queries
         assert queries.size() == 3
-        assert queries[0] instanceof MiniProfilerGapModule
-        assert queries[0].displayed == !queries[0].trivial
-        assert queries[1] instanceof MiniProfilerQueryModule
-        assert queries[1].displayed
-        assert queries[2] instanceof MiniProfilerGapModule
-        assert queries[2].displayed == !queries[2].trivial
 
+        assert queries[0] instanceof MiniProfilerGapModule
+        assert !queries[0].trivial
+
+        assert queries[1] instanceof MiniProfilerQueryModule
+        assert queries[1].type == 'sql - query'
         assert queries[1].step == 'TestHandler.getData'
-        assert queries[1].timeFromStart ==~ ~/T\+\d+.\d ms/
-        assert queries[1].duration ==~ ~/\d+.\d ms/
+        assert queries[1].duration ==~ ~/\d+\.\d+ ms \(T\+\d+\.\d+ ms\)/
         assert queries[1].query ==~ ~/select\s+\*\s+from\s+people/
+
+        assert queries[2] instanceof MiniProfilerGapModule
 
         closeResultPopup(result)
 

@@ -45,7 +45,19 @@ public class ConfigHelper {
 
     public static <T extends Enum<T>> T getProperty(List<PropertiesWithPrefix> props, String key, Class<T> enumClass, T defaultValue) {
         Result r = getProperty(props, key);
-        return r != null ? (r.value == null ? null : Enum.valueOf(enumClass, r.value.toUpperCase())) : defaultValue;
+        return r != null ? (r.value == null ? null : findEnum(enumClass, r.value)) : defaultValue;
+    }
+
+    public static <T extends Enum<T>> T findEnum(Class<T> enumClass, String value) {
+        try {
+            return Enum.valueOf(enumClass, value);
+        } catch (IllegalArgumentException e) {
+            // try looking for case insensitive match
+            return Arrays.stream(enumClass.getEnumConstants())
+                .filter(c -> c.name().equalsIgnoreCase(value))
+                .findFirst()
+                .orElseThrow(() -> e);
+        }
     }
 
     private static class Result {
