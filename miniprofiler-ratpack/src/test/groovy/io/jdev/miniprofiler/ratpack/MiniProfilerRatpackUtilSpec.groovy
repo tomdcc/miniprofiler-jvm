@@ -18,9 +18,11 @@ package io.jdev.miniprofiler.ratpack
 
 import io.jdev.miniprofiler.ProfileLevel
 import io.jdev.miniprofiler.Profiler
+import io.jdev.miniprofiler.ProfilerProvider
 import io.jdev.miniprofiler.internal.NullProfiler
 import io.jdev.miniprofiler.internal.ProfilerImpl
 import io.jdev.miniprofiler.test.TestProfilerProvider
+import ratpack.exec.ExecInitializer
 import ratpack.exec.Execution
 import ratpack.exec.Promise
 import ratpack.func.Action
@@ -109,14 +111,16 @@ class MiniProfilerRatpackUtilSpec extends Specification {
         def profiler
         app = GroovyEmbeddedApp.of {
             registryOf {
-                add(new MiniProfilerExecInitializer(provider))
+                add(ProfilerProvider, provider)
+                add(ExecInitializer, new MiniProfilerExecInitializer(provider))
             }
             handlers {
+                all(new MiniProfilerStartProfilingHandler(provider))
                 get { ctx ->
-                    profiler = provider.start("request")
+                    profiler = provider.current
                     provider.current.step('handler') {
                         MiniProfilerRatpackUtil.forkChildProfiler(Execution.fork(), "forked execution").start { execution ->
-                            execution.get(Profiler).step('forked') {
+                            provider.current.step('forked') {
                             }
                         }
                     }
@@ -138,7 +142,7 @@ class MiniProfilerRatpackUtilSpec extends Specification {
         !(profiler instanceof NullProfiler)
 
         and: 'child profilers are attached'
-        profiler.root.name == 'request'
+        profiler.root.name == '/'
         profiler.root.children.name == ['handler']
         def handlerTiming = profiler.root.children[0]
         handlerTiming.childProfilers.root.name == ['⑃ forked execution']
@@ -155,11 +159,13 @@ class MiniProfilerRatpackUtilSpec extends Specification {
         def composedOnStart = { composedOnStartCalled = true } as Action<Execution>
         app = GroovyEmbeddedApp.of {
             registryOf {
-                add(new MiniProfilerExecInitializer(provider))
+                add(ProfilerProvider, provider)
+                add(ExecInitializer, new MiniProfilerExecInitializer(provider))
             }
             handlers {
+                all(new MiniProfilerStartProfilingHandler(provider))
                 get { ctx ->
-                    profiler = provider.start("request")
+                    profiler = provider.current
                     provider.current.step('handler') {
                         MiniProfilerRatpackUtil.forkChildProfiler(Execution.fork(), "forked execution", composedOnStart).start { execution ->
                             provider.current.step('forked') {
@@ -184,7 +190,7 @@ class MiniProfilerRatpackUtilSpec extends Specification {
         !(profiler instanceof NullProfiler)
 
         and: 'child profilers are attached'
-        profiler.root.name == 'request'
+        profiler.root.name == '/'
         profiler.root.children.name == ['handler']
         def handlerTiming = profiler.root.children[0]
         handlerTiming.childProfilers.root.name == ['⑃ forked execution']
