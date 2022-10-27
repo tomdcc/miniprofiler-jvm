@@ -60,7 +60,7 @@ publishing {
 
 signing {
     sign publishing.publications.maven
-    required { project.hasProperty('forceSigning') || !isSnapshot && gradle.taskGraph.hasTask('publishMavenPublicationToSonatypeStagingRepository') }
+    required { project.hasProperty('forceSigning') || !isSnapshot && gradle.taskGraph.hasTask(tasks.publishMavenPublicationToSonatypeStagingRepository) }
 }
 
 // disable metadata publication, messes with using the shadow jar
