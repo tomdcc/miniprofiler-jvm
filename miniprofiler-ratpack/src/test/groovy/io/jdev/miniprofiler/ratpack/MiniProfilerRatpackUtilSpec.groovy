@@ -146,6 +146,7 @@ class MiniProfilerRatpackUtilSpec extends Specification {
             profiler.stopped
         }
         !(profiler instanceof NullProfiler)
+        println profiler.toJSONString()
 
         and: 'child profilers are attached'
         profiler.root.name == '/'
@@ -199,6 +200,7 @@ class MiniProfilerRatpackUtilSpec extends Specification {
             profiler.stopped
         }
         !(profiler instanceof NullProfiler)
+        println profiler.toJSONString()
 
         and: 'child profilers are attached'
         profiler.root.name == '/'
