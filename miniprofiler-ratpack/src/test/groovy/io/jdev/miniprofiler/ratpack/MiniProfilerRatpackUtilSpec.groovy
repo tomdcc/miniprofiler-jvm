@@ -29,8 +29,11 @@ import ratpack.test.ApplicationUnderTest
 import ratpack.test.exec.ExecHarness
 import spock.lang.AutoCleanup
 import spock.lang.Specification
+import spock.util.concurrent.PollingConditions
 
 class MiniProfilerRatpackUtilSpec extends Specification {
+
+    def polling = new PollingConditions()
 
     def provider = new TestProfilerProvider()
 
@@ -129,7 +132,9 @@ class MiniProfilerRatpackUtilSpec extends Specification {
         response.status.'2xx'
 
         and:
-        profiler.stopped
+        polling.eventually {
+            profiler.stopped
+        }
         !(profiler instanceof NullProfiler)
 
         and: 'child profilers are attached'
@@ -173,7 +178,9 @@ class MiniProfilerRatpackUtilSpec extends Specification {
         response.status.'2xx'
 
         and:
-        profiler.stopped
+        polling.eventually {
+            profiler.stopped
+        }
         !(profiler instanceof NullProfiler)
 
         and: 'child profilers are attached'
