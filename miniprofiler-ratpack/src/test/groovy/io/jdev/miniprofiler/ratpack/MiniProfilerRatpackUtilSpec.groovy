@@ -22,6 +22,7 @@ import io.jdev.miniprofiler.ProfilerProvider
 import io.jdev.miniprofiler.internal.NullProfiler
 import io.jdev.miniprofiler.internal.ProfilerImpl
 import io.jdev.miniprofiler.test.TestProfilerProvider
+import ratpack.exec.Blocking
 import ratpack.exec.ExecInitializer
 import ratpack.exec.Execution
 import ratpack.exec.Promise
@@ -124,7 +125,12 @@ class MiniProfilerRatpackUtilSpec extends Specification {
                             }
                         }
                     }
-                    ctx.render("ok")
+                    Blocking.op {
+                        // give some time for the forked exec to finish
+                        Thread.sleep(100)
+                    }.then {
+                        ctx.render("ok")
+                    }
                 }
             }
         }
@@ -172,7 +178,12 @@ class MiniProfilerRatpackUtilSpec extends Specification {
                             }
                         }
                     }
-                    ctx.render("ok")
+                    Blocking.op {
+                        // give some time for the forked exec to finish
+                        Thread.sleep(100)
+                    }.then {
+                        ctx.render("ok")
+                    }
                 }
             }
         }
