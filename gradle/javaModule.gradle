@@ -39,6 +39,7 @@ dependencies {
     testImplementation commonDependencies.groovy
     testImplementation commonDependencies.spock
     testImplementation commonDependencies.junitJupiter
+    testImplementation commonDependencies.awaitility
     testRuntimeOnly commonDependencies.logback
 }
 

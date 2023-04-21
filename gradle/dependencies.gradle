@@ -16,6 +16,7 @@
 
 ext {
     commonVersions = [
+        awaitility: '4.2.0',
         cargo: '1.9.13',
         cglib: "3.2.4",
         eclipselink: '2.5.0',
@@ -44,8 +45,11 @@ ext {
     ]
 
     commonDependencies = [
+        awaitility: dependencies.create("org.awaitility:awaitility-groovy:${commonVersions.awaitility}") {
+            exclude group: "org.codehaus.groovy", module: "groovy"
+        },
         cargo: [
-            dependencies.create( "org.codehaus.cargo:cargo-core-uberjar:${commonVersions.cargo}"),
+            dependencies.create("org.codehaus.cargo:cargo-core-uberjar:${commonVersions.cargo}"),
             dependencies.create("org.codehaus.cargo:cargo-ant:${commonVersions.cargo}")
         ],
         eclipselink: dependencies.create("org.eclipse.persistence:eclipselink:${commonVersions.eclipselink}") {

@@ -38,6 +38,7 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
+import static org.awaitility.Awaitility.await
 import static ratpack.groovy.test.handling.GroovyRequestFixture.handle
 
 class MiniProfilerExecInitializerSpec extends Specification {
@@ -85,7 +86,7 @@ class MiniProfilerExecInitializerSpec extends Specification {
 
         and: 'profiler created and was stopped but not discarded'
         provider.current
-        provider.current.stopped
+        await().until { provider.current.stopped }
         !(provider.current instanceof NullProfiler)
         !provider.wasDiscarded()
     }
@@ -96,9 +97,9 @@ class MiniProfilerExecInitializerSpec extends Specification {
             provider.start("foo")
         }
 
-        then: 'profiler created and was stoped but not discarded'
+        then: 'profiler created and was stopped but not discarded'
         provider.current
-        provider.current.stopped
+        await().until { provider.current.stopped }
         !(provider.current instanceof NullProfiler)
         !provider.wasDiscarded()
     }
@@ -111,7 +112,7 @@ class MiniProfilerExecInitializerSpec extends Specification {
 
         then: 'profiler created but was discarded'
         provider.current
-        provider.current.stopped
+        await().until { provider.current.stopped }
         !(provider.current instanceof NullProfiler)
         provider.wasDiscarded()
     }
