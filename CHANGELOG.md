@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.9.1
+---
+- Always use original Ratpack execution for cleanup
+- Add async Ratpack storage interface.
+
 0.9
 ---
 - Drop support for JDK < 8
