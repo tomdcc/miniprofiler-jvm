@@ -32,7 +32,7 @@ import java.util.UUID;
  * the current profiler.
  */
 public abstract class BaseProfilerProvider implements ProfilerProvider {
-    private Storage storage = new MapStorage();
+    protected Storage storage = new MapStorage();
     private String machineName = getDefaultHostname();
     private UserProvider userProvider;
     private ProfilerUiConfig uiConfig;
@@ -183,7 +183,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
         }
     }
 
-    private void saveProfiler(ProfilerImpl currentProfiler) {
+    protected void saveProfiler(ProfilerImpl currentProfiler) {
         storage.save(currentProfiler);
     }
 

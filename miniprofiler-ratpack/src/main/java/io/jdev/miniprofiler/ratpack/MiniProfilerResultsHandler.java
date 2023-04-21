@@ -16,7 +16,6 @@
 
 package io.jdev.miniprofiler.ratpack;
 
-import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.internal.ResultsRequest;
 import ratpack.handling.Context;
@@ -58,13 +57,16 @@ public class MiniProfilerResultsHandler implements Handler {
                     return;
                 }
 
-                Profiler profiler = provider.getStorage().load(resultsRequest.id);
-                if (profiler != null) {
-                    response.status(200).contentType("text/json").send(profiler.asUiJson());
-                } else {
-                    // not there
-                    response.status(404).send();
-                }
+                AsyncStorage.adapt(provider.getStorage())
+                    .loadAsync(resultsRequest.id)
+                    .then(profiler -> {
+                        if (profiler != null) {
+                            response.status(200).contentType("text/json").send(profiler.asUiJson());
+                        } else {
+                            // not there
+                            response.status(404).send();
+                        }
+                    });
             });
     }
 }

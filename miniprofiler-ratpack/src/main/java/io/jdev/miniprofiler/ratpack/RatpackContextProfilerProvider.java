@@ -18,6 +18,7 @@ package io.jdev.miniprofiler.ratpack;
 
 import io.jdev.miniprofiler.BaseProfilerProvider;
 import io.jdev.miniprofiler.Profiler;
+import io.jdev.miniprofiler.internal.ProfilerImpl;
 import ratpack.exec.Execution;
 
 import java.util.Optional;
@@ -49,6 +50,13 @@ public class RatpackContextProfilerProvider extends BaseProfilerProvider {
      */
     @Override
     protected void profilerStopped(Profiler profiler) {
+    }
+
+    @Override
+    protected void saveProfiler(ProfilerImpl currentProfiler) {
+        AsyncStorage.adapt(storage)
+            .saveAsync(currentProfiler)
+            .then();
     }
 
     /**
