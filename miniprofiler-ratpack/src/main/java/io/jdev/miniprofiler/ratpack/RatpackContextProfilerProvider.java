@@ -20,6 +20,8 @@ import io.jdev.miniprofiler.BaseProfilerProvider;
 import io.jdev.miniprofiler.Profiler;
 import ratpack.exec.Execution;
 
+import java.util.Optional;
+
 /**
  * A {@link io.jdev.miniprofiler.ProfilerProvider} that keeps profilers that it creates on the current Ratpack
  * {@link Execution} rather than e.g. a {@link ThreadLocal}, since Ratpack executions span across multiple
@@ -57,9 +59,13 @@ public class RatpackContextProfilerProvider extends BaseProfilerProvider {
     @Override
     protected Profiler lookupCurrentProfiler() {
         if(Execution.isManagedThread()) {
-            return Execution.current().maybeGet(Profiler.class).orElse(null);
+            return lookupCurrentProfiler(Execution.current()).orElse(null);
         } else {
             return null;
         }
+    }
+
+    protected Optional<Profiler> lookupCurrentProfiler(Execution execution) {
+        return execution.maybeGet(Profiler.class);
     }
 }

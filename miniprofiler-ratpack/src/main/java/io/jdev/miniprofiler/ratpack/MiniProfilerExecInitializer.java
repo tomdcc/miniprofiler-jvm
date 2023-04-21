@@ -111,12 +111,21 @@ public class MiniProfilerExecInitializer implements ExecInitializer {
         }
     }
 
-    protected void executionComplete(Execution execution) {
-        if (provider.hasCurrent()) {
-            Profiler profiler = provider.current();
-            ProfilerStoreOption store = execution.maybeGet(ProfilerStoreOption.class).orElse(defaultProfilerStoreOption);
-            profiler.stop(store == ProfilerStoreOption.DISCARD_RESULTS);
+    protected Optional<Profiler> maybeCurrentProfiler(Execution execution) {
+        if (provider instanceof RatpackContextProfilerProvider) {
+            return ((RatpackContextProfilerProvider) provider).lookupCurrentProfiler(execution);
+        } else {
+            return Optional.ofNullable(provider.current());
         }
+    }
+
+    protected void executionComplete(Execution execution) {
+        maybeCurrentProfiler(execution).ifPresent(profiler -> stopProfiler(execution, profiler));
+    }
+
+    protected void stopProfiler(Execution execution, Profiler profiler) {
+        ProfilerStoreOption store = execution.maybeGet(ProfilerStoreOption.class).orElse(defaultProfilerStoreOption);
+        profiler.stop(store == ProfilerStoreOption.DISCARD_RESULTS);
     }
 
     /**
