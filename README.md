@@ -2,6 +2,7 @@ MiniProfiler-JVM
 ================
 
 [![Build Status](https://github.com/tomdcc/miniprofiler-jvm/actions/workflows/gradle-build-and-publish-snapshot.yml/badge.svg)][1]
+[![Latest version](https://img.shields.io/maven-central/v/io.jdev.miniprofiler/miniprofiler-core)][4]
 
 This library provides (some of) the functionality of the StackExchange [MiniProfiler][2] for JVM-based applications.
 
@@ -140,3 +141,4 @@ Please raise issues in the [GitHub issue tracker][3]
 [1]:https://github.com/tomdcc/miniprofiler-jvm/actions?query=workflow%3A%22Build%2C+test+and+publish+snapshots%22+branch%3Amain+actor%3A+
 [2]:http://miniprofiler.com/
 [3]:https://github.com/tomdcc/miniprofiler-jvm/issues
+[4]:https://central.sonatype.com/namespace/io.jdev.miniprofiler
