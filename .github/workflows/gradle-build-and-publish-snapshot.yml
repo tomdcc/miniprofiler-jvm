@@ -2,12 +2,12 @@ name: "Build, test and publish snapshots"
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   call-gradle-build:
-    uses: tomdcc/miniprofiler-jvm/.github/workflows/gradle-build.yml@master
+    uses: tomdcc/miniprofiler-jvm/.github/workflows/gradle-build.yml@main
   call-publish-snapshots:
     needs: call-gradle-build
-    uses: tomdcc/miniprofiler-jvm/.github/workflows/gradle-publish-snapshots.yml@master
+    uses: tomdcc/miniprofiler-jvm/.github/workflows/gradle-publish-snapshots.yml@main
     secrets: inherit

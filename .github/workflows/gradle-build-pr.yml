@@ -2,4 +2,4 @@ name: "Build and test PR"
 on: [ pull_request ]
 jobs:
   call-gradle-build:
-    uses: tomdcc/miniprofiler-jvm/.github/workflows/gradle-build.yml@master
+    uses: tomdcc/miniprofiler-jvm/.github/workflows/gradle-build.yml@main
