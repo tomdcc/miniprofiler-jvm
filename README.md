@@ -1,7 +1,7 @@
 MiniProfiler-JVM
 ================
 
-[![Build Status](https://travis-ci.org/tomdcc/miniprofiler-jvm.png)][1]
+[![Build Status](https://github.com/tomdcc/miniprofiler-jvm/actions/workflows/gradle-build.yml/badge.svg)][1]
 
 This library provides (some of) the functionality of the StackExchange [MiniProfiler][2] for JVM-based applications.
 
