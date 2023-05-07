@@ -17,7 +17,6 @@
 package io.jdev.miniprofiler.internal;
 
 import io.jdev.miniprofiler.*;
-import org.json.simple.JSONObject;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -245,10 +244,9 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public JSONObject toJson() {
-        JSONObject map = new JSONObject();
+    public Map<String, Object> toJson() {
+        Map<String, Object> map = new LinkedHashMap<>();
         map.put("Id", id.toString());
         map.put("Name", name);
         map.put("Started", Instant.ofEpochMilli(started).atOffset(ZoneOffset.UTC).toString());

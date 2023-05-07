@@ -16,6 +16,7 @@
 
 package io.jdev.miniprofiler.internal
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.jdev.miniprofiler.ProfileLevel
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import spock.lang.Specification
@@ -131,4 +132,21 @@ class ProfilerImplSpec extends Specification {
         calls == 1
         result == 'bar'
     }
+
+    void "json is in expected order"() {
+        when:
+        def parsed = new ObjectMapper().readTree(profiler.asUiJson())
+
+        then:
+        parsed.fieldNames().collect() ==  [
+            'Id',
+            'Name',
+            'Started',
+            'DurationMilliseconds',
+            'MachineName',
+            'Root',
+            'ClientTimings'
+        ]
+    }
+
 }

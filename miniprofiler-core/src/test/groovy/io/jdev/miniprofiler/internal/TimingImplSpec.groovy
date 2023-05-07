@@ -16,8 +16,8 @@
 
 package io.jdev.miniprofiler.internal
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.jdev.miniprofiler.ProfileLevel
-import io.jdev.miniprofiler.Timing
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import spock.lang.Specification
 
@@ -26,7 +26,7 @@ import java.util.concurrent.Callable
 class TimingImplSpec extends Specification {
 
     def profiler = new ProfilerImpl("foo", ProfileLevel.Info, new TestProfilerProvider())
-    Timing timing = profiler.root
+    TimingImpl timing = profiler.root as TimingImpl
 
     void "runnable custom timing is profiled properly"() {
         when:
@@ -78,6 +78,25 @@ class TimingImplSpec extends Specification {
         ex.message == 'eek'
         verifyTimings()
     }
+
+    void "json is in expected order"() {
+        given:
+        timing.customTiming('sql', 'query', 'select 1').stop()
+
+        when:
+        def parsed = new ObjectMapper().readTree(timing.toJSONString())
+
+        then:
+        parsed.fieldNames().collect() ==  [
+            'Id',
+            'Name',
+            'StartMilliseconds',
+            'DurationMilliseconds',
+            'Children',
+            'CustomTimings'
+        ]
+    }
+
 
     private void verifyTimings() {
         assert timing.customTimings.keySet() == ['sql'] as Set

@@ -19,7 +19,6 @@ package io.jdev.miniprofiler.internal;
 import io.jdev.miniprofiler.CustomTiming;
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.Timing;
-import org.json.simple.JSONObject;
 
 import java.io.Serializable;
 import java.util.*;
@@ -124,8 +123,8 @@ public class TimingImpl implements TimingInternal, Serializable, Jsonable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public JSONObject toJson() {
-        JSONObject map = new JSONObject();
+    public Map<String, Object> toJson() {
+        Map<String, Object> map = new LinkedHashMap<>();
         map.put("Id", id.toString());
         map.put("Name", name);
         map.put("StartMilliseconds", startMilliseconds);
