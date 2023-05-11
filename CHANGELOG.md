@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.9.2
+---
+- Profiler JSON has stable field order
+
 0.9.1
 ---
 - Always use original Ratpack execution for cleanup
