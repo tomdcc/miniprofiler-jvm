@@ -16,6 +16,8 @@
 
 package io.jdev.miniprofiler.internal
 
+
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.jdev.miniprofiler.ProfileLevel
 import io.jdev.miniprofiler.ProfilerProvider
 import spock.lang.Specification
@@ -43,5 +45,23 @@ class CustomTimingImplSpec extends Specification {
         then:
         ct.startMilliseconds == 77
         ct.durationMilliseconds == 6
+    }
+
+    void "json is in expected order"() {
+        given:
+        def ct = CustomTimingImpl.from(timing, "query", "select * from foo", profiler.started + 77)
+
+        when:
+        def parsed = new ObjectMapper().readTree(ct.toJSONString())
+
+        then:
+        parsed.fieldNames().collect() ==  [
+            'Id',
+            'ExecuteType',
+            'CommandString',
+            'StartMilliseconds',
+            'DurationMilliseconds',
+            'StackTraceSnippet'
+        ]
     }
 }

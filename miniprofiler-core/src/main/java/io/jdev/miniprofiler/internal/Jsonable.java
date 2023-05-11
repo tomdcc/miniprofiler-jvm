@@ -22,20 +22,21 @@ import org.json.simple.JSONStreamAware;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Map;
 
 /**
  * Internal interface used by JSON serialization classes.
  */
 interface Jsonable extends JSONAware, JSONStreamAware {
-    JSONObject toJson();
+    Map<String, Object> toJson();
 
     @Override
     default String toJSONString() {
-        return toJson().toJSONString();
+        return JSONObject.toJSONString(toJson());
     }
 
     @Override
     default void writeJSONString(Writer out) throws IOException {
-        toJson().writeJSONString(out);
+        JSONObject.writeJSONString(toJson(), out);
     }
 }
