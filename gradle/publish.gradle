@@ -67,3 +67,9 @@ signing {
 tasks.withType(GenerateModuleMetadata) {
     enabled = false
 }
+
+tasks.register("publishSnapshots") { task ->
+    if (project.version.endsWith("-SNAPSHOT")) {
+        task.dependsOn(tasks.publishMavenPublicationToSonatypeSnapshotsRepository)
+    }
+}
