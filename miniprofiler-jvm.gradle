@@ -23,7 +23,7 @@ apply from: 'gradle/dependencies.gradle'
 
 allprojects {
     group = 'io.jdev.miniprofiler'
-    version = '0.9.2'
+    version = '0.9.3-SNAPSHOT'
 }
 
 ext {
