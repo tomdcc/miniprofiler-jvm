@@ -64,7 +64,7 @@ class ServletMiniprofilerFunctionalSpec extends GebReportingSpec {
 
         then: 'three timings, but trivial gaps not visible'
         def queries = result.queriesPopup.queries
-        queries.size() == 3
+        waitFor { queries.size() == 3 }
         queries[0] instanceof MiniProfilerGapModule
         queries[1] instanceof MiniProfilerQueryModule
         queries[2] instanceof MiniProfilerGapModule
