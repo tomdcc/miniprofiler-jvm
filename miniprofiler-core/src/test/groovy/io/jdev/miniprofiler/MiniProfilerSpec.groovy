@@ -22,6 +22,8 @@ import spock.lang.Specification
 
 class MiniProfilerSpec extends Specification {
 
+    String version = System.getProperty("test.miniprofiler.version")
+
     def cleanup() {
         MiniProfiler.profilerProvider = null
     }
@@ -69,5 +71,10 @@ class MiniProfilerSpec extends Specification {
         and:
         result == profiler
 
+    }
+
+    void "returns correct version"() {
+        expect:
+        MiniProfiler.version == version
     }
 }

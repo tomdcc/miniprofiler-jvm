@@ -21,6 +21,7 @@ import spock.lang.Specification
 
 class ScriptTagWriterSpec extends Specification {
 
+    String version = System.getProperty("test.miniprofiler.version")
     ProfilerUiConfig config = ProfilerUiConfig.defaults()
     TestProfilerProvider provider = new TestProfilerProvider(uiConfig: config)
     ScriptTagWriter writer = new ScriptTagWriter(provider)
@@ -36,9 +37,9 @@ class ScriptTagWriterSpec extends Specification {
 
         then:
         def attrs = parseTag(result)
-        attrs.src == "$config.path/includes.js?version=${MiniProfiler.version}"
+        attrs.src == "$config.path/includes.js?version=${version}"
         attrs['data-path'] == "$config.path/"
-        attrs['data-version'] == MiniProfiler.version
+        attrs['data-version'] == version
 
         and:
         attrs['data-current-id'] == profiler.id.toString()
@@ -93,7 +94,7 @@ class ScriptTagWriterSpec extends Specification {
 
         then:
         def attrs = parseTag(result)
-        attrs.src == "/foo/includes.js?version=${MiniProfiler.version}"
+        attrs.src == "/foo/includes.js?version=${version}"
         attrs['data-path'] == "/foo/"
     }
 
@@ -108,7 +109,7 @@ class ScriptTagWriterSpec extends Specification {
 
         then:
         def attrs = parseTag(result)
-        attrs.src == "/foo/includes.js?version=${MiniProfiler.version}"
+        attrs.src == "/foo/includes.js?version=${version}"
         attrs['data-path'] == "/foo/"
         attrs['data-current-id'] == profiler.id.toString()
         attrs['data-ids'] == "[$profiler.id]"

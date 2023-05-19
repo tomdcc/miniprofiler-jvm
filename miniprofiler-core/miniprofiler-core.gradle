@@ -90,3 +90,6 @@ publishing {
     }
 }
 
+project.tasks.withType(Test).configureEach {
+    systemProperty("test.miniprofiler.version", project.version)
+}
