@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.9.3
+---
+- Resource URLs use correct version for cache-busting.
+
 0.9.2
 ---
 - Profiler JSON has stable field order
