@@ -58,6 +58,7 @@ processResources {
 			"version": version
 		])
 	}
+    inputs.property("version", version)
 }
 
 

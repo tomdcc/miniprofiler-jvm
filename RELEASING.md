@@ -2,7 +2,7 @@
 - Remove snapshot from version
 - Update version numbers in README
 - Commit, ensure build is green
-- Run `./gradlew publishMavenPublicationToSonatypeStagingRepository -Dorg.gradle.parallel=false`
+- Run `./gradlew clean; ./gradlew publishMavenPublicationToSonatypeStagingRepository -Dorg.gradle.parallel=false`
 - Close and release repo in oss.sonatype.org
 - `git tag v0.x`
 - `git push origin v0.x`
