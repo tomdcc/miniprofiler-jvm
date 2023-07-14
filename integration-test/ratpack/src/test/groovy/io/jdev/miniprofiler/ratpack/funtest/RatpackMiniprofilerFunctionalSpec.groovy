@@ -19,7 +19,9 @@ package io.jdev.miniprofiler.ratpack.funtest
 import geb.spock.GebReportingSpec
 import io.jdev.miniprofiler.test.pages.MiniProfilerGapModule
 import io.jdev.miniprofiler.test.pages.MiniProfilerQueryModule
-import org.openqa.selenium.Keys
+import io.jdev.miniprofiler.test.pages.MiniProfilerResultModule
+import io.jdev.miniprofiler.test.pages.MiniProfilerModule
+import io.jdev.miniprofiler.test.pages.MiniProfilerSingleResultPage
 import ratpack.test.MainClassApplicationUnderTest
 import ratpack.test.ServerBackedApplicationUnderTest
 
@@ -31,7 +33,7 @@ class RatpackMiniprofilerFunctionalSpec extends GebReportingSpec {
         aut = new MainClassApplicationUnderTest(Main)
         browser.baseUrl = aut.address.toString()
 
-        // Go here first as th`ere's an issue in the ui js the very first time it's loaded, related to something
+        // Go here first as there's an issue in the ui js the very first time it's loaded, related to something
         // being in localStorage I think. Basically the first miniprofiler load on the page is ok, but the second
         // one fails. All loads on subsequent pages are ok.
         to HomePage
@@ -45,28 +47,41 @@ class RatpackMiniprofilerFunctionalSpec extends GebReportingSpec {
         when:
         to HomePage
 
-        then: 'mini profiler visible with single timing info'
+        then: 'mini profiler visible with page timing info, plus ajax call eventually'
         miniProfiler
-        miniProfiler.results.size() >= 1
-
-        and: 'ajax timer also visible, eventually'
-        waitFor(60) { miniProfiler.results.size() == 2 }
+        waitFor(60) {
+            miniProfiler.results.size() == 2
+        }
 
         and:
         verifyResults(miniProfiler.results[0])
         verifyResults(miniProfiler.results[1])
+
+        when:
+        with(miniProfiler.results[0]) {
+            button.click()
+            assert waitFor { popup.displayed }
+            popup.shareLink.click()
+        }
+
+        then:
+        withWindow({ MiniProfilerSingleResultPage.matches(driver) }, page: MiniProfilerSingleResultPage) {
+            assert driver.title ==~ /\/page .* - Profiling Results/
+            waitFor {
+                page.items.size() == 2
+            }
+        }
+
     }
 
     private void closeResultPopup(result) {
         if (result.popup.displayed) {
-            if (result.queriesPopup.displayed) {
-                result.queriesPopup.firstElement().sendKeys(Keys.ESCAPE)
-            }
-            page.$('body').firstElement().sendKeys(Keys.ESCAPE)
+            miniProfiler.queriesPopup?.close()
+            result.popup.close()
         }
     }
 
-    private boolean verifyResults(result) {
+    private boolean verifyResults(MiniProfilerResultModule result) {
         assert result.button.time ==~ ~/\d+\.\d+ ms/
 
         assert !result.popup.displayed
@@ -92,9 +107,10 @@ class RatpackMiniprofilerFunctionalSpec extends GebReportingSpec {
 
         timings[2].queries.click()
 
-        def queries = result.queriesPopup.queries
-        assert queries.size() == 3
-
+        waitFor {
+            miniProfiler.queriesPopup.queries.size() == 3
+        }
+        def queries = miniProfiler.queriesPopup.queries
         assert queries[0] instanceof MiniProfilerGapModule
         assert !queries[0].trivial
 
@@ -109,5 +125,9 @@ class RatpackMiniprofilerFunctionalSpec extends GebReportingSpec {
         closeResultPopup(result)
 
         true
+    }
+
+    MiniProfilerModule getMiniProfiler() {
+        page.miniProfiler as MiniProfilerModule
     }
 }
