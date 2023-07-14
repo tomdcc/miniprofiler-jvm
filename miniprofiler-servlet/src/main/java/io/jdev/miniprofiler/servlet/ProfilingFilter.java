@@ -20,9 +20,9 @@ import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.StaticProfilerProvider;
+import io.jdev.miniprofiler.internal.Pages;
 import io.jdev.miniprofiler.internal.ResultsRequest;
 import io.jdev.miniprofiler.sql.DriverUtil;
-import io.jdev.miniprofiler.storage.Storage;
 import io.jdev.miniprofiler.util.ResourceHelper;
 
 import javax.servlet.*;
@@ -33,8 +33,8 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 /**
  * Filter to start and end profiling, and serve up results as JSON.
@@ -52,6 +52,11 @@ public class ProfilingFilter implements Filter {
     private static final String DEFAULT_PROFILER_PATH = "/miniprofiler/";
     private static final String PROFILER_PATH_PARAM = "path";
     private static final String ALLOWED_ORIGIN_PARAM = "allowed-origin";
+
+    private static final String ACCEPT_HEADER = "Accept";
+    private static final String CONTENT_TYPE_HTML = "text/html";
+    private static final String CONTENT_TYPE_JSON = "application/json";
+    private static final String ID_PARAM = "id";
 
     protected ProfilerProvider profilerProvider = new StaticProfilerProvider();
     protected String profilerPath = DEFAULT_PROFILER_PATH;
@@ -139,33 +144,67 @@ public class ProfilingFilter implements Filter {
         }
     }
 
-
-    private static final Pattern UUID_PATTERN = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
-
     private void serveResults(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ResultsRequest rr;
-        try {
-            rr = ResultsRequest.from(getBody(request));
-        } catch (IllegalArgumentException e) {
+        boolean jsonRequest = Optional.ofNullable(request.getHeader(ACCEPT_HEADER))
+            .map(header -> header.contains(CONTENT_TYPE_JSON)).orElse(false);
+
+        UUID id = parseId(request, jsonRequest);
+        if (id == null) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        Storage storage = profilerProvider.getStorage();
-        Profiler profiler = storage.load(rr.id);
+        Profiler profiler = profilerProvider.getStorage().load(id);
         if (profiler == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        response.setContentType("application/json");
+
+        if (jsonRequest) {
+            renderJson(profiler, response);
+        } else {
+            renderSingleResultHtml(profiler, request, response);
+        }
+    }
+
+    private static UUID parseId(HttpServletRequest request, boolean jsonRequest) {
+        UUID id = null;
+        if (jsonRequest) {
+            try {
+                id = ResultsRequest.from(getBody(request)).id;
+            } catch (IOException | IllegalArgumentException ignored) {
+                // fall through
+            }
+        }
+        if (id == null) {
+            try {
+                id = Optional.ofNullable(request.getParameter(ID_PARAM))
+                    .map(UUID::fromString)
+                    .orElse(null);
+            } catch (IllegalArgumentException ignored) {
+                // fall through
+            }
+        }
+        return id;
+    }
+
+    private void renderJson(Profiler profiler, HttpServletResponse response) throws IOException {
+        response.setContentType(CONTENT_TYPE_JSON);
         if (allowedOrigin != null) {
             response.addHeader("Access-Control-Allow-Origin", allowedOrigin);
         }
-        Writer writer = response.getWriter();
-        try {
+        try (Writer writer = response.getWriter()) {
             writer.write(profiler.asUiJson());
-        } finally {
-            writer.close();
+        }
+    }
+
+    private void renderSingleResultHtml(Profiler profiler, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType(CONTENT_TYPE_HTML);
+        if (allowedOrigin != null) {
+            response.addHeader("Access-Control-Allow-Origin", allowedOrigin);
+        }
+        try (Writer writer = response.getWriter()) {
+            writer.write(Pages.renderSingleResultPage(profiler, profilerProvider, Optional.of(request.getContextPath() + profilerProvider.getUiConfig().getPath())));
         }
     }
 

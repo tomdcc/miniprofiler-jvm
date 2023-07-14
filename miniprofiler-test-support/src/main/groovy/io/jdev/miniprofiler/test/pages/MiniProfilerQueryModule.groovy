@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,15 @@ package io.jdev.miniprofiler.test.pages
 
 import geb.Module
 
-class MiniProfilerModule extends Module {
-
-    static base = { $('.mp-results') }
+class MiniProfilerQueryModule extends Module {
 
     static content = {
-        results { $('.mp-result').moduleList(MiniProfilerResultModule) }
-        queriesPopup(required: false) { siblings('.mp-overlay').module(MiniProfilerQueriesPopupModule) }
+        // for some reason geckodriver returns empty for text() on these, so we use a different way to get it
+        profilerInfo(cache: true) { $('td:first-child') }
+        type { profilerInfo.$('.mp-call-type')?.attr('innerText')?.trim() }
+        step { profilerInfo.$('div').not('.mp-call-type').not('.mp-number')?.attr('innerText')?.trim() }
+        duration { profilerInfo.$('.mp-number')?.attr('innerText')?.trim() }
+        query { $('.query code')?.attr('innerText')?.trim() }
     }
 
 }

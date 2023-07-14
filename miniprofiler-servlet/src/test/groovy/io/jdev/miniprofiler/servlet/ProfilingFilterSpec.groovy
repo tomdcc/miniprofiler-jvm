@@ -87,6 +87,7 @@ class ProfilingFilterSpec extends Specification {
         when: 'ask for json'
         request = new MockHttpServletRequest('GET', '/miniprofiler/results')
         request.content = "{\"Id\":\"${storage.profiler.id}\"}".getBytes(StandardCharsets.UTF_8)
+        request.addHeader("Accept", "application/json")
         response = new MockHttpServletResponse()
         chain.invoked = false
         filter.doFilter(request, response, chain)
@@ -151,6 +152,7 @@ class ProfilingFilterSpec extends Specification {
         when: 'ask for results'
         request.requestURI = '/miniprofiler/results'
         request.content = "{\"Id\":\"${storage.profiler.id}\"}".getBytes(StandardCharsets.UTF_8)
+        request.addHeader("Accept", "application/json")
         filter.doFilter(request, response, chain)
 
         then: 'results have correct header'
@@ -178,6 +180,30 @@ class ProfilingFilterSpec extends Specification {
 
         and: 'profiler id set in header'
         response.getHeader("X-MiniProfiler-Ids") == """["$id"]"""
+    }
+
+    void "serves standalone results"() {
+        given: 'profiler'
+        storage.profiler = new ProfilerImpl("test", ProfileLevel.Info, profilerProvider).tap {
+            stop()
+        }
+
+        and: 'request'
+        request.requestURI = '/miniprofiler/results'
+        request.addParameter("id", storage.profiler.id.toString())
+
+        when: 'invoked'
+        filter.doFilter(request, response, chain)
+
+        then: 'chain not invoked'
+        !chain.invoked
+
+        and: 'serves profiler json'
+        def body = response.contentAsString
+        body.contains(storage.profiler.asUiJson())
+
+        and: 'serves includes script tag'
+        body.contains("<script type='text/javascript' id='mini-profiler' src='/miniprofiler/includes.js?version=")
     }
 }
 

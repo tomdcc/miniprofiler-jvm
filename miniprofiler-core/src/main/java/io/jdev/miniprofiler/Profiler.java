@@ -73,6 +73,13 @@ import java.util.concurrent.Callable;
 public interface Profiler extends Closeable {
 
     /**
+     * The name of the profiling session.
+     *
+     * @return the name of the profiling session.
+     */
+    String getName();
+
+    /**
      * Start a new profiling step with the default {@link ProfileLevel#Info} level;
      *
      * @param name The name of the step.

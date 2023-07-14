@@ -30,11 +30,10 @@ public class MiniProfilerHandlerChain implements Action<Chain> {
     /**
      * Installs handlers to return results and serve UI resources on the given chain.
      * @param chain the chain to install the handler on
-     * @throws Exception any
      */
     @Override
-    public void execute(Chain chain) throws Exception {
-        chain.post("results", MiniProfilerResultsHandler.class);
+    public void execute(Chain chain) {
+        chain.path("results", MiniProfilerResultsHandler.class);
         chain.get(":path", MiniProfilerResourceHandler.class);
     }
 }

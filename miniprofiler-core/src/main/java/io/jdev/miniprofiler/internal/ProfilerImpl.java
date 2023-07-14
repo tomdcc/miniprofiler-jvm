@@ -323,6 +323,11 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         return id;
     }
 
+    @Override
+    public String getName() {
+        return name;
+    }
+
     public String getMachineName() {
         return machineName;
     }

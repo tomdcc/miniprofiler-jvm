@@ -18,17 +18,16 @@ package io.jdev.miniprofiler.wildfly8.funtest
 
 import geb.spock.GebReportingSpec
 import io.jdev.miniprofiler.test.pages.MiniProfilerGapModule
-import io.jdev.miniprofiler.test.pages.MiniProfilerModule
 import io.jdev.miniprofiler.test.pages.MiniProfilerQueryModule
+import io.jdev.miniprofiler.test.pages.MiniProfilerModule
 
 class Wildfly8MiniprofilerFunctionalSpec extends GebReportingSpec {
 
     void "can see miniprofiler"() {
         when:
-        to HomePage
+        def miniProfiler = to(HomePage).miniProfiler
 
         then: 'mini profiler visible with single timing info'
-        miniProfiler
         miniProfiler.results.size() == 1
         def result = miniProfiler.results[0]
         result.button.time ==~ ~/\d+\.\d+ ms/
@@ -74,7 +73,7 @@ class Wildfly8MiniprofilerFunctionalSpec extends GebReportingSpec {
         secondThingTiming.queries.click()
 
         then: 'three timings, but trivial gaps not visible'
-        def queries = result.queriesPopup.queries
+        def queries = miniProfiler.queriesPopup.queries
         queries.size() == 3
         queries[0] instanceof MiniProfilerGapModule
         queries[1] instanceof MiniProfilerQueryModule

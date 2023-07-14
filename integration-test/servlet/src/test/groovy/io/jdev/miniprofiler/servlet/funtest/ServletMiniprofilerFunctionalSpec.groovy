@@ -19,6 +19,7 @@ package io.jdev.miniprofiler.servlet.funtest
 import geb.spock.GebReportingSpec
 import io.jdev.miniprofiler.test.pages.MiniProfilerGapModule
 import io.jdev.miniprofiler.test.pages.MiniProfilerQueryModule
+import io.jdev.miniprofiler.test.pages.MiniProfilerSingleResultPage
 
 class ServletMiniprofilerFunctionalSpec extends GebReportingSpec {
 
@@ -39,7 +40,7 @@ class ServletMiniprofilerFunctionalSpec extends GebReportingSpec {
         result.button.click()
 
         then: 'popup visible'
-        result.popup.displayed
+        waitFor { result.popup.displayed }
 
         and: ''
         def timings = result.popup.timings
@@ -63,7 +64,7 @@ class ServletMiniprofilerFunctionalSpec extends GebReportingSpec {
         timings[0].queries.click()
 
         then: 'three timings, but trivial gaps not visible'
-        def queries = result.queriesPopup.queries
+        def queries = miniProfiler.queriesPopup.queries
         waitFor { queries.size() == 3 }
         queries[0] instanceof MiniProfilerGapModule
         queries[1] instanceof MiniProfilerQueryModule
@@ -73,5 +74,19 @@ class ServletMiniprofilerFunctionalSpec extends GebReportingSpec {
         queries[1].step == '/servlet/'
         queries[1].duration ==~ ~/\d+\.\d+ ms \(T\+\d+\.\d+ ms\)/
         queries[1].query ==~ ~/select\s+\*\s+from\s+people/
+
+        when:
+        miniProfiler.queriesPopup.close()
+        result.popup.shareLink.click()
+
+        then:
+        withWindow({ MiniProfilerSingleResultPage.matches(driver) }, page: MiniProfilerSingleResultPage) {
+            driver.title ==~ /\/servlet\/ .* = Profiling Results/
+            waitFor {
+                page.items.size() == 2
+            }
+        }
     }
+
+
 }

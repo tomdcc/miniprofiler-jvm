@@ -31,6 +31,8 @@
         if(st != null) try { st.close(); } catch(SQLException s2) {}
         if(con != null) try { con.close(); } catch(SQLException s2) {}
     }
+    // make a predictable delay after the queries for the int test
+    Thread.sleep(200);
 %>
 <html>
 <head>

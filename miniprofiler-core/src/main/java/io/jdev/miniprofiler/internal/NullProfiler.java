@@ -123,6 +123,11 @@ public class NullProfiler implements Profiler {
     }
 
     @Override
+    public String getName() {
+        return "";
+    }
+
+    @Override
     public Timing getHead() {
         return NullTiming.INSTANCE;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,24 @@
 package io.jdev.miniprofiler.test.pages
 
 import geb.Module
+import org.openqa.selenium.By
+import org.openqa.selenium.Keys
 
-class MiniProfilerModule extends Module {
-
-    static base = { $('.mp-results') }
+class MiniProfilerPopupModule extends Module {
 
     static content = {
-        results { $('.mp-result').moduleList(MiniProfilerResultModule) }
-        queriesPopup(required: false) { siblings('.mp-overlay').module(MiniProfilerQueriesPopupModule) }
+        name { $('.mp-name') }
+        timings { $('.mp-output .mp-timings tbody tr').moduleList(MiniProfilerTimingRowModule) }
+        toggleChildTimingLink { $('.mp-toggle-columns').first() }
+        shareLink { $('.mp-share-mp-results') }
+    }
+
+    void close() {
+        if (displayed) {
+            def body = $(By.xpath('/html/body'))
+            body.firstElement().sendKeys(Keys.ESCAPE)
+            waitFor { !body.find('.mp-popup').any { it.displayed } }
+        }
     }
 
 }

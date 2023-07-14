@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,15 @@ package io.jdev.miniprofiler.test.pages
 
 import geb.Module
 
-class MiniProfilerModule extends Module {
-
-    static base = { $('.mp-results') }
+class MiniProfilerTimingRowModule extends Module {
 
     static content = {
-        results { $('.mp-result').moduleList(MiniProfilerResultModule) }
-        queriesPopup(required: false) { siblings('.mp-overlay').module(MiniProfilerQueriesPopupModule) }
+        label { $('.mp-label')?.text()?.trim() }
+        durations(cache: true) { $('.mp-duration') }
+        duration { durations[0] }
+        durationWithChildren { durations[1] }
+        timeFromStart { durations[2] }
+        queries(required: false) { durations[3].find('a') }
     }
-
 }
+
