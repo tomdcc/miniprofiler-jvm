@@ -16,7 +16,8 @@
 
 plugins {
     id 'war'
-    id "org.gretty" version "3.0.6"
+    // not gretty 4.x which doesn't support ye olde javax-supporting servlet containers
+    id "org.gretty" version "3.1.1"
 }
 
 apply from: "$rootDir/gradle/javaModule.gradle"
@@ -33,12 +34,5 @@ dependencies {
 gretty {
     servletContainer = 'jetty9'
     integrationTestTask = 'test'
-}
-
-// task is only added by gretty in an afterEvaluate
-afterEvaluate {
-    tasks.appBeforeIntegrationTest.configure {
-        // needs to be a war to pick up tld automatically
-        inplace = false
-    }
+    inplace = false
 }

@@ -17,7 +17,7 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    id "com.github.johnrengelman.shadow" version "6.1.0"
+    id "com.github.johnrengelman.shadow" version "8.1.1"
 }
 
 apply from: "$rootDir/gradle/javaModule.gradle"
@@ -52,8 +52,7 @@ dependencies {
 }
 
 processResources {
-	from(sourceSets.main.resources.srcDirs) {
-		include '**/miniprofiler-version.txt'
+	filesMatching('**/miniprofiler-version.txt') {
 		filter(ReplaceTokens, tokens: [
 			"version": version
 		])
@@ -69,8 +68,12 @@ jar {
     archiveClassifier.set('plain')
 }
 
-// remove plain jar form publishing
-configurations.runtime.artifacts.clear()
+// remove plain jar from publishing
+[configurations.runtimeElements, configurations.apiElements].each {
+    components.java.withVariantsFromConfiguration(it) {
+        skip()
+    }
+}
 
 shadowJar {
     archiveClassifier.set('')
