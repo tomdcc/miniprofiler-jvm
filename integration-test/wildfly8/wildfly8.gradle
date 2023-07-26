@@ -44,13 +44,17 @@ cargo {
 		installer {
 			installUrl = 'https://download.jboss.org/wildfly/8.1.0.Final/wildfly-8.1.0.Final.tar.gz'
 			downloadDir = rootProject.file(".gradle/cache/cargo")
-			extractDir = buildDir
+			extractDir = file("$buildDir/extract")
 		}
 
 		configHomeDir = wildflyBaseDir
 		homeDir = wildflyBaseDir
 
-		file {
+        containerProperties {
+            property 'cargo.java.home', javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(8) }.get().metadata.installationPath.asFile.absolutePath
+        }
+
+        file {
 			file = configurations.cargo.files.find { it.name.startsWith('h2-') }
 			toDir = new File("lib")
 		}

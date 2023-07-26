@@ -21,13 +21,8 @@ apply from: "$rootDir/gradle/codenarc.gradle"
 apply plugin: 'idea'
 
 java {
-    targetCompatibility = JavaVersion.VERSION_1_8
-    sourceCompatibility = JavaVersion.VERSION_1_8
-}
-
-idea {
-    module {
-        jdkName = '1.8'
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
     }
 }
 
