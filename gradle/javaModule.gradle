@@ -35,7 +35,7 @@ dependencies {
     testImplementation dependencies.create(libs.spock.get()) {
         exclude group: "org.codehaus.groovy", module: "groovy-all"
     }
-    testImplementation libs.junitJupiter
+    testImplementation libs.junit.jupiter
     testImplementation dependencies.create(libs.awaitility.get()) {
         exclude group: "org.codehaus.groovy", module: "groovy"
     }

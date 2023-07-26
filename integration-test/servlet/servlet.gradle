@@ -28,7 +28,7 @@ dependencies {
     // needs to be a jar to pick up tld automatically
     implementation project(path: ':miniprofiler-servlet', configuration: 'jars')
     implementation commonDependencies.h2
-	compileOnly commonDependencies.servletApi
+	compileOnly libs.servlet.api
 }
 
 gretty {

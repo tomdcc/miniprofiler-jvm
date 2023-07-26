@@ -14,9 +14,20 @@
 
 [libraries]
 awaitility = { module = "org.awaitility:awaitility-groovy", version = '4.2.0' }
-junitJupiter = { module = "org.junit.jupiter:junit-jupiter", version = '5.9.0' }
+eclipselink = { module = "org.eclipse.persistence:eclipselink", version = "2.5.0" }
+ehcache = { module = "net.sf.ehcache:ehcache", version = "2.7.2" }
+hibernate = { module = "org.hibernate:hibernate-core", version = '4.3.5.Final' }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version = '2.10.3' }
+json-simple = { module = "com.googlecode.json-simple:json-simple", version = '1.1.1' }
+jta = { module = "javax.transaction:jta", version = '1.1' }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version = '5.9.0' }
 groovy = { module = "org.codehaus.groovy:groovy-all", version = "2.5.18" }
 # Ratpack looks for org.slf4j.impl.StaticLoggerBinder which is the old discovery mechnanism for slf4j 1.x,
 # so we stay on the old version (and this corresponding logback version) to make it be quiet
 logback = { module = "ch.qos.logback:logback-classic", version = "1.2.11" }
+servlet-api = { module = "javax.servlet:servlet-api", version = "2.3" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version = "1.7.4" }
 spock = { module = "org.spockframework:spock-core", version = "2.1-groovy-2.5" }
+
+[plugins]
+shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }

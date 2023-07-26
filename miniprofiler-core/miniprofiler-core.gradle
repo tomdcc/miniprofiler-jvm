@@ -17,14 +17,13 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    id "com.github.johnrengelman.shadow" version "8.1.1"
+    alias(libs.plugins.shadow)
 }
 
 apply from: "$rootDir/gradle/javaModule.gradle"
 
 configurations {
     bundled { }
-
 }
 
 project.sourceSets.all { sourceSet ->
@@ -33,22 +32,30 @@ project.sourceSets.all { sourceSet ->
 }
 
 dependencies {
-    compileOnly commonDependencies.servletApi
-    compileOnly commonDependencies.ehcache
+    compileOnly libs.servlet.api
+    compileOnly dependencies.create(libs.ehcache.get()) {
+        transitive false
+    }
 
 	// for profiling eclipselink-generated sql
-    compileOnly commonDependencies.eclipselink
+    compileOnly dependencies.create(libs.eclipselink.get()) {
+        transitive false
+    }
 
 	// for profiling hibernate-generated sql
-    compileOnly commonDependencies.hibernate
+    compileOnly dependencies.create(libs.hibernate.get()) {
+        transitive false
+    }
 
-    bundled commonDependencies.jsonSimple
+    bundled dependencies.create(libs.json.simple.get()) {
+        exclude group: "junit", module: "junit"
+    }
 
-    testImplementation "com.fasterxml.jackson.core:jackson-databind:${commonVersions.jackson}"
-    testRuntimeOnly commonDependencies.slf4jApi
+    testImplementation libs.jackson.databind
+    testRuntimeOnly libs.slf4j.api
 
 	// needed since we're excluding ehcache's deps and spock falls over otherwise
-    testRuntimeOnly commonDependencies.jta
+    testRuntimeOnly libs.jta
 }
 
 processResources {
