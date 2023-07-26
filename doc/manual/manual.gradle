@@ -15,11 +15,15 @@
  */
 
 plugins {
-    id 'org.asciidoctor.gradle.asciidoctor' version '1.5.1'
+    id 'org.asciidoctor.jvm.convert' version '3.3.2'
+}
+
+repositories {
+    mavenCentral()
 }
 
 asciidoctor {
-    separateOutputDirs = false
+    baseDirFollowsSourceDir()
 }
 
 tasks.create('api', Javadoc) {
