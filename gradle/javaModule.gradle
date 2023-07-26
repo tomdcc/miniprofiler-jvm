@@ -31,11 +31,15 @@ repositories {
 }
 
 dependencies {
-    testImplementation commonDependencies.groovy
-    testImplementation commonDependencies.spock
-    testImplementation commonDependencies.junitJupiter
-    testImplementation commonDependencies.awaitility
-    testRuntimeOnly commonDependencies.logback
+    testImplementation libs.groovy
+    testImplementation dependencies.create(libs.spock.get()) {
+        exclude group: "org.codehaus.groovy", module: "groovy-all"
+    }
+    testImplementation libs.junitJupiter
+    testImplementation dependencies.create(libs.awaitility.get()) {
+        exclude group: "org.codehaus.groovy", module: "groovy"
+    }
+    testRuntimeOnly libs.logback
 }
 
 project.tasks.withType(Test).configureEach {

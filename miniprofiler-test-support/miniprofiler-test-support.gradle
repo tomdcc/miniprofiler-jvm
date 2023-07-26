@@ -17,7 +17,7 @@
 apply from: "$rootDir/gradle/javaModule.gradle"
 
 dependencies {
-	compileOnly commonDependencies.groovy
+	compileOnly libs.groovy
     compileOnly commonDependencies.geb
 
     // these are really transitive dependencies of geb, not sure why they're not being picked up

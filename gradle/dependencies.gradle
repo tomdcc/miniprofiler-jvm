@@ -16,12 +16,9 @@
 
 ext {
     commonVersions = [
-        awaitility: '4.2.0',
         cargo: '1.9.13',
-        cglib: "3.2.4",
         eclipselink: '2.5.0',
         ehcache: '2.7.2',
-        groovy: '2.5.18',
         geb: '4.1',
         jooqCompile: '3.0.0',
         jooqTest: '3.9.5',
@@ -32,23 +29,15 @@ ext {
         jspApi: '2.3.0',
         jsonSimple: '1.1.1',
         jta: '1.1',
-        junitJupiter: '5.9.0',
-        // Ratpack looks for org.slf4j.impl.StaticLoggerBinder which is the old discovery mechnanism for slf4j 1.x,
-        // so we stay on the old version (and this corresponding logback version) to make it be quiet
-        logback: '1.2.11',
         ratpack: '1.10.0-milestone-8',
         seleniumRuntime: '3.141.59', // 4.x not supported until Geb 6
         seleniumApi: '3.0.0',
         servletApi: '2.3',
         slf4j: '1.7.4',
-        spock: '2.1-groovy-2.5',
         spring: '3.2.4.RELEASE'
     ]
 
     commonDependencies = [
-        awaitility: dependencies.create("org.awaitility:awaitility-groovy:${commonVersions.awaitility}") {
-            exclude group: "org.codehaus.groovy", module: "groovy"
-        },
         cargo: [
             dependencies.create("org.codehaus.cargo:cargo-core-uberjar:${commonVersions.cargo}"),
             dependencies.create("org.codehaus.cargo:cargo-ant:${commonVersions.cargo}")
@@ -61,7 +50,6 @@ ext {
         },
         geb: "org.gebish:geb-core:${commonVersions.geb}",
         gebSpock: "org.gebish:geb-spock:${commonVersions.geb}",
-        groovy: "org.codehaus.groovy:groovy-all:${commonVersions.groovy}",
         h2: "com.h2database:h2:${commonVersions.h2}",
         hibernate: dependencies.create("org.hibernate:hibernate-core:${commonVersions.hibernate}") {
             transitive false
@@ -72,10 +60,8 @@ ext {
             exclude group: "junit", module: "junit"
         },
         jta: "javax.transaction:jta:${commonVersions.jta}",
-        junitJupiter:  "org.junit.jupiter:junit-jupiter:${commonVersions.junitJupiter}",
         jooqCompile: "org.jooq:jooq:${commonVersions.jooqCompile}",
         jooqTest: "org.jooq:jooq:${commonVersions.jooqTest}",
-        logback: "ch.qos.logback:logback-classic:${commonVersions.logback}",
         seleniumApi: "org.seleniumhq.selenium:selenium-api:${commonVersions.seleniumApi}",
         seleniumRuntime: [
             dependencies.create("org.seleniumhq.selenium:selenium-support:${commonVersions.seleniumRuntime}"),
@@ -84,12 +70,6 @@ ext {
         servletApi: "javax.servlet:servlet-api:${commonVersions.servletApi}",
 
         slf4jApi: "org.slf4j:slf4j-api:${commonVersions.slf4j}",
-        spock: [
-            dependencies.create("org.spockframework:spock-core:${commonVersions.spock}", {
-                exclude group: "org.codehaus.groovy", module: "groovy-all"
-            }),
-            dependencies.create("cglib:cglib-nodep:${commonVersions.cglib}")
-        ],
         springTest: "org.springframework:spring-test:${commonVersions.spring}"
     ]
 }
