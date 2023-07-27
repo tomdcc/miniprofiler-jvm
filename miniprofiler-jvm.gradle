@@ -40,18 +40,6 @@ ext {
     ]
 }
 
-task resolveAllDependencies {
-    doLast {
-        gradle.allprojects { project ->
-            project.configurations.all { c ->
-                if (c.canBeResolved && (!c.name.startsWith('gretty') || c.name == 'grettyRunnerJetty7')) {
-                    c.resolve()
-                }
-            }
-        }
-    }
-}
-
 def buildScansEnabled = isCI || project.hasProperty('enableBuildScans') && project.property('enableBuildScans') == 'true'
 if (buildScansEnabled) {
     buildScan {
