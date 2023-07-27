@@ -18,6 +18,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     alias(libs.plugins.shadow)
+    id("build.java-module")
     id("build.publish")
 }
 

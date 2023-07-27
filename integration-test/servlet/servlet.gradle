@@ -15,8 +15,9 @@
  */
 
 plugins {
-    id 'war'
+    id("build.java-module")
     alias(libs.plugins.gretty)
+    id("war")
 }
 
 apply from: "$rootDir/gradle/javaModule.gradle"

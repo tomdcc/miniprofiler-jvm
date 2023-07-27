@@ -14,52 +14,5 @@
  * limitations under the License.
  */
 
-apply plugin: 'java-library'
-apply plugin: 'groovy'
 apply from: "$rootDir/gradle/checkstyle.gradle"
 apply from: "$rootDir/gradle/codenarc.gradle"
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
-    }
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    testImplementation libs.groovy
-    testImplementation dependencies.create(libs.spock.get()) {
-        exclude group: "org.codehaus.groovy", module: "groovy-all"
-    }
-    testImplementation libs.junit.jupiter
-    testImplementation dependencies.create(libs.awaitility.get()) {
-        exclude group: "org.codehaus.groovy", module: "groovy"
-    }
-    testRuntimeOnly libs.logback
-}
-
-project.tasks.withType(Test).configureEach {
-    useJUnitPlatform()
-
-    testLogging {
-        exceptionFormat = 'full'
-    }
-
-    // Always run tests in the IDE
-    if (Boolean.getBoolean('idea.active')) {
-        outputs.upToDateWhen { false }
-        outputs.doNotCacheIf('Running in IDE') { true }
-    }
-}
-
-if (!project.path.startsWith(':integration-test:')) {
-    sourceSets {
-        test {
-            compileClasspath += configurations.compileClasspath
-            runtimeClasspath += configurations.compileClasspath
-        }
-    }
-}

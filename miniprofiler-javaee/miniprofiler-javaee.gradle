@@ -15,6 +15,7 @@
  */
 
 plugins {
+    id("build.java-module")
     id("build.publish")
 }
 
