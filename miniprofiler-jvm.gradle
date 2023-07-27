@@ -27,17 +27,6 @@ allprojects {
 ext {
     isSnapshot = version.endsWith("-SNAPSHOT")
     isCI = System.getenv("CI")
-
-    publishedModules = [
-        ':miniprofiler-core',
-        ':miniprofiler-servlet',
-        ':miniprofiler-javaee',
-        ':miniprofiler-grails',
-        ':miniprofiler-ratpack',
-        ':miniprofiler-jooq',
-        ':miniprofiler-test-support',
-        ':doc:manual'
-    ]
 }
 
 def buildScansEnabled = isCI || project.hasProperty('enableBuildScans') && project.property('enableBuildScans') == 'true'
