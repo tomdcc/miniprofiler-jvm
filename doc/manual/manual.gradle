@@ -16,6 +16,7 @@
 
 plugins {
     alias(libs.plugins.asciidoctor)
+    id("build.publish")
 }
 
 repositories {
@@ -26,13 +27,15 @@ asciidoctor {
     baseDirFollowsSourceDir()
 }
 
-tasks.create('api', Javadoc) {
+tasks.register('api', Javadoc) {
     group "manual"
     description "Generate combined Javadoc for all published modules"
 
     destinationDir = file("$buildDir/api")
 
-    Set<Project> publishedProjects = publishedModules.collect { project(it) }.findAll { it != project }
+    def publishedProjects = rootProject.subprojects.findAll {
+        it.plugins.hasPlugin("java") && it.plugins.hasPlugin("build.publish")
+    }
 
     source publishedProjects.javadoc.source
     classpath = files(publishedProjects.javadoc.classpath)

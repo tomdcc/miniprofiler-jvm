@@ -15,7 +15,8 @@
  */
 
 plugins {
-    id 'io.ratpack.ratpack-base'
+    id("io.ratpack.ratpack-base")
+    id("build.publish")
 }
 
 apply from: "$rootDir/gradle/javaModule.gradle"

@@ -64,10 +64,3 @@ if (!project.path.startsWith(':integration-test:')) {
         }
     }
 }
-
-if (project.path in publishedModules) {
-    java {
-        withJavadocJar()
-        withSourcesJar()
-    }
-}

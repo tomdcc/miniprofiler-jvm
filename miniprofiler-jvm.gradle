@@ -40,12 +40,6 @@ ext {
     ]
 }
 
-subprojects {
-    if (path in publishedModules) {
-        apply from: "$rootDir/gradle/publish.gradle"
-    }
-}
-
 task resolveAllDependencies {
     doLast {
         gradle.allprojects { project ->
