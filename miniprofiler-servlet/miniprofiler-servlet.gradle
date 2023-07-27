@@ -19,9 +19,9 @@ apply from: "$rootDir/gradle/javaModule.gradle"
 dependencies {
     api project(path: ':miniprofiler-core', configuration: 'shadow')
     compileOnly libs.servlet.api
-    compileOnly commonDependencies.jspApi
+    compileOnly libs.jsp.api
 
-    testImplementation commonDependencies.springTest
+    testImplementation libs.spring.test
 }
 
 // to allow deps on a jar, so that a tld will get picked up

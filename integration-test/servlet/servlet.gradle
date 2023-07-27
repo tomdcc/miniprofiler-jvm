@@ -16,8 +16,7 @@
 
 plugins {
     id 'war'
-    // not gretty 4.x which doesn't support ye olde javax-supporting servlet containers
-    id "org.gretty" version "3.1.1"
+    alias(libs.plugins.gretty)
 }
 
 apply from: "$rootDir/gradle/javaModule.gradle"
@@ -27,7 +26,7 @@ dependencies {
     implementation project(path: ':miniprofiler-core', configuration: 'shadow')
     // needs to be a jar to pick up tld automatically
     implementation project(path: ':miniprofiler-servlet', configuration: 'jars')
-    implementation commonDependencies.h2
+    implementation libs.h2
 	compileOnly libs.servlet.api
 }
 

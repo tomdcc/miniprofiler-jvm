@@ -26,8 +26,9 @@ project.tasks.findByName('test')?.with {
 
 dependencies {
     testImplementation project(':miniprofiler-test-support')
-    testImplementation commonDependencies.geb
-    testImplementation commonDependencies.gebSpock
-    testImplementation commonDependencies.seleniumApi
-    testRuntimeOnly commonDependencies.seleniumRuntime
+    testImplementation libs.geb.core
+    testImplementation libs.geb.spock
+    testImplementation libs.selenium.api
+    testRuntimeOnly libs.selenium.support
+    testRuntimeOnly libs.selenium.firefox.driver
 }

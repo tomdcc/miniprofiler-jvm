@@ -1,7 +1,8 @@
 project.apply plugin: "codenarc"
 
 dependencies {
-  codenarc "org.codenarc:CodeNarc:0.23"
+  codenarc libs.codenarc
+  codenarc libs.groovy
 }
 
 codenarc {
@@ -15,6 +16,6 @@ codenarcTest {
 // stop codenarc from using a dynamic groovy version
 configurations.codenarc.resolutionStrategy.eachDependency {
     if (requested.group == "org.codehaus.groovy") {
-        useVersion '2.4.4'
+        useVersion libs.versions.groovy.get()
     }
 }

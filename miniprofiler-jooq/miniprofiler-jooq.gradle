@@ -18,10 +18,10 @@ apply from: "$rootDir/gradle/javaModule.gradle"
 
 dependencies {
 	api project(path: ':miniprofiler-core', configuration: 'shadow')
-	compileOnly commonDependencies.jooqCompile
+	compileOnly libs.jooq.compile
 
-    testImplementation commonDependencies.jooqTest
-    testImplementation commonDependencies.h2
+    testImplementation libs.jooq.test
+    testImplementation libs.h2
 }
 
 publishing {

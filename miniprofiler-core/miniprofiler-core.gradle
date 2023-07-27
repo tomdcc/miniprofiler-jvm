@@ -52,7 +52,7 @@ dependencies {
     }
 
     testImplementation libs.jackson.databind
-    testRuntimeOnly libs.slf4j.api
+    testRuntimeOnly libs.slf4j.api.get()
 
 	// needed since we're excluding ehcache's deps and spock falls over otherwise
     testRuntimeOnly libs.jta

@@ -18,10 +18,10 @@ apply from: "$rootDir/gradle/javaModule.gradle"
 
 dependencies {
 	compileOnly libs.groovy
-    compileOnly commonDependencies.geb
+    compileOnly libs.geb.core
 
     // these are really transitive dependencies of geb, not sure why they're not being picked up
-    compileOnly commonDependencies.seleniumApi
+    compileOnly libs.selenium.api
 }
 
 publishing {

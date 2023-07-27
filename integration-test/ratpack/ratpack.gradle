@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id 'io.ratpack.ratpack-java'
+    alias(libs.plugins.ratpack.java)
 }
 
 apply from: "$rootDir/gradle/javaModule.gradle"
@@ -27,7 +27,7 @@ dependencies {
     implementation project(":miniprofiler-ratpack")
     implementation ratpack.dependency("hikari")
     implementation ratpack.dependency("groovy")
-    implementation commonDependencies.h2
+    implementation libs.h2
 
     testImplementation "io.ratpack:ratpack-test"
 }

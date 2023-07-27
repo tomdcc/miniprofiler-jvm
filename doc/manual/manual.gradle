@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id 'org.asciidoctor.jvm.convert' version '3.3.2'
+    alias(libs.plugins.asciidoctor)
 }
 
 repositories {

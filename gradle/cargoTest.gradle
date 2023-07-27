@@ -18,9 +18,10 @@ apply plugin: 'war'
 apply plugin: 'com.bmuschko.cargo'
 
 dependencies {
-    compileOnly commonDependencies.javaee
-    cargo commonDependencies.cargo
-    cargo commonDependencies.h2
+    compileOnly libs.javaee
+    cargo libs.cargo.ant
+    cargo libs.cargo.core
+    cargo libs.h2
 }
 
 [cargoRunLocal, cargoStartLocal]*.dependsOn([':miniprofiler-core:assemble', assemble])
