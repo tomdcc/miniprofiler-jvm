@@ -17,6 +17,7 @@
 plugins {
     alias(libs.plugins.cargo) apply false
     alias(libs.plugins.ratpack.java) apply false
+    id("build.build-scan")
 }
 
 allprojects {
@@ -26,40 +27,5 @@ allprojects {
 
 ext {
     isSnapshot = version.endsWith("-SNAPSHOT")
-    isCI = System.getenv("CI")
-}
-
-def buildScansEnabled = isCI || project.hasProperty('enableBuildScans') && project.property('enableBuildScans') == 'true'
-if (buildScansEnabled) {
-    buildScan {
-        termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-        termsOfServiceAgree = 'yes'
-
-        publishAlwaysIf(project.hasProperty('alwaysPublishBuildScans') && project.property('alwaysPublishBuildScans') == 'true')
-
-        if (isCI) {
-            publishOnFailure()
-            tag "CI"
-            link "Travis Build", "https://travis-ci.org/${System.getenv('TRAVIS_REPO_SLUG')}/builds/${System.getenv('TRAVIS_BUILD_ID')}"
-            value "Build Number", System.getenv("TRAVIS_BUILD_NUMBER")
-            value "Build ID", System.getenv('TRAVIS_BUILD_ID')
-            value "Git Commit ID", System.getenv("TRAVIS_COMMIT")
-        } else {
-            tag "LOCAL"
-            try {
-                value "Git Commit ID", 'git rev-parse --verify HEAD'.execute().text.trim()
-            } catch (ignore) {
-                // ignore
-            }
-            try {
-                def status = 'git status --porcelain'.execute().text
-                if (status) {
-                    tag "dirty"
-                    value "Git Status", status
-                }
-            } catch (ignore) {
-                // ignore
-            }
-        }
-    }
+    isCI = System.getenv("CI") != null
 }

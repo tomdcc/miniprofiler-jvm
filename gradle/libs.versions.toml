@@ -33,6 +33,7 @@ jsp-api = "2.3.0"
 json-simple = "1.1.1"
 jta = "1.1"
 junit = "5.9.0"
+gradle-enterprise-plugin = "3.14.1"
 # not gretty 4.x which doesn't support ye olde javax-supporting servlet containers
 gretty = "3.1.1"
 groovy = "2.5.18"
@@ -59,6 +60,7 @@ eclipselink = { module = "org.eclipse.persistence:eclipselink", version.ref = "e
 ehcache = { module = "net.sf.ehcache:ehcache", version.ref = "ehcache" }
 geb-core = { module = "org.gebish:geb-core", version.ref = "geb" }
 geb-spock = { module = "org.gebish:geb-spock", version.ref = "geb" }
+gradle-enterprise-plugin = { module = "com.gradle:gradle-enterprise-gradle-plugin", version.ref = "gradle-enterprise-plugin" }
 grails-web = { module = "org.grails:grails-web", version.ref = "grails" }
 groovy = { module = "org.codehaus.groovy:groovy-all", version.ref = "groovy" }
 h2 = { module = "com.h2database:h2", version.ref = "h2" }

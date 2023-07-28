@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-plugins {
-    // goes with this gradle version
-    id("org.gradle.kotlin.kotlin-dsl") version "4.0.14"
-}
+import com.gradle.scan.plugin.BuildScanExtension
+import org.gradle.kotlin.dsl.extra
+import org.gradle.kotlin.dsl.the
 
-repositories {
-    mavenCentral()
-    gradlePluginPortal()
-}
+project.afterEvaluate {
+    project.the<BuildScanExtension>().run {
+        val isCI = project.extra["isCI"] as Boolean
 
-dependencies {
-    // expose version catalog to these plugins
-    implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
+        if (isCI || project.findProperty("buildScansTermsAgree") == "true") {
+            termsOfServiceUrl = "https://gradle.com/terms-of-service"
+            termsOfServiceAgree = "yes"
+        }
 
-    // another workaround for https://github.com/gradle/gradle/issues/15383
-    implementation(libs.cargo.plugin)
-    implementation(libs.gradle.enterprise.plugin)
+        publishAlwaysIf(isCI || project.findProperty("alwaysPublishBuildScans") == "true")
+        isUploadInBackground = !isCI
+    }
 }
