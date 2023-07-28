@@ -15,11 +15,10 @@
  */
 
 plugins {
+    id("build.browser-test")
+    id("build.cargo-test")
     id("build.java-module")
 }
-
-apply from: "$rootDir/gradle/browserTest.gradle"
-apply from: "$rootDir/gradle/cargoTest.gradle"
 
 dependencies {
     implementation project(':miniprofiler-javaee')

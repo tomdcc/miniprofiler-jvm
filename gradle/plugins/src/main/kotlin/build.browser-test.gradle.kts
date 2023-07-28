@@ -14,20 +14,26 @@
  * limitations under the License.
  */
 
+import org.gradle.accessors.dm.LibrariesForLibs
+import org.gradle.kotlin.dsl.the
+
 plugins {
-    // goes with this gradle version
-    id("org.gradle.kotlin.kotlin-dsl") version "4.0.14"
+    id("java-library")
 }
 
-repositories {
-    mavenCentral()
-    gradlePluginPortal()
-}
+val libs = the<LibrariesForLibs>()
 
 dependencies {
-    // expose version catalog to these plugins
-    implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
-
-    // another workaround for https://github.com/gradle/gradle/issues/15383
-    implementation(libs.cargo.plugin)
+    testImplementation(project(":miniprofiler-test-support"))
+    testImplementation(libs.geb.core)
+    testImplementation(libs.geb.spock)
+    testImplementation(libs.selenium.api)
+    testRuntimeOnly(libs.selenium.support)
+    testRuntimeOnly(libs.selenium.firefox.driver)
+}
+project.tasks.withType<Test> {
+    systemProperty("geb.build.reportsDir", "${reporting.baseDir}/geb")
+    project.findProperty("webdriverFirefoxBin")?.run {
+        systemProperty("webdriver.firefox.bin", this as String)
+    }
 }

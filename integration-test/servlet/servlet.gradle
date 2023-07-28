@@ -15,12 +15,11 @@
  */
 
 plugins {
+    id("build.browser-test")
     id("build.java-module")
     alias(libs.plugins.gretty)
     id("war")
 }
-
-apply from: "$rootDir/gradle/browserTest.gradle"
 
 dependencies {
     implementation project(path: ':miniprofiler-core', configuration: 'shadow')
