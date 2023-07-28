@@ -76,9 +76,10 @@ jar {
 }
 
 // remove plain jar from publishing
-[configurations.runtimeElements, configurations.apiElements].each {
-    components.java.withVariantsFromConfiguration(it) {
-        skip()
+[configurations.runtimeElements, configurations.apiElements].each { conf ->
+    conf.outgoing {
+        artifacts.clear()
+        artifact(tasks.named("shadowJar"))
     }
 }
 

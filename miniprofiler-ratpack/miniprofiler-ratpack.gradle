@@ -21,7 +21,7 @@ plugins {
 }
 
 dependencies {
-    api project(path: ':miniprofiler-core', configuration: 'shadow')
+    api project(':miniprofiler-core')
     compileOnly ratpack.dependency("core")
     compileOnly ratpack.dependency("guice")
     compileOnly ratpack.dependency("hikari")

@@ -22,7 +22,7 @@ plugins {
 }
 
 dependencies {
-    implementation project(path: ':miniprofiler-core', configuration: 'shadow')
+    implementation project(':miniprofiler-core')
     // needs to be a jar to pick up tld automatically
     implementation project(path: ':miniprofiler-servlet', configuration: 'jars')
     implementation libs.h2

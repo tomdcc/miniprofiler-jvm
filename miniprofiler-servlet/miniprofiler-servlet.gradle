@@ -20,7 +20,7 @@ plugins {
 }
 
 dependencies {
-    api project(path: ':miniprofiler-core', configuration: 'shadow')
+    api project(':miniprofiler-core')
     compileOnly libs.servlet.api
     compileOnly libs.jsp.api
 
