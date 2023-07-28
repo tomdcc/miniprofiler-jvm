@@ -59,7 +59,9 @@ dependencies {
 
 tasks.named<ProcessResources>("processResources") {
 	filesMatching("**/miniprofiler-version.txt") {
-		filter(mapOf("version" to version), ReplaceTokens::class.java)
+		filter(mapOf("tokens" to mapOf(
+            "version" to project.version
+        )), ReplaceTokens::class.java)
 	}
     inputs.property("version", version)
 }
