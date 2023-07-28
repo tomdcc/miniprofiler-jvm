@@ -73,7 +73,7 @@ publishing {
 
 signing {
     sign(publishing.publications["maven"])
-    setRequired(project.provider { project.hasProperty("forceSigning") || !(project.ext.get("isSnapshot") as Boolean) && gradle.taskGraph.hasTask("${project.path}:publishMavenPublicationToSonatypeStagingRepository") })
+    setRequired(project.provider { project.hasProperty("forceSigning") || !(rootProject.extra["isSnapshot"] as Boolean) && gradle.taskGraph.hasTask("${project.path}:publishMavenPublicationToSonatypeStagingRepository") })
 }
 
 // disable metadata publication, messes with using the shadow jar
