@@ -19,8 +19,6 @@ plugins {
     id("build.publish")
 }
 
-apply from: "$rootDir/gradle/javaModule.gradle"
-
 dependencies {
     api project(path: ':miniprofiler-core', configuration: 'shadow')
     compileOnly libs.servlet.api

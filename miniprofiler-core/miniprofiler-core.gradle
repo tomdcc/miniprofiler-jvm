@@ -22,8 +22,6 @@ plugins {
     id("build.publish")
 }
 
-apply from: "$rootDir/gradle/javaModule.gradle"
-
 configurations {
     bundled { }
 }

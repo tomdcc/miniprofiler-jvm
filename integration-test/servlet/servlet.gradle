@@ -20,7 +20,6 @@ plugins {
     id("war")
 }
 
-apply from: "$rootDir/gradle/javaModule.gradle"
 apply from: "$rootDir/gradle/browserTest.gradle"
 
 dependencies {

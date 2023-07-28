@@ -18,7 +18,6 @@ plugins {
     id("build.java-module")
 }
 
-apply from: "$rootDir/gradle/javaModule.gradle"
 apply from: "$rootDir/gradle/browserTest.gradle"
 apply from: "$rootDir/gradle/cargoTest.gradle"
 

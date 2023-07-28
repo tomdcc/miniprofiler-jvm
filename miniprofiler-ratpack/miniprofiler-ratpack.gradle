@@ -20,8 +20,6 @@ plugins {
     id("io.ratpack.ratpack-base")
 }
 
-apply from: "$rootDir/gradle/javaModule.gradle"
-
 dependencies {
     api project(path: ':miniprofiler-core', configuration: 'shadow')
     compileOnly ratpack.dependency("core")

@@ -18,6 +18,8 @@ import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
+    id("build.checkstyle")
+    id("build.codenarc")
     id("groovy")
     id("java-library")
 }

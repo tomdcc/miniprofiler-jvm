@@ -19,8 +19,6 @@ plugins {
     id("build.publish")
 }
 
-apply from: "$rootDir/gradle/javaModule.gradle"
-
 dependencies {
 	compileOnly libs.groovy
     compileOnly libs.geb.core

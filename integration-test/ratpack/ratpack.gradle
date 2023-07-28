@@ -19,7 +19,6 @@ plugins {
     alias(libs.plugins.ratpack.java)
 }
 
-apply from: "$rootDir/gradle/javaModule.gradle"
 apply from: "$rootDir/gradle/browserTest.gradle"
 
 mainClassName = "io.jdev.miniprofiler.ratpack.funtest.Main"
