@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 the original author or authors.
+ * Copyright 2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,21 +20,18 @@ plugins {
 }
 
 dependencies {
-	api project(':miniprofiler-core')
-	compileOnly libs.jooq.compile
+	api(project(":miniprofiler-core"))
+    compileOnly(libs.javaee)
 
-    testImplementation libs.jooq.test
-    testImplementation libs.h2
+    testRuntimeOnly(project(":miniprofiler-servlet"))
 }
 
 publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-            pom {
-                name = 'MiniProfiler jOOQ Support'
-                description = 'Support classes for getting SQL statements profiled in the MiniProfiler using jOOQ.'
-            }
+    publications.named<MavenPublication>("maven") {
+        from(components["java"])
+        pom {
+            name = "MiniProfiler Java EE Module"
+            description = "Support classes for getting the MiniProfiler working out of the box in modern Java EE containers."
         }
     }
 }

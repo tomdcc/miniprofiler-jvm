@@ -17,28 +17,26 @@
 plugins {
     id("build.java-module")
     id("build.publish")
+    id("io.ratpack.ratpack-base")
 }
 
 dependencies {
-    api project(':miniprofiler-core')
-    compileOnly libs.servlet.api
-    compileOnly libs.jsp.api
+    api(project(":miniprofiler-core"))
+    compileOnly(ratpack.dependency("core"))
+    compileOnly(ratpack.dependency("guice"))
+    compileOnly(ratpack.dependency("hikari"))
+    compileOnly(ratpack.dependency("h2"))
 
-    testImplementation libs.spring.test
+    testImplementation(ratpack.dependency("test"))
+    testImplementation(ratpack.dependency("groovy-test"))
 }
 
-// to allow deps on a jar, so that a tld will get picked up
-configurations { jars }
-artifacts { jars jar }
-
 publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-            pom {
-                name = 'MiniProfiler Java Servlet Module'
-                description = 'Support classes for getting the MiniProfiler working in servlet environments.'
-            }
+    publications.named<MavenPublication>("maven") {
+        from(components["java"])
+        pom {
+            name = "MiniProfiler Ratpack Support"
+            description = "Support classes for getting the MiniProfiler working out of the box in Ratpack."
         }
     }
 }

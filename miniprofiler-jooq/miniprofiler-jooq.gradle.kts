@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +15,24 @@
  */
 
 plugins {
-    id("build.browser-test")
     id("build.java-module")
-    alias(libs.plugins.gretty)
-    id("war")
+    id("build.publish")
 }
 
 dependencies {
-    implementation project(':miniprofiler-core')
-    // needs to be a jar to pick up tld automatically
-    implementation project(path: ':miniprofiler-servlet', configuration: 'jars')
-    implementation libs.h2
-	compileOnly libs.servlet.api
+	api(project(":miniprofiler-core"))
+	compileOnly(libs.jooq.compile)
+
+    testImplementation(libs.jooq.test)
+    testImplementation(libs.h2)
 }
 
-gretty {
-    servletContainer = 'jetty9'
-    integrationTestTask = 'test'
-    inplace = false
+publishing {
+    publications.named<MavenPublication>("maven") {
+        from(components["java"])
+        pom {
+            name = "MiniProfiler jOOQ Support"
+            description = "Support classes for getting SQL statements profiled in the MiniProfiler using jOOQ."
+        }
+    }
 }

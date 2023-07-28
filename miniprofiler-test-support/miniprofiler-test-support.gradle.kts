@@ -20,21 +20,19 @@ plugins {
 }
 
 dependencies {
-	compileOnly libs.groovy
-    compileOnly libs.geb.core
+	compileOnly(libs.groovy)
+    compileOnly(libs.geb.core)
 
     // these are really transitive dependencies of geb, not sure why they're not being picked up
-    compileOnly libs.selenium.api
+    compileOnly(libs.selenium.api)
 }
 
 publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-            pom {
-                name = 'MiniProfiler Test Support Classes'
-                description = 'Contains Geb modules modelling the MiniProfiler UI for easy functional testing'
-            }
+    publications.named<MavenPublication>("maven") {
+        from(components["java"])
+        pom {
+            name = "MiniProfiler Test Support Classes"
+            description = "Contains Geb modules modelling the MiniProfiler UI for easy functional testing"
         }
     }
 }

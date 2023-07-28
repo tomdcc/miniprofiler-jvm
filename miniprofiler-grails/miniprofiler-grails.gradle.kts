@@ -1,11 +1,11 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,18 +15,22 @@
  */
 
 plugins {
-    id("build.browser-test")
     id("build.java-module")
-    alias(libs.plugins.ratpack.java)
+    id("build.publish")
 }
 
-mainClassName = "io.jdev.miniprofiler.ratpack.funtest.Main"
-
 dependencies {
-    implementation project(":miniprofiler-ratpack")
-    implementation ratpack.dependency("hikari")
-    implementation ratpack.dependency("groovy")
-    implementation libs.h2
+	api(project(":miniprofiler-core"))
+    compileOnly(libs.servlet.api)
+    compileOnly(libs.grails.web)
+}
 
-    testImplementation "io.ratpack:ratpack-test"
+publishing {
+    publications.named<MavenPublication>("maven") {
+        from(components["java"])
+        pom {
+            name = "MiniProfiler Grails Support"
+            description = "Support classes for getting the MiniProfiler working out of the box in Grails."
+        }
+    }
 }

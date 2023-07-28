@@ -21,11 +21,11 @@ plugins {
 }
 
 allprojects {
-    group = 'io.jdev.miniprofiler'
-    version = '0.10.0-SNAPSHOT'
+    group = "io.jdev.miniprofiler"
+    version = "0.10.0-SNAPSHOT"
 }
 
-ext {
-    isSnapshot = version.endsWith("-SNAPSHOT")
-    isCI = System.getenv("CI") != null
+project.the<ExtraPropertiesExtension>().run {
+    set("isSnapshot", (project.version as String).endsWith("-SNAPSHOT"))
+    set("isCI", System.getenv("CI") != null)
 }

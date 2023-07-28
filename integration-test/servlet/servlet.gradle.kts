@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,25 +15,22 @@
  */
 
 plugins {
+    id("build.browser-test")
     id("build.java-module")
-    id("build.publish")
+    alias(libs.plugins.gretty)
+    id("war")
 }
 
 dependencies {
-	api project(':miniprofiler-core')
-    compileOnly libs.javaee
-
-    testRuntimeOnly project(':miniprofiler-servlet')
+    implementation(project(":miniprofiler-core"))
+    // needs to be a jar to pick up tld automatically
+    implementation(project(path = ":miniprofiler-servlet", configuration = "jars"))
+    implementation(libs.h2)
+	compileOnly(libs.servlet.api)
 }
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-            pom {
-                name = 'MiniProfiler Java EE Module'
-                description = 'Support classes for getting the MiniProfiler working out of the box in modern Java EE containers.'
-            }
-        }
-    }
+gretty {
+    servletContainer = "jetty9"
+    integrationTestTask = "test"
+    inplace = false
 }
