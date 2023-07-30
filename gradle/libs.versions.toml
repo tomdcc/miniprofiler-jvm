@@ -40,6 +40,7 @@ groovy = "2.5.18"
 # Ratpack looks for org.slf4j.impl.StaticLoggerBinder which is the old discovery mechnanism for slf4j 1.x,
 # so we stay on the old version (and this corresponding logback version) to make it be quiet
 logback = "1.2.11"
+nexus-publish-plugin = "2.0.0-rc-1"
 ratpack = "1.10.0-milestone-8"
 selenium-api = "3.0.0"
 selenium-runtime = "3.141.59"
@@ -74,6 +75,7 @@ json-simple = { module = "com.googlecode.json-simple:json-simple", version.ref =
 jta = { module = "javax.transaction:jta", version.ref = "jta" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+nexus-publish-plugin = { module = "io.github.gradle-nexus:publish-plugin", version.ref = "nexus-publish-plugin" }
 selenium-api = { module = "org.seleniumhq.selenium:selenium-api", version.ref = "selenium-api" }
 selenium-support = { module = "org.seleniumhq.selenium:selenium-support", version.ref = "selenium-runtime" }
 selenium-firefox-driver = { module = "org.seleniumhq.selenium:selenium-firefox-driver", version.ref = "selenium-runtime" }
@@ -86,5 +88,6 @@ spring-test = { module = "org.springframework:spring-test", version.ref = "sprin
 asciidoctor = { id = "org.asciidoctor.jvm.convert", version.ref = "asciidoctor" }
 cargo = { id = "com.bmuschko.cargo", version.ref = "cargo-plugin" }
 gretty = { id = "org.gretty", version.ref = "gretty" }
+nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexus-publish-plugin" }
 ratpack-java = { id = "io.ratpack.ratpack-java", version.ref = "ratpack" }
 shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }

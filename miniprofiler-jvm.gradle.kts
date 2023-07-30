@@ -18,6 +18,7 @@ plugins {
     alias(libs.plugins.cargo) apply false
     alias(libs.plugins.ratpack.java) apply false
     id("build.build-scan")
+    id("build.nexus-publish")
 }
 
 allprojects {
@@ -26,6 +27,5 @@ allprojects {
 }
 
 project.the<ExtraPropertiesExtension>().run {
-    set("isSnapshot", (project.version as String).endsWith("-SNAPSHOT"))
     set("isCI", System.getenv("CI") != null)
 }
