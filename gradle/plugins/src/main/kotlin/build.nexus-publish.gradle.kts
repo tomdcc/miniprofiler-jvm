@@ -20,9 +20,6 @@ plugins {
 
 nexusPublishing {
     repositories {
-        sonatype {
-            username = project.provider { project.findProperty("sonatypeUsername") as String }
-            password = project.provider { project.findProperty("sonatypePassword") as String }
-        }
+        sonatype()
     }
 }
