@@ -21,7 +21,7 @@ plugins {
 }
 
 dependencies {
-    api(project(":miniprofiler-core"))
+    api(projects.miniprofilerCore)
     compileOnly(ratpack.dependency("core"))
     compileOnly(ratpack.dependency("guice"))
     compileOnly(ratpack.dependency("hikari"))

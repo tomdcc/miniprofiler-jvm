@@ -20,10 +20,10 @@ plugins {
 }
 
 dependencies {
-	api(project(":miniprofiler-core"))
+	api(projects.miniprofilerCore)
     compileOnly(libs.javaee)
 
-    testRuntimeOnly(project(":miniprofiler-servlet"))
+    testRuntimeOnly(projects.miniprofilerServlet)
 }
 
 publishing {

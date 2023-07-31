@@ -31,6 +31,8 @@ fun setBuildFile(project: ProjectDescriptor) {
 
 setBuildFile(rootProject)
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 val isCI = System.getenv("CI") != null
 buildCache {
     local {

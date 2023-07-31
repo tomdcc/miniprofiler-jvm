@@ -23,7 +23,7 @@ plugins {
 application.mainClass = "io.jdev.miniprofiler.ratpack.funtest.Main"
 
 dependencies {
-    implementation(project(":miniprofiler-ratpack"))
+    implementation(projects.miniprofilerRatpack)
     implementation(ratpack.dependency("hikari"))
     implementation(ratpack.dependency("groovy"))
     implementation(libs.h2)

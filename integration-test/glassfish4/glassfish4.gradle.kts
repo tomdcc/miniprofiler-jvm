@@ -23,10 +23,10 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":miniprofiler-javaee"))
-    implementation(project(":miniprofiler-servlet"))
+    implementation(projects.miniprofilerJavaee)
+    implementation(projects.miniprofilerServlet)
 
-    testImplementation(project(":miniprofiler-test-support"))
+    testImplementation(projects.miniprofilerTestSupport)
 }
 
 val glassfishBaseDir = file("$buildDir/glassfish")

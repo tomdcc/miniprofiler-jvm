@@ -23,8 +23,8 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":miniprofiler-javaee"))
-    implementation(project(":miniprofiler-servlet"))
+    implementation(projects.miniprofilerJavaee)
+    implementation(projects.miniprofilerServlet)
 }
 
 val wildflyBaseDir = file("$buildDir/wildfly")

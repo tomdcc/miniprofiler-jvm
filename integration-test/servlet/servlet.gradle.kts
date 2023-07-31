@@ -22,9 +22,11 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":miniprofiler-core"))
+    implementation(projects.miniprofilerCore)
     // needs to be a jar to pick up tld automatically
-    implementation(project(path = ":miniprofiler-servlet", configuration = "jars"))
+    implementation(projects.miniprofilerServlet) {
+        targetConfiguration = "jars"
+    }
     implementation(libs.h2)
 	compileOnly(libs.servlet.api)
 }

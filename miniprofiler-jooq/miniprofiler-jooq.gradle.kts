@@ -20,7 +20,7 @@ plugins {
 }
 
 dependencies {
-	api(project(":miniprofiler-core"))
+	api(projects.miniprofilerCore)
 	compileOnly(libs.jooq.compile)
 
     testImplementation(libs.jooq.test)
