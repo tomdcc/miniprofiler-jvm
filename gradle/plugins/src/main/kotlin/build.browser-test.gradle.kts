@@ -18,6 +18,7 @@ import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.kotlin.dsl.the
 
 plugins {
+    id("build.build-parameters")
     id("java-library")
 }
 
@@ -31,9 +32,9 @@ dependencies {
     testRuntimeOnly(libs.selenium.support)
     testRuntimeOnly(libs.selenium.firefox.driver)
 }
-project.tasks.withType<Test> {
+project.tasks.withType<Test>().configureEach {
     systemProperty("geb.build.reportsDir", "${reporting.baseDir}/geb")
-    project.findProperty("webdriverFirefoxBin")?.run {
-        systemProperty("webdriver.firefox.bin", this as String)
+    buildParameters.browserTest.firefoxBinPath.orNull?.let {
+        systemProperty("webdriver.firefox.bin", it)
     }
 }

@@ -15,19 +15,20 @@
  */
 
 import com.gradle.scan.plugin.BuildScanExtension
-import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.the
+
+plugins {
+    id("build.build-parameters")
+}
 
 project.afterEvaluate {
     project.the<BuildScanExtension>().run {
-        val isCI = project.extra["isCI"] as Boolean
-
-        if (isCI || project.findProperty("buildScansTermsAgree") == "true") {
+        if (buildParameters.ci || buildParameters.buildScans.scansGradleComTermsAgree) {
             termsOfServiceUrl = "https://gradle.com/terms-of-service"
             termsOfServiceAgree = "yes"
         }
 
-        publishAlwaysIf(isCI || project.findProperty("alwaysPublishBuildScans") == "true")
-        isUploadInBackground = !isCI
+        publishAlwaysIf(buildParameters.ci || buildParameters.buildScans.alwaysPublish)
+        isUploadInBackground = !buildParameters.ci
     }
 }

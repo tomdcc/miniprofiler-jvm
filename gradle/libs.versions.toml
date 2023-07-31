@@ -15,6 +15,7 @@
 [versions]
 asciidoctor = "3.3.2"
 awaitility = "4.2.0"
+build-parameters-plugin = "1.4.3"
 cargo = "1.9.13"
 cargo-plugin = "2.9.0"
 checkstyle = "6.5"
@@ -52,6 +53,7 @@ spring = "3.2.4.RELEASE"
 
 [libraries]
 awaitility = { module = "org.awaitility:awaitility-groovy", version.ref = "awaitility" }
+build-parameters-plugin = { module = "org.gradlex:build-parameters", version.ref = "build-parameters-plugin" }
 cargo-ant = { module = "org.codehaus.cargo:cargo-ant", version.ref = "cargo" }
 cargo-core = { module = "org.codehaus.cargo:cargo-core-uberjar", version.ref = "cargo" }
 cargo-plugin = { module = "com.bmuschko:gradle-cargo-plugin" , version.ref = "cargo-plugin" }
@@ -86,6 +88,7 @@ spring-test = { module = "org.springframework:spring-test", version.ref = "sprin
 
 [plugins]
 asciidoctor = { id = "org.asciidoctor.jvm.convert", version.ref = "asciidoctor" }
+build-parameters = { id = "org.gradlex.build-parameters", version.ref = "build-parameters-plugin" }
 cargo = { id = "com.bmuschko.cargo", version.ref = "cargo-plugin" }
 gretty = { id = "org.gretty", version.ref = "gretty" }
 nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexus-publish-plugin" }

@@ -67,7 +67,7 @@ cargo {
 		containerProperties(delegateClosureOf<ContainerProperties> {
 			property("cargo.java.home", javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(8) }.get().metadata.installationPath.asFile.absolutePath)
 			property("cargo.datasource.datasource1", "cargo.datasource.jndi=jdbc/DataSource|cargo.datasource.url=jdbc:h2:mem:miniprofiler;DB_CLOSE_DELAY=-1|cargo.datasource.driver=org.h2.Driver|cargo.datasource.username=sa|cargo.datasource.password=sa")
-			if (project.hasProperty("debugCargo")) {
+			if (buildParameters.cargoTest.debug) {
 				property("cargo.glassfish.domain.debug", "true")
 			}
 		})

@@ -1,4 +1,11 @@
+import buildparameters.BuildParametersExtension
+
+pluginManagement {
+    includeBuild("gradle/plugins")
+}
+
 plugins {
+    id("build.build-parameters")
     id("com.gradle.enterprise") version "3.11.1"
     id("com.gradle.common-custom-user-data-gradle-plugin") version "1.11.1"
 }
@@ -33,9 +40,9 @@ setBuildFile(rootProject)
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-val isCI = System.getenv("CI") != null
+val buildParameters = the<BuildParametersExtension>()
 buildCache {
     local {
-        isEnabled = !isCI
+        isEnabled = !buildParameters.ci
     }
 }

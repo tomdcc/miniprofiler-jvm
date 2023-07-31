@@ -21,3 +21,7 @@ dependencyResolutionManagement {
         }
     }
 }
+
+include("build-parameters")
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

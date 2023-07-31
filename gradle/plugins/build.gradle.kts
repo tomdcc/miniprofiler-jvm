@@ -28,6 +28,8 @@ dependencies {
     // expose version catalog to these plugins
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
 
+    implementation(projects.buildParameters)
+
     // another workaround for https://github.com/gradle/gradle/issues/15383
     implementation(libs.cargo.plugin)
     implementation(libs.gradle.enterprise.plugin)

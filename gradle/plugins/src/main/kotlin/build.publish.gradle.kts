@@ -1,3 +1,5 @@
+import gradle.kotlin.dsl.accessors._8d406b70b7b518f23730b456e0c46f8d.buildParameters
+
 /*
  * Copyright 2023 the original author or authors.
  *
@@ -16,6 +18,7 @@
 
 plugins {
     id("base")
+    id("build.build-parameters")
     id("maven-publish")
     id("signing")
 }
@@ -60,7 +63,7 @@ signing {
     sign(publishing.publications["maven"])
     setRequired(project.provider {
         val publishingToStaging = !isSnapshot && gradle.taskGraph.hasTask("${project.path}:publishToSonatype")
-        project.hasProperty("forceSigning") || rootProject.extra["isCI"] as Boolean || publishingToStaging
+        buildParameters.publishing.alwaysSign || buildParameters.ci || publishingToStaging
     })
 }
 

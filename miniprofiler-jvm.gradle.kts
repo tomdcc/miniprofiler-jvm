@@ -25,7 +25,3 @@ allprojects {
     group = "io.jdev.miniprofiler"
     version = "0.10.0-SNAPSHOT"
 }
-
-project.the<ExtraPropertiesExtension>().run {
-    set("isCI", System.getenv("CI") != null)
-}
