@@ -63,7 +63,7 @@ signing {
     sign(publishing.publications["maven"])
     setRequired(project.provider {
         val publishingToStaging = !isSnapshot && gradle.taskGraph.hasTask("${project.path}:publishToSonatype")
-        buildParameters.publishing.alwaysSign || buildParameters.ci || publishingToStaging
+        buildParameters.publishing.alwaysSign || publishingToStaging
     })
 }
 
