@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-project.tasks.findByName('test')?.with {
-    systemProperty "geb.build.reportsDir", "$reporting.baseDir/geb"
-    if (project.hasProperty('webdriverFirefoxBin')) {
-        systemProperty "webdriver.firefox.bin", project.property('webdriverFirefoxBin')
-    }
-    testLogging {
-        exceptionFormat = 'full'
-    }
+plugins {
+    id("build.java-module")
+    id("build.publish")
 }
 
 dependencies {
-    testImplementation project(':miniprofiler-test-support')
-    testImplementation commonDependencies.geb
-    testImplementation commonDependencies.gebSpock
-    testImplementation commonDependencies.seleniumApi
-    testRuntimeOnly commonDependencies.seleniumRuntime
+	api(projects.miniprofilerCore)
+    compileOnly(libs.javaee)
+
+    testRuntimeOnly(projects.miniprofilerServlet)
+}
+
+publishing {
+    publications.named<MavenPublication>("maven") {
+        from(components["java"])
+        pom {
+            name = "MiniProfiler Java EE Module"
+            description = "Support classes for getting the MiniProfiler working out of the box in modern Java EE containers."
+        }
+    }
 }

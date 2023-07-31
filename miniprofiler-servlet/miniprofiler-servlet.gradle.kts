@@ -14,28 +14,29 @@
  * limitations under the License.
  */
 
-apply from: "$rootDir/gradle/javaModule.gradle"
+plugins {
+    id("build.java-module")
+    id("build.publish")
+}
 
 dependencies {
-    api project(path: ':miniprofiler-core', configuration: 'shadow')
-    compileOnly commonDependencies.servletApi
-    compileOnly commonDependencies.jspApi
+    api(projects.miniprofilerCore)
+    compileOnly(libs.servlet.api)
+    compileOnly(libs.jsp.api)
 
-    testImplementation commonDependencies.springTest
+    testImplementation(libs.spring.test)
 }
 
 // to allow deps on a jar, so that a tld will get picked up
-configurations { jars }
-artifacts { jars jar }
+val jars by configurations.registering { }
+artifacts.add("jars", tasks.named("jar"))
 
 publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-            pom {
-                name = 'MiniProfiler Java Servlet Module'
-                description = 'Support classes for getting the MiniProfiler working in servlet environments.'
-            }
+    publications.named<MavenPublication>("maven") {
+        from(components["java"])
+        pom {
+            name = "MiniProfiler Java Servlet Module"
+            description = "Support classes for getting the MiniProfiler working in servlet environments."
         }
     }
 }

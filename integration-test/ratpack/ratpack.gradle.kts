@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-apply plugin: 'war'
-apply plugin: 'com.bmuschko.cargo'
-
-dependencies {
-    compileOnly commonDependencies.javaee
-    cargo commonDependencies.cargo
-    cargo commonDependencies.h2
+plugins {
+    id("build.browser-test")
+    id("build.java-module")
+    alias(libs.plugins.ratpack.java)
 }
 
-[cargoRunLocal, cargoStartLocal]*.dependsOn([':miniprofiler-core:assemble', assemble])
+application.mainClass = "io.jdev.miniprofiler.ratpack.funtest.Main"
 
-test.dependsOn(cargoStartLocal)
-cargoStartLocal.finalizedBy(cargoStopLocal)
-cargoStopLocal.mustRunAfter(test)
+dependencies {
+    implementation(projects.miniprofilerRatpack)
+    implementation(ratpack.dependency("hikari"))
+    implementation(ratpack.dependency("groovy"))
+    implementation(libs.h2)
+
+    testImplementation("io.ratpack:ratpack-test")
+}

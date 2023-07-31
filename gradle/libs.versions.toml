@@ -1,0 +1,96 @@
+# Copyright 2023 the original author or authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+[versions]
+asciidoctor = "3.3.2"
+awaitility = "4.2.0"
+build-parameters-plugin = "1.4.3"
+cargo = "1.9.13"
+cargo-plugin = "2.9.0"
+checkstyle = "6.5"
+codenarc = "0.23"
+eclipselink = "2.5.0"
+ehcache = "2.7.2"
+geb = "4.1"
+grails = "2.2.0"
+h2 = "1.3.173"
+hibernate = "4.3.5.Final"
+jackson = "2.10.3"
+javaee = "7.0"
+jooq-compile = "3.0.0"
+jooq-test = "3.9.5"
+jsp-api = "2.3.0"
+json-simple = "1.1.1"
+jta = "1.1"
+junit = "5.9.0"
+gradle-enterprise-plugin = "3.14.1"
+# not gretty 4.x which doesn't support ye olde javax-supporting servlet containers
+gretty = "3.1.1"
+groovy = "2.5.18"
+# Ratpack looks for org.slf4j.impl.StaticLoggerBinder which is the old discovery mechnanism for slf4j 1.x,
+# so we stay on the old version (and this corresponding logback version) to make it be quiet
+logback = "1.2.11"
+nexus-publish-plugin = "2.0.0-rc-1"
+ratpack = "1.10.0-milestone-8"
+selenium-api = "3.0.0"
+selenium-runtime = "3.141.59"
+servlet-api = "2.3"
+shadow = "8.1.1"
+slf4j-api = "1.7.4"
+spock = "2.1-groovy-2.5"
+spring = "3.2.4.RELEASE"
+
+[libraries]
+awaitility = { module = "org.awaitility:awaitility-groovy", version.ref = "awaitility" }
+build-parameters-plugin = { module = "org.gradlex:build-parameters", version.ref = "build-parameters-plugin" }
+cargo-ant = { module = "org.codehaus.cargo:cargo-ant", version.ref = "cargo" }
+cargo-core = { module = "org.codehaus.cargo:cargo-core-uberjar", version.ref = "cargo" }
+cargo-plugin = { module = "com.bmuschko:gradle-cargo-plugin" , version.ref = "cargo-plugin" }
+checkstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "checkstyle" }
+codenarc = { module = "org.codenarc:CodeNarc", version.ref = "codenarc" }
+eclipselink = { module = "org.eclipse.persistence:eclipselink", version.ref = "eclipselink" }
+ehcache = { module = "net.sf.ehcache:ehcache", version.ref = "ehcache" }
+geb-core = { module = "org.gebish:geb-core", version.ref = "geb" }
+geb-spock = { module = "org.gebish:geb-spock", version.ref = "geb" }
+gradle-enterprise-plugin = { module = "com.gradle:gradle-enterprise-gradle-plugin", version.ref = "gradle-enterprise-plugin" }
+grails-web = { module = "org.grails:grails-web", version.ref = "grails" }
+groovy = { module = "org.codehaus.groovy:groovy-all", version.ref = "groovy" }
+h2 = { module = "com.h2database:h2", version.ref = "h2" }
+hibernate = { module = "org.hibernate:hibernate-core", version.ref = "hibernate" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+javaee = { module = "javax:javaee-api", version.ref = "javaee" }
+jooq-compile = { module = "org.jooq:jooq", version.ref = "jooq-compile" }
+jooq-test = { module = "org.jooq:jooq", version.ref = "jooq-test" }
+jsp-api = { module = "javax.servlet.jsp:javax.servlet.jsp-api", version.ref = "jsp-api" }
+json-simple = { module = "com.googlecode.json-simple:json-simple", version.ref = "json-simple" }
+jta = { module = "javax.transaction:jta", version.ref = "jta" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+nexus-publish-plugin = { module = "io.github.gradle-nexus:publish-plugin", version.ref = "nexus-publish-plugin" }
+selenium-api = { module = "org.seleniumhq.selenium:selenium-api", version.ref = "selenium-api" }
+selenium-support = { module = "org.seleniumhq.selenium:selenium-support", version.ref = "selenium-runtime" }
+selenium-firefox-driver = { module = "org.seleniumhq.selenium:selenium-firefox-driver", version.ref = "selenium-runtime" }
+servlet-api = { module = "javax.servlet:servlet-api", version.ref = "servlet-api" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j-api" }
+spock = { module = "org.spockframework:spock-core", version.ref = "spock" }
+spring-test = { module = "org.springframework:spring-test", version.ref = "spring" }
+
+[plugins]
+asciidoctor = { id = "org.asciidoctor.jvm.convert", version.ref = "asciidoctor" }
+build-parameters = { id = "org.gradlex.build-parameters", version.ref = "build-parameters-plugin" }
+cargo = { id = "com.bmuschko.cargo", version.ref = "cargo-plugin" }
+gretty = { id = "org.gretty", version.ref = "gretty" }
+nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexus-publish-plugin" }
+ratpack-java = { id = "io.ratpack.ratpack-java", version.ref = "ratpack" }
+shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }

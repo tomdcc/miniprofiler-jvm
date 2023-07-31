@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-apply from: "$rootDir/gradle/javaModule.gradle"
+plugins {
+    id("build.java-module")
+    id("build.publish")
+}
 
 dependencies {
-	api project(path: ':miniprofiler-core', configuration: 'shadow')
-    compileOnly commonDependencies.javaee
-
-    testRuntimeOnly project(':miniprofiler-servlet')
+	api(projects.miniprofilerCore)
+    compileOnly(libs.servlet.api)
+    compileOnly(libs.grails.web)
 }
 
 publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-            pom {
-                name = 'MiniProfiler Java EE Module'
-                description = 'Support classes for getting the MiniProfiler working out of the box in modern Java EE containers.'
-            }
+    publications.named<MavenPublication>("maven") {
+        from(components["java"])
+        pom {
+            name = "MiniProfiler Grails Support"
+            description = "Support classes for getting the MiniProfiler working out of the box in Grails."
         }
     }
 }

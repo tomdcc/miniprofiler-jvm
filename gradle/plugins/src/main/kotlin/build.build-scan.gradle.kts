@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-apply from: "$rootDir/gradle/javaModule.gradle"
+import com.gradle.scan.plugin.BuildScanExtension
+import org.gradle.kotlin.dsl.the
 
-dependencies {
-	api project(path: ':miniprofiler-core', configuration: 'shadow')
-    compileOnly commonDependencies.servletApi
-    compileOnly 'org.grails:grails-web:2.2.0'
+plugins {
+    id("build.build-parameters")
 }
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-            pom {
-                name = 'MiniProfiler Grails Support'
-                description = 'Support classes for getting the MiniProfiler working out of the box in Grails.'
-            }
+project.afterEvaluate {
+    project.the<BuildScanExtension>().run {
+        if (buildParameters.ci || buildParameters.buildScans.scansGradleComTermsAgree) {
+            termsOfServiceUrl = "https://gradle.com/terms-of-service"
+            termsOfServiceAgree = "yes"
         }
+
+        publishAlwaysIf(buildParameters.ci || buildParameters.buildScans.alwaysPublish)
+        isUploadInBackground = !buildParameters.ci
     }
 }

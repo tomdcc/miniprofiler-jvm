@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-apply from: "$rootDir/gradle/javaModule.gradle"
-
-dependencies {
-	compileOnly commonDependencies.groovy
-    compileOnly commonDependencies.geb
-
-    // these are really transitive dependencies of geb, not sure why they're not being picked up
-    compileOnly commonDependencies.seleniumApi
+plugins {
+    id("build.browser-test")
+    id("build.java-module")
+    alias(libs.plugins.gretty)
+    id("war")
 }
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-            pom {
-                name = 'MiniProfiler Test Support Classes'
-                description = 'Contains Geb modules modelling the MiniProfiler UI for easy functional testing'
-            }
-        }
+dependencies {
+    implementation(projects.miniprofilerCore)
+    // needs to be a jar to pick up tld automatically
+    implementation(projects.miniprofilerServlet) {
+        targetConfiguration = "jars"
     }
+    implementation(libs.h2)
+	compileOnly(libs.servlet.api)
+}
+
+gretty {
+    servletContainer = "jetty9"
+    integrationTestTask = "test"
+    inplace = false
 }

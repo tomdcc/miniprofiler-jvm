@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 the original author or authors.
+ * Copyright 2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-apply from: "$rootDir/gradle/javaModule.gradle"
+plugins {
+    id("build.java-module")
+    id("build.publish")
+}
 
 dependencies {
-	api project(path: ':miniprofiler-core', configuration: 'shadow')
-	compileOnly commonDependencies.jooqCompile
+	compileOnly(libs.groovy)
+    compileOnly(libs.geb.core)
 
-    testImplementation commonDependencies.jooqTest
-    testImplementation commonDependencies.h2
+    // these are really transitive dependencies of geb, not sure why they're not being picked up
+    compileOnly(libs.selenium.api)
 }
 
 publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-            pom {
-                name = 'MiniProfiler jOOQ Support'
-                description = 'Support classes for getting SQL statements profiled in the MiniProfiler using jOOQ.'
-            }
+    publications.named<MavenPublication>("maven") {
+        from(components["java"])
+        pom {
+            name = "MiniProfiler Test Support Classes"
+            description = "Contains Geb modules modelling the MiniProfiler UI for easy functional testing"
         }
     }
 }
