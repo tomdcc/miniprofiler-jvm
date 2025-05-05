@@ -21,12 +21,12 @@ jobs:
       - name: Setup Firefox
         uses: browser-actions/setup-firefox@v0.0.0
         with:
-          firefox-version: 91.12.0esr
+          firefox-version: 128.10.0esresr
 
       - name: Setup Geckodriver
         uses: browser-actions/setup-geckodriver@v0.0.0
         with:
-          geckodriver-version: 0.31.0
+          geckodriver-version: 0.36.0
 
       - name: Build
         run: ./gradlew assemble
