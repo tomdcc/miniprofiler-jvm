@@ -5,6 +5,7 @@ Changelog
 ---
 - Serves profile in standalone single page
 - Ratpack module uses Guice annotations, not javax.inject.
+- Fixes to plain text report
 
 0.9.3
 ---
