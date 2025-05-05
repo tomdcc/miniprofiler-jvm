@@ -17,13 +17,13 @@
 package io.jdev.miniprofiler.ratpack.funtest;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.inject.Inject;
 import io.jdev.miniprofiler.ProfilerProvider;
 import ratpack.exec.Blocking;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
 import ratpack.jackson.Jackson;
 
-import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;

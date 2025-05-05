@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.10.0
+---
+- Serves profile in standalone single page
+- Ratpack module uses Guice annotations, not javax.inject.
+
 0.9.3
 ---
 - Resource URLs use correct version for cache-busting.

@@ -16,6 +16,7 @@
 
 package io.jdev.miniprofiler.ratpack;
 
+import com.google.inject.Inject;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.internal.ProfilerImpl;
 import io.jdev.miniprofiler.internal.ResultsRequest;
@@ -25,7 +26,6 @@ import ratpack.http.Response;
 import ratpack.http.Status;
 import ratpack.http.TypedData;
 
-import javax.inject.Inject;
 import java.util.Optional;
 import java.util.UUID;
 

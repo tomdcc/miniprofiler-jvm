@@ -16,18 +16,17 @@
 
 package io.jdev.miniprofiler.ratpack;
 
+import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
+import com.google.inject.Singleton;
 import com.google.inject.multibindings.ProvidesIntoSet;
 import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.ProfilerUiConfig;
 import ratpack.exec.ExecInitializer;
 import ratpack.guice.ConfigurableModule;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * A Guice module to install a Ratpack compatible {@link ProfilerProvider} and an {@link ExecInitializer}
