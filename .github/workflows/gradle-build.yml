@@ -21,7 +21,7 @@ jobs:
       - name: Setup Firefox
         uses: browser-actions/setup-firefox@v0.0.0
         with:
-          firefox-version: 128.10.0esresr
+          firefox-version: 128.10.0esr
 
       - name: Setup Geckodriver
         uses: browser-actions/setup-geckodriver@v0.0.0
