@@ -129,14 +129,15 @@ public class TimingImpl implements TimingInternal, Serializable, Jsonable {
         map.put("Name", name);
         map.put("StartMilliseconds", startMilliseconds);
         map.put("DurationMilliseconds", durationMilliseconds);
-        map.put("Children", allChildren());
+        map.put("Children", getAllChildren());
         if (customTimings != null) {
             map.put("CustomTimings", customTimings);
         }
         return map;
     }
 
-    private List<Timing> allChildren() {
+    @Override
+    public List<Timing> getAllChildren() {
         if (children == null && childProfilers == null) {
             return null;
         }

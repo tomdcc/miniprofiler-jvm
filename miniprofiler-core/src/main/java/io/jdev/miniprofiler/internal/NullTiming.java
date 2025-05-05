@@ -96,6 +96,11 @@ class NullTiming implements Timing {
     }
 
     @Override
+    public List<Timing> getAllChildren() {
+        return null;
+    }
+
+    @Override
     public void addCustomTiming(String type, String executeType, String command, long duration) {
     }
 

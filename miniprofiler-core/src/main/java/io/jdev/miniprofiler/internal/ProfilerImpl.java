@@ -279,7 +279,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         while (!timings.isEmpty()) {
             Timing timing = timings.pop();
             appendTimingPrefix(text, timing);
-            text.append(String.format(" %s = %,dms", timing.getName(), timing.getDurationMilliseconds()));
+            text.append(String.format("%s = %,dms", timing.getName(), timing.getDurationMilliseconds()));
 
             Map<String, List<CustomTiming>> customTimings = timing.getCustomTimings();
 
@@ -293,14 +293,14 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
                     }
                     text.append(String.format(" (%s = %,dms in %d cmd%s)",
                         type,
-                        sum, customTimings.size(),
-                        customTimings.size() == 1 ? "" : "s"));
+                        sum, typeCustomTimings.size(),
+                        typeCustomTimings.size() == 1 ? "" : "s"));
                 }
             }
 
             text.append("\n");
 
-            List<Timing> children = timing.getChildren();
+            List<Timing> children = timing.getAllChildren();
             if (children != null) {
                 for (int i = children.size() - 1; i >= 0; i--) {
                     timings.push(children.get(i));
@@ -315,6 +315,9 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         int depth = timing.getDepth();
         for (int i = 0; i < depth; i++) {
             sb.append('>');
+        }
+        if (depth > 0) {
+            sb.append(' ');
         }
     }
 
