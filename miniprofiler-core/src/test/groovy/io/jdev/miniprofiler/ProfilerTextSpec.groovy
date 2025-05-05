@@ -28,20 +28,28 @@ class ProfilerTextSpec extends Specification {
         profiler.machineName = 'machine.name'
         def timing1 = profiler.step("timing1")
         def timing2 = profiler.step("timing2")
-        timing2.addCustomTiming("sql", "query", "select * from foo", 123)
+        timing2.addCustomTiming("sql", "query1", "select * from foo", 1000)
+        timing2.addCustomTiming("sql", "query2", "select * from bar", 123)
         timing2.stop()
         timing1.stop()
+        def childProfiler = profiler.addChild("child")
+        def childTiming = childProfiler.step("timing")
+        childTiming.addCustomTiming("sql", "query", "select * from foo", 456)
+        childTiming.stop()
+        childProfiler.stop()
         profiler.stop()
 
         when:
         def lines = profiler.asPlainText().readLines()
 
         then:
-        lines.size() == 4
+        lines.size() == 6
         lines[0] ==~ /machine.name at .*/
-        lines[1] ==~ / \/foo = \d+ms/
+        lines[1] ==~ /\/foo = \d+ms/
         lines[2] ==~ /> timing1 = \d+ms/
-        lines[3] ==~ />> timing2 = \d+ms \(sql = \d+ms in 1 cmd\)/
+        lines[3] ==~ />> timing2 = \d+ms \(sql = 1,123ms in 2 cmds\)/
+        lines[4] ==~ /⑃ child = \d+ms/
+        lines[5] ==~ /> timing = \d+ms \(sql = 456ms in 1 cmd\)/
     }
 
 }

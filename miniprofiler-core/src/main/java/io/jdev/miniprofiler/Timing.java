@@ -124,6 +124,13 @@ public interface Timing extends Closeable {
     List<Timing> getChildren();
 
     /**
+     * Returns all child timings of this timing, including in child profilers.
+     *
+     * @return all children
+     */
+    List<Timing> getAllChildren();
+
+    /**
      * Add a custom timing to this timing.
      * @param type type of timing, e.g. "sql"
      * @param executeType what type of execution, e.g. "query"
