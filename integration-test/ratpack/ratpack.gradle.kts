@@ -17,16 +17,20 @@
 plugins {
     id("build.browser-test")
     id("build.java-module")
-    alias(libs.plugins.ratpack.java)
+    id("application")
 }
 
 application.mainClass = "io.jdev.miniprofiler.ratpack.funtest.Main"
 
+sourceSets.main {
+    resources.srcDir("src/ratpack")
+}
+
 dependencies {
     implementation(projects.miniprofilerRatpack)
-    implementation(ratpack.dependency("hikari"))
-    implementation(ratpack.dependency("groovy"))
+    implementation(libs.ratpack.hikari)
+    implementation(libs.ratpack.groovy)
     implementation(libs.h2)
 
-    testImplementation("io.ratpack:ratpack-test")
+    testImplementation(libs.ratpack.test)
 }

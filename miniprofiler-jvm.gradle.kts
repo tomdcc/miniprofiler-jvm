@@ -15,7 +15,6 @@
  */
 
 plugins {
-    alias(libs.plugins.ratpack.java) apply false
     id("build.build-scan")
     id("build.nexus-publish")
 }
