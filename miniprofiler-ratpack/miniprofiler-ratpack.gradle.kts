@@ -17,18 +17,17 @@
 plugins {
     id("build.java-module")
     id("build.publish")
-    id("io.ratpack.ratpack-base")
 }
 
 dependencies {
     api(projects.miniprofilerCore)
-    compileOnly(ratpack.dependency("core"))
-    compileOnly(ratpack.dependency("guice"))
-    compileOnly(ratpack.dependency("hikari"))
-    compileOnly(ratpack.dependency("h2"))
+    compileOnly(libs.ratpack.core)
+    compileOnly(libs.ratpack.guice)
+    compileOnly(libs.ratpack.hikari)
+    compileOnly(libs.ratpack.h2)
 
-    testImplementation(ratpack.dependency("test"))
-    testImplementation(ratpack.dependency("groovy-test"))
+    testImplementation(libs.ratpack.test)
+    testImplementation(libs.ratpack.groovy.test)
 }
 
 publishing {
