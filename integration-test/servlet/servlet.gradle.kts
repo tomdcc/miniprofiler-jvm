@@ -16,9 +16,8 @@
 
 plugins {
     id("build.browser-test")
+    id("build.docker-test")
     id("build.java-module")
-    alias(libs.plugins.gretty)
-    id("war")
 }
 
 dependencies {
@@ -28,11 +27,13 @@ dependencies {
         targetConfiguration = "jars"
     }
     implementation(libs.h2)
-	compileOnly(libs.servlet.api)
+
+    testImplementation(projects.integrationTest.lib)
 }
 
-gretty {
-    servletContainer = "jetty9"
-    integrationTestTask = "test"
-    inplace = false
+tasks.withType<Test>().configureEach {
+    val warFile = tasks.named<War>("war").flatMap { it.archiveFile }
+    doFirst {
+        systemProperty("integrationTest.warPath", warFile.get().asFile.absolutePath)
+    }
 }

@@ -33,8 +33,6 @@ json-simple = "1.1.1"
 jta = "1.1"
 junit = "5.9.0"
 gradle-enterprise-plugin = "3.14.1"
-# not gretty 4.x which doesn't support ye olde javax-supporting servlet containers
-gretty = "3.1.1"
 groovy = "2.5.18"
 # Ratpack looks for org.slf4j.impl.StaticLoggerBinder which is the old discovery mechnanism for slf4j 1.x,
 # so we stay on the old version (and this corresponding logback version) to make it be quiet
@@ -87,7 +85,6 @@ testcontainers-junit5 = { module = "org.testcontainers:testcontainers-junit-jupi
 [plugins]
 asciidoctor = { id = "org.asciidoctor.jvm.convert", version.ref = "asciidoctor" }
 build-parameters = { id = "org.gradlex.build-parameters", version.ref = "build-parameters-plugin" }
-gretty = { id = "org.gretty", version.ref = "gretty" }
 nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexus-publish-plugin" }
 ratpack-java = { id = "io.ratpack.ratpack-java", version.ref = "ratpack" }
 shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
