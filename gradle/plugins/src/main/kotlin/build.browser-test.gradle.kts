@@ -33,7 +33,7 @@ dependencies {
     testRuntimeOnly(libs.selenium.firefox.driver)
 }
 project.tasks.withType<Test>().configureEach {
-    systemProperty("geb.build.reportsDir", "${reporting.baseDir}/geb")
+    systemProperty("geb.build.reportsDir", "${reporting.baseDirectory.get().asFile}/geb")
     buildParameters.browserTest.firefoxBinPath.orNull?.let {
         systemProperty("webdriver.firefox.bin", it)
     }

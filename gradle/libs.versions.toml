@@ -13,11 +13,12 @@
 # limitations under the License.
 
 [versions]
-asciidoctor = "3.3.2"
+asciidoctor = "4.0.5"
 awaitility = "4.2.0"
-build-parameters-plugin = "1.4.3"
+build-parameters-plugin = "1.4.5"
 checkstyle = "6.5"
-codenarc = "0.23"
+codenarc = "2.2.0"
+develocity-plugin = "4.3.2"
 eclipselink = "2.5.0"
 ehcache = "2.7.2"
 geb = "4.1"
@@ -32,7 +33,6 @@ jsp-api = "2.3.0"
 json-simple = "1.1.1"
 jta = "1.1"
 junit = "5.9.0"
-gradle-enterprise-plugin = "3.14.1"
 groovy = "2.5.18"
 # Ratpack looks for org.slf4j.impl.StaticLoggerBinder which is the old discovery mechnanism for slf4j 1.x,
 # so we stay on the old version (and this corresponding logback version) to make it be quiet
@@ -42,7 +42,7 @@ ratpack = "1.10.0-milestone-8"
 selenium-api = "3.0.0"
 selenium-runtime = "3.141.59"
 servlet-api = "2.3"
-shadow = "8.1.1"
+shadow = "9.4.0"
 slf4j-api = "1.7.4"
 spock = "2.1-groovy-2.5"
 spring = "3.2.4.RELEASE"
@@ -52,11 +52,11 @@ testcontainers = "2.0.3"
 awaitility = { module = "org.awaitility:awaitility-groovy", version.ref = "awaitility" }
 checkstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "checkstyle" }
 codenarc = { module = "org.codenarc:CodeNarc", version.ref = "codenarc" }
+develocity-plugin = { module = "com.gradle:develocity-gradle-plugin", version.ref = "develocity-plugin" }
 eclipselink = { module = "org.eclipse.persistence:eclipselink", version.ref = "eclipselink" }
 ehcache = { module = "net.sf.ehcache:ehcache", version.ref = "ehcache" }
 geb-core = { module = "org.gebish:geb-core", version.ref = "geb" }
 geb-spock = { module = "org.gebish:geb-spock", version.ref = "geb" }
-gradle-enterprise-plugin = { module = "com.gradle:gradle-enterprise-gradle-plugin", version.ref = "gradle-enterprise-plugin" }
 grails-web = { module = "org.grails:grails-web", version.ref = "grails" }
 groovy = { module = "org.codehaus.groovy:groovy-all", version.ref = "groovy" }
 h2 = { module = "com.h2database:h2", version.ref = "h2" }
@@ -93,4 +93,4 @@ testcontainers-junit5 = { module = "org.testcontainers:testcontainers-junit-jupi
 asciidoctor = { id = "org.asciidoctor.jvm.convert", version.ref = "asciidoctor" }
 build-parameters = { id = "org.gradlex.build-parameters", version.ref = "build-parameters-plugin" }
 nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexus-publish-plugin" }
-shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }

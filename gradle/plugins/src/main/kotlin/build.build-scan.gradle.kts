@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import com.gradle.scan.plugin.BuildScanExtension
+import com.gradle.develocity.agent.gradle.DevelocityConfiguration
 import org.gradle.kotlin.dsl.the
 
 plugins {
@@ -22,13 +22,17 @@ plugins {
 }
 
 project.afterEvaluate {
-    project.the<BuildScanExtension>().run {
-        if (buildParameters.ci || buildParameters.buildScans.scansGradleComTermsAgree) {
-            termsOfServiceUrl = "https://gradle.com/terms-of-service"
-            termsOfServiceAgree = "yes"
-        }
+    project.the<DevelocityConfiguration>().run {
+        buildScan {
+            if (buildParameters.ci || buildParameters.buildScans.scansGradleComTermsAgree) {
+                termsOfUseUrl = "https://gradle.com/help/legal-terms-of-use"
+                termsOfUseAgree = "yes"
+            }
 
-        publishAlwaysIf(buildParameters.ci || buildParameters.buildScans.alwaysPublish)
-        isUploadInBackground = !buildParameters.ci
+            publishing {
+                onlyIf { buildParameters.ci || buildParameters.buildScans.alwaysPublish }
+            }
+            uploadInBackground = !buildParameters.ci
+        }
     }
 }
