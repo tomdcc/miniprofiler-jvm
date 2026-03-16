@@ -22,6 +22,7 @@ include("miniprofiler-jooq")
 
 include("doc:manual")
 
+include("integration-test:lib")
 include("integration-test:servlet")
 include("integration-test:glassfish4")
 include("integration-test:wildfly8")

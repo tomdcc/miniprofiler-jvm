@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-baseUrl = 'http://127.0.0.1:8081/'
+// Use the URL provided by the container manager (set as a system property),
+// falling back to localhost for running against a manually started server.
+baseUrl = System.getProperty("geb.build.baseUrl") ?: 'http://127.0.0.1:8080/'
 
 if(!System.getProperty("geb.build.reportsDir")) {
 	// probably running in IDE

@@ -1,5 +1,3 @@
-import com.bmuschko.gradle.cargo.convention.*
-
 /*
  * Copyright 2018 the original author or authors.
  *
@@ -18,52 +16,26 @@ import com.bmuschko.gradle.cargo.convention.*
 
 plugins {
     id("build.browser-test")
-    id("build.cargo-test")
+    id("build.docker-test")
     id("build.java-module")
 }
 
 dependencies {
     implementation(projects.miniprofilerJavaee)
     implementation(projects.miniprofilerServlet)
+
+    testImplementation(projects.integrationTest.lib)
 }
 
-val wildflyBaseDir = file("$buildDir/wildfly")
-val wildflyDir by tasks.registering {
-    doLast {
-	    wildflyBaseDir.mkdirs()
+val h2Classpath by configurations.creating
+dependencies {
+    h2Classpath(libs.h2)
+}
+
+tasks.withType<Test>().configureEach {
+    val warFile = tasks.named<War>("war").flatMap { it.archiveFile }
+    doFirst {
+        systemProperty("integrationTest.warPath", warFile.get().asFile.absolutePath)
+        systemProperty("integrationTest.h2JarPath", h2Classpath.singleFile.absolutePath)
     }
-}
-
-listOf(tasks.cargoRunLocal, tasks.cargoStartLocal).forEach {
-    it.configure {
-        dependsOn(wildflyDir)
-    }
-}
-
-cargo {
-	containerId = "wildfly8x"
-	port = 8081
-    deployables = listOf(Deployable().apply {
-        context = "/"
-    })
-
-    local(delegateClosureOf<CargoLocalTaskConvention> {
-        installer(delegateClosureOf<ZipUrlInstaller> {
-			installUrl = "https://download.jboss.org/wildfly/8.1.0.Final/wildfly-8.1.0.Final.tar.gz"
-			downloadDir = rootProject.file(".gradle/cache/cargo")
-			extractDir = file("$buildDir/extract")
-		})
-
-		configHomeDir = wildflyBaseDir
-		homeDir = wildflyBaseDir
-
-        containerProperties(delegateClosureOf<ContainerProperties> {
-            property("cargo.java.home", javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(8) }.get().metadata.installationPath.asFile.absolutePath)
-        })
-
-        file(delegateClosureOf<BinFile> {
-			file = configurations.cargo.get().files.find { it.name.startsWith("h2-") }
-			toDir = "lib"
-		})
-	})
 }

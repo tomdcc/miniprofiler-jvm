@@ -31,7 +31,6 @@ dependencies {
     implementation(projects.buildParameters)
 
     // another workaround for https://github.com/gradle/gradle/issues/15383
-    implementation(libs.cargo.plugin)
     implementation(libs.gradle.enterprise.plugin)
     implementation(libs.nexus.publish.plugin)
 }

@@ -1,5 +1,3 @@
-import com.bmuschko.gradle.cargo.convention.*
-
 /*
  * Copyright 2018 the original author or authors.
  *
@@ -18,7 +16,7 @@ import com.bmuschko.gradle.cargo.convention.*
 
 plugins {
     id("build.browser-test")
-    id("build.cargo-test")
+    id("build.docker-test")
     id("build.java-module")
 }
 
@@ -27,54 +25,18 @@ dependencies {
     implementation(projects.miniprofilerServlet)
 
     testImplementation(projects.miniprofilerTestSupport)
+    testImplementation(projects.integrationTest.lib)
 }
 
-val glassfishBaseDir = file("$buildDir/glassfish")
-val glassfishDir by tasks.registering {
-    doLast {
-        glassfishBaseDir.mkdirs()
+val h2Classpath by configurations.creating
+dependencies {
+    h2Classpath(libs.h2)
+}
+
+tasks.withType<Test>().configureEach {
+    val warFile = tasks.named<War>("war").flatMap { it.archiveFile }
+    doFirst {
+        systemProperty("integrationTest.warPath", warFile.get().asFile.absolutePath)
+        systemProperty("integrationTest.h2JarPath", h2Classpath.singleFile.absolutePath)
     }
-}
-
-listOf(tasks.cargoRunLocal, tasks.cargoStartLocal).forEach {
-    it.configure {
-        dependsOn(glassfishDir)
-    }
-}
-
-// this sometimes hasn't cleaned up a process that uses the same port in time
-tasks.cargoStartLocal.configure {
-    shouldRunAfter(":integration-test:servlet:test")
-}
-
-cargo {
-	containerId = "glassfish4x"
-	port = 8081
-	deployables = listOf(Deployable().apply {
-		context = "/"
-	})
-
-	local(delegateClosureOf<CargoLocalTaskConvention> {
-		installer(delegateClosureOf<ZipUrlInstaller> {
-			installUrl = "https://download.java.net/glassfish/4.1.1/release/glassfish-4.1.1.zip"
-			downloadDir = rootProject.file(".gradle/cache/cargo")
-			extractDir = file("$buildDir/extract")
-		})
-
-		configHomeDir = glassfishBaseDir
-		homeDir = glassfishBaseDir
-
-		containerProperties(delegateClosureOf<ContainerProperties> {
-			property("cargo.java.home", javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(8) }.get().metadata.installationPath.asFile.absolutePath)
-			property("cargo.datasource.datasource1", "cargo.datasource.jndi=jdbc/DataSource|cargo.datasource.url=jdbc:h2:mem:miniprofiler;DB_CLOSE_DELAY=-1|cargo.datasource.driver=org.h2.Driver|cargo.datasource.username=sa|cargo.datasource.password=sa")
-			if (buildParameters.cargoTest.debug) {
-				property("cargo.glassfish.domain.debug", "true")
-			}
-		})
-
-		file(delegateClosureOf<BinFile> {
-			file = configurations.cargo.get().files.find { it.name.startsWith("h2-") }
-			toDir = "cargo-domain/lib"
-		})
-	})
 }
