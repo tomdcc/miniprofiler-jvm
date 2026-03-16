@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-baseUrl = 'http://127.0.0.1:8080/servlet/'
+baseUrl = System.getProperty("geb.build.baseUrl") ?: 'http://127.0.0.1:8080/servlet/'
 
 if(!System.getProperty("geb.build.reportsDir")) {
 	// probably running in IDE
