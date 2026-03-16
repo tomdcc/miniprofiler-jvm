@@ -1,5 +1,3 @@
-import gradle.kotlin.dsl.accessors._8d406b70b7b518f23730b456e0c46f8d.buildParameters
-
 /*
  * Copyright 2023 the original author or authors.
  *

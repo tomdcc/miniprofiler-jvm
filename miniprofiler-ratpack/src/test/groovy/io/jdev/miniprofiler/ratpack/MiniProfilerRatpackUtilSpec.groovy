@@ -48,12 +48,10 @@ class MiniProfilerRatpackUtilSpec extends Specification {
         long sleepTime = 100L
 
         when:
-        Long start = null
         Long afterProfiler = null
         Long afterYield = null
         Profiler profiler = null
         def result = ExecHarness.yieldSingle { c ->
-            start = System.currentTimeMillis()
             profiler = new ProfilerImpl('root', ProfileLevel.Info, provider)
             def instrumentedPromise = MiniProfilerRatpackUtil.profile(profiler, 'foo', Promise.ofLazy { ->
                 afterYield = System.currentTimeMillis()

@@ -15,8 +15,7 @@
  */
 
 plugins {
-    // goes with this gradle version
-    id("org.gradle.kotlin.kotlin-dsl") version "4.0.14"
+    `kotlin-dsl`
 }
 
 repositories {
@@ -31,6 +30,6 @@ dependencies {
     implementation(projects.buildParameters)
 
     // another workaround for https://github.com/gradle/gradle/issues/15383
-    implementation(libs.gradle.enterprise.plugin)
+    implementation(libs.develocity.plugin)
     implementation(libs.nexus.publish.plugin)
 }

@@ -27,7 +27,8 @@ class Glassfish4MiniprofilerFunctionalSpec extends GebReportingSpec {
         def miniProfiler = to(HomePage).miniProfiler
 
         then: 'mini profiler visible with single timing info'
-        miniProfiler.results.size() == 1
+        waitFor { miniProfiler.results.size() == 1 }
+
         def result = miniProfiler.results[0]
         result.button.time ==~ ~/\d+\.\d+ ms/
 
