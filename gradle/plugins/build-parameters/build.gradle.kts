@@ -46,10 +46,5 @@ buildParameters {
         string("firefoxBinPath")
     }
 
-    group("cargoTest") {
-        bool("debug") {
-            defaultValue = false
-        }
-    }
 }
 
