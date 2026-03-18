@@ -19,6 +19,7 @@ include("miniprofiler-test-support")
 include("miniprofiler-grails")
 include("miniprofiler-ratpack")
 include("miniprofiler-jooq")
+include("miniprofiler-viewer")
 
 include("doc:manual")
 

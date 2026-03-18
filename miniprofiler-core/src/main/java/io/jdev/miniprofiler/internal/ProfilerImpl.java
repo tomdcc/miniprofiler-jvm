@@ -17,9 +17,13 @@
 package io.jdev.miniprofiler.internal;
 
 import io.jdev.miniprofiler.*;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+import org.json.simple.parser.ParseException;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -48,7 +52,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
     private String user;
     private String machineName;
     private final ProfileLevel level;
-    private final TimingImpl root;
+    private TimingImpl root;
     private boolean hasQueryTimings;
     private TimingInternal head;
     private boolean stopped;
@@ -59,8 +63,6 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
      *
      * <p>This will create an implicit root {@link Timing} step considered to have
      * started now, with the given root name.</p>
-     *
-     * <p>A new random UUID id is created for every profiler.</p>
      *
      * <p>Any profiling steps more verbose than the given level will be ignored.</p>
      *
@@ -83,8 +85,6 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
      * <p>This will create an implicit root {@link Timing} step considered to have
      * started now, with the given root name.</p>
      *
-     * <p>A new random UUID id is created for every profiler.</p>
-     *
      * <p>Any profiling steps more verbose than the given level will be ignored.</p>
      *
      * <p>The profiler provider constructing the profiler is passed in so that
@@ -101,13 +101,24 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         this(null, name, rootName, level, profilerProvider);
     }
 
+    private ProfilerImpl(UUID id, String name, long started, String machineName, ProfileLevel level,
+                         TimingImpl root, TimingInternal head, boolean stopped, ProfilerProvider profilerProvider) {
+        this.id = id;
+        this.name = name;
+        this.started = started;
+        this.machineName = machineName;
+        this.level = level;
+        this.root = root;
+        this.head = head;
+        this.stopped = stopped;
+        this.profilerProvider = profilerProvider;
+    }
+
     /**
      * Construct a new profiling session.
      *
      * <p>This will create an implicit root {@link Timing} step considered to have
      * started now, with the given root name.</p>
-     *
-     * <p>A new random UUID id is created for every profiler.</p>
      *
      * <p>Any profiling steps more verbose than the given level will be ignored.</p>
      *
@@ -123,11 +134,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
      * @param profilerProvider the profiler provider constructing the
      */
     public ProfilerImpl(UUID id, String name, String rootName, ProfileLevel level, ProfilerProvider profilerProvider) {
-        this.id = id != null ? id : UUID.randomUUID();
-        this.name = name;
-        this.profilerProvider = profilerProvider;
-        this.level = level;
-        started = System.currentTimeMillis();
+        this(id != null ? id : UUID.randomUUID(), name, System.currentTimeMillis(), null, level, null, null, false, profilerProvider);
         root = new TimingImpl(this, null, rootName);
         head = root;
     }
@@ -136,13 +143,53 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
      * Used to add a child profiler.
      */
     ProfilerImpl(String rootName, ProfileLevel level, long started) {
-        this.id = null;
-        this.name = rootName;
-        this.profilerProvider = null;
-        this.level = level;
-        this.started = started;
+        this(null, rootName, started, null, level, null, null, false, null);
         root = new TimingImpl(this, null, rootName);
         head = root;
+    }
+
+    // Deserialization constructor — does not create a root timing or set head
+    ProfilerImpl(UUID id, String name, long started, String machineName, ProfileLevel level) {
+        this(id, name, started, machineName, level, null, null, true, null);
+    }
+
+    /**
+     * Deserialize a profiler from a JSON object.
+     *
+     * @param obj the JSON object to deserialize
+     * @return the deserialized profiler
+     */
+    public static ProfilerImpl fromJson(JSONObject obj) {
+        UUID id = UUID.fromString((String) obj.get("Id"));
+        String name = (String) obj.get("Name");
+        long started = OffsetDateTime.parse((String) obj.get("Started")).toInstant().toEpochMilli();
+        String machineName = (String) obj.get("MachineName");
+        ProfileLevel level = ProfileLevel.Verbose;
+
+        ProfilerImpl profiler = new ProfilerImpl(id, name, started, machineName, level);
+        TimingImpl root = TimingImpl.fromJson(profiler, null, (JSONObject) obj.get("Root"));
+        profiler.root = root;
+
+        return profiler;
+    }
+
+    /**
+     * Deserialize a profiler from a JSON string.
+     *
+     * @param json the JSON string to deserialize
+     * @return the deserialized profiler
+     */
+    public static ProfilerImpl fromJson(String json) {
+        Object parsed;
+        try {
+            parsed = JSONValue.parseWithException(json);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Invalid JSON", e);
+        }
+        if (!(parsed instanceof JSONObject)) {
+            throw new IllegalArgumentException("JSON was not an object");
+        }
+        return fromJson((JSONObject) parsed);
     }
 
     private long getDurationMilliseconds() {
@@ -361,7 +408,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         this.head = head;
     }
 
-    long getStarted() {
+    public long getStarted() {
         return started;
     }
 

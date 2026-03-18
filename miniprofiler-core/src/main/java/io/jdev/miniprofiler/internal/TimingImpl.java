@@ -19,6 +19,8 @@ package io.jdev.miniprofiler.internal;
 import io.jdev.miniprofiler.CustomTiming;
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.Timing;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.io.Serializable;
 import java.util.*;
@@ -42,22 +44,71 @@ public class TimingImpl implements TimingInternal, Serializable, Jsonable {
     private List<Profiler> childProfilers;
 
 
-    TimingImpl(ProfilerImpl profiler, TimingInternal parent, String name) {
-        this.id = UUID.randomUUID();
+    private TimingImpl(ProfilerImpl profiler, TimingInternal parent, UUID id, String name,
+                       long startMilliseconds, Long durationMilliseconds, int depth) {
+        this.id = id;
         this.profiler = profiler;
-        this.name = name;
         this.parent = parent;
-        startMilliseconds = System.currentTimeMillis() - profiler.getStarted();
+        this.name = name;
+        this.startMilliseconds = startMilliseconds;
+        this.durationMilliseconds = durationMilliseconds;
+        this.depth = depth;
+    }
 
-        // root will have no parent
+    TimingImpl(ProfilerImpl profiler, TimingInternal parent, String name) {
+        this(profiler, parent, UUID.randomUUID(), name,
+            System.currentTimeMillis() - profiler.getStarted(), null,
+            parent != null ? parent.getDepth() + 1 : 0);
         if (parent != null) {
             parent.addChild(this);
-            depth = parent.getDepth() + 1;
-        } else {
-            depth = 0;
+        }
+        profiler.setHead(this);
+    }
+
+    // Deserialization constructor — does NOT call profiler.setHead() or parent.addChild()
+    TimingImpl(ProfilerImpl profiler, TimingInternal parent, UUID id, String name,
+               long startMilliseconds, Long durationMilliseconds) {
+        this(profiler, parent, id, name, startMilliseconds, durationMilliseconds,
+            parent != null ? parent.getDepth() + 1 : 0);
+    }
+
+    @SuppressWarnings("unchecked")
+    static TimingImpl fromJson(ProfilerImpl profiler, TimingInternal parent, JSONObject obj) {
+        UUID id = UUID.fromString((String) obj.get("Id"));
+        String name = (String) obj.get("Name");
+        long startMilliseconds = ((Number) obj.get("StartMilliseconds")).longValue();
+        Long durationMilliseconds = obj.get("DurationMilliseconds") != null
+            ? ((Number) obj.get("DurationMilliseconds")).longValue() : null;
+
+        TimingImpl timing = new TimingImpl(profiler, parent, id, name,
+            startMilliseconds, durationMilliseconds);
+
+        // Deserialize children
+        JSONArray childrenJson = (JSONArray) obj.get("Children");
+        if (childrenJson != null) {
+            List<TimingImpl> children = new ArrayList<>();
+            for (Object child : childrenJson) {
+                children.add(TimingImpl.fromJson(profiler, timing, (JSONObject) child));
+            }
+            timing.children = children;
         }
 
-        profiler.setHead(this);
+        // Deserialize custom timings
+        JSONObject customTimingsJson = (JSONObject) obj.get("CustomTimings");
+        if (customTimingsJson != null) {
+            Map<String, List<CustomTiming>> customTimings = new LinkedHashMap<>();
+            for (Object entry : customTimingsJson.entrySet()) {
+                Map.Entry<String, JSONArray> e = (Map.Entry<String, JSONArray>) entry;
+                List<CustomTiming> list = new ArrayList<>();
+                for (Object ct : e.getValue()) {
+                    list.add(CustomTimingImpl.fromJson(timing, (JSONObject) ct));
+                }
+                customTimings.put(e.getKey(), list);
+            }
+            timing.customTimings = customTimings;
+        }
+
+        return timing;
     }
 
     @Override

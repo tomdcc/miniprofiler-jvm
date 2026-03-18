@@ -18,6 +18,7 @@ package io.jdev.miniprofiler.internal;
 
 import io.jdev.miniprofiler.CustomTiming;
 import io.jdev.miniprofiler.sql.SqlFormatterFactory;
+import org.json.simple.JSONObject;
 
 import java.io.Serializable;
 import java.util.LinkedHashMap;
@@ -36,13 +37,27 @@ class CustomTimingImpl implements CustomTiming, Serializable, Jsonable {
     // TODO: stack traces
     // TODO FirstFetchDurationMilliseconds
 
-    private CustomTimingImpl(TimingInternal parentTiming, String executeType, String commandString, long startMilliseconds, Long durationMilliseconds) {
-        id = UUID.randomUUID();
+    private CustomTimingImpl(UUID id, TimingInternal parentTiming, String executeType, String commandString, long startMilliseconds, Long durationMilliseconds) {
+        this.id = id;
+        this.parentTiming = parentTiming;
         this.executeType = executeType;
         this.commandString = commandString;
-        this.parentTiming = parentTiming;
         this.startMilliseconds = startMilliseconds;
         this.durationMilliseconds = durationMilliseconds;
+    }
+
+    private CustomTimingImpl(TimingInternal parentTiming, String executeType, String commandString, long startMilliseconds, Long durationMilliseconds) {
+        this(UUID.randomUUID(), parentTiming, executeType, commandString, startMilliseconds, durationMilliseconds);
+    }
+
+    static CustomTimingImpl fromJson(TimingInternal parent, JSONObject obj) {
+        UUID id = UUID.fromString((String) obj.get("Id"));
+        String executeType = (String) obj.get("ExecuteType");
+        String commandString = (String) obj.get("CommandString");
+        long startMilliseconds = ((Number) obj.get("StartMilliseconds")).longValue();
+        Long durationMilliseconds = obj.get("DurationMilliseconds") != null
+            ? ((Number) obj.get("DurationMilliseconds")).longValue() : null;
+        return new CustomTimingImpl(id, parent, executeType, commandString, startMilliseconds, durationMilliseconds);
     }
 
     static CustomTimingImpl forDuration(TimingImpl parentTiming, String executeType, String command, long duration) {
