@@ -8,3 +8,6 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+ignore:
+  - dependency-name: "org.seleniumhq.selenium:*"
+    update-types: ["version-update:semver-major"]
