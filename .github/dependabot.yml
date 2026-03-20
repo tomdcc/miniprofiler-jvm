@@ -8,6 +8,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-ignore:
-  - dependency-name: "org.seleniumhq.selenium:*"
-    update-types: ["version-update:semver-major"]
+    ignore:
+      - dependency-name: "org.seleniumhq.selenium:*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "org.springframework:*"
+        update-types: ["version-update:semver-major"]
