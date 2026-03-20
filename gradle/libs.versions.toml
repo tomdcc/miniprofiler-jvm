@@ -38,7 +38,7 @@ groovy = "2.5.18"
 # so we stay on the old version (and this corresponding logback version) to make it be quiet
 logback = "1.2.11"
 nexus-publish-plugin = "2.0.0"
-ratpack = "1.10.0-milestone-8"
+ratpack = "2.0.0-rc-1"
 selenium-api = "3.0.0"
 selenium-runtime = "3.141.59"
 servlet-api = "2.3"
