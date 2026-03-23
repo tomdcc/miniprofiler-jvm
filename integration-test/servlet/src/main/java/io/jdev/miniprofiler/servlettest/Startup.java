@@ -40,7 +40,7 @@ public class Startup implements ServletContextListener {
 
     private DataSource setupDataSource() {
         JdbcDataSource ds = new JdbcDataSource();
-        ds.setURL("jdbc:h2:mem:miniprofiler;DB_CLOSE_DELAY=-1");
+        ds.setURL("jdbc:h2:mem:servlet_integ_test;DB_CLOSE_DELAY=-1");
         ds.setUser("sa");
         ds.setPassword("sa");
         return ds;

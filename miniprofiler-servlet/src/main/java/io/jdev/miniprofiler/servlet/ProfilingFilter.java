@@ -21,8 +21,10 @@ import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.StaticProfilerProvider;
 import io.jdev.miniprofiler.internal.Pages;
+import io.jdev.miniprofiler.internal.ProfilerImpl;
 import io.jdev.miniprofiler.internal.ResultsRequest;
 import io.jdev.miniprofiler.sql.DriverUtil;
+import io.jdev.miniprofiler.storage.Storage;
 import io.jdev.miniprofiler.util.ResourceHelper;
 
 import javax.servlet.*;
@@ -33,6 +35,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -124,8 +127,17 @@ public class ProfilingFilter implements Filter {
     }
 
     private void serveResource(HttpServletRequest request, HttpServletResponse response, String uri, String requestBasePath) throws IOException {
-        if (resourceHelper.stripBasePath(requestBasePath, uri).equals("results")) {
+        String stripped = resourceHelper.stripBasePath(requestBasePath, uri);
+        if (stripped.equals("results")) {
             serveResults(request, response);
+            return;
+        }
+        if (stripped.equals("results-index")) {
+            serveResultsIndex(request, response);
+            return;
+        }
+        if (stripped.equals("results-list")) {
+            serveResultsList(request, response);
             return;
         }
         // serve up stuff
@@ -164,6 +176,48 @@ public class ProfilingFilter implements Filter {
             renderJson(profiler, response);
         } else {
             renderSingleResultHtml(profiler, request, response);
+        }
+    }
+
+    private void serveResultsIndex(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType(CONTENT_TYPE_HTML);
+        if (allowedOrigin != null) {
+            response.addHeader("Access-Control-Allow-Origin", allowedOrigin);
+        }
+        try (Writer writer = response.getWriter()) {
+            writer.write(Pages.renderResultListPage(profilerProvider, Optional.of(request.getContextPath() + profilerProvider.getUiConfig().getPath())));
+        }
+    }
+
+    private void serveResultsList(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Storage storage = profilerProvider.getStorage();
+        Collection<UUID> ids = storage.list(100, null, null, Storage.ListResultsOrder.Descending);
+
+        String lastIdParam = request.getParameter("last-id");
+        if (lastIdParam != null && !lastIdParam.isEmpty()) {
+            try {
+                UUID lastId = UUID.fromString(lastIdParam);
+                ProfilerImpl lastProfiler = storage.load(lastId);
+                if (lastProfiler != null) {
+                    long cutoff = lastProfiler.getStarted();
+                    ids = ids.stream()
+                        .filter(id -> {
+                            ProfilerImpl p = storage.load(id);
+                            return p != null && p.getStarted() > cutoff;
+                        })
+                        .collect(java.util.stream.Collectors.toList());
+                }
+            } catch (IllegalArgumentException ignored) {
+                // ignore bad last-id
+            }
+        }
+
+        response.setContentType(CONTENT_TYPE_JSON);
+        if (allowedOrigin != null) {
+            response.addHeader("Access-Control-Allow-Origin", allowedOrigin);
+        }
+        try (Writer writer = response.getWriter()) {
+            writer.write(Pages.renderResultListJson(ids, storage));
         }
     }
 

@@ -162,6 +162,112 @@ public class ScriptTagWriter {
         return sb.toString();
     }
 
+    /**
+     * Writes out a script tag in the format that the mini profiler front end
+     * javascript expects for the results list page.
+     *
+     * <p>Writes tag using default path to miniprofiler resources (<code>/miniprofiler</code>).</p>
+     *
+     * @return script html tag
+     */
+    public String printListScriptTag() {
+        return printListScriptTag(provider.getUiConfig());
+    }
+
+    /**
+     * Writes out a script tag in the format that the mini profiler front end
+     * javascript expects for the results list page.
+     *
+     * @param path path to the script
+     * @return script html tag
+     */
+    public String printListScriptTag(String path) {
+        return printListScriptTag(provider.getUiConfig(), path);
+    }
+
+    /**
+     * Writes out a script tag in the format that the mini profiler front end
+     * javascript expects for the results list page.
+     *
+     * @param config specific UI config
+     * @return script html tag
+     */
+    public String printListScriptTag(ProfilerUiConfig config) {
+        return printListScriptTag(config, config.getPath());
+    }
+
+    /**
+     * Writes out a script tag in the format that the mini profiler front end
+     * javascript expects for the results list page.
+     *
+     * @param config specific UI config
+     * @param path   path to the script
+     * @return script html tag
+     */
+    public String printListScriptTag(ProfilerUiConfig config, String path) {
+        String version = MiniProfiler.getVersion();
+        if (!path.endsWith("/")) {
+            path = path + "/";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("<script id='mini-profiler'");
+        appendAttribute(sb, "src", path + "includes.js?version=" + version);
+        appendAttribute(sb, "data-version", version);
+        appendAttribute(sb, "data-path", path);
+        appendAttribute(sb, "data-color-scheme", config.getColorScheme().name());
+        sb.append("></script>");
+        return sb.toString();
+    }
+
+    /**
+     * Writes out an inline script tag that invokes <code>MiniProfiler.listInit()</code> for the results list page.
+     *
+     * <p>Uses default path to miniprofiler resources (<code>/miniprofiler</code>).</p>
+     *
+     * @return inline script html tag
+     */
+    public String printListInitScript() {
+        return printListInitScript(provider.getUiConfig());
+    }
+
+    /**
+     * Writes out an inline script tag that invokes <code>MiniProfiler.listInit()</code> for the results list page.
+     *
+     * @param path path to miniprofiler resources
+     * @return inline script html tag
+     */
+    public String printListInitScript(String path) {
+        return printListInitScript(provider.getUiConfig(), path);
+    }
+
+    /**
+     * Writes out an inline script tag that invokes <code>MiniProfiler.listInit()</code> for the results list page.
+     *
+     * @param config specific UI config
+     * @return inline script html tag
+     */
+    public String printListInitScript(ProfilerUiConfig config) {
+        return printListInitScript(config, config.getPath());
+    }
+
+    /**
+     * Writes out an inline script tag that invokes <code>MiniProfiler.listInit()</code> for the results list page.
+     *
+     * @param config specific UI config
+     * @param path   path to miniprofiler resources
+     * @return inline script html tag
+     */
+    public String printListInitScript(ProfilerUiConfig config, String path) {
+        if (!path.endsWith("/")) {
+            path = path + "/";
+        }
+        String version = MiniProfiler.getVersion();
+        return "<script>MiniProfiler.listInit({path: '" + path
+            + "', version: '" + version
+            + "', authorized: '" + config.isAuthorized()
+            + "', colorScheme: '" + config.getColorScheme().name() + "'});</script>";
+    }
+
     // TODO: We don't currently encode these attributes properly. The only case where this is likely to be a problem
     // is the toggleShortcut where someone could put a
     private static void appendAttribute(StringBuilder sb, String attributeName, Object value) {

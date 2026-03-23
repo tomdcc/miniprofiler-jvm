@@ -149,4 +149,29 @@ class ProfilerImplSpec extends Specification {
         ]
     }
 
+    void "list json contains expected fields in order"() {
+        when:
+        def parsed = new ObjectMapper().readTree(profiler.asListJson())
+
+        then:
+        parsed.fieldNames().collect() == [
+            'Id',
+            'Name',
+            'ClientTimings',
+            'Started',
+            'HasUserViewed',
+            'MachineName',
+            'User',
+            'DurationMilliseconds'
+        ]
+    }
+
+    void "list json does not contain Root"() {
+        when:
+        def parsed = new ObjectMapper().readTree(profiler.asListJson())
+
+        then:
+        !parsed.has('Root')
+    }
+
 }

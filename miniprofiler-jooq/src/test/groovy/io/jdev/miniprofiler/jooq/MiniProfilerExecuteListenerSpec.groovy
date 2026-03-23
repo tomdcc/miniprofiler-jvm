@@ -45,7 +45,7 @@ class MiniProfilerExecuteListenerSpec extends Specification {
         tpp = new TestProfilerProvider()
 
         ds = new JdbcDataSource()
-        ds.URL = "jdbc:h2:mem:miniprofiler;DB_CLOSE_DELAY=-1"
+        ds.URL = "jdbc:h2:mem:jooq_test;DB_CLOSE_DELAY=-1"
         ds.user = "sa"
         ds.password = "sa"
 

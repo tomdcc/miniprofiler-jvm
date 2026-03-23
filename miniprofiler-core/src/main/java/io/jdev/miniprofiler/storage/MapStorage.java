@@ -18,10 +18,16 @@ package io.jdev.miniprofiler.storage;
 
 import io.jdev.miniprofiler.internal.ProfilerImpl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Storage implementation based on an LRU in-memory map.
@@ -45,6 +51,27 @@ public class MapStorage extends BaseStorage {
 
     public ProfilerImpl load(UUID id) {
         return cache.get(id);
+    }
+
+    @Override
+    public Collection<UUID> list(int maxResults, Date start, Date finish, ListResultsOrder orderBy) {
+        long startMs = start != null ? start.getTime() : 0;
+        long finishMs = finish != null ? finish.getTime() : Long.MAX_VALUE;
+        List<ProfilerImpl> filtered;
+        synchronized (cache) {
+            filtered = new ArrayList<>(cache.values()).stream()
+                .filter(p -> p.getStarted() >= startMs && p.getStarted() <= finishMs)
+                .collect(Collectors.toList());
+        }
+        Comparator<ProfilerImpl> cmp = Comparator.comparingLong(ProfilerImpl::getStarted);
+        if (orderBy == ListResultsOrder.Descending) {
+            cmp = cmp.reversed();
+        }
+        return filtered.stream()
+            .sorted(cmp)
+            .limit(maxResults)
+            .map(ProfilerImpl::getId)
+            .collect(Collectors.toList());
     }
 
     private static class LRUMapCache extends LinkedHashMap<UUID, ProfilerImpl> {

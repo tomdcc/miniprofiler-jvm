@@ -19,6 +19,7 @@ package io.jdev.miniprofiler.servlet.funtest
 import geb.spock.GebReportingSpec
 import io.jdev.miniprofiler.test.pages.MiniProfilerGapModule
 import io.jdev.miniprofiler.test.pages.MiniProfilerQueryModule
+import io.jdev.miniprofiler.test.pages.MiniProfilerResultsIndexPage
 import io.jdev.miniprofiler.test.pages.MiniProfilerSingleResultPage
 
 class ServletMiniprofilerFunctionalSpec extends GebReportingSpec {
@@ -85,6 +86,25 @@ class ServletMiniprofilerFunctionalSpec extends GebReportingSpec {
             waitFor {
                 page.items.size() == 2
             }
+        }
+    }
+
+    void "can view results index page"() {
+        given: 'a profile exists'
+        to HomePage
+
+        when: 'navigate to results index'
+        to MiniProfilerResultsIndexPage
+
+        then: 'page loaded'
+        at MiniProfilerResultsIndexPage
+
+        and: 'table is present'
+        resultsTable.displayed
+
+        and: 'at least one row appears after JS loads'
+        waitFor {
+            resultRows.size() >= 1
         }
     }
 

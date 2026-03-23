@@ -20,6 +20,7 @@ import groovy.json.JsonSlurper
 import io.jdev.miniprofiler.ProfileLevel
 import io.jdev.miniprofiler.internal.ProfilerImpl
 import io.jdev.miniprofiler.ProfilerProvider
+import io.jdev.miniprofiler.storage.MapStorage
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import io.jdev.miniprofiler.test.TestStorage
 import org.springframework.mock.web.MockFilterConfig
@@ -180,6 +181,102 @@ class ProfilingFilterSpec extends Specification {
 
         and: 'profiler id set in header'
         response.getHeader("X-MiniProfiler-Ids") == """["$id"]"""
+    }
+
+    void "results-index returns HTML list page"() {
+        given: 'request'
+        request = new MockHttpServletRequest('GET', '/miniprofiler/results-index')
+
+        when: 'invoked'
+        filter.doFilter(request, response, chain)
+
+        then: 'chain not invoked'
+        !chain.invoked
+
+        and: 'returns html'
+        response.status == 200
+        response.contentType.contains('text/html')
+
+        and: 'contains list table'
+        response.contentAsString.contains("mp-results-index")
+
+        and: 'contains listInit call'
+        response.contentAsString.contains("MiniProfiler.listInit")
+    }
+
+    void "results-list returns JSON array of stored profiles"() {
+        given: 'map storage with profilers'
+        def mapStorage = new MapStorage()
+        profilerProvider.storage = mapStorage
+        def p1 = new ProfilerImpl('test1', ProfileLevel.Info, profilerProvider)
+        p1.stop()
+        def p2 = new ProfilerImpl('test2', ProfileLevel.Info, profilerProvider)
+        p2.stop()
+
+        and: 'request'
+        request = new MockHttpServletRequest('GET', '/miniprofiler/results-list')
+
+        when: 'invoked'
+        filter.doFilter(request, response, chain)
+
+        then: 'chain not invoked'
+        !chain.invoked
+
+        and: 'returns json'
+        response.status == 200
+        response.contentType.contains('application/json')
+
+        and: 'contains profiler data'
+        def json = new JsonSlurper().parseText(response.contentAsString)
+        json instanceof List
+        json.size() == 2
+    }
+
+    void "results-list JSON does not contain Root"() {
+        given: 'map storage with a profiler'
+        def mapStorage = new MapStorage()
+        profilerProvider.storage = mapStorage
+        def p1 = new ProfilerImpl('test1', ProfileLevel.Info, profilerProvider)
+        p1.stop()
+
+        and: 'request'
+        request = new MockHttpServletRequest('GET', '/miniprofiler/results-list')
+
+        when: 'invoked'
+        filter.doFilter(request, response, chain)
+
+        then: 'returned JSON does not contain Root'
+        def json = new JsonSlurper().parseText(response.contentAsString)
+        !json[0].containsKey('Root')
+    }
+
+    void "results-list with last-id filters results"() {
+        given: 'map storage with profilers at different times'
+        def mapStorage = new MapStorage()
+        profilerProvider.storage = mapStorage
+        def p1 = new ProfilerImpl(null, 'test1', 'test1', ProfileLevel.Info, profilerProvider)
+        mapStorage.save(p1)
+        Thread.sleep(10)
+        def p2 = new ProfilerImpl(null, 'test2', 'test2', ProfileLevel.Info, profilerProvider)
+        mapStorage.save(p2)
+        Thread.sleep(10)
+        def p3 = new ProfilerImpl(null, 'test3', 'test3', ProfileLevel.Info, profilerProvider)
+        mapStorage.save(p3)
+
+        and: 'request with last-id set to p1'
+        request = new MockHttpServletRequest('GET', '/miniprofiler/results-list')
+        request.addParameter('last-id', p1.id.toString())
+
+        when: 'invoked'
+        filter.doFilter(request, response, chain)
+
+        then: 'returns profiles started after p1'
+        def json = new JsonSlurper().parseText(response.contentAsString)
+        json instanceof List
+        json.size() == 2
+        json*.Id.contains(p2.id.toString())
+        json*.Id.contains(p3.id.toString())
+        !json*.Id.contains(p1.id.toString())
     }
 
     void "serves standalone results"() {

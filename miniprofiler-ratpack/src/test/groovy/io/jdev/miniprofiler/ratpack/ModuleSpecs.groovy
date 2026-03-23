@@ -40,11 +40,11 @@ class ModuleSpecs extends Specification {
         }
     }
 
-    final JdbcDataSource ds = new JdbcDataSource(url: "jdbc:h2:mem:dev")
+    final JdbcDataSource ds = new JdbcDataSource(url: "jdbc:h2:mem:ratpack_test_shared")
 
     void "hikari module provides wrapped ds"() {
         given:
-        DataSource ds = new JdbcDataSource(url: "jdbc:h2:mem:dev")
+        DataSource ds = new JdbcDataSource(url: "jdbc:h2:mem:ratpack_test")
         Injector injector = Guice.createInjector(new ServerConfigModule(), new MiniProfilerHikariModule() {
             @Override
             protected void defaultConfig(ServerConfig serverConfig, HikariConfig config) {

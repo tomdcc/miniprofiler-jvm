@@ -310,6 +310,19 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         return this.toJSONString();
     }
 
+    public String asListJson() {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("Id", id.toString());
+        map.put("Name", name);
+        map.put("ClientTimings", null);
+        map.put("Started", Instant.ofEpochMilli(started).atOffset(ZoneOffset.UTC).toString());
+        map.put("HasUserViewed", false);
+        map.put("MachineName", machineName);
+        map.put("User", user);
+        map.put("DurationMilliseconds", getDurationMilliseconds());
+        return JSONObject.toJSONString(map);
+    }
+
     /**
      * Render a plain test version of this profiler, for logging
      *
