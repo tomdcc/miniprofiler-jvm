@@ -27,13 +27,7 @@ public final class MiniProfilerJooqUtil {
 
     public static String renderInlined(ExecuteContext ctx) {
         Configuration configuration = ctx.configuration();
-        if (ctx.query() != null) {
-            return DSL.using(configuration).renderInlined(ctx.query());
-        } else if (ctx.routine() != null) {
-            return DSL.using(configuration).renderInlined(ctx.routine());
-        } else if (!StringUtils.isBlank(ctx.sql())) {
-            return ctx.sql();
-        } else if(ctx.type() == ExecuteType.BATCH) {
+        if (ctx.type() == ExecuteType.BATCH) {
             String[] statements = ctx.batchSQL();
             if (statements != null && statements.length > 0) {
                 StringBuilder queries = new StringBuilder();
@@ -45,6 +39,13 @@ public final class MiniProfilerJooqUtil {
                 }
                 return queries.toString();
             }
+        }
+        if (ctx.query() != null) {
+            return DSL.using(configuration).renderInlined(ctx.query());
+        } else if (ctx.routine() != null) {
+            return DSL.using(configuration).renderInlined(ctx.routine());
+        } else if (!StringUtils.isBlank(ctx.sql())) {
+            return ctx.sql();
         }
         return null;
     }
