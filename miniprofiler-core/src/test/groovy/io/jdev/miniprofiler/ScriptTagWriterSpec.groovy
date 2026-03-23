@@ -115,6 +115,79 @@ class ScriptTagWriterSpec extends Specification {
         attrs['data-ids'] == "[$profiler.id]"
     }
 
+    void "printListScriptTag writes correct attributes"() {
+        when:
+        def result = writer.printListScriptTag()
+
+        then:
+        def attrs = parseListTag(result)
+        attrs.src == "$config.path/includes.js?version=${version}"
+        attrs['data-path'] == "$config.path/"
+        attrs['data-version'] == version
+        attrs['data-color-scheme'] == config.colorScheme.name()
+    }
+
+    void "printListScriptTag uses provided path"() {
+        when:
+        def result = writer.printListScriptTag('/custom/path')
+
+        then:
+        def attrs = parseListTag(result)
+        attrs.src == "/custom/path/includes.js?version=${version}"
+        attrs['data-path'] == "/custom/path/"
+    }
+
+    void "printListScriptTag uses provided config"() {
+        given:
+        ProfilerUiConfig override = config.copy().with {
+            path = '/other'
+            colorScheme = ProfilerUiConfig.ColorScheme.Dark
+            it
+        }
+
+        when:
+        def result = writer.printListScriptTag(override)
+
+        then:
+        def attrs = parseListTag(result)
+        attrs['data-path'] == '/other/'
+        attrs['data-color-scheme'] == 'Dark'
+    }
+
+    void "printListInitScript writes correct params"() {
+        when:
+        def result = writer.printListInitScript()
+
+        then:
+        result == "<script>MiniProfiler.listInit({path: '$config.path/', version: '${version}', authorized: '${config.authorized}', colorScheme: '${config.colorScheme.name()}'});</script>"
+    }
+
+    void "printListInitScript uses provided path"() {
+        when:
+        def result = writer.printListInitScript('/custom/path')
+
+        then:
+        result.contains("path: '/custom/path/'")
+    }
+
+    void "printListInitScript uses provided config"() {
+        given:
+        ProfilerUiConfig override = config.copy().with {
+            path = '/other'
+            colorScheme = ProfilerUiConfig.ColorScheme.Dark
+            authorized = true
+            it
+        }
+
+        when:
+        def result = writer.printListInitScript(override)
+
+        then:
+        result.contains("path: '/other/'")
+        result.contains("colorScheme: 'Dark'")
+        result.contains("authorized: 'true'")
+    }
+
     private static void validateUiAttrs(Map<String, String> attrs, ProfilerUiConfig config) {
         assert attrs['data-position'] == config.position.name()
         assert attrs['data-scheme'] == config.colorScheme.name()
@@ -132,6 +205,16 @@ class ScriptTagWriterSpec extends Specification {
         def match = tag =~ /<script type='text\/javascript' id='mini-profiler' src='(.*?)'(.*)><\/script>/
         assert match.matches()
         // this is obviously q&d, but it works for our test data well enough
+        [src: match.group(1)] + (match.group(2).split(' data-') as List).findAll { it }.collectEntries { item ->
+            def itemMatch = item =~ /(.*)='(.*)'/
+            assert itemMatch.matches()
+            ["data-${itemMatch.group(1)}".toString(), itemMatch.group(2)]
+        }
+    }
+
+    private static Map<String, String> parseListTag(String tag) {
+        def match = tag =~ /<script id='mini-profiler' src='(.*?)'(.*)><\/script>/
+        assert match.matches()
         [src: match.group(1)] + (match.group(2).split(' data-') as List).findAll { it }.collectEntries { item ->
             def itemMatch = item =~ /(.*)='(.*)'/
             assert itemMatch.matches()

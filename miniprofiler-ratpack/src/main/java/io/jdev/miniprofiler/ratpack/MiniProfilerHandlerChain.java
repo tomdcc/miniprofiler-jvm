@@ -34,6 +34,8 @@ public class MiniProfilerHandlerChain implements Action<Chain> {
     @Override
     public void execute(Chain chain) {
         chain.path("results", MiniProfilerResultsHandler.class);
+        chain.path("results-index", MiniProfilerResultsIndexHandler.class);
+        chain.path("results-list", MiniProfilerResultsListHandler.class);
         chain.get(":path", MiniProfilerResourceHandler.class);
     }
 }

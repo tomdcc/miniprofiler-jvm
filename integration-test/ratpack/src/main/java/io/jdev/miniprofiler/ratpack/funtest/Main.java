@@ -36,7 +36,7 @@ public class Main {
                     bindings.module(TextTemplateModule.class);
                     bindings.module(MiniProfilerHikariModule.class, hikariConfig -> {
                         hikariConfig.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
-                        hikariConfig.addDataSourceProperty("URL", "jdbc:h2:mem:miniprofiler;DB_CLOSE_DELAY=-1");
+                        hikariConfig.addDataSourceProperty("URL", "jdbc:h2:mem:ratpack_integ_test;DB_CLOSE_DELAY=-1");
                     });
                     bindings.module(MiniProfilerModule.class, profilerConfig -> {
                         profilerConfig.uiConfig.setPosition(ProfilerUiConfig.Position.Left);

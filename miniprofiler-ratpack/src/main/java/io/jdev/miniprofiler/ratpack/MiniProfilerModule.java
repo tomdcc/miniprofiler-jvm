@@ -57,6 +57,8 @@ public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Co
         bind(StoreMiniProfilerHandler.class).in(Scopes.SINGLETON);
         bind(DiscardMiniProfilerHandler.class).in(Scopes.SINGLETON);
         bind(MiniProfilerResultsHandler.class).in(Scopes.SINGLETON);
+        bind(MiniProfilerResultsIndexHandler.class).in(Scopes.SINGLETON);
+        bind(MiniProfilerResultsListHandler.class).in(Scopes.SINGLETON);
         bind(MiniProfilerResourceHandler.class).in(Scopes.SINGLETON);
     }
 

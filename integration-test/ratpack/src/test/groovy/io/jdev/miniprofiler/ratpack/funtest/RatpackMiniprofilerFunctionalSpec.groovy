@@ -21,16 +21,24 @@ import io.jdev.miniprofiler.test.pages.MiniProfilerGapModule
 import io.jdev.miniprofiler.test.pages.MiniProfilerQueryModule
 import io.jdev.miniprofiler.test.pages.MiniProfilerResultModule
 import io.jdev.miniprofiler.test.pages.MiniProfilerModule
+import io.jdev.miniprofiler.test.pages.MiniProfilerResultsIndexPage
 import io.jdev.miniprofiler.test.pages.MiniProfilerSingleResultPage
 import ratpack.test.MainClassApplicationUnderTest
 import ratpack.test.ServerBackedApplicationUnderTest
+import spock.lang.AutoCleanup
+import spock.lang.Shared
 
 class RatpackMiniprofilerFunctionalSpec extends GebReportingSpec {
 
+    @AutoCleanup
+    @Shared
     ServerBackedApplicationUnderTest aut
 
-    void setup() {
+    void setupSpec() {
         aut = new MainClassApplicationUnderTest(Main)
+    }
+
+    void setup() {
         browser.baseUrl = aut.address.toString()
 
         // Go here first as there's an issue in the ui js the very first time it's loaded, related to something
@@ -125,6 +133,26 @@ class RatpackMiniprofilerFunctionalSpec extends GebReportingSpec {
         closeResultPopup(result)
 
         true
+    }
+
+    void "can view results index page"() {
+        given: 'a profile exists'
+        to HomePage
+        Thread.sleep(500)
+
+        when: 'navigate to results index'
+        to MiniProfilerResultsIndexPage
+
+        then: 'page loaded'
+        at MiniProfilerResultsIndexPage
+
+        and: 'table is present'
+        resultsTable.displayed
+
+        and: 'at least one row appears after JS loads'
+        waitFor {
+            resultRows.size() >= 1
+        }
     }
 
     MiniProfilerModule getMiniProfiler() {

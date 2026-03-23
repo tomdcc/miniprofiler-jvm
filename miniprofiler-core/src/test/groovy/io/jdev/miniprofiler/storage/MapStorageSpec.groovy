@@ -19,6 +19,7 @@ package io.jdev.miniprofiler.storage
 import io.jdev.miniprofiler.ProfileLevel
 import io.jdev.miniprofiler.internal.ProfilerImpl
 import io.jdev.miniprofiler.ProfilerProvider
+import io.jdev.miniprofiler.storage.Storage.ListResultsOrder
 import spock.lang.Specification
 
 class MapStorageSpec extends Specification {
@@ -58,5 +59,103 @@ class MapStorageSpec extends Specification {
         !storage.load(val1.id)
         storage.load(val2.id) == val2
         storage.load(val3.id) == val3
+    }
+
+    void "list returns profiles in descending order by started time"() {
+        given:
+        storage = new MapStorage(10)
+        def val1 = new ProfilerImpl(null, 'test1', 'test1', ProfileLevel.Info, profilerProvider)
+        Thread.sleep(10)
+        def val2 = new ProfilerImpl(null, 'test2', 'test2', ProfileLevel.Info, profilerProvider)
+        Thread.sleep(10)
+        def val3 = new ProfilerImpl(null, 'test3', 'test3', ProfileLevel.Info, profilerProvider)
+        storage.save(val1)
+        storage.save(val2)
+        storage.save(val3)
+
+        when:
+        def result = storage.list(10, null, null, ListResultsOrder.Descending)
+
+        then:
+        result.toList() == [val3.id, val2.id, val1.id]
+    }
+
+    void "list returns profiles in ascending order by started time"() {
+        given:
+        storage = new MapStorage(10)
+        def val1 = new ProfilerImpl(null, 'test1', 'test1', ProfileLevel.Info, profilerProvider)
+        Thread.sleep(10)
+        def val2 = new ProfilerImpl(null, 'test2', 'test2', ProfileLevel.Info, profilerProvider)
+        Thread.sleep(10)
+        def val3 = new ProfilerImpl(null, 'test3', 'test3', ProfileLevel.Info, profilerProvider)
+        storage.save(val1)
+        storage.save(val2)
+        storage.save(val3)
+
+        when:
+        def result = storage.list(10, null, null, ListResultsOrder.Ascending)
+
+        then:
+        result.toList() == [val1.id, val2.id, val3.id]
+    }
+
+    void "list respects maxResults limit"() {
+        given:
+        storage = new MapStorage(10)
+        def val1 = new ProfilerImpl(null, 'test1', 'test1', ProfileLevel.Info, profilerProvider)
+        Thread.sleep(10)
+        def val2 = new ProfilerImpl(null, 'test2', 'test2', ProfileLevel.Info, profilerProvider)
+        Thread.sleep(10)
+        def val3 = new ProfilerImpl(null, 'test3', 'test3', ProfileLevel.Info, profilerProvider)
+        storage.save(val1)
+        storage.save(val2)
+        storage.save(val3)
+
+        when:
+        def result = storage.list(2, null, null, ListResultsOrder.Descending)
+
+        then:
+        result.size() == 2
+        result.toList() == [val3.id, val2.id]
+    }
+
+    void "list filters by start date"() {
+        given:
+        storage = new MapStorage(10)
+        def val1 = new ProfilerImpl(null, 'test1', 'test1', ProfileLevel.Info, profilerProvider)
+        Thread.sleep(10)
+        def val2 = new ProfilerImpl(null, 'test2', 'test2', ProfileLevel.Info, profilerProvider)
+        Thread.sleep(10)
+        def val3 = new ProfilerImpl(null, 'test3', 'test3', ProfileLevel.Info, profilerProvider)
+        storage.save(val1)
+        storage.save(val2)
+        storage.save(val3)
+
+        when:
+        // Filter to only val2 and val3 by starting after val1
+        def result = storage.list(10, new Date(val2.started), null, ListResultsOrder.Descending)
+
+        then:
+        result.toList() == [val3.id, val2.id]
+    }
+
+    void "list filters by finish date"() {
+        given:
+        storage = new MapStorage(10)
+        def val1 = new ProfilerImpl(null, 'test1', 'test1', ProfileLevel.Info, profilerProvider)
+        Thread.sleep(10)
+        def val2 = new ProfilerImpl(null, 'test2', 'test2', ProfileLevel.Info, profilerProvider)
+        Thread.sleep(10)
+        def val3 = new ProfilerImpl(null, 'test3', 'test3', ProfileLevel.Info, profilerProvider)
+        storage.save(val1)
+        storage.save(val2)
+        storage.save(val3)
+
+        when:
+        // Filter to only val1 and val2 by ending before val3
+        def result = storage.list(10, null, new Date(val2.started), ListResultsOrder.Descending)
+
+        then:
+        result.toList() == [val2.id, val1.id]
     }
 }
