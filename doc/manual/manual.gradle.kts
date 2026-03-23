@@ -17,8 +17,9 @@ import java.awt.Desktop.getDesktop
  */
 
 plugins {
-    alias(libs.plugins.asciidoctor)
+    id("build.base")
     id("build.publish")
+    alias(libs.plugins.asciidoctor)
 }
 
 repositories {
@@ -27,6 +28,10 @@ repositories {
 
 tasks.asciidoctor.configure {
     baseDirFollowsSourceDir()
+}
+
+tasks.named("sanityCheck") {
+    dependsOn(tasks.named("asciidoctor"))
 }
 
 val api by tasks.registering(Javadoc::class) {

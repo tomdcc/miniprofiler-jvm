@@ -18,6 +18,7 @@ import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
+    id("build.base")
     id("build.checkstyle")
     id("build.codenarc")
     id("groovy")
@@ -69,4 +70,11 @@ if (!project.path.startsWith(":integration-test:")) {
             runtimeClasspath += sourceSets.main.get().compileClasspath
         }
     }
+}
+
+tasks.named("sanityCheck") {
+    dependsOn(tasks.withType<AbstractCompile>())
+    dependsOn(tasks.withType<Checkstyle>())
+    dependsOn(tasks.withType<CodeNarc>())
+    dependsOn(tasks.withType<Javadoc>())
 }
