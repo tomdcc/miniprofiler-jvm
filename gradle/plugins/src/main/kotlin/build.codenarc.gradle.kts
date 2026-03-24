@@ -33,8 +33,8 @@ codenarc {
     configFile = rootProject.file("gradle/codenarc/codenarc.groovy")
 }
 
-project.afterEvaluate {
-    tasks.named<CodeNarc>("codenarcTest") {
+tasks.withType<CodeNarc>().configureEach {
+    if (name != "codenarcMain") {
         configFile = rootProject.file("gradle/codenarc/codenarcTest.groovy")
     }
 }

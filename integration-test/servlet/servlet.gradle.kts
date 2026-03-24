@@ -15,8 +15,8 @@
  */
 
 plugins {
-    id("build.browser-test")
     id("build.docker-test")
+    id("build.integration-test")
     id("build.java-module")
 }
 
@@ -28,10 +28,10 @@ dependencies {
     }
     implementation(libs.h2)
 
-    testImplementation(projects.integrationTest.lib)
+    integrationTestImplementation(projects.integrationTest.lib)
 }
 
-tasks.withType<Test>().configureEach {
+tasks.named<Test>("integrationTest").configure {
     val warFile = tasks.named<War>("war").flatMap { it.archiveFile }
     doFirst {
         systemProperty("integrationTest.warPath", warFile.get().asFile.absolutePath)
