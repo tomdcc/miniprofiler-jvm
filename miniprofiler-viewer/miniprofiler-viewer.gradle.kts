@@ -14,17 +14,38 @@
  * limitations under the License.
  */
 
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
+    alias(libs.plugins.shadow)
     id("build.integration-test")
     id("build.java-module")
     id("build.publish")
     id("application")
+    id("java-test-fixtures")
 }
 
 application.mainClass = "io.jdev.miniprofiler.viewer.MiniProfilerViewerMain"
 
 dependencies {
     implementation(projects.miniprofilerCore)
+}
+
+dependencies {
+    testFixturesImplementation(libs.groovy)
+}
+
+val testFixturesResourceDir = file("src/testFixtures/resources").absolutePath
+
+tasks.withType<Test>().configureEach {
+    systemProperty("miniprofiler.viewer.testFixturesDir", testFixturesResourceDir)
+}
+
+val shadowJarTask = tasks.named<ShadowJar>("shadowJar")
+
+tasks.named<Test>("integrationTest") {
+    dependsOn(shadowJarTask)
+    systemProperty("miniprofiler.viewer.jar", shadowJarTask.get().archiveFile.get().asFile.absolutePath)
 }
 
 publishing {

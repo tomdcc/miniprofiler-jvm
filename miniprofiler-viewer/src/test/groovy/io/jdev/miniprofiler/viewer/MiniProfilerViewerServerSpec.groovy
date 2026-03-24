@@ -22,13 +22,10 @@ import spock.lang.Specification
 
 class MiniProfilerViewerServerSpec extends Specification {
 
-    static final UUID PROFILE_ID = UUID.fromString('550e8400-e29b-41d4-a716-446655440000')
-
     MiniProfilerViewerServer server
 
     void setup() {
-        def profileFile = new File(getClass().getResource('/test-profile.json').toURI())
-        def storage = MiniProfilerViewerSingleFileStorage.forFile(profileFile.toPath())
+        def storage = MiniProfilerViewerSingleFileStorage.forFile(ViewerTestFixtures.PROFILE_FILE.toPath())
         server = new MiniProfilerViewerServer(storage)
     }
 
@@ -50,7 +47,7 @@ class MiniProfilerViewerServerSpec extends Specification {
 
     void "GET results returns HTML"() {
         when:
-        def conn = connect("miniprofiler/results?id=${PROFILE_ID}")
+        def conn = connect("miniprofiler/results?id=${ViewerTestFixtures.PROFILE_ID}")
 
         then:
         conn.responseCode == 200
@@ -60,25 +57,25 @@ class MiniProfilerViewerServerSpec extends Specification {
 
     void "GET results with JSON accept returns profiler JSON"() {
         when:
-        def conn = connect("miniprofiler/results?id=${PROFILE_ID}", 'application/json')
+        def conn = connect("miniprofiler/results?id=${ViewerTestFixtures.PROFILE_ID}", 'application/json')
         def json = new JsonSlurper().parse(conn.inputStream)
 
         then:
         conn.responseCode == 200
         conn.contentType.contains('application/json')
-        json.Id == PROFILE_ID.toString()
+        json.Id == ViewerTestFixtures.PROFILE_ID.toString()
         json.Name == '/test-request'
     }
 
     void "POST results with JSON body returns profiler JSON"() {
         when:
-        def conn = connect('miniprofiler/results', 'application/json', 'POST', """{"Id": "${PROFILE_ID}"}""")
+        def conn = connect('miniprofiler/results', 'application/json', 'POST', """{"Id": "${ViewerTestFixtures.PROFILE_ID}"}""")
         def json = new JsonSlurper().parse(conn.inputStream)
 
         then:
         conn.responseCode == 200
         conn.contentType.contains('application/json')
-        json.Id == PROFILE_ID.toString()
+        json.Id == ViewerTestFixtures.PROFILE_ID.toString()
     }
 
     void "GET results with unknown id returns 404"() {

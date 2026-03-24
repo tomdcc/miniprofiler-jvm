@@ -21,24 +21,25 @@ import io.jdev.miniprofiler.test.pages.MiniProfilerSingleResultPage
 
 class MiniProfilerViewerFunctionalSpec extends GebReportingSpec {
 
-    static final String PROFILE_ID = '550e8400-e29b-41d4-a716-446655440000'
-
-    MiniProfilerViewerServer server
+    Process viewerProcess
 
     void setup() {
-        def profileFile = new File(getClass().getResource('/test-profile.json').toURI())
-        def storage = MiniProfilerViewerSingleFileStorage.forFile(profileFile.toPath())
-        server = new MiniProfilerViewerServer(storage)
-        browser.baseUrl = "http://localhost:${server.port}/"
+        def jarPath = System.getProperty('miniprofiler.viewer.jar')
+        viewerProcess = new ProcessBuilder('java', '-jar', jarPath, ViewerTestFixtures.PROFILE_FILE.absolutePath)
+            .start()
+        def line = new BufferedReader(new InputStreamReader(viewerProcess.inputStream)).readLine()
+        def url = line.replaceFirst(/^View profile at: /, '')
+        def port = new URI(url).port
+        browser.baseUrl = "http://localhost:${port}/"
     }
 
     void cleanup() {
-        server?.close()
+        viewerProcess?.destroy()
     }
 
     void "profile file is loaded and displayed in the browser"() {
         when:
-        go "miniprofiler/results?id=${PROFILE_ID}"
+        go "miniprofiler/results?id=${ViewerTestFixtures.PROFILE_ID}"
 
         then:
         at MiniProfilerSingleResultPage

@@ -23,27 +23,24 @@ import java.nio.file.Paths
 
 class MiniProfilerViewerSingleFileStorageSpec extends Specification {
 
-    static final UUID PROFILE_ID = UUID.fromString('550e8400-e29b-41d4-a716-446655440000')
-
     MiniProfilerViewerSingleFileStorage storage
 
     void setup() {
-        def profileFile = new File(getClass().getResource('/test-profile.json').toURI())
-        storage = MiniProfilerViewerSingleFileStorage.forFile(profileFile.toPath())
+        storage = MiniProfilerViewerSingleFileStorage.forFile(ViewerTestFixtures.PROFILE_FILE.toPath())
     }
 
     void "forFile parses the profile id"() {
         expect:
-        storage.uuid == PROFILE_ID
+        storage.uuid == ViewerTestFixtures.PROFILE_ID
     }
 
     void "load returns profiler for matching id"() {
         when:
-        def profiler = storage.load(PROFILE_ID)
+        def profiler = storage.load(storage.uuid)
 
         then:
         profiler != null
-        profiler.id == PROFILE_ID
+        profiler.id == storage.uuid
         profiler.name == '/test-request'
         profiler.machineName == 'testhost'
     }
@@ -55,17 +52,17 @@ class MiniProfilerViewerSingleFileStorageSpec extends Specification {
 
     void "list returns uuid when profile started is within date range"() {
         given:
-        def start = new Date(storage.load(PROFILE_ID).started - 1000)
-        def finish = new Date(storage.load(PROFILE_ID).started + 1000)
+        def start = new Date(storage.load(storage.uuid).started - 1000)
+        def finish = new Date(storage.load(storage.uuid).started + 1000)
 
         expect:
-        storage.list(10, start, finish, ListResultsOrder.Ascending) == [PROFILE_ID]
+        storage.list(10, start, finish, ListResultsOrder.Ascending) == [storage.uuid]
     }
 
     void "list returns empty when profile started is before range"() {
         given:
-        def start = new Date(storage.load(PROFILE_ID).started + 1000)
-        def finish = new Date(storage.load(PROFILE_ID).started + 2000)
+        def start = new Date(storage.load(storage.uuid).started + 1000)
+        def finish = new Date(storage.load(storage.uuid).started + 2000)
 
         expect:
         storage.list(10, start, finish, ListResultsOrder.Ascending).isEmpty()
@@ -73,8 +70,8 @@ class MiniProfilerViewerSingleFileStorageSpec extends Specification {
 
     void "list returns empty when profile started is after range"() {
         given:
-        def start = new Date(storage.load(PROFILE_ID).started - 2000)
-        def finish = new Date(storage.load(PROFILE_ID).started - 1000)
+        def start = new Date(storage.load(storage.uuid).started - 2000)
+        def finish = new Date(storage.load(storage.uuid).started - 1000)
 
         expect:
         storage.list(10, start, finish, ListResultsOrder.Ascending).isEmpty()
