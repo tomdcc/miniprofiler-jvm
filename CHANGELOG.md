@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.11.0
+---
+- Add standalone profile viewer application
+- Add profile list page
+- Fix rendering of jOOQ batches
+
 0.10.0
 ---
 - Serves profile in standalone single page
