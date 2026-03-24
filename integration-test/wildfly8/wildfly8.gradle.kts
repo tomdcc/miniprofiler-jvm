@@ -15,8 +15,8 @@
  */
 
 plugins {
-    id("build.browser-test")
     id("build.docker-test")
+    id("build.integration-test")
     id("build.java-module")
 }
 
@@ -24,7 +24,7 @@ dependencies {
     implementation(projects.miniprofilerJavaee)
     implementation(projects.miniprofilerServlet)
 
-    testImplementation(projects.integrationTest.lib)
+    integrationTestImplementation(projects.integrationTest.lib)
 }
 
 val h2Classpath by configurations.creating
@@ -32,7 +32,7 @@ dependencies {
     h2Classpath(libs.h2)
 }
 
-tasks.withType<Test>().configureEach {
+tasks.named<Test>("integrationTest").configure {
     val warFile = tasks.named<War>("war").flatMap { it.archiveFile }
     doFirst {
         systemProperty("integrationTest.warPath", warFile.get().asFile.absolutePath)

@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id("build.browser-test")
+    id("build.integration-test")
     id("build.java-module")
     id("application")
 }
@@ -32,5 +32,5 @@ dependencies {
     implementation(libs.ratpack.groovy)
     implementation(libs.h2)
 
-    testImplementation(libs.ratpack.test)
+    integrationTestImplementation(libs.ratpack.test)
 }
