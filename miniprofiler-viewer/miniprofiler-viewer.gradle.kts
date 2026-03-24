@@ -41,7 +41,13 @@ tasks.withType<Test>().configureEach {
     systemProperty("miniprofiler.viewer.testFixturesDir", testFixturesResourceDir)
 }
 
-val shadowJarTask = tasks.named<ShadowJar>("shadowJar")
+val shadowJarTask = tasks.named<ShadowJar>("shadowJar") {
+    archiveClassifier.set("")
+}
+
+tasks.named<Jar>("jar") {
+    archiveClassifier.set("original")
+}
 
 tasks.named<Test>("integrationTest") {
     dependsOn(shadowJarTask)
@@ -50,7 +56,9 @@ tasks.named<Test>("integrationTest") {
 
 publishing {
     publications.named<MavenPublication>("maven") {
-        from(components["java"])
+        artifact(shadowJarTask)
+        artifact(tasks.named("sourcesJar"))
+        artifact(tasks.named("javadocJar"))
         pom {
             name = "MiniProfiler Standalone Viewer"
             description = "Standalone app to allow viewing saved profiles."
