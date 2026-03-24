@@ -58,6 +58,11 @@ publishing {
 val isSnapshot = (project.version as String).endsWith("-SNAPSHOT")
 
 signing {
+    val signingKey: String? = findProperty("signingKey") as String?
+    val signingPassword: String? = findProperty("signingPassword") as String?
+    if (signingKey != null && signingPassword != null) {
+        useInMemoryPgpKeys(signingKey, signingPassword)
+    }
     sign(publishing.publications["maven"])
     setRequired(project.provider {
         val publishingToStaging = !isSnapshot && gradle.taskGraph.hasTask("${project.path}:publishToSonatype")

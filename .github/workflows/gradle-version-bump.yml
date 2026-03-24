@@ -1,0 +1,53 @@
+name: "Version bump"
+on:
+  workflow_run:
+    workflows: ["Validate release artifacts"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      nextVersion:
+        description: "Next dev version (default: auto-increment patch or minor)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  version-bump:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.RELEASE_PAT || secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+
+      - name: Compute next version
+        id: versions
+        run: |
+          CURRENT_VERSION=$(grep -oP '(?<=version = ")[^"]+' miniprofiler-jvm.gradle.kts)
+          RELEASE_VERSION="${CURRENT_VERSION%-SNAPSHOT}"
+          if [ -n "${{ github.event.inputs.nextVersion }}" ]; then
+            NEXT_VERSION="${{ github.event.inputs.nextVersion }}"
+          else
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$RELEASE_VERSION"
+            if [ "$PATCH" != "0" ]; then
+              NEXT_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))-SNAPSHOT"
+            else
+              NEXT_VERSION="${MAJOR}.$((MINOR + 1)).0-SNAPSHOT"
+            fi
+          fi
+          echo "next_version=$NEXT_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Stamp next snapshot version
+        run: |
+          NEXT_VERSION="${{ steps.versions.outputs.next_version }}"
+          sed -i "s/version = \"[^\"]*\"/version = \"${NEXT_VERSION}\"/" miniprofiler-jvm.gradle.kts
+          git add miniprofiler-jvm.gradle.kts
+          git commit -m "Begin development of ${NEXT_VERSION}"
+          git push origin main

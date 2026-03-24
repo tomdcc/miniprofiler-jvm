@@ -1,0 +1,56 @@
+name: "Validate release artifacts"
+on:
+  workflow_run:
+    workflows: ["Release"]
+    types: [completed]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Read version
+        id: version
+        run: |
+          VERSION=$(grep -oP '(?<=version = ")[^"]+' miniprofiler-jvm.gradle.kts)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check artifacts on Maven Central
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          BASE_URL="https://repo1.maven.org/maven2/io/jdev/miniprofiler"
+          ARTIFACTS=(
+            miniprofiler-core
+            miniprofiler-servlet
+            miniprofiler-javaee
+            miniprofiler-jooq
+            miniprofiler-ratpack
+            miniprofiler-grails
+            miniprofiler-viewer
+            miniprofiler-test-support
+            miniprofiler-manual
+          )
+          MAX_WAIT=600
+          INTERVAL=30
+          for ARTIFACT in "${ARTIFACTS[@]}"; do
+            URL="${BASE_URL}/${ARTIFACT}/${VERSION}/${ARTIFACT}-${VERSION}.pom"
+            echo "Checking $URL"
+            ELAPSED=0
+            while true; do
+              STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
+              if [ "$STATUS" = "200" ]; then
+                echo "  OK"
+                break
+              fi
+              if [ $ELAPSED -ge $MAX_WAIT ]; then
+                echo "  Not available after ${MAX_WAIT}s (HTTP $STATUS)"
+                exit 1
+              fi
+              echo "  HTTP $STATUS, retrying in ${INTERVAL}s..."
+              sleep $INTERVAL
+              ELAPSED=$((ELAPSED + INTERVAL))
+            done
+          done

@@ -1,0 +1,79 @@
+name: "Release"
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: "Release version (default: strip -SNAPSHOT from current)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_PAT || secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: |
+            8
+            11
+            17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Configure git
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+
+      - name: Compute release version
+        id: versions
+        run: |
+          SNAPSHOT_VERSION=$(grep -oP '(?<=version = ")[^"]+' miniprofiler-jvm.gradle.kts)
+          if [ -n "${{ github.event.inputs.releaseVersion }}" ]; then
+            RELEASE_VERSION="${{ github.event.inputs.releaseVersion }}"
+          else
+            RELEASE_VERSION="${SNAPSHOT_VERSION%-SNAPSHOT}"
+          fi
+          echo "release_version=$RELEASE_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Stamp release version
+        run: |
+          RELEASE_VERSION="${{ steps.versions.outputs.release_version }}"
+          sed -i "s/version = \".*-SNAPSHOT\"/version = \"${RELEASE_VERSION}\"/" miniprofiler-jvm.gradle.kts
+          sed -i "s/    version: .*/    version: ${RELEASE_VERSION}/" README.md
+
+      - name: Run checks
+        env:
+          CI: true
+        run: ./gradlew check -x integrationTest
+
+      - name: Commit release version
+        run: |
+          RELEASE_VERSION="${{ steps.versions.outputs.release_version }}"
+          git add miniprofiler-jvm.gradle.kts README.md
+          git diff --cached --quiet || git commit -m "Release ${RELEASE_VERSION}"
+
+      - name: Publish to Maven Central
+        env:
+          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.SONATYPE_USERNAME }}
+          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.SONATYPE_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
+        run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --no-parallel
+
+      - name: Tag release and push
+        run: |
+          RELEASE_VERSION="${{ steps.versions.outputs.release_version }}"
+          git tag "v${RELEASE_VERSION}"
+          git push origin main
+          git push origin "v${RELEASE_VERSION}"
