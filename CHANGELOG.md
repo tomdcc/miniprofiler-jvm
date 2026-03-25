@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.11.1
+---
+- Publish viewer fat jar to Maven Central
+
 0.11.0
 ---
 - Add standalone profile viewer application
