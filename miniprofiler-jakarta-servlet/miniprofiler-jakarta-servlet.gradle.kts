@@ -34,8 +34,8 @@ dependencies {
     api(projects.miniprofilerCore)
     compileOnly(libs.jakarta.servlet.api)
     compileOnly(libs.jakarta.jsp.api)
-    testImplementation(libs.spring6.test)
-    testImplementation(libs.spring6.web)
+    testImplementation(libs.spring.v6.test)
+    testImplementation(libs.spring.v6.web)
 }
 
 // to allow deps on a jar, so that a tld will get picked up

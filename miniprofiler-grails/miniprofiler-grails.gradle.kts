@@ -21,7 +21,7 @@ plugins {
 
 dependencies {
 	api(projects.miniprofilerCore)
-    compileOnly(libs.servlet.api)
+    compileOnly(libs.javax.servlet.api.v2)
     compileOnly(libs.grails.web)
 }
 

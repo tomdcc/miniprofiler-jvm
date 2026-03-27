@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Copyright 2026 the original author or authors.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+		 version="6.0">
+
+	<filter>
+		<filter-name>miniprofiler</filter-name>
+		<filter-class>io.jdev.miniprofiler.jakarta.servlet.ProfilingFilter</filter-class>
+		<!-- integration test for non-standard path too -->
+		<init-param>
+			<param-name>path</param-name>
+			<param-value>/admin/miniprofiler</param-value>
+		</init-param>
+		<!-- and cross-origin ajax as well -->
+		<init-param>
+			<param-name>allowed-origin</param-name>
+			<param-value>http://localhost:8081</param-value>
+		</init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>miniprofiler</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+</web-app>

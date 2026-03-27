@@ -6,7 +6,6 @@
 <head>
     <title>MiniProfiler Wildfly 8 Test</title>
     <link href="bootstrap.min.css" rel="stylesheet"/>
-    <script src="jquery-2.0.3.min.js"></script>
 </head>
 <body>
     <div class="container">

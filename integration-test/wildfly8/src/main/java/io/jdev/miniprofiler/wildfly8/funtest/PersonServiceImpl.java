@@ -18,7 +18,7 @@ package io.jdev.miniprofiler.wildfly8.funtest;
 
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.Timing;
-import io.jdev.miniprofiler.javaee.Profiled;
+import io.jdev.miniprofiler.javax.ee.Profiled;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;

@@ -21,12 +21,12 @@ plugins {
 
 dependencies {
     api(projects.miniprofilerCore)
-    compileOnly(libs.servlet.api)
-    compileOnly(libs.jsp.api)
+    compileOnly(libs.javax.servlet.api.v2)
+    compileOnly(libs.javax.jsp.api)
 
-    testImplementation(libs.javax.servlet.api)
-    testImplementation(libs.spring5.test)
-    testImplementation(libs.spring5.web)
+    testImplementation(libs.javax.servlet.api.v4)
+    testImplementation(libs.spring.v5.test)
+    testImplementation(libs.spring.v5.web)
 }
 
 // to allow deps on a jar, so that a tld will get picked up

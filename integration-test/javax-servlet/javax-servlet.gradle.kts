@@ -21,6 +21,7 @@ plugins {
 }
 
 dependencies {
+    compileOnly(libs.javax.ee.api)
     implementation(projects.miniprofilerCore)
     // needs to be a jar to pick up tld automatically
     implementation(projects.miniprofilerJavaxServlet) {

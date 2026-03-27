@@ -31,18 +31,8 @@ project.sourceSets.configureEach { ->
 }
 
 dependencies {
-    compileOnly(libs.servlet.api)
+    compileOnly(libs.javax.servlet.api.v2)
     compileOnly(libs.ehcache) {
-        isTransitive = false
-    }
-
-	// for profiling eclipselink-generated sql
-    compileOnly(libs.eclipselink) {
-        isTransitive = false
-    }
-
-	// for profiling hibernate-generated sql
-    compileOnly(libs.hibernate) {
         isTransitive = false
     }
 

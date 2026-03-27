@@ -30,7 +30,6 @@
 <head>
     <title>MiniProfiler Jakarta Servlet Test</title>
     <link href="bootstrap.min.css" rel="stylesheet"/>
-    <script src="jquery-2.0.3.min.js"></script>
 </head>
 <body>
     <div class="container">

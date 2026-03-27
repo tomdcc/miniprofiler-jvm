@@ -21,8 +21,10 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.miniprofilerJavaee)
+    compileOnly(libs.javax.ee.api)
+    implementation(projects.miniprofilerJavaxEe)
     implementation(projects.miniprofilerJavaxServlet)
+    implementation(projects.miniprofilerHibernate)
 
     integrationTestImplementation(projects.integrationTest.lib)
 }
