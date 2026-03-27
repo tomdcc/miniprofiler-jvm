@@ -23,7 +23,7 @@ dependencies {
 	api(projects.miniprofilerCore)
     compileOnly(libs.javaee)
 
-    testRuntimeOnly(projects.miniprofilerServlet)
+    testRuntimeOnly(projects.miniprofilerJavaxServlet)
 }
 
 publishing {
