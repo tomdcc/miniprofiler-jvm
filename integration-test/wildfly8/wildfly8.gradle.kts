@@ -22,7 +22,7 @@ plugins {
 
 dependencies {
     implementation(projects.miniprofilerJavaee)
-    implementation(projects.miniprofilerServlet)
+    implementation(projects.miniprofilerJavaxServlet)
 
     integrationTestImplementation(projects.integrationTest.lib)
 }

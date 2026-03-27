@@ -24,7 +24,8 @@ jobs:
           BASE_URL="https://repo1.maven.org/maven2/io/jdev/miniprofiler"
           ARTIFACTS=(
             miniprofiler-core
-            miniprofiler-servlet
+            miniprofiler-javax-servlet
+            miniprofiler-jakarta-servlet
             miniprofiler-javaee
             miniprofiler-jooq
             miniprofiler-ratpack

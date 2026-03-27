@@ -103,7 +103,7 @@ The filter can be included in your web.xml like this:
 
 	<filter>
 		<filter-name>miniprofiler</filter-name>
-		<filter-class>io.jdev.miniprofiler.servlet.ProfilingFilter</filter-class>
+		<filter-class>io.jdev.miniprofiler.javax.servlet.ProfilingFilter</filter-class>
 	</filter>
 
 	<filter-mapping>

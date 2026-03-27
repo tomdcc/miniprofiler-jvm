@@ -39,16 +39,16 @@ class JettyContainerManager implements LauncherSessionListener {
             .withExposedPorts(8080)
             .withCopyFileToContainer(
                 MountableFile.forHostPath(war.absolutePath),
-                "/var/lib/jetty/webapps/servlet.war"
+                "/var/lib/jetty/webapps/javax-servlet.war"
             )
             .waitingFor(
-                Wait.forHttp("/servlet/").forPort(8080).forStatusCode(200)
+                Wait.forHttp("/javax-servlet/").forPort(8080).forStatusCode(200)
                     .withStartupTimeout(Duration.ofMinutes(5))
             )
 
         container.start()
 
-        baseUrl = "http://" + container.host + ":" + container.getMappedPort(8080) + "/servlet/"
+        baseUrl = "http://" + container.host + ":" + container.getMappedPort(8080) + "/javax-servlet/"
 
         System.setProperty("geb.build.baseUrl", baseUrl)
     }
