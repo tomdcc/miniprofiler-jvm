@@ -13,7 +13,10 @@ plugins {
 includeBuild("gradle/plugins")
 
 include("miniprofiler-core")
-include("miniprofiler-javaee")
+include("miniprofiler-eclipselink")
+include("miniprofiler-hibernate")
+include("miniprofiler-javax-ee")
+include("miniprofiler-jakarta-ee")
 include("miniprofiler-javax-servlet")
 include("miniprofiler-jakarta-servlet")
 include("miniprofiler-test-support")
@@ -29,6 +32,8 @@ include("integration-test:javax-servlet")
 include("integration-test:jakarta-servlet")
 include("integration-test:glassfish4")
 include("integration-test:wildfly8")
+include("integration-test:glassfish7")
+include("integration-test:wildfly27")
 include("integration-test:ratpack")
 
 rootProject.name = "miniprofiler-jvm"

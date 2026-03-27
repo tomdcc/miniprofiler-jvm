@@ -27,11 +27,6 @@ java {
     }
 }
 
-// build.docker-test adds compileOnly(libs.javaee) — exclude it and use jakarta instead
-configurations.named("compileOnly") {
-    exclude(group = "javax", module = "javaee-api")
-}
-
 dependencies {
     compileOnly(libs.jakarta.servlet.api)
     implementation(projects.miniprofilerCore)

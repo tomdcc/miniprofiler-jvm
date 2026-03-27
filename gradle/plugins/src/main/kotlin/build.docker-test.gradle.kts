@@ -25,7 +25,6 @@ plugins {
 val libs = the<LibrariesForLibs>()
 
 dependencies {
-    compileOnly(libs.javaee)
     testImplementation(libs.testcontainers.core)
     testImplementation(libs.testcontainers.junit5)
 }
