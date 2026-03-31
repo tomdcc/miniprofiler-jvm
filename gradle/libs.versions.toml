@@ -42,7 +42,8 @@ jooq-compile = "3.0.0"
 jooq-test = "3.9.5"
 json-simple = "1.1.1"
 jta = "1.1"
-junit = "5.9.0"
+junit = "5.12.2"
+junit-platform = "1.12.2"
 # Ratpack looks for org.slf4j.impl.StaticLoggerBinder which is the old discovery mechnanism for slf4j 1.x,
 # so we stay on the old version (and this corresponding logback version) to make it be quiet
 logback = "1.2.11"
@@ -91,7 +92,7 @@ jooq-test = { module = "org.jooq:jooq", version.ref = "jooq-test" }
 json-simple = { module = "com.googlecode.json-simple:json-simple", version.ref = "json-simple" }
 jta = { module = "javax.transaction:jta", version.ref = "jta" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "1.9.0" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 nexus-publish-plugin = { module = "io.github.gradle-nexus:publish-plugin", version.ref = "nexus-publish-plugin" }
 ratpack-core = { module = "io.ratpack:ratpack-core", version.ref = "ratpack" }
