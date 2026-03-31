@@ -91,7 +91,7 @@ jooq-test = { module = "org.jooq:jooq", version.ref = "jooq-test" }
 json-simple = { module = "com.googlecode.json-simple:json-simple", version.ref = "json-simple" }
 jta = { module = "javax.transaction:jta", version.ref = "jta" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "1.9.0" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "6.0.3" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 nexus-publish-plugin = { module = "io.github.gradle-nexus:publish-plugin", version.ref = "nexus-publish-plugin" }
 ratpack-core = { module = "io.ratpack:ratpack-core", version.ref = "ratpack" }
