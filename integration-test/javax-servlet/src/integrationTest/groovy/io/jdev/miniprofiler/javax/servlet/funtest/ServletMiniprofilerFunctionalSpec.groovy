@@ -17,10 +17,10 @@
 package io.jdev.miniprofiler.javax.servlet.funtest
 
 import geb.spock.GebReportingSpec
-import io.jdev.miniprofiler.test.pages.MiniProfilerGapModule
-import io.jdev.miniprofiler.test.pages.MiniProfilerQueryModule
-import io.jdev.miniprofiler.test.pages.MiniProfilerResultsIndexPage
-import io.jdev.miniprofiler.test.pages.MiniProfilerSingleResultPage
+import io.jdev.miniprofiler.test.geb.MiniProfilerGapModule
+import io.jdev.miniprofiler.test.geb.MiniProfilerQueryModule
+import io.jdev.miniprofiler.test.geb.MiniProfilerResultsIndexPage
+import io.jdev.miniprofiler.test.geb.MiniProfilerSingleResultPage
 
 class ServletMiniprofilerFunctionalSpec extends GebReportingSpec {
 

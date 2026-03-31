@@ -16,7 +16,6 @@
 
 package io.jdev.miniprofiler.viewer;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -36,10 +35,7 @@ public final class MiniProfilerViewerMain {
         MiniProfilerViewerSingleFileStorage storage = MiniProfilerViewerSingleFileStorage.forFile(path);
         MiniProfilerViewerServer server = new MiniProfilerViewerServer(storage);
         System.out.println("View profile at: http://localhost:" + server.getPort()
-            + "/" + MiniProfilerViewerServer.PREFIX + "/results?id=" + storage.getUuid());
+            + MiniProfilerViewerServer.DEFAULT_PREFIX + "/results?id=" + storage.getUuid());
     }
 
-    public static MiniProfilerViewerServer start(MiniProfilerViewerSingleFileStorage storage) throws IOException {
-        return new MiniProfilerViewerServer(storage);
-    }
 }

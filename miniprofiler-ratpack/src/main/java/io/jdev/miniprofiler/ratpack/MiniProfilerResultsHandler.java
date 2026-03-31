@@ -19,7 +19,7 @@ package io.jdev.miniprofiler.ratpack;
 import com.google.inject.Inject;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.internal.ProfilerImpl;
-import io.jdev.miniprofiler.internal.ResultsRequest;
+import io.jdev.miniprofiler.server.IdParser;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
 import ratpack.http.Response;
@@ -29,7 +29,7 @@ import ratpack.http.TypedData;
 import java.util.Optional;
 import java.util.UUID;
 
-import static io.jdev.miniprofiler.internal.Pages.renderSingleResultPage;
+import static io.jdev.miniprofiler.server.Pages.renderSingleResultPage;
 import static io.netty.handler.codec.http.HttpHeaderNames.ACCEPT;
 import static io.netty.handler.codec.http.HttpHeaderValues.APPLICATION_JSON;
 import static io.netty.handler.codec.http.HttpHeaderValues.TEXT_HTML;
@@ -61,12 +61,15 @@ public class MiniProfilerResultsHandler implements Handler {
 
     public void handleRequest(Context ctx) {
         Response response = ctx.getResponse();
-        boolean jsonRequest = isJsonRequest(ctx);
 
         ctx.getRequest().getBody()
             .map(TypedData::getText)
             .then(body -> {
-                UUID requestedId = parseId(ctx, jsonRequest, body);
+                UUID requestedId = IdParser.parseId(
+                    ctx.getRequest().getHeaders().get(ACCEPT),
+                    body,
+                    ctx.getRequest().getQueryParams().get("id")
+                );
                 if (requestedId == null) {
                     response.status(Status.BAD_REQUEST).send();
                     return;
@@ -87,27 +90,6 @@ public class MiniProfilerResultsHandler implements Handler {
                         }
                     });
             });
-    }
-
-    private static UUID parseId(Context ctx, boolean jsonRequest, String body) {
-        UUID id = null;
-        if (jsonRequest) {
-            try {
-                id = ResultsRequest.from(body).id;
-            } catch (IllegalArgumentException ignored) {
-                // fall through
-            }
-        }
-        if (id == null) {
-            try {
-                id = Optional.ofNullable(ctx.getRequest().getQueryParams().get("id"))
-                    .map(UUID::fromString)
-                    .orElse(null);
-            } catch (IllegalArgumentException ignored) {
-                // fall through
-            }
-        }
-        return id;
     }
 
     private boolean isJsonRequest(Context ctx) {

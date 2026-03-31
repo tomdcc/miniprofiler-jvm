@@ -17,12 +17,12 @@
 package io.jdev.miniprofiler.ratpack.funtest
 
 import geb.spock.GebReportingSpec
-import io.jdev.miniprofiler.test.pages.MiniProfilerGapModule
-import io.jdev.miniprofiler.test.pages.MiniProfilerQueryModule
-import io.jdev.miniprofiler.test.pages.MiniProfilerResultModule
-import io.jdev.miniprofiler.test.pages.MiniProfilerModule
-import io.jdev.miniprofiler.test.pages.MiniProfilerResultsIndexPage
-import io.jdev.miniprofiler.test.pages.MiniProfilerSingleResultPage
+import io.jdev.miniprofiler.test.geb.MiniProfilerGapModule
+import io.jdev.miniprofiler.test.geb.MiniProfilerQueryModule
+import io.jdev.miniprofiler.test.geb.MiniProfilerResultModule
+import io.jdev.miniprofiler.test.geb.MiniProfilerModule
+import io.jdev.miniprofiler.test.geb.MiniProfilerResultsIndexPage
+import io.jdev.miniprofiler.test.geb.MiniProfilerSingleResultPage
 import ratpack.test.MainClassApplicationUnderTest
 import ratpack.test.ServerBackedApplicationUnderTest
 import spock.lang.AutoCleanup

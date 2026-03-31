@@ -17,8 +17,8 @@
 package io.jdev.miniprofiler.glassfish4.funtest
 
 import geb.spock.GebReportingSpec
-import io.jdev.miniprofiler.test.pages.MiniProfilerGapModule
-import io.jdev.miniprofiler.test.pages.MiniProfilerQueryModule
+import io.jdev.miniprofiler.test.geb.MiniProfilerGapModule
+import io.jdev.miniprofiler.test.geb.MiniProfilerQueryModule
 
 class Glassfish4MiniprofilerFunctionalSpec extends GebReportingSpec {
 

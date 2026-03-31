@@ -17,9 +17,9 @@
 package io.jdev.miniprofiler.wildfly8.funtest
 
 import geb.spock.GebReportingSpec
-import io.jdev.miniprofiler.test.pages.MiniProfilerGapModule
-import io.jdev.miniprofiler.test.pages.MiniProfilerQueryModule
-import io.jdev.miniprofiler.test.pages.MiniProfilerModule
+import io.jdev.miniprofiler.test.geb.MiniProfilerGapModule
+import io.jdev.miniprofiler.test.geb.MiniProfilerQueryModule
+import io.jdev.miniprofiler.test.geb.MiniProfilerModule
 
 class Wildfly8MiniprofilerFunctionalSpec extends GebReportingSpec {
 

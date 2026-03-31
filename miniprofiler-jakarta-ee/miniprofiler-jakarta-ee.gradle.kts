@@ -33,6 +33,7 @@ dependencies {
     api(projects.miniprofilerCore)
     compileOnly(libs.jakarta.ee.api)
 
+    testImplementation(projects.miniprofilerTest)
     testRuntimeOnly(projects.miniprofilerJakartaServlet)
 }
 

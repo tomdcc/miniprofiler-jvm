@@ -40,6 +40,7 @@ dependencies {
         exclude(group = "junit", module = "junit")
     }
 
+    testImplementation(projects.miniprofilerTest)
     testImplementation(libs.jackson.databind)
     testRuntimeOnly(libs.slf4j.api)
 

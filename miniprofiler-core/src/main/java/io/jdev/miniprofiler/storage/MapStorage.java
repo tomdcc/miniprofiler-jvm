@@ -74,6 +74,10 @@ public class MapStorage extends BaseStorage {
             .collect(Collectors.toList());
     }
 
+    public void clear() {
+        cache.clear();
+    }
+
     private static class LRUMapCache extends LinkedHashMap<UUID, ProfilerImpl> {
         private int maxSize;
 

@@ -23,6 +23,7 @@ dependencies {
 	api(projects.miniprofilerCore)
     compileOnly(libs.javax.ee.api)
 
+    testImplementation(projects.miniprofilerTest)
     testRuntimeOnly(projects.miniprofilerJavaxServlet)
 }
 

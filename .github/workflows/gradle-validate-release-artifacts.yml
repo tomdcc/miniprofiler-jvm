@@ -34,7 +34,8 @@ jobs:
             miniprofiler-jooq
             miniprofiler-manual
             miniprofiler-ratpack
-            miniprofiler-test-support
+            miniprofiler-test
+            miniprofiler-test-geb
             miniprofiler-viewer
           )
           MAX_WAIT=600
