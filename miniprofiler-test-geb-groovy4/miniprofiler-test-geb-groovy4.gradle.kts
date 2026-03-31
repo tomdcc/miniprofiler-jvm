@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-import org.gradle.accessors.dm.LibrariesForLibs
-import org.gradle.kotlin.dsl.the
-
 plugins {
-    id("build.build-parameters")
     id("build.java-module")
     id("build.publish")
-    `java-test-fixtures`
 }
 
-val libs = the<LibrariesForLibs>()
+sourceSets {
+    main {
+        groovy.srcDir("../miniprofiler-test-geb/src/main/groovy")
+        resources.srcDir("../miniprofiler-test-geb/src/main/resources")
+    }
+    test {
+        groovy.srcDir("../miniprofiler-test-geb/src/test/groovy")
+        resources.srcDir("../miniprofiler-test-geb/src/test/resources")
+    }
+}
 
 dependencies {
     api(projects.miniprofilerTest)
-    compileOnly(libs.groovy)
-    compileOnly(libs.geb.core)
+    compileOnly(libs.groovy.v4)
+    compileOnly(libs.geb.core.v4)
     compileOnly(libs.selenium.api)
 }
 
@@ -45,8 +49,8 @@ publishing {
     publications.named<MavenPublication>("maven") {
         from(components["java"])
         pom {
-            name = "MiniProfiler Geb Test Support"
-            description = "Geb modules and test utilities for verifying the MiniProfiler UI in browser-based functional tests"
+            name = "MiniProfiler Geb Test Support (Groovy 4)"
+            description = "Geb modules and test utilities for verifying the MiniProfiler UI in browser-based functional tests (Groovy 4 variant)"
         }
     }
 }

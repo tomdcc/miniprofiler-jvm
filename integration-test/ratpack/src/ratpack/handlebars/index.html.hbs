@@ -34,12 +34,12 @@
         </tr>
         </thead>
         <tbody>
-        <% model.people.each { p -> %>
+        {{#each model.people}}
             <tr>
-                <td>${p.id}</td>
-                <td>${p.name}</td>
+                <td>{{id}}</td>
+                <td>{{name}}</td>
             </tr>
-        <% } %>
+        {{/each}}
         </tbody>
     </table>
 
@@ -55,7 +55,7 @@
         </tbody>
     </table>
 </div>
-<%= new io.jdev.miniprofiler.ScriptTagWriter().printScriptTag() %>
+{{{miniprofilerScriptTag}}}
 <script>
     jQuery(document).ready(function() {
         jQuery.ajax('/page', {

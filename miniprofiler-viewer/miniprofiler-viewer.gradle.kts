@@ -32,7 +32,7 @@ dependencies {
 }
 
 dependencies {
-    testFixturesImplementation(libs.groovy)
+    testFixturesImplementation(libs.groovy.v4)
 }
 
 val testFixturesResourceDir = file("src/testFixtures/resources").absolutePath

@@ -15,6 +15,7 @@
  */
 
 import org.gradle.accessors.dm.LibrariesForLibs
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
@@ -38,14 +39,16 @@ repositories {
 val libs = the<LibrariesForLibs>()
 
 dependencies {
-    testImplementation(libs.groovy)
-    testImplementation(dependencies.create(libs.spock.get()) as ModuleDependency) {
-        exclude(group = "org.codehaus.groovy", module = "groovy-all")
+    testImplementation(libs.groovy.v4)
+    testImplementation(dependencies.create(libs.spock.v4.get()) as ModuleDependency) {
+        exclude(group = "org.apache.groovy", module = "groovy-all")
     }
     testImplementation(libs.junit.jupiter)
     testImplementation(dependencies.create(libs.awaitility.get()) as ModuleDependency) {
         exclude(group = "org.codehaus.groovy", module = "groovy")
+        exclude(group = "org.apache.groovy", module = "groovy")
     }
+    testRuntimeOnly(libs.byte.buddy)
     testRuntimeOnly(libs.logback)
 }
 
@@ -60,6 +63,17 @@ project.tasks.withType<Test>().configureEach {
     if (System.getProperty("idea.active").toBoolean()) {
         outputs.upToDateWhen { false }
         outputs.doNotCacheIf("Running in IDE") { true }
+    }
+}
+
+// When both org.codehaus.groovy and org.apache.groovy are on the classpath (e.g. via ratpack-groovy
+// which uses Groovy 2.5), Groovy 4 declares capability equivalence and causes a conflict.
+// Resolve by selecting the highest version (Groovy 4) as the winner.
+configurations.all {
+    resolutionStrategy.capabilitiesResolution.all {
+        if (candidates.any { (it.id as? ModuleComponentIdentifier)?.group == "org.apache.groovy" }) {
+            selectHighestVersion()
+        }
     }
 }
 
