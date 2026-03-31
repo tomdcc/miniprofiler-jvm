@@ -22,7 +22,6 @@ develocity-plugin = "4.3.2"
 eclipselink = "2.5.0"
 ehcache = "2.7.2"
 geb = "4.1"
-grails = "2.2.0"
 groovy = "2.5.18"
 h2 = "1.3.173"
 hibernate = "4.3.5.Final"
@@ -62,7 +61,6 @@ eclipselink = { module = "org.eclipse.persistence:eclipselink", version.ref = "e
 ehcache = { module = "net.sf.ehcache:ehcache", version.ref = "ehcache" }
 geb-core = { module = "org.gebish:geb-core", version.ref = "geb" }
 geb-spock = { module = "org.gebish:geb-spock", version.ref = "geb" }
-grails-web = { module = "org.grails:grails-web", version.ref = "grails" }
 groovy = { module = "org.codehaus.groovy:groovy-all", version.ref = "groovy" }
 h2 = { module = "com.h2database:h2", version.ref = "h2" }
 hibernate = { module = "org.hibernate:hibernate-core", version.ref = "hibernate" }

@@ -14,7 +14,6 @@ includeBuild("gradle/plugins")
 
 include("miniprofiler-core")
 include("miniprofiler-eclipselink")
-include("miniprofiler-grails")
 include("miniprofiler-hibernate")
 include("miniprofiler-jakarta-ee")
 include("miniprofiler-jakarta-servlet")

@@ -25,7 +25,6 @@ jobs:
           ARTIFACTS=(
             miniprofiler-core
             miniprofiler-eclipselink
-            miniprofiler-grails
             miniprofiler-hibernate
             miniprofiler-jakarta-ee
             miniprofiler-jakarta-servlet
