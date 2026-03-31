@@ -55,7 +55,7 @@ configurations.matching { it.name.startsWith("test") }.configureEach {
 testing {
     suites {
         named<JvmTestSuite>("test") {
-            makeBrowserTest(project, "v3")
+            makeBrowserTest(project, "groovy3")
         }
     }
 }
