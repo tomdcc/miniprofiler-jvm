@@ -24,6 +24,7 @@ dependencies {
     compileOnly(libs.javax.servlet.api.v2)
     compileOnly(libs.javax.jsp.api)
 
+    testImplementation(projects.miniprofilerTest)
     testImplementation(libs.javax.servlet.api.v4)
     testImplementation(libs.spring.v5.test)
     testImplementation(libs.spring.v5.web)

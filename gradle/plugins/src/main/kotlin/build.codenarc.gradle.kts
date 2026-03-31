@@ -26,7 +26,7 @@ val libs = the<LibrariesForLibs>()
 
 dependencies {
     codenarc(libs.codenarc)
-    codenarc(libs.groovy)
+    codenarc(libs.groovy.v4)
 }
 
 codenarc {
@@ -42,8 +42,8 @@ tasks.withType<CodeNarc>().configureEach {
 // stop codenarc from using a dynamic groovy version
 configurations.named("codenarc").configure {
     resolutionStrategy.eachDependency {
-        if (requested.group == "org.codehaus.groovy") {
-            useVersion(libs.versions.groovy.get())
+        if (requested.group == "org.apache.groovy") {
+            useVersion(libs.versions.groovy.v4.get())
         }
     }
 }

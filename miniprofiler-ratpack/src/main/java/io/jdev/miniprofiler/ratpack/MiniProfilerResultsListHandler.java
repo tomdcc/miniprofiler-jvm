@@ -18,7 +18,7 @@ package io.jdev.miniprofiler.ratpack;
 
 import com.google.inject.Inject;
 import io.jdev.miniprofiler.ProfilerProvider;
-import io.jdev.miniprofiler.internal.Pages;
+import io.jdev.miniprofiler.server.Pages;
 import io.jdev.miniprofiler.internal.ProfilerImpl;
 import io.jdev.miniprofiler.storage.Storage;
 import ratpack.exec.Promise;

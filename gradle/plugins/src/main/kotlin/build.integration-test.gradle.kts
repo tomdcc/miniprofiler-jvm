@@ -24,44 +24,19 @@ plugins {
 
 val libs = the<LibrariesForLibs>()
 
+val suiteName = "integrationTest"
 testing {
     suites {
-        register<JvmTestSuite>("integrationTest") {
-            dependencies {
-                implementation(project())
-                // type-safe project accessors are not available in precompiled script plugins
-                implementation(project(":miniprofiler-test-support"))
-                implementation(libs.geb.core)
-                implementation(libs.geb.spock)
-                implementation(libs.selenium.api)
-                runtimeOnly(libs.selenium.support)
-                runtimeOnly(libs.selenium.firefox.driver)
-            }
-            targets {
-                all {
-                    testTask.configure {
-                        systemProperty("geb.build.reportsDir", "${reporting.baseDirectory.get().asFile}/geb")
-                        buildParameters.browserTest.firefoxBinPath.orNull?.let {
-                            systemProperty("webdriver.firefox.bin", it)
-                        }
-                    }
-                }
-            }
+        register<JvmTestSuite>(suiteName) {
+            makeBrowserTest(project)
         }
     }
 }
 
-// Inherit unit test dependencies (Spock, Groovy, JUnit Platform, etc.) from the build.java-module
-// convention plugin so they don't need to be redeclared for integration tests.
 configurations {
-    named("integrationTestImplementation") {
-        extendsFrom(configurations.testImplementation.get())
-    }
-    named("integrationTestRuntimeOnly") {
-        extendsFrom(configurations.testRuntimeOnly.get())
-    }
+    extendFromTest(suiteName)
 }
 
 tasks.named("check") {
-    dependsOn(testing.suites.named("integrationTest"))
+    dependsOn(testing.suites.named(suiteName))
 }

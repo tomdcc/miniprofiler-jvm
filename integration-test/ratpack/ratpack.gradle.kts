@@ -28,8 +28,8 @@ sourceSets.main {
 
 dependencies {
     implementation(projects.miniprofilerRatpack)
+    implementation(libs.ratpack.handlebars)
     implementation(libs.ratpack.hikari)
-    implementation(libs.ratpack.groovy)
     implementation(libs.h2)
 
     integrationTestImplementation(libs.ratpack.test)

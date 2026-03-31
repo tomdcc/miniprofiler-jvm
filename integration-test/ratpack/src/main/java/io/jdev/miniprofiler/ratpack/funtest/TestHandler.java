@@ -19,6 +19,7 @@ package io.jdev.miniprofiler.ratpack.funtest;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import io.jdev.miniprofiler.ProfilerProvider;
+import io.jdev.miniprofiler.ScriptTagWriter;
 import ratpack.exec.Blocking;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
@@ -33,7 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ratpack.groovy.Groovy.groovyTemplate;
+import static ratpack.handlebars.Template.handlebarsTemplate;
 
 public class TestHandler implements Handler {
 
@@ -52,7 +53,13 @@ public class TestHandler implements Handler {
             Blocking.get(this::getData).then(data -> {
                 ctx.byContent(spr -> {
                     spr.json(() -> ctx.render(Jackson.json(data)));
-                    spr.html(() -> ctx.render(groovyTemplate(ImmutableMap.of("people", data), "index.html")));
+                    spr.html(() -> ctx.render(handlebarsTemplate(
+                        ImmutableMap.of(
+                            "people", data,
+                            "miniprofilerScriptTag", new ScriptTagWriter(profilerProvider).printScriptTag()
+                        ),
+                        "index.html"))
+                    );
                 });
             });
         });

@@ -20,9 +20,9 @@ import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.StaticProfilerProvider;
-import io.jdev.miniprofiler.internal.Pages;
+import io.jdev.miniprofiler.server.Pages;
 import io.jdev.miniprofiler.internal.ProfilerImpl;
-import io.jdev.miniprofiler.internal.ResultsRequest;
+import io.jdev.miniprofiler.server.IdParser;
 import io.jdev.miniprofiler.sql.DriverUtil;
 import io.jdev.miniprofiler.storage.Storage;
 import io.jdev.miniprofiler.util.ResourceHelper;
@@ -222,24 +222,15 @@ public class ProfilingFilter implements Filter {
     }
 
     private static UUID parseId(HttpServletRequest request, boolean jsonRequest) {
-        UUID id = null;
+        String body = null;
         if (jsonRequest) {
             try {
-                id = ResultsRequest.from(getBody(request)).id;
-            } catch (IOException | IllegalArgumentException ignored) {
-                // fall through
+                body = getBody(request);
+            } catch (IOException ignored) {
+                // fall through to id param
             }
         }
-        if (id == null) {
-            try {
-                id = Optional.ofNullable(request.getParameter(ID_PARAM))
-                    .map(UUID::fromString)
-                    .orElse(null);
-            } catch (IllegalArgumentException ignored) {
-                // fall through
-            }
-        }
-        return id;
+        return IdParser.parseId(request.getHeader(ACCEPT_HEADER), body, request.getParameter(ID_PARAM));
     }
 
     private void renderJson(Profiler profiler, HttpServletResponse response) throws IOException {

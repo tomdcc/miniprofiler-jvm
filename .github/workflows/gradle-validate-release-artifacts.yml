@@ -25,7 +25,6 @@ jobs:
           ARTIFACTS=(
             miniprofiler-core
             miniprofiler-eclipselink
-            miniprofiler-grails
             miniprofiler-hibernate
             miniprofiler-jakarta-ee
             miniprofiler-jakarta-servlet
@@ -34,7 +33,9 @@ jobs:
             miniprofiler-jooq
             miniprofiler-manual
             miniprofiler-ratpack
-            miniprofiler-test-support
+            miniprofiler-test
+            miniprofiler-test-geb-groovy3
+            miniprofiler-test-geb-groovy4
             miniprofiler-viewer
           )
           MAX_WAIT=600

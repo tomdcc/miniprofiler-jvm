@@ -17,7 +17,7 @@
 package io.jdev.miniprofiler.viewer
 
 import geb.spock.GebReportingSpec
-import io.jdev.miniprofiler.test.pages.MiniProfilerSingleResultPage
+import io.jdev.miniprofiler.test.geb.MiniProfilerSingleResultPage
 
 class MiniProfilerViewerFunctionalSpec extends GebReportingSpec {
 

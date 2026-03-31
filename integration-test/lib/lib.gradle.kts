@@ -19,7 +19,7 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.groovy)
+    implementation(libs.groovy.v4)
     implementation(libs.testcontainers.core)
     implementation(libs.junit.platform.launcher)
 }

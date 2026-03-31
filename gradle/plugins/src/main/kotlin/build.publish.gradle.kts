@@ -28,6 +28,12 @@ project.plugins.withId("java") {
     }
 }
 
+project.plugins.withId("java-test-fixtures") {
+    val javaComponent = project.components["java"] as AdhocComponentWithVariants
+    javaComponent.withVariantsFromConfiguration(project.configurations["testFixturesApiElements"]) { skip() }
+    javaComponent.withVariantsFromConfiguration(project.configurations["testFixturesRuntimeElements"]) { skip() }
+}
+
 publishing {
     publications {
         create<MavenPublication>("maven") {

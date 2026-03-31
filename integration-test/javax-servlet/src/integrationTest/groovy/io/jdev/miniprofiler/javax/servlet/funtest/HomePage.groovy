@@ -17,7 +17,7 @@
 package io.jdev.miniprofiler.javax.servlet.funtest
 
 import geb.Page
-import io.jdev.miniprofiler.test.pages.MiniProfilerModule
+import io.jdev.miniprofiler.test.geb.MiniProfilerModule
 
 class HomePage extends Page {
     static url = ''

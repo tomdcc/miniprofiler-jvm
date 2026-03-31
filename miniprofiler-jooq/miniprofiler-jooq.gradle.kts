@@ -23,6 +23,7 @@ dependencies {
 	api(projects.miniprofilerCore)
 	compileOnly(libs.jooq.compile)
 
+    testImplementation(projects.miniprofilerTest)
     testImplementation(libs.jooq.test)
     testImplementation(libs.h2)
 }

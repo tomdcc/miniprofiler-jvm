@@ -26,6 +26,7 @@ dependencies {
     compileOnly(libs.ratpack.hikari)
     compileOnly(libs.ratpack.h2)
 
+    testImplementation(projects.miniprofilerTest)
     testImplementation(libs.ratpack.test)
     testImplementation(libs.ratpack.groovy.test)
 }

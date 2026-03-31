@@ -17,13 +17,15 @@
 package io.jdev.miniprofiler.ratpack.funtest;
 
 import io.jdev.miniprofiler.ProfilerUiConfig;
-import io.jdev.miniprofiler.ratpack.*;
-import ratpack.groovy.template.TextTemplateModule;
+import io.jdev.miniprofiler.ratpack.MiniProfilerHandlerChain;
+import io.jdev.miniprofiler.ratpack.MiniProfilerHikariModule;
+import io.jdev.miniprofiler.ratpack.MiniProfilerModule;
+import io.jdev.miniprofiler.ratpack.MiniProfilerStartProfilingHandlers;
 import ratpack.guice.Guice;
+import ratpack.handlebars.HandlebarsModule;
 import ratpack.server.*;
 
 import javax.sql.DataSource;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -33,7 +35,7 @@ public class Main {
         RatpackServer.start(server -> server
                 .serverConfig(ServerConfig.builder().baseDir(BaseDir.find()))
                 .registry(Guice.registry(bindings -> {
-                    bindings.module(TextTemplateModule.class);
+                    bindings.module(HandlebarsModule.class);
                     bindings.module(MiniProfilerHikariModule.class, hikariConfig -> {
                         hikariConfig.setDataSourceClassName("org.h2.jdbcx.JdbcDataSource");
                         hikariConfig.addDataSourceProperty("URL", "jdbc:h2:mem:ratpack_integ_test;DB_CLOSE_DELAY=-1");

@@ -34,6 +34,7 @@ dependencies {
     api(projects.miniprofilerCore)
     compileOnly(libs.jakarta.servlet.api)
     compileOnly(libs.jakarta.jsp.api)
+    testImplementation(projects.miniprofilerTest)
     testImplementation(libs.spring.v6.test)
     testImplementation(libs.spring.v6.web)
 }
