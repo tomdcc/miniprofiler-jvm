@@ -40,7 +40,7 @@ val libs = the<LibrariesForLibs>()
 
 dependencies {
     testImplementation(libs.groovy.v4)
-    testImplementation(dependencies.create(libs.spock.v4.get()) as ModuleDependency) {
+    testImplementation(dependencies.create(libs.spock.groovy4.get()) as ModuleDependency) {
         exclude(group = "org.apache.groovy", module = "groovy-all")
     }
     testImplementation(libs.junit.jupiter)

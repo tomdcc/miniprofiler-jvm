@@ -33,22 +33,22 @@ sourceSets {
 dependencies {
     api(projects.miniprofilerTest)
     compileOnly(libs.groovy.v3)
-    compileOnly(libs.geb.core.v3)
+    compileOnly(libs.geb.core.groovy3)
     compileOnly(libs.selenium.api)
 
-    // Override build.java-module's groovy.v4 + spock.v4 with Groovy 3 equivalents
+    // Override build.java-module's groovy.v4 + spock.groovy4 with Groovy 3 equivalents
     testImplementation(libs.groovy.v3)
-    testImplementation(libs.spock.v3)
+    testImplementation(libs.spock.groovy3)
 }
 
 // build.java-module adds org.apache.groovy (groovy.v4) — exclude all of it so only groovy.v3 is on the test classpath
 configurations.named("testImplementation") {
     exclude(group = "org.apache.groovy")
 }
-// Force spock.v3 to win over spock.v4 that build.java-module adds
+// Force spock.groovy3 to win over spock.groovy4 that build.java-module adds
 configurations.matching { it.name.startsWith("test") }.configureEach {
     resolutionStrategy {
-        force(libs.spock.v3.get())
+        force(libs.spock.groovy3.get())
     }
 }
 
