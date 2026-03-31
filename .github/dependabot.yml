@@ -15,3 +15,17 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "org.springframework:*"
         update-types: ["version-update:semver-major"]
+      - dependency-name: "org.hibernate:*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "org.eclipse.persistence:*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "org.jooq:*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "org.gebish:*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "org.spockframework:*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "org.codehaus.groovy:*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "org.apache.groovy:*"
+        update-types: ["version-update:semver-major"]
