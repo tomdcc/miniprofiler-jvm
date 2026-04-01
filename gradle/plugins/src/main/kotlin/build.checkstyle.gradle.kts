@@ -15,6 +15,7 @@
  */
 
 import org.gradle.accessors.dm.LibrariesForLibs
+import org.gradle.jvm.toolchain.JavaToolchainService
 import org.gradle.kotlin.dsl.the
 
 plugins {
@@ -34,6 +35,16 @@ checkstyle {
     configProperties["checkstyleConfigDir"] = checkstyleConfigDir
 }
 
+// Checkstyle 10+ requires Java 11+; 12.x requires Java 17+. Configure a separate launcher
+// so checkstyle runs on Java 17 while source compilation targets Java 8.
+// The JavaToolchainService lookup is deferred into configureEach so it runs at configuration
+// time, after all other plugins (including java-library) have been applied to the project.
+tasks.withType<Checkstyle>().configureEach {
+    javaLauncher = project.extensions.getByType<JavaToolchainService>().launcherFor {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
 plugins.withType<GroovyBasePlugin> {
     project.the<JavaPluginExtension>().sourceSets.configureEach {
         tasks.register<Checkstyle>(getTaskName("checkstyle", "groovy")) {
@@ -41,6 +52,9 @@ plugins.withType<GroovyBasePlugin> {
             source(this@configureEach.the<GroovySourceDirectorySet>())
             classpath = compileClasspath
             reports.xml.outputLocation = File(checkstyle.reportsDir, "${name}-groovy.xml")
+            javaLauncher = project.extensions.getByType<JavaToolchainService>().launcherFor {
+                languageVersion = JavaLanguageVersion.of(17)
+            }
         }
     }
 }
