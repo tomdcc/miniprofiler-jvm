@@ -11,6 +11,8 @@ updates:
     ignore:
       - dependency-name: "com.h2database:*"
         update-types: ["version-update:semver-major"]
+      - dependency-name: "com.puppycrawl.tools:checkstyle"
+        update-types: ["version-update:semver-major"]
       - dependency-name: "io.ratpack:*"
         update-types: ["version-update:semver-major"]
       - dependency-name: "jakarta.*:*"
