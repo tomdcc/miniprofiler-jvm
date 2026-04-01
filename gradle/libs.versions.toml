@@ -54,7 +54,7 @@ spock-groovy3 = "2.4-groovy-3.0"
 spock-groovy4 = "2.4-groovy-4.0"
 spring-v5 = "5.3.39"
 spring-v6 = "6.2.8"
-testcontainers = "2.0.3"
+testcontainers = "2.0.4"
 
 [libraries]
 awaitility = { module = "org.awaitility:awaitility-groovy", version.ref = "awaitility" }
