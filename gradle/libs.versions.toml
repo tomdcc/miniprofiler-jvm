@@ -50,7 +50,6 @@ ratpack = "1.10.0-milestone-39"
 selenium-groovy3 = "4.34.0"
 selenium-groovy4 = "4.41.0"
 shadow = "9.4.0"
-slf4j-api = "1.7.4"
 spock-groovy3 = "2.4-groovy-3.0"
 spock-groovy4 = "2.4-groovy-4.0"
 spring-v5 = "5.3.39"
@@ -102,7 +101,6 @@ selenium-firefox-driver-groovy3 = { module = "org.seleniumhq.selenium:selenium-f
 selenium-firefox-driver-groovy4 = { module = "org.seleniumhq.selenium:selenium-firefox-driver", version.ref = "selenium-groovy4" }
 selenium-support-groovy3 = { module = "org.seleniumhq.selenium:selenium-support", version.ref = "selenium-groovy3" }
 selenium-support-groovy4 = { module = "org.seleniumhq.selenium:selenium-support", version.ref = "selenium-groovy4" }
-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j-api" }
 spock-groovy3 = { module = "org.spockframework:spock-core", version.ref = "spock-groovy3" }
 spock-groovy4 = { module = "org.spockframework:spock-core", version.ref = "spock-groovy4" }
 spring-v5-test = { module = "org.springframework:spring-test", version.ref = "spring-v5" }
