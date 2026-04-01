@@ -8,6 +8,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 100
     ignore:
       - dependency-name: "com.h2database:*"
         update-types: ["version-update:semver-major"]
@@ -20,6 +21,8 @@ updates:
       - dependency-name: "jakarta.servlet:jakarta.servlet-api"
       - dependency-name: "javax:*"
         update-types: ["version-update:semver-major"]
+      - dependency-name: "javax.servlet:servlet-api"
+        versions: [">= 2.4"]
       - dependency-name: "org.apache.groovy:*"
         update-types: ["version-update:semver-major"]
       - dependency-name: "org.codehaus.groovy:*"
