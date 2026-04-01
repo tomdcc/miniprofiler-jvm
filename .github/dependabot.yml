@@ -35,5 +35,7 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "javax:*"
         update-types: ["version-update:semver-major"]
+      - dependency-name: "jakarta.*:*"
+        update-types: ["version-update:semver-major"]
       - dependency-name: "com.h2database:*"
         update-types: ["version-update:semver-major"]
