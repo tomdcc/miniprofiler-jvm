@@ -37,6 +37,7 @@ project.plugins.withId("java-test-fixtures") {
 publishing {
     publications {
         create<MavenPublication>("maven") {
+            artifactId = "miniprofiler-${project.name}"
             pom {
                 url = "https://github.com/tomdcc/miniprofiler-jvm/"
                 inceptionYear = "2013"

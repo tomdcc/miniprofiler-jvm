@@ -28,7 +28,7 @@ fun JvmTestSuite.makeBrowserTest(project: Project, groovyVariant: String = "groo
     dependencies {
         implementation(project())
         // type-safe project accessors are not available in precompiled script plugins
-        implementation(project(":miniprofiler-test-geb-$groovyVariant"))
+        implementation(project(":test-geb-$groovyVariant"))
         implementation(libs.findLibrary("geb-core-$groovyVariant").get())
         implementation(libs.findLibrary("geb-spock-$groovyVariant").get())
         implementation(libs.findLibrary("selenium-api").get())

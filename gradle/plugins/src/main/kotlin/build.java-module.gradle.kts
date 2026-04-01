@@ -77,7 +77,7 @@ configurations.all {
     }
 }
 
-if (!project.path.startsWith(":integration-test:")) {
+if (!project.path.startsWith(":scenario-test:")) {
     sourceSets {
         test {
             compileClasspath += sourceSets.main.get().compileClasspath
