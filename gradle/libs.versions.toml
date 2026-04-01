@@ -41,7 +41,7 @@ jooq-test = "3.9.5"
 json-simple = "1.1.1"
 jta = "1.1"
 junit = "5.14.3"
-junit-platform = "1.12.2"
+junit-platform = "1.14.3"
 # Ratpack looks for org.slf4j.impl.StaticLoggerBinder which is the old discovery mechnanism for slf4j 1.x,
 # so we stay on the old version (and this corresponding logback version) to make it be quiet
 logback = "1.2.11"
