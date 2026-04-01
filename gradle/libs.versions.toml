@@ -46,7 +46,7 @@ junit-platform = "1.12.2"
 # so we stay on the old version (and this corresponding logback version) to make it be quiet
 logback = "1.2.11"
 nexus-publish-plugin = "2.0.0"
-ratpack = "1.10.0-milestone-8"
+ratpack = "1.10.0-milestone-39"
 selenium-api = "4.33.0"
 selenium-runtime = "4.33.0"
 shadow = "9.4.0"
