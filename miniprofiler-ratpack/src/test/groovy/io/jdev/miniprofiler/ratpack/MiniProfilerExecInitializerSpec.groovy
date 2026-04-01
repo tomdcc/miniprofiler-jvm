@@ -21,7 +21,7 @@ import io.jdev.miniprofiler.internal.NullProfiler
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import ratpack.exec.Execution
 import ratpack.exec.Promise
-import ratpack.exec.internal.DefaultExecController
+import ratpack.exec.internal.DefaultExecControllerBuilder
 import ratpack.func.Action
 import ratpack.groovy.test.embed.GroovyEmbeddedApp
 import ratpack.groovy.test.handling.GroovyRequestFixture
@@ -39,7 +39,6 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 import static org.awaitility.Awaitility.await
-import static ratpack.groovy.test.handling.GroovyRequestFixture.handle
 
 class MiniProfilerExecInitializerSpec extends Specification {
 
@@ -64,7 +63,7 @@ class MiniProfilerExecInitializerSpec extends Specification {
 
     void "by default initializer does not create a new profiler on execution start"() {
         when: "run handler with initializer"
-        handle(Handlers.next(), this.&addToRegistry)
+        GroovyRequestFixture.handle(Handlers.next(), this.&addToRegistry)
 
         then: 'no profiler created'
         !provider.hasCurrent()
@@ -122,7 +121,7 @@ class MiniProfilerExecInitializerSpec extends Specification {
         def profiler = provider.start("already running")
 
         when: "run handler with initializer on execution which already has a provider"
-        handle(Handlers.next(), this.&addToRegistry)
+        GroovyRequestFixture.handle(Handlers.next(), this.&addToRegistry)
 
         then: "current profiler is the original one"
         provider.current == profiler
@@ -138,8 +137,9 @@ class MiniProfilerExecInitializerSpec extends Specification {
                 super.executionComplete(execution)
             }
         }
-        def execController = new DefaultExecController()
-        execController.initializers = ImmutableList.of(initializer)
+        def execController = new DefaultExecControllerBuilder()
+            .execInitializers(ImmutableList.of(initializer))
+            .build()
         def harness = new DefaultExecHarness(execController)
 
         when: "run handler with initializer on handler which forks execution"
