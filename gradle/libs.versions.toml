@@ -14,7 +14,7 @@
 
 [versions]
 asciidoctor = "4.0.5"
-awaitility = "4.2.0"
+awaitility = "4.3.0"
 build-parameters-plugin = "1.4.5"
 byte-buddy = "1.17.5"
 checkstyle = "6.5"
