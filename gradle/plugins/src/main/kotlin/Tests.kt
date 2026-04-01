@@ -20,7 +20,7 @@ fun ConfigurationContainer.extendFromTest(testSuiteName: String) {
     }
 }
 
-fun JvmTestSuite.makeBrowserTest(project: Project, groovyVariant: String = "v4"): Unit {
+fun JvmTestSuite.makeBrowserTest(project: Project, groovyVariant: String = "groovy4"): Unit {
 
     val catalogs = project.extensions.getByType(VersionCatalogsExtension::class.java)
     val libs = catalogs.named("libs")
@@ -28,7 +28,7 @@ fun JvmTestSuite.makeBrowserTest(project: Project, groovyVariant: String = "v4")
     dependencies {
         implementation(project())
         // type-safe project accessors are not available in precompiled script plugins
-        implementation(project(":miniprofiler-test-geb-groovy${groovyVariant.removePrefix("v")}"))
+        implementation(project(":miniprofiler-test-geb-$groovyVariant"))
         implementation(libs.findLibrary("geb-core-$groovyVariant").get())
         implementation(libs.findLibrary("geb-spock-$groovyVariant").get())
         implementation(libs.findLibrary("selenium-api").get())

@@ -33,7 +33,7 @@ sourceSets {
 dependencies {
     api(projects.miniprofilerTest)
     compileOnly(libs.groovy.v4)
-    compileOnly(libs.geb.core.v4)
+    compileOnly(libs.geb.core.groovy4)
     compileOnly(libs.selenium.api)
 }
 
