@@ -31,9 +31,9 @@ fun JvmTestSuite.makeBrowserTest(project: Project, groovyVariant: String = "groo
         implementation(project(":test-geb-$groovyVariant"))
         implementation(libs.findLibrary("geb-core-$groovyVariant").get())
         implementation(libs.findLibrary("geb-spock-$groovyVariant").get())
-        implementation(libs.findLibrary("selenium-api").get())
-        runtimeOnly(libs.findLibrary("selenium-firefox-driver").get())
-        runtimeOnly(libs.findLibrary("selenium-support").get())
+        implementation(libs.findLibrary("selenium-api-$groovyVariant").get())
+        runtimeOnly(libs.findLibrary("selenium-firefox-driver-$groovyVariant").get())
+        runtimeOnly(libs.findLibrary("selenium-support-$groovyVariant").get())
     }
 
     val buildParameters = project.extensions.getByType(BuildParametersExtension::class.java)

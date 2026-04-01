@@ -15,6 +15,9 @@
  */
 
 import org.gradle.accessors.dm.LibrariesForLibs
+import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.gradle.jvm.toolchain.JavaToolchainService
 import org.gradle.kotlin.dsl.the
 
 plugins {
@@ -35,6 +38,28 @@ testing {
 
 configurations {
     extendFromTest(suiteName)
+}
+
+// Force integrationTest compilation to Java 11+ (Selenium 4.x requires it), while allowing
+// modules that already target a higher version (e.g. Java 17) to keep their configured version.
+// Capture project-scope objects here; inside configureEach{} the receiver changes to the task.
+val javaPluginExt = extensions.findByType(JavaPluginExtension::class.java)
+val javaToolchains = extensions.getByType(JavaToolchainService::class.java)
+tasks.withType<JavaCompile>().matching { it.name.startsWith("compileIntegrationTest") }.configureEach {
+    javaCompiler.set(project.provider {
+        val configuredVersion = javaPluginExt?.toolchain?.languageVersion?.orNull?.asInt() ?: 8
+        javaToolchains.compilerFor {
+            languageVersion.set(JavaLanguageVersion.of(maxOf(11, configuredVersion)))
+        }.get()
+    })
+}
+tasks.withType<GroovyCompile>().matching { it.name.startsWith("compileIntegrationTest") }.configureEach {
+    javaLauncher.set(project.provider {
+        val configuredVersion = javaPluginExt?.toolchain?.languageVersion?.orNull?.asInt() ?: 8
+        javaToolchains.launcherFor {
+            languageVersion.set(JavaLanguageVersion.of(maxOf(11, configuredVersion)))
+        }.get()
+    })
 }
 
 tasks.named("check") {

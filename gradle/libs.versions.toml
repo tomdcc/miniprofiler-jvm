@@ -23,7 +23,7 @@ develocity-plugin = "4.3.2"
 eclipselink = "2.7.16"
 ehcache = "2.10.9.2"
 geb-groovy3 = "6.0"
-geb-groovy4 = "7.0"
+geb-groovy4 = "8.0.1"
 groovy-v3 = "3.0.25"
 groovy-v4 = "4.0.30"
 h2 = "1.4.200"
@@ -47,8 +47,8 @@ junit-platform = "1.12.2"
 logback = "1.2.11"
 nexus-publish-plugin = "2.0.0"
 ratpack = "1.10.0-milestone-39"
-selenium-api = "4.33.0"
-selenium-runtime = "4.33.0"
+selenium-groovy3 = "4.34.0"
+selenium-groovy4 = "4.41.0"
 shadow = "9.4.0"
 slf4j-api = "1.7.4"
 spock-groovy3 = "2.4-groovy-3.0"
@@ -66,9 +66,9 @@ develocity-plugin = { module = "com.gradle:develocity-gradle-plugin", version.re
 eclipselink = { module = "org.eclipse.persistence:eclipselink", version.ref = "eclipselink" }
 ehcache = { module = "net.sf.ehcache:ehcache", version.ref = "ehcache" }
 geb-core-groovy3 = { module = "org.gebish:geb-core", version.ref = "geb-groovy3" }
-geb-core-groovy4 = { module = "org.gebish:geb-core", version.ref = "geb-groovy4" }
+geb-core-groovy4 = { module = "org.apache.groovy.geb:geb-core", version.ref = "geb-groovy4" }
 geb-spock-groovy3 = { module = "org.gebish:geb-spock", version.ref = "geb-groovy3" }
-geb-spock-groovy4 = { module = "org.gebish:geb-spock", version.ref = "geb-groovy4" }
+geb-spock-groovy4 = { module = "org.apache.groovy.geb:geb-spock", version.ref = "geb-groovy4" }
 groovy-v3 = { module = "org.codehaus.groovy:groovy-all", version.ref = "groovy-v3" }
 groovy-v4 = { module = "org.apache.groovy:groovy-all", version.ref = "groovy-v4" }
 h2 = { module = "com.h2database:h2", version.ref = "h2" }
@@ -96,9 +96,12 @@ ratpack-guice = { module = "io.ratpack:ratpack-guice", version.ref = "ratpack" }
 ratpack-h2 = { module = "io.ratpack:ratpack-h2", version.ref = "ratpack" }
 ratpack-hikari = { module = "io.ratpack:ratpack-hikari", version.ref = "ratpack" }
 ratpack-test = { module = "io.ratpack:ratpack-test", version.ref = "ratpack" }
-selenium-api = { module = "org.seleniumhq.selenium:selenium-api", version.ref = "selenium-api" }
-selenium-firefox-driver = { module = "org.seleniumhq.selenium:selenium-firefox-driver", version.ref = "selenium-runtime" }
-selenium-support = { module = "org.seleniumhq.selenium:selenium-support", version.ref = "selenium-runtime" }
+selenium-api-groovy3 = { module = "org.seleniumhq.selenium:selenium-api", version.ref = "selenium-groovy3" }
+selenium-api-groovy4 = { module = "org.seleniumhq.selenium:selenium-api", version.ref = "selenium-groovy4" }
+selenium-firefox-driver-groovy3 = { module = "org.seleniumhq.selenium:selenium-firefox-driver", version.ref = "selenium-groovy3" }
+selenium-firefox-driver-groovy4 = { module = "org.seleniumhq.selenium:selenium-firefox-driver", version.ref = "selenium-groovy4" }
+selenium-support-groovy3 = { module = "org.seleniumhq.selenium:selenium-support", version.ref = "selenium-groovy3" }
+selenium-support-groovy4 = { module = "org.seleniumhq.selenium:selenium-support", version.ref = "selenium-groovy4" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j-api" }
 spock-groovy3 = { module = "org.spockframework:spock-core", version.ref = "spock-groovy3" }
 spock-groovy4 = { module = "org.spockframework:spock-core", version.ref = "spock-groovy4" }

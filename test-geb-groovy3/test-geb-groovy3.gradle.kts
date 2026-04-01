@@ -34,7 +34,7 @@ dependencies {
     api(projects.test)
     compileOnly(libs.groovy.v3)
     compileOnly(libs.geb.core.groovy3)
-    compileOnly(libs.selenium.api)
+    compileOnly(libs.selenium.api.groovy3)
 
     // Override build.java-module's groovy.v4 + spock.groovy4 with Groovy 3 equivalents
     testImplementation(libs.groovy.v3)
