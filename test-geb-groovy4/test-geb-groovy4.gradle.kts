@@ -19,6 +19,12 @@ plugins {
     id("build.publish")
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
 sourceSets {
     main {
         groovy.srcDir("../test-geb/src/main/groovy")
@@ -34,7 +40,7 @@ dependencies {
     api(projects.test)
     compileOnly(libs.groovy.v4)
     compileOnly(libs.geb.core.groovy4)
-    compileOnly(libs.selenium.api)
+    compileOnly(libs.selenium.api.groovy4)
 }
 
 testing {

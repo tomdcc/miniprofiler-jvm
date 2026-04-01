@@ -35,6 +35,12 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "org.seleniumhq.selenium:*"
         update-types: ["version-update:semver-major"]
+      - dependency-name: "org.seleniumhq.selenium:selenium-api"
+        versions: [">= 4.35, < 5"]
+      - dependency-name: "org.seleniumhq.selenium:selenium-firefox-driver"
+        versions: [">= 4.35, < 5"]
+      - dependency-name: "org.seleniumhq.selenium:selenium-support"
+        versions: [">= 4.35, < 5"]
       - dependency-name: "org.spockframework:*"
         update-types: ["version-update:semver-major"]
       - dependency-name: "org.springframework:*"
