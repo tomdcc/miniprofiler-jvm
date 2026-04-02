@@ -36,9 +36,6 @@ updates:
       - dependency-name: "ch.qos.logback:*"
         versions: [">= 1.4"]
       - dependency-name: "org.jooq:*"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "org.jooq:*"
-        versions: [">= 3.15"]
       - dependency-name: "org.junit.jupiter:*"
         update-types: ["version-update:semver-major"]
       - dependency-name: "org.junit.platform:*"
