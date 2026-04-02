@@ -33,8 +33,9 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "org.hibernate:*"
         update-types: ["version-update:semver-major"]
+      - dependency-name: "ch.qos.logback:*"
+        versions: [">= 1.4"]
       - dependency-name: "org.jooq:*"
-        update-types: ["version-update:semver-major"]
       - dependency-name: "org.junit.jupiter:*"
         update-types: ["version-update:semver-major"]
       - dependency-name: "org.junit.platform:*"
