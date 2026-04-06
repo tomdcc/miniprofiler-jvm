@@ -7,7 +7,7 @@ pluginManagement {
 plugins {
     id("build.build-parameters")
     id("com.gradle.develocity") version "4.4.0"
-    id("com.gradle.common-custom-user-data-gradle-plugin") version "2.4.0"
+    id("com.gradle.common-custom-user-data-gradle-plugin") version "2.5.0"
 }
 
 includeBuild("gradle/plugins")
