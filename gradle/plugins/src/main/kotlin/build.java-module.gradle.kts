@@ -92,3 +92,7 @@ tasks.named("sanityCheck") {
     dependsOn(tasks.withType<CodeNarc>())
     dependsOn(tasks.withType<Javadoc>())
 }
+
+tasks.named("fullCheck") {
+    dependsOn(tasks.named("check"))
+}

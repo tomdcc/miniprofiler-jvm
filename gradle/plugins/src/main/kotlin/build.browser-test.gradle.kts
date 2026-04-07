@@ -15,6 +15,7 @@
  */
 
 plugins {
+    id("build.base")
     id("build.build-parameters")
     id("java-library")
 }
@@ -26,4 +27,7 @@ val browserTestSuite = addTestSuite("browserTest", 11) {
     }
 }
 
-// NOTE: intentionally NOT wired into the check task — run explicitly or in CI
+// NOTE: intentionally NOT wired into the check task — run explicitly or via fullCheck
+tasks.named("fullCheck") {
+    dependsOn(browserTestSuite)
+}
