@@ -29,8 +29,8 @@ class DockerGlassfish7Server implements TestedServer {
     static volatile String baseUrl
 
     DockerGlassfish7Server() {
-        File war = new File(System.getProperty("integrationTest.warPath"))
-        File h2Jar = new File(System.getProperty("integrationTest.h2JarPath"))
+        File war = new File(System.getProperty("scenarioTest.warPath"))
+        File h2Jar = new File(System.getProperty("scenarioTest.h2JarPath"))
 
         // Wait for the GlassFish startup log message — the admin port 4848 redirects
         // to HTTPS in GlassFish 7, so we wait for the server-started log line instead.
@@ -90,7 +90,7 @@ class DockerGlassfish7Server implements TestedServer {
         // (GlassFish may serve the default page briefly after asadmin deploy returns)
         waitForApp(baseUrl)
 
-        System.setProperty("geb.build.baseUrl", baseUrl)
+        System.setProperty("scenarioTest.baseUrl", baseUrl)
     }
 
     private static void exec(String... args) {

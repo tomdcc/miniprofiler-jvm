@@ -29,7 +29,7 @@ class DockerJetty9Server implements TestedServer {
     static volatile String baseUrl
 
     DockerJetty9Server() {
-        File war = new File(System.getProperty("integrationTest.warPath"))
+        File war = new File(System.getProperty("scenarioTest.warPath"))
 
         // Deploy the WAR as javax-servlet.war so it is served at the /javax-servlet/ context root,
         // matching the context path the functional tests expect.
@@ -48,7 +48,7 @@ class DockerJetty9Server implements TestedServer {
 
         baseUrl = "http://" + container.host + ":" + container.getMappedPort(8080) + "/javax-servlet/"
 
-        System.setProperty("geb.build.baseUrl", baseUrl)
+        System.setProperty("scenarioTest.baseUrl", baseUrl)
     }
 
     @Override

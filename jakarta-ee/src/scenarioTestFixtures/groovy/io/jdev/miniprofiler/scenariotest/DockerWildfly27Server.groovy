@@ -31,7 +31,7 @@ class DockerWildfly27Server implements TestedServer {
 
     DockerWildfly27Server() {
         // Locate the WAR produced by the assemble task
-        File war = new File(System.getProperty("integrationTest.warPath"))
+        File war = new File(System.getProperty("scenarioTest.warPath"))
 
         // WildFly 27 is the first WildFly release supporting Jakarta EE 10 with
         // the jakarta.* namespace. It ships with Hibernate 6. The WAR is dropped
@@ -52,7 +52,7 @@ class DockerWildfly27Server implements TestedServer {
 
         baseUrl = "http://" + container.host + ":" + container.getMappedPort(8080) + "/"
 
-        System.setProperty("geb.build.baseUrl", baseUrl)
+        System.setProperty("scenarioTest.baseUrl", baseUrl)
     }
 
     @Override

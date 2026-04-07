@@ -30,8 +30,8 @@ class DockerGlassfish4Server implements TestedServer {
     static volatile String baseUrl
 
     DockerGlassfish4Server() {
-        File war = new File(System.getProperty("integrationTest.warPath"))
-        File h2Jar = new File(System.getProperty("integrationTest.h2JarPath"))
+        File war = new File(System.getProperty("scenarioTest.warPath"))
+        File h2Jar = new File(System.getProperty("scenarioTest.h2JarPath"))
 
         // Wait for the GlassFish admin port to be serving HTTP — this indicates
         // GlassFish has fully started and the asadmin commands can be issued.
@@ -90,7 +90,7 @@ class DockerGlassfish4Server implements TestedServer {
         // (GlassFish may serve the default page briefly after asadmin deploy returns)
         waitForApp(baseUrl)
 
-        System.setProperty("geb.build.baseUrl", baseUrl)
+        System.setProperty("scenarioTest.baseUrl", baseUrl)
     }
 
     private static void exec(String... args) {

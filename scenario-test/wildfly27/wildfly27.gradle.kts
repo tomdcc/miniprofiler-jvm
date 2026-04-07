@@ -16,7 +16,7 @@
 
 plugins {
     id("build.docker-test")
-    id("build.integration-test")
+    id("build.scenario-test")
     id("build.java-module")
 }
 
@@ -32,12 +32,12 @@ dependencies {
     implementation(projects.jakartaServlet)
     implementation(projects.hibernate)
 
-    integrationTestRuntimeOnly(scenarioTestFixtures(projects.jakartaEe))
+    scenarioTestRuntimeOnly(scenarioTestFixtures(projects.jakartaEe))
 }
 
-tasks.named<Test>("integrationTest").configure {
+tasks.named<Test>("scenarioTest").configure {
     val warFile = tasks.named<War>("war").flatMap { it.archiveFile }
     doFirst {
-        systemProperty("integrationTest.warPath", warFile.get().asFile.absolutePath)
+        systemProperty("scenarioTest.warPath", warFile.get().asFile.absolutePath)
     }
 }

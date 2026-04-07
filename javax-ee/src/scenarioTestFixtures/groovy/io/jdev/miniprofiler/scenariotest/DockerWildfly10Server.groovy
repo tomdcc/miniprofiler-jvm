@@ -31,7 +31,7 @@ class DockerWildfly10Server implements TestedServer {
 
     DockerWildfly10Server() {
         // Locate the WAR produced by the assemble task
-        File war = new File(System.getProperty("integrationTest.warPath"))
+        File war = new File(System.getProperty("scenarioTest.warPath"))
 
         // The WAR is dropped into the deployments directory and picked up by WildFly's
         // hot-deploy scanner on startup. We wait for the "Deployed ROOT.war" log line
@@ -52,7 +52,7 @@ class DockerWildfly10Server implements TestedServer {
 
         baseUrl = "http://" + container.host + ":" + container.getMappedPort(8080) + "/"
 
-        System.setProperty("geb.build.baseUrl", baseUrl)
+        System.setProperty("scenarioTest.baseUrl", baseUrl)
     }
 
     @Override
