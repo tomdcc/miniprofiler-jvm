@@ -15,8 +15,10 @@
  */
 
 plugins {
+    id("build.browser-test")
     id("build.java-module")
     id("build.publish")
+    id("java-test-fixtures")
 }
 
 dependencies {
@@ -26,9 +28,21 @@ dependencies {
     compileOnly(libs.ratpack.hikari)
     compileOnly(libs.ratpack.h2)
 
+    testImplementation(libs.ratpack.core)
+    testImplementation(libs.ratpack.guice)
+    testImplementation(libs.ratpack.hikari)
+    testImplementation(libs.ratpack.h2)
     testImplementation(projects.test)
     testImplementation(libs.ratpack.test)
     testImplementation(libs.ratpack.groovy.test)
+
+    testFixturesImplementation(projects.testlibIntegration)
+    testFixturesImplementation(libs.groovy.v4)
+    testFixturesImplementation(libs.ratpack.core)
+    testFixturesImplementation(libs.ratpack.guice)
+
+    browserTestImplementation(libs.ratpack.core)
+    browserTestImplementation(libs.ratpack.guice)
 }
 
 publishing {

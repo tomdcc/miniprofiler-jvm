@@ -19,8 +19,10 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     alias(libs.plugins.shadow)
+    id("build.browser-test")
     id("build.java-module")
     id("build.publish")
+    id("java-test-fixtures")
 }
 
 val bundled by configurations.creating { }
@@ -37,6 +39,9 @@ dependencies {
 
     testImplementation(projects.test)
     testImplementation(libs.jackson.databind)
+
+    testFixturesImplementation(libs.groovy.v4)
+    testFixturesImplementation(projects.testlibIntegration)
 }
 
 tasks.named<ProcessResources>("processResources") {

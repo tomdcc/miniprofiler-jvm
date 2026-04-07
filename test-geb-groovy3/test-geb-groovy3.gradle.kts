@@ -19,6 +19,12 @@ plugins {
     id("build.publish")
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
 sourceSets {
     main {
         groovy.srcDir("../test-geb/src/main/groovy")
@@ -39,6 +45,8 @@ dependencies {
     // Override build.java-module's groovy.v4 + spock.groovy4 with Groovy 3 equivalents
     testImplementation(libs.groovy.v3)
     testImplementation(libs.spock.groovy3)
+    testImplementation(libs.geb.core.groovy3)
+    testImplementation(libs.selenium.api.groovy3)
 }
 
 // build.java-module adds org.apache.groovy (groovy.v4) — exclude all of it so only groovy.v3 is on the test classpath

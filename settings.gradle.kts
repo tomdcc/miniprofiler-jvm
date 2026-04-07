@@ -28,6 +28,7 @@ include("viewer")
 
 include("doc:manual")
 
+include("testlib-browser")
 include("testlib-integration")
 
 include("scenario-test:glassfish4")
