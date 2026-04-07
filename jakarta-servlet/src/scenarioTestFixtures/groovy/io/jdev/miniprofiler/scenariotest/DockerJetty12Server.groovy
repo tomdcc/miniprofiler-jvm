@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.jakarta.servlet
+package io.jdev.miniprofiler.scenariotest
 
 import io.jdev.miniprofiler.integtest.TestedServer
 import org.testcontainers.containers.GenericContainer

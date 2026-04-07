@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.javax.servlet
+package io.jdev.miniprofiler.scenariotest
 
 import io.jdev.miniprofiler.integtest.TestedServer
 import io.jdev.miniprofiler.integtest.TestedServerLauncherSessionListener
 
-class Jetty9ContainerManager extends TestedServerLauncherSessionListener {
+class Jetty12ContainerManager extends TestedServerLauncherSessionListener {
 
     @Override
     protected TestedServer createServer() {
-        new DockerJetty9Server()
+        new DockerJetty12Server()
     }
 
 }
