@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import addTestSuite
-
 plugins {
     id("build.base")
     id("java-library")

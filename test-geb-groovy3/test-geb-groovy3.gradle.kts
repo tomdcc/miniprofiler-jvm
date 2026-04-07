@@ -15,6 +15,8 @@
  */
 
 plugins {
+    id("build.base")
+    id("build.build-parameters")
     id("build.java-module")
     id("build.publish")
 }
@@ -30,10 +32,6 @@ sourceSets {
         groovy.srcDir("../test-geb/src/main/groovy")
         resources.srcDir("../test-geb/src/main/resources")
     }
-    test {
-        groovy.srcDir("../test-geb/src/test/groovy")
-        resources.srcDir("../test-geb/src/test/resources")
-    }
 }
 
 dependencies {
@@ -41,31 +39,38 @@ dependencies {
     compileOnly(libs.groovy.v3)
     compileOnly(libs.geb.core.groovy3)
     compileOnly(libs.selenium.api.groovy3)
-
-    // Override build.java-module's groovy.v4 + spock.groovy4 with Groovy 3 equivalents
-    testImplementation(libs.groovy.v3)
-    testImplementation(libs.spock.groovy3)
-    testImplementation(libs.geb.core.groovy3)
-    testImplementation(libs.selenium.api.groovy3)
 }
 
-// build.java-module adds org.apache.groovy (groovy.v4) — exclude all of it so only groovy.v3 is on the test classpath
-configurations.named("testImplementation") {
+// Cannot use build.browser-test here because it hardcodes groovy4 Geb deps;
+// this module needs the groovy3 variants instead.
+val browserTestSuite = addTestSuite("browserTest", 11) {
+    makeBrowserTest(project, "groovy3")
+}
+
+sourceSets.named("browserTest") {
+    groovy.srcDir("../test-geb/src/browserTest/groovy")
+    resources.srcDir("../test-geb/src/browserTest/resources")
+}
+
+dependencies {
+    "browserTestImplementation"(projects.core)
+    "browserTestImplementation"(libs.groovy.v3)
+    "browserTestImplementation"(libs.spock.groovy3)
+}
+
+// build.java-module adds org.apache.groovy (groovy.v4) — exclude all of it so only groovy.v3 is on the browserTest classpath
+configurations.named("browserTestImplementation") {
     exclude(group = "org.apache.groovy")
 }
 // Force spock.groovy3 to win over spock.groovy4 that build.java-module adds
-configurations.matching { it.name.startsWith("test") }.configureEach {
+configurations.matching { it.name.startsWith("browserTest") }.configureEach {
     resolutionStrategy {
         force(libs.spock.groovy3.get())
     }
 }
 
-testing {
-    suites {
-        named<JvmTestSuite>("test") {
-            makeBrowserTest(project, "groovy3")
-        }
-    }
+tasks.named("fullCheck") {
+    dependsOn(browserTestSuite)
 }
 
 publishing {
