@@ -14,24 +14,12 @@
  * limitations under the License.
  */
 
-import addTestSuite
-import org.gradle.accessors.dm.LibrariesForLibs
-import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.jvm.toolchain.JavaLanguageVersion
-import org.gradle.jvm.toolchain.JavaToolchainService
-import org.gradle.kotlin.dsl.the
-
 plugins {
-    id("build.build-parameters")
     id("java-library")
 }
 
-val libs = the<LibrariesForLibs>()
-
 val suiteName = "integrationTest"
-val integrationTestSuite = addTestSuite(suiteName, 11) {
-    makeBrowserTest(project)
-}
+val integrationTestSuite = addTestSuite(suiteName, 11)
 
 configurations {
     extendFromTest(suiteName)
