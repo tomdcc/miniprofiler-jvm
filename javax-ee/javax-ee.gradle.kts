@@ -18,6 +18,7 @@ plugins {
     id("build.java-module")
     id("build.publish")
     id("build.scenario-test-fixtures")
+    id("build.integration-test")
 }
 
 dependencies {
@@ -28,10 +29,16 @@ dependencies {
     testImplementation(libs.javax.ee.api)
     testRuntimeOnly(projects.javaxServlet)
 
+    integrationTestImplementation(libs.weld.se.v3)
+
     scenarioTestFixturesImplementation(libs.groovy.v4)
     scenarioTestFixturesImplementation(libs.junit.platform.launcher)
     scenarioTestFixturesImplementation(projects.testlibIntegration)
     scenarioTestFixturesImplementation(libs.testcontainers.core)
+}
+
+configurations.named("integrationTestRuntimeClasspath") {
+    exclude(group = "javax", module = "javaee-api")
 }
 
 publishing {

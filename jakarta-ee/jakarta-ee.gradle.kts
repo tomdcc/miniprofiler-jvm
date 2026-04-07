@@ -18,6 +18,7 @@ plugins {
     id("build.java-module")
     id("build.publish")
     id("build.scenario-test-fixtures")
+    id("build.integration-test")
 }
 
 java {
@@ -38,10 +39,16 @@ dependencies {
     testImplementation(libs.jakarta.ee.api)
     testRuntimeOnly(projects.jakartaServlet)
 
+    integrationTestImplementation(libs.weld.se.v5)
+
     scenarioTestFixturesImplementation(libs.groovy.v4)
     scenarioTestFixturesImplementation(libs.junit.platform.launcher)
     scenarioTestFixturesImplementation(projects.testlibIntegration)
     scenarioTestFixturesImplementation(libs.testcontainers.core)
+}
+
+configurations.named("integrationTestRuntimeClasspath") {
+    exclude(group = "jakarta.platform", module = "jakarta.jakartaee-api")
 }
 
 publishing {

@@ -56,6 +56,8 @@ spock-groovy4 = "2.4-groovy-4.0"
 spring-v5 = "5.3.39"
 spring-v6 = "6.2.8"
 testcontainers = "2.0.4"
+weld-se-v3 = "3.1.9.Final"
+weld-se-v5 = "5.1.3.Final"
 
 [libraries]
 awaitility = { module = "org.awaitility:awaitility-groovy", version.ref = "awaitility" }
@@ -112,6 +114,8 @@ spring-v6-test = { module = "org.springframework:spring-test", version.ref = "sp
 spring-v6-web = { module = "org.springframework:spring-web", version.ref = "spring-v6" }
 testcontainers-core   = { module = "org.testcontainers:testcontainers",   version.ref = "testcontainers" }
 testcontainers-junit5 = { module = "org.testcontainers:testcontainers-junit-jupiter", version.ref = "testcontainers" }
+weld-se-v3 = { module = "org.jboss.weld.se:weld-se-core", version.ref = "weld-se-v3" }
+weld-se-v5 = { module = "org.jboss.weld.se:weld-se-core", version.ref = "weld-se-v5" }
 
 [plugins]
 asciidoctor = { id = "org.asciidoctor.jvm.convert", version.ref = "asciidoctor" }
