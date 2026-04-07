@@ -26,7 +26,7 @@ dependencies {
     implementation(projects.javaxServlet)
     implementation(projects.hibernate)
 
-    integrationTestImplementation(projects.scenarioTest.lib)
+    integrationTestRuntimeOnly(scenarioTestFixtures(projects.javaxEe))
 }
 
 val h2Classpath by configurations.creating

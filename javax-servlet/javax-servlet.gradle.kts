@@ -17,6 +17,7 @@
 plugins {
     id("build.java-module")
     id("build.publish")
+    id("build.scenario-test-fixtures")
 }
 
 dependencies {
@@ -28,6 +29,10 @@ dependencies {
     testImplementation(libs.javax.servlet.api.v4)
     testImplementation(libs.spring.v5.test)
     testImplementation(libs.spring.v5.web)
+
+    scenarioTestFixturesImplementation(libs.groovy.v4)
+    scenarioTestFixturesImplementation(projects.testlibIntegration)
+    scenarioTestFixturesImplementation(libs.testcontainers.core)
 }
 
 // to allow deps on a jar, so that a tld will get picked up

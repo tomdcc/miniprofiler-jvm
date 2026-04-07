@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-// Use the URL provided by the container manager (set as a system property),
-// falling back to localhost for running against a manually started server.
-baseUrl = System.getProperty("geb.build.baseUrl") ?: 'http://127.0.0.1:8080/'
+package io.jdev.miniprofiler.jakarta.servlet
 
-if(!System.getProperty("geb.build.reportsDir")) {
-	// probably running in IDE
-	reportsDir = 'build/reports/geb'
+import io.jdev.miniprofiler.integtest.TestedServer
+import io.jdev.miniprofiler.integtest.TestedServerLauncherSessionListener
+
+class Jetty12ContainerManager extends TestedServerLauncherSessionListener {
+
+    @Override
+    protected TestedServer createServer() {
+        new DockerJetty12Server()
+    }
+
 }

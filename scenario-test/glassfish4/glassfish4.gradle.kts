@@ -18,6 +18,7 @@ plugins {
     id("build.docker-test")
     id("build.integration-test")
     id("build.java-module")
+    id("java-test-fixtures")
 }
 
 dependencies {
@@ -26,7 +27,7 @@ dependencies {
     implementation(projects.javaxServlet)
     implementation(projects.eclipselink)
 
-    integrationTestImplementation(projects.scenarioTest.lib)
+    integrationTestRuntimeOnly(scenarioTestFixtures(projects.javaxEe))
 }
 
 val h2Classpath by configurations.creating

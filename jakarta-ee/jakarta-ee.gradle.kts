@@ -17,6 +17,7 @@
 plugins {
     id("build.java-module")
     id("build.publish")
+    id("build.scenario-test-fixtures")
 }
 
 java {
@@ -34,7 +35,13 @@ dependencies {
     compileOnly(libs.jakarta.ee.api)
 
     testImplementation(projects.test)
+    testImplementation(libs.jakarta.ee.api)
     testRuntimeOnly(projects.jakartaServlet)
+
+    scenarioTestFixturesImplementation(libs.groovy.v4)
+    scenarioTestFixturesImplementation(libs.junit.platform.launcher)
+    scenarioTestFixturesImplementation(projects.testlibIntegration)
+    scenarioTestFixturesImplementation(libs.testcontainers.core)
 }
 
 publishing {

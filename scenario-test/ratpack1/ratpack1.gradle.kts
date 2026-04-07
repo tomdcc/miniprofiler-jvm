@@ -32,5 +32,6 @@ dependencies {
     implementation(libs.ratpack.hikari)
     implementation(libs.h2)
 
+    integrationTestImplementation(project)
     integrationTestImplementation(libs.ratpack.test)
 }

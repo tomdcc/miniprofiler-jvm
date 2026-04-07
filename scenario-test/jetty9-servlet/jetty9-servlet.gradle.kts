@@ -29,7 +29,7 @@ dependencies {
     }
     implementation(libs.h2)
 
-    integrationTestImplementation(projects.scenarioTest.lib)
+    integrationTestRuntimeOnly(scenarioTestFixtures(projects.javaxServlet))
 }
 
 tasks.named<Test>("integrationTest").configure {

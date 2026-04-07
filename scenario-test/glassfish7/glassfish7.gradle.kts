@@ -32,7 +32,7 @@ dependencies {
     implementation(projects.jakartaServlet)
     implementation(projects.eclipselink)
 
-    integrationTestImplementation(projects.scenarioTest.lib)
+    integrationTestRuntimeOnly(scenarioTestFixtures(projects.jakartaEe))
 }
 
 val h2Classpath by configurations.creating

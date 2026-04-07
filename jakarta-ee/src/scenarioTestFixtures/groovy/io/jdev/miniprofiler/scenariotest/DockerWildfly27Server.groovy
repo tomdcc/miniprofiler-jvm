@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.integtest
+package io.jdev.miniprofiler.scenariotest
 
-import org.junit.platform.launcher.LauncherSession
-import org.junit.platform.launcher.LauncherSessionListener
+import io.jdev.miniprofiler.integtest.TestedServer
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.MountableFile
 
 import java.time.Duration
 
-class Wildfly27ContainerManager implements LauncherSessionListener {
+class DockerWildfly27Server implements TestedServer {
 
     // Shared across the entire test session
     static volatile GenericContainer<?> container
     static volatile String baseUrl
 
-    @Override
-    void launcherSessionOpened(LauncherSession session) {
+    DockerWildfly27Server() {
         // Locate the WAR produced by the assemble task
         File war = new File(System.getProperty("integrationTest.warPath"))
 
@@ -58,7 +56,12 @@ class Wildfly27ContainerManager implements LauncherSessionListener {
     }
 
     @Override
-    void launcherSessionClosed(LauncherSession session) {
+    String getServerUrl() {
+        baseUrl
+    }
+
+    @Override
+    void close() throws IOException {
         container?.stop()
     }
 }

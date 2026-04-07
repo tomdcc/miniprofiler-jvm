@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.integtest
+package io.jdev.miniprofiler.jakarta.servlet
 
-import org.junit.platform.launcher.LauncherSession
-import org.junit.platform.launcher.LauncherSessionListener
+import io.jdev.miniprofiler.integtest.TestedServer
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.images.builder.Transferable
 
 import java.time.Duration
 
-class Jetty12ContainerManager implements LauncherSessionListener {
+class DockerJetty12Server implements TestedServer {
 
     static volatile GenericContainer<?> container
     static volatile String baseUrl
 
-    @Override
-    void launcherSessionOpened(LauncherSession session) {
+    DockerJetty12Server() {
         File war = new File(System.getProperty("integrationTest.warPath"))
 
         // Deploy the WAR as jakarta-servlet.war so it is served at the /jakarta-servlet/ context root,
@@ -60,7 +58,12 @@ class Jetty12ContainerManager implements LauncherSessionListener {
     }
 
     @Override
-    void launcherSessionClosed(LauncherSession session) {
+    String getServerUrl() {
+        baseUrl
+    }
+
+    @Override
+    void close() throws IOException {
         container?.stop()
     }
 }

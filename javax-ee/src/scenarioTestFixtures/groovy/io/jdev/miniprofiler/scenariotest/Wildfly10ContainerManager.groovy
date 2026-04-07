@@ -14,29 +14,16 @@
  * limitations under the License.
  */
 
-import addTestSuite
-import org.gradle.accessors.dm.LibrariesForLibs
-import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.jvm.toolchain.JavaLanguageVersion
-import org.gradle.jvm.toolchain.JavaToolchainService
-import org.gradle.kotlin.dsl.the
+package io.jdev.miniprofiler.scenariotest
 
-plugins {
-    id("build.build-parameters")
-    id("java-library")
-}
+import io.jdev.miniprofiler.integtest.TestedServer
+import io.jdev.miniprofiler.integtest.TestedServerLauncherSessionListener
 
-val libs = the<LibrariesForLibs>()
+class Wildfly10ContainerManager extends TestedServerLauncherSessionListener {
 
-val suiteName = "integrationTest"
-val integrationTestSuite = addTestSuite(suiteName, 11) {
-    makeBrowserTest(project)
-}
+    @Override
+    protected TestedServer createServer() {
+        new DockerWildfly10Server()
+    }
 
-configurations {
-    extendFromTest(suiteName)
-}
-
-tasks.named("check") {
-    dependsOn(integrationTestSuite)
 }

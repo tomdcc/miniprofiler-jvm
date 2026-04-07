@@ -20,10 +20,9 @@ plugins {
     id("build.java-module")
 }
 
-// jakarta.servlet-api 6.0 requires Java 11+
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
@@ -36,7 +35,7 @@ dependencies {
     }
     implementation(libs.h2)
 
-    integrationTestImplementation(projects.scenarioTest.lib)
+    integrationTestRuntimeOnly(scenarioTestFixtures(projects.jakartaServlet))
 }
 
 tasks.named<Test>("integrationTest").configure {

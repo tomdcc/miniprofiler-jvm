@@ -14,47 +14,54 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.integtest
+package io.jdev.miniprofiler.scenariotest
 
-import org.junit.platform.launcher.LauncherSession
-import org.junit.platform.launcher.LauncherSessionListener
+import io.jdev.miniprofiler.integtest.TestedServer
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.MountableFile
 
 import java.time.Duration
 
-class Jetty9ContainerManager implements LauncherSessionListener {
+class DockerWildfly10Server implements TestedServer {
 
+    // Shared across the entire test session
     static volatile GenericContainer<?> container
     static volatile String baseUrl
 
-    @Override
-    void launcherSessionOpened(LauncherSession session) {
+    DockerWildfly10Server() {
+        // Locate the WAR produced by the assemble task
         File war = new File(System.getProperty("integrationTest.warPath"))
 
-        // Deploy the WAR as servlet.war so it is served at the /servlet/ context root,
-        // matching the context path the functional tests expect.
-        container = new GenericContainer<>("jetty:9-jre11")
+        // The WAR is dropped into the deployments directory and picked up by WildFly's
+        // hot-deploy scanner on startup. We wait for the "Deployed ROOT.war" log line
+        // rather than a plain HTTP 200, which could match the welcome page before our
+        // WAR loads.
+        container = new GenericContainer<>("jboss/wildfly:10.1.0.Final")
             .withExposedPorts(8080)
             .withCopyFileToContainer(
                 MountableFile.forHostPath(war.absolutePath),
-                "/var/lib/jetty/webapps/javax-servlet.war"
+                "/opt/jboss/wildfly/standalone/deployments/ROOT.war"
             )
             .waitingFor(
-                Wait.forHttp("/javax-servlet/").forPort(8080).forStatusCode(200)
+                Wait.forLogMessage(".*Deployed.*ROOT\\.war.*\\n", 1)
                     .withStartupTimeout(Duration.ofMinutes(5))
             )
 
         container.start()
 
-        baseUrl = "http://" + container.host + ":" + container.getMappedPort(8080) + "/javax-servlet/"
+        baseUrl = "http://" + container.host + ":" + container.getMappedPort(8080) + "/"
 
         System.setProperty("geb.build.baseUrl", baseUrl)
     }
 
     @Override
-    void launcherSessionClosed(LauncherSession session) {
+    String getServerUrl() {
+        baseUrl
+    }
+
+    @Override
+    void close() throws IOException {
         container?.stop()
     }
 }

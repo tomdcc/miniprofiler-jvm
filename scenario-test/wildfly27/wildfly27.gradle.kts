@@ -32,7 +32,7 @@ dependencies {
     implementation(projects.jakartaServlet)
     implementation(projects.hibernate)
 
-    integrationTestImplementation(projects.scenarioTest.lib)
+    integrationTestRuntimeOnly(scenarioTestFixtures(projects.jakartaEe))
 }
 
 tasks.named<Test>("integrationTest").configure {

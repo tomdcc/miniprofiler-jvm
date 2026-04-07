@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.integtest
+package io.jdev.miniprofiler.scenariotest
 
-import org.junit.platform.launcher.LauncherSession
-import org.junit.platform.launcher.LauncherSessionListener
+import io.jdev.miniprofiler.integtest.TestedServer
 import org.testcontainers.containers.Container
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
@@ -25,28 +24,26 @@ import org.testcontainers.utility.MountableFile
 
 import java.time.Duration
 
-class Glassfish7ContainerManager implements LauncherSessionListener {
+class DockerGlassfish4Server implements TestedServer {
 
     static volatile GenericContainer<?> container
     static volatile String baseUrl
 
-    @Override
-    void launcherSessionOpened(LauncherSession session) {
+    DockerGlassfish4Server() {
         File war = new File(System.getProperty("integrationTest.warPath"))
         File h2Jar = new File(System.getProperty("integrationTest.h2JarPath"))
 
-        // Wait for the GlassFish startup log message — the admin port 4848 redirects
-        // to HTTPS in GlassFish 7, so we wait for the server-started log line instead.
-        // Image from ghcr.io/eclipse-ee4j/glassfish (official Eclipse GlassFish images).
-        container = new GenericContainer<>("ghcr.io/eclipse-ee4j/glassfish:7.0.25")
+        // Wait for the GlassFish admin port to be serving HTTP — this indicates
+        // GlassFish has fully started and the asadmin commands can be issued.
+        container = new GenericContainer<>("glassfish:4.1")
             .withExposedPorts(8080, 4848)
             // Copy H2 driver into the domain lib so it is on the server classpath
             .withCopyFileToContainer(
                 MountableFile.forHostPath(h2Jar.absolutePath),
-                "/opt/glassfish7/glassfish/domains/domain1/lib/h2.jar"
+                "/usr/local/glassfish4/glassfish/domains/domain1/lib/h2.jar"
             )
             .waitingFor(
-                Wait.forLogMessage(".*Eclipse GlassFish.*startup time.*\\n", 1)
+                Wait.forHttp("/").forPort(4848).forStatusCode(200)
                     .withStartupTimeout(Duration.ofMinutes(5))
             )
 
@@ -84,7 +81,7 @@ class Glassfish7ContainerManager implements LauncherSessionListener {
                 "/tmp/ROOT.war")
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to configure and deploy application to GlassFish 7", e)
+            throw new RuntimeException("Failed to configure and deploy application to GlassFish", e)
         }
 
         baseUrl = "http://" + container.host + ":" + container.getMappedPort(8080) + "/"
@@ -96,9 +93,9 @@ class Glassfish7ContainerManager implements LauncherSessionListener {
         System.setProperty("geb.build.baseUrl", baseUrl)
     }
 
-    private void exec(String... args) {
+    private static void exec(String... args) {
         String[] fullCmd = new String[args.length + 3]
-        fullCmd[0] = "/opt/glassfish7/bin/asadmin"
+        fullCmd[0] = "/usr/local/glassfish4/bin/asadmin"
         fullCmd[1] = "--user"
         fullCmd[2] = "admin"
         System.arraycopy(args, 0, fullCmd, 3, args.length)
@@ -118,7 +115,7 @@ class Glassfish7ContainerManager implements LauncherSessionListener {
      * Polls the app root until it responds with a non-default-GlassFish page,
      * giving the deployed WAR time to replace the welcome screen.
      */
-    private void waitForApp(String appBaseUrl) {
+    private static void waitForApp(String appBaseUrl) {
         long deadline = System.currentTimeMillis() + 120_000L
         while (System.currentTimeMillis() < deadline) {
             try {
@@ -143,7 +140,12 @@ class Glassfish7ContainerManager implements LauncherSessionListener {
     }
 
     @Override
-    void launcherSessionClosed(LauncherSession session) {
+    String getServerUrl() {
+        baseUrl
+    }
+
+    @Override
+    void close() throws IOException {
         container?.stop()
     }
 }

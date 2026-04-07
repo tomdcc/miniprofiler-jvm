@@ -17,6 +17,7 @@
 plugins {
     id("build.java-module")
     id("build.publish")
+    id("build.scenario-test-fixtures")
 }
 
 // Spring 6 test dependency requires Java 17+; production code targets Java 11+
@@ -34,9 +35,14 @@ dependencies {
     api(projects.core)
     compileOnly(libs.jakarta.servlet.api)
     compileOnly(libs.jakarta.jsp.api)
+
     testImplementation(projects.test)
     testImplementation(libs.spring.v6.test)
     testImplementation(libs.spring.v6.web)
+
+    scenarioTestFixturesImplementation(libs.groovy.v4)
+    scenarioTestFixturesImplementation(projects.testlibIntegration)
+    scenarioTestFixturesImplementation(libs.testcontainers.core)
 }
 
 // to allow deps on a jar, so that a tld will get picked up

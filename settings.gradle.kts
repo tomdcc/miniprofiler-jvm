@@ -28,9 +28,10 @@ include("viewer")
 
 include("doc:manual")
 
+include("testlib-integration")
+
 include("scenario-test:glassfish4")
 include("scenario-test:glassfish7")
-include("scenario-test:lib")
 include("scenario-test:jetty12-servlet")
 include("scenario-test:jetty9-servlet")
 include("scenario-test:ratpack1")

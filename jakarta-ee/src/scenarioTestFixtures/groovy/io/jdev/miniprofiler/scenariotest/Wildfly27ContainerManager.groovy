@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-plugins {
-    id("build.java-module")
-}
+package io.jdev.miniprofiler.scenariotest
 
-dependencies {
-    implementation(libs.groovy.v4)
-    implementation(libs.testcontainers.core)
-    implementation(libs.junit.platform.launcher)
+import io.jdev.miniprofiler.integtest.TestedServer
+import io.jdev.miniprofiler.integtest.TestedServerLauncherSessionListener
+
+class Wildfly27ContainerManager extends TestedServerLauncherSessionListener {
+
+    @Override
+    protected TestedServer createServer() {
+        new DockerWildfly27Server()
+    }
+
 }

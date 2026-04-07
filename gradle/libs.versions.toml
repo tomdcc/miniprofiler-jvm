@@ -35,6 +35,8 @@ javax-ee-api = "7.0"
 javax-jsp-api = "2.3.3"
 javax-servlet-api-v2 = "2.3"
 javax-servlet-api-v4 = "4.0.1"
+jetty9 = "9.4.57.v20241219"
+jetty12 = "12.0.21"
 jooq-compile = "3.0.0"
 # jOOQ 3.15+ requires Java 11, so we stay on 3.14.x for Java 8 compatibility
 jooq-test = "3.14.16"
@@ -46,7 +48,7 @@ junit-platform = "1.14.3"
 logback = "1.3.16"
 nexus-publish-plugin = "2.0.0"
 ratpack = "1.10.0-milestone-39"
-selenium-groovy3 = "4.34.0"
+selenium-groovy3 = "4.28.0"
 selenium-groovy4 = "4.41.0"
 shadow = "9.4.1"
 spock-groovy3 = "2.4-groovy-3.0"
@@ -78,6 +80,10 @@ javax-ee-api = { module = "javax:javaee-api", version.ref = "javax-ee-api" }
 javax-jsp-api = { module = "javax.servlet.jsp:javax.servlet.jsp-api", version.ref = "javax-jsp-api" }
 javax-servlet-api-v2 = { module = "javax.servlet:servlet-api", version.ref = "javax-servlet-api-v2" }
 javax-servlet-api-v4 = { module = "javax.servlet:javax.servlet-api", version.ref = "javax-servlet-api-v4" }
+jetty9-server        = { module = "org.eclipse.jetty:jetty-server",            version.ref = "jetty9"  }
+jetty9-servlet       = { module = "org.eclipse.jetty:jetty-servlet",           version.ref = "jetty9"  }
+jetty12-server       = { module = "org.eclipse.jetty:jetty-server",            version.ref = "jetty12" }
+jetty12-ee10-servlet = { module = "org.eclipse.jetty.ee10:jetty-ee10-servlet", version.ref = "jetty12" }
 jooq-compile = { module = "org.jooq:jooq", version.ref = "jooq-compile" }
 jooq-test = { module = "org.jooq:jooq", version.ref = "jooq-test" }
 json-simple = { module = "com.googlecode.json-simple:json-simple", version.ref = "json-simple" }
