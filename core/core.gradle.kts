@@ -31,20 +31,12 @@ project.sourceSets.configureEach { ->
 }
 
 dependencies {
-    compileOnly(libs.javax.servlet.api.v2)
-    compileOnly(libs.ehcache) {
-        isTransitive = false
-    }
-
     bundled(libs.json.simple) {
         exclude(group = "junit", module = "junit")
     }
 
     testImplementation(projects.test)
     testImplementation(libs.jackson.databind)
-
-	// needed since we're excluding ehcache's deps and spock falls over otherwise
-    testRuntimeOnly(libs.jta)
 }
 
 tasks.named<ProcessResources>("processResources") {

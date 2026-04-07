@@ -21,7 +21,6 @@ checkstyle = "12.3.1"
 codenarc = "3.7.0-groovy-4.0"
 develocity-plugin = "4.3.2"
 eclipselink = "2.7.16"
-ehcache = "2.10.9.2"
 geb-groovy3 = "6.0"
 geb-groovy4 = "8.0.1"
 groovy-v3 = "3.0.25"
@@ -40,7 +39,6 @@ jooq-compile = "3.0.0"
 # jOOQ 3.15+ requires Java 11, so we stay on 3.14.x for Java 8 compatibility
 jooq-test = "3.14.16"
 json-simple = "1.1.1"
-jta = "1.1"
 junit = "5.14.3"
 junit-platform = "1.14.3"
 # Ratpack looks for org.slf4j.impl.StaticLoggerBinder which is the old discovery mechanism for slf4j 1.x.
@@ -64,7 +62,6 @@ checkstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "checks
 codenarc = { module = "org.codenarc:CodeNarc", version.ref = "codenarc" }
 develocity-plugin = { module = "com.gradle:develocity-gradle-plugin", version.ref = "develocity-plugin" }
 eclipselink = { module = "org.eclipse.persistence:eclipselink", version.ref = "eclipselink" }
-ehcache = { module = "net.sf.ehcache:ehcache", version.ref = "ehcache" }
 geb-core-groovy3 = { module = "org.gebish:geb-core", version.ref = "geb-groovy3" }
 geb-core-groovy4 = { module = "org.apache.groovy.geb:geb-core", version.ref = "geb-groovy4" }
 geb-spock-groovy3 = { module = "org.gebish:geb-spock", version.ref = "geb-groovy3" }
@@ -84,7 +81,6 @@ javax-servlet-api-v4 = { module = "javax.servlet:javax.servlet-api", version.ref
 jooq-compile = { module = "org.jooq:jooq", version.ref = "jooq-compile" }
 jooq-test = { module = "org.jooq:jooq", version.ref = "jooq-test" }
 json-simple = { module = "com.googlecode.json-simple:json-simple", version.ref = "json-simple" }
-jta = { module = "javax.transaction:jta", version.ref = "jta" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
