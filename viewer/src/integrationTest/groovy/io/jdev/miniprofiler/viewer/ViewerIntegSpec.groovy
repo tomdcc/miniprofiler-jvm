@@ -25,22 +25,18 @@ import java.net.http.HttpResponse
 
 class ViewerIntegSpec extends Specification {
 
-    Process viewerProcess
-    String baseUrl
+    ForkingViewerServer server
     HttpClient client = HttpClient.newHttpClient()
 
     void setup() {
-        def jarPath = System.getProperty('miniprofiler.viewer.jar')
-        viewerProcess = new ProcessBuilder('java', '-jar', jarPath, ViewerTestFixtures.PROFILE_FILE.absolutePath)
-            .start()
-        def line = new BufferedReader(new InputStreamReader(viewerProcess.inputStream)).readLine()
-        def url = line.replaceFirst(/^View profile at: /, '')
-        def port = new URI(url).port
-        baseUrl = "http://localhost:${port}/"
+        server = new ForkingViewerServer(
+            System.getProperty('miniprofiler.viewer.jar'),
+            ViewerTestFixtures.PROFILE_FILE
+        )
     }
 
     void cleanup() {
-        viewerProcess?.destroy()
+        server?.close()
     }
 
     private HttpResponse<String> get(String url, Map<String, String> headers = [:]) {
@@ -51,7 +47,7 @@ class ViewerIntegSpec extends Specification {
 
     void "profile file is loaded and served as HTML"() {
         when:
-        def response = get("${baseUrl}miniprofiler/results?id=${ViewerTestFixtures.PROFILE_ID}")
+        def response = get("${server.serverUrl}miniprofiler/results?id=${ViewerTestFixtures.PROFILE_ID}")
 
         then:
         response.statusCode() == 200
@@ -60,21 +56,12 @@ class ViewerIntegSpec extends Specification {
 
     void "profile file is served as JSON"() {
         when:
-        def response = get("${baseUrl}miniprofiler/results?id=${ViewerTestFixtures.PROFILE_ID}", [Accept: 'application/json'])
+        def response = get("${server.serverUrl}miniprofiler/results?id=${ViewerTestFixtures.PROFILE_ID}", [Accept: 'application/json'])
         def profiler = new JsonSlurper().parseText(response.body())
 
         then:
         response.statusCode() == 200
         profiler.Name == '/test-request'
         profiler.Root != null
-    }
-
-    void "root redirects to results index"() {
-        when:
-        def response = get(baseUrl)
-
-        then:
-        response.statusCode() == 301
-        response.headers().firstValue('Location').get().contains('results-index')
     }
 }

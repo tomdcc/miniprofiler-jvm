@@ -34,7 +34,7 @@ dependencies {
 
 dependencies {
     testFixturesImplementation(libs.groovy.v4)
-    testFixturesCompileOnly(projects.testlibIntegration)
+    testFixturesApi(projects.testlibIntegration)
 }
 
 val testFixturesResourceDir = file("src/testFixtures/resources").absolutePath
