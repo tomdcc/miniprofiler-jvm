@@ -16,6 +16,7 @@
 
 plugins {
     id("build.browser-test")
+    id("build.integration-test")
     id("build.java-module")
     id("build.publish")
     id("build.scenario-test-fixtures")

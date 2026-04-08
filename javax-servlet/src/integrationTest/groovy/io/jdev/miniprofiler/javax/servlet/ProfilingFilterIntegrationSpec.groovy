@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-plugins {
-    id("build.java-module")
-}
+package io.jdev.miniprofiler.javax.servlet
 
-dependencies {
-    // Core types: TestedServer, BaseProfilerProvider, Storage
-    api(projects.core)
-    api(libs.junit.platform.launcher)
+import io.jdev.miniprofiler.integtest.AbstractProfilingHandlerIntegrationSpec
+import io.jdev.miniprofiler.integtest.InProcessTestedServer
 
-    // AbstractProfilingHandlerIntegrationSpec: compileOnly so they don't leak to consumers
-    compileOnly(libs.groovy.v4)
-    compileOnly(libs.spock.groovy4)
+class ProfilingFilterIntegrationSpec extends AbstractProfilingHandlerIntegrationSpec {
+
+    @Override
+    protected InProcessTestedServer createServer() {
+        new InProcessJetty9()
+    }
 }

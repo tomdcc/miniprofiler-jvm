@@ -257,8 +257,14 @@ public class ProfilingFilter implements Filter {
         int contentLength = request.getContentLength();
         try (ServletInputStream is = request.getInputStream()) {
             byte[] buf = new byte[contentLength == -1 ? 2048 : contentLength];
-            int size = is.read(buf);
-            return new String(buf, 0, size, StandardCharsets.UTF_8);
+            int offset = 0;
+            int remaining = buf.length;
+            int size;
+            while (remaining > 0 && (size = is.read(buf, offset, remaining)) != -1) {
+                offset += size;
+                remaining -= size;
+            }
+            return offset == 0 ? null : new String(buf, 0, offset, StandardCharsets.UTF_8);
         }
     }
 

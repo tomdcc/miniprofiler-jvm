@@ -16,6 +16,7 @@
 
 plugins {
     id("build.browser-test")
+    id("build.integration-test")
     id("build.java-module")
     id("build.publish")
     id("build.scenario-test-fixtures")
@@ -37,6 +38,8 @@ dependencies {
     testFixturesApi(projects.testlibIntegration)
     testFixturesImplementation(libs.jetty9.server)
     testFixturesImplementation(libs.jetty9.servlet)
+
+    integrationTestImplementation(projects.core)
 
     scenarioTestFixturesImplementation(libs.groovy.v4)
     scenarioTestFixturesImplementation(projects.testlibIntegration)
