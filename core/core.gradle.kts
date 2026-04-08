@@ -19,8 +19,10 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     alias(libs.plugins.shadow)
+    id("build.browser-test")
     id("build.java-module")
     id("build.publish")
+    id("java-test-fixtures")
 }
 
 val bundled by configurations.creating { }
@@ -31,11 +33,6 @@ project.sourceSets.configureEach { ->
 }
 
 dependencies {
-    compileOnly(libs.javax.servlet.api.v2)
-    compileOnly(libs.ehcache) {
-        isTransitive = false
-    }
-
     bundled(libs.json.simple) {
         exclude(group = "junit", module = "junit")
     }
@@ -43,8 +40,8 @@ dependencies {
     testImplementation(projects.test)
     testImplementation(libs.jackson.databind)
 
-	// needed since we're excluding ehcache's deps and spock falls over otherwise
-    testRuntimeOnly(libs.jta)
+    testFixturesImplementation(libs.groovy.v4)
+    testFixturesImplementation(projects.testlibIntegration)
 }
 
 tasks.named<ProcessResources>("processResources") {

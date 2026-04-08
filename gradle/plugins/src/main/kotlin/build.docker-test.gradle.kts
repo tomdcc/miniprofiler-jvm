@@ -30,12 +30,6 @@ dependencies {
 }
 
 tasks.withType<Test>().configureEach {
-    // Testcontainers 1.20+ requires Java 11+ at runtime (docker-java 3.4.0 needs API >= 1.44).
-    // Override the test execution JVM to Java 11, regardless of the module's compile toolchain.
-    javaLauncher.set(javaToolchains.launcherFor {
-        languageVersion.set(JavaLanguageVersion.of(11))
-    })
-
     // Also set DOCKER_API_VERSION so docker-java negotiates with a version Docker 29+ accepts
     // (Docker Desktop 29.x rejects client requests below API 1.44).
     environment("DOCKER_API_VERSION", "1.45")

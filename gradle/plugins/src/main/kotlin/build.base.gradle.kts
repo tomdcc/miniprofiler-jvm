@@ -18,3 +18,8 @@ tasks.register("sanityCheck") {
     group = "verification"
     description = "Lifecycle task: compiles all code, runs quality checks and generates documentation"
 }
+
+tasks.register("fullCheck") {
+    group = "verification"
+    description = "Lifecycle task: runs check and all additional test suites (e.g. browserTest)"
+}

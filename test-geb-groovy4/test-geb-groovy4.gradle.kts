@@ -15,6 +15,7 @@
  */
 
 plugins {
+    id("build.browser-test")
     id("build.java-module")
     id("build.publish")
 }
@@ -30,9 +31,9 @@ sourceSets {
         groovy.srcDir("../test-geb/src/main/groovy")
         resources.srcDir("../test-geb/src/main/resources")
     }
-    test {
-        groovy.srcDir("../test-geb/src/test/groovy")
-        resources.srcDir("../test-geb/src/test/resources")
+    browserTest {
+        groovy.srcDir("../test-geb/src/browserTest/groovy")
+        resources.srcDir("../test-geb/src/browserTest/resources")
     }
 }
 
@@ -41,14 +42,8 @@ dependencies {
     compileOnly(libs.groovy.v4)
     compileOnly(libs.geb.core.groovy4)
     compileOnly(libs.selenium.api.groovy4)
-}
 
-testing {
-    suites {
-        named<JvmTestSuite>("test") {
-            makeBrowserTest(project)
-        }
-    }
+    browserTestImplementation(projects.core)
 }
 
 publishing {

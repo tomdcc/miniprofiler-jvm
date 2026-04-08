@@ -16,7 +16,7 @@
 
 plugins {
     id("build.docker-test")
-    id("build.integration-test")
+    id("build.scenario-test")
     id("build.java-module")
 }
 
@@ -32,7 +32,8 @@ dependencies {
     implementation(projects.jakartaServlet)
     implementation(projects.eclipselink)
 
-    integrationTestImplementation(projects.scenarioTest.lib)
+    scenarioTestImplementation(projects.testlibIntegration)
+    scenarioTestRuntimeOnly(scenarioTestFixtures(projects.jakartaEe))
 }
 
 val h2Classpath by configurations.creating
@@ -40,10 +41,10 @@ dependencies {
     h2Classpath(libs.h2)
 }
 
-tasks.named<Test>("integrationTest").configure {
+tasks.named<Test>("scenarioTest").configure {
     val warFile = tasks.named<War>("war").flatMap { it.archiveFile }
     doFirst {
-        systemProperty("integrationTest.warPath", warFile.get().asFile.absolutePath)
-        systemProperty("integrationTest.h2JarPath", h2Classpath.singleFile.absolutePath)
+        systemProperty("scenarioTest.warPath", warFile.get().asFile.absolutePath)
+        systemProperty("scenarioTest.h2JarPath", h2Classpath.singleFile.absolutePath)
     }
 }

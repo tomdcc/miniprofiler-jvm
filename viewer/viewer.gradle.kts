@@ -18,6 +18,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     alias(libs.plugins.shadow)
+    id("build.browser-test")
     id("build.integration-test")
     id("build.java-module")
     id("build.publish")
@@ -33,6 +34,7 @@ dependencies {
 
 dependencies {
     testFixturesImplementation(libs.groovy.v4)
+    testFixturesApi(projects.testlibIntegration)
 }
 
 val testFixturesResourceDir = file("src/testFixtures/resources").absolutePath

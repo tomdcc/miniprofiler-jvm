@@ -15,28 +15,39 @@
  */
 
 plugins {
+    id("build.browser-test")
+    id("build.integration-test")
     id("build.java-module")
     id("build.publish")
+    id("build.scenario-test-fixtures")
+    id("java-test-fixtures")
 }
 
-// Spring 6 test dependency requires Java 17+; production code targets Java 11+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
-tasks.named<JavaCompile>("compileJava") {
-    options.release = 11
-}
-
 dependencies {
     api(projects.core)
     compileOnly(libs.jakarta.servlet.api)
     compileOnly(libs.jakarta.jsp.api)
+
     testImplementation(projects.test)
+    testImplementation(libs.jakarta.servlet.api)
+    testImplementation(libs.jakarta.jsp.api)
     testImplementation(libs.spring.v6.test)
     testImplementation(libs.spring.v6.web)
+
+    testFixturesApi(libs.groovy.v4)
+    testFixturesApi(projects.testlibIntegration)
+    testFixturesImplementation(libs.jetty12.server)
+    testFixturesImplementation(libs.jetty12.ee10.servlet)
+
+    scenarioTestFixturesImplementation(libs.groovy.v4)
+    scenarioTestFixturesImplementation(projects.testlibIntegration)
+    scenarioTestFixturesImplementation(libs.testcontainers.core)
 }
 
 // to allow deps on a jar, so that a tld will get picked up

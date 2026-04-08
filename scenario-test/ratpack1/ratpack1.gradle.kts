@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id("build.integration-test")
+    id("build.scenario-test")
     id("build.java-module")
     id("application")
 }
@@ -32,5 +32,7 @@ dependencies {
     implementation(libs.ratpack.hikari)
     implementation(libs.h2)
 
-    integrationTestImplementation(libs.ratpack.test)
+    scenarioTestImplementation(project)
+    scenarioTestImplementation(projects.testlibIntegration)
+    scenarioTestImplementation(libs.ratpack.test)
 }

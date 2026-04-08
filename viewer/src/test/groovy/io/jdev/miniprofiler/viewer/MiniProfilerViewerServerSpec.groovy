@@ -111,4 +111,13 @@ class MiniProfilerViewerServerSpec extends Specification {
         then:
         conn.responseCode == 404
     }
+
+    void "GET root redirects to results index"() {
+        when:
+        def conn = connect('')
+
+        then:
+        conn.responseCode == 301
+        conn.getHeaderField('Location').contains('results-index')
+    }
 }
