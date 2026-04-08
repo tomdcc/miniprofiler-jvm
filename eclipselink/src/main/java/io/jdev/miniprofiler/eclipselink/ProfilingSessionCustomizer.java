@@ -17,7 +17,7 @@
 package io.jdev.miniprofiler.eclipselink;
 
 import io.jdev.miniprofiler.ProfilerProvider;
-import io.jdev.miniprofiler.StaticProfilerProvider;
+import io.jdev.miniprofiler.ProfilerProviderLocator;
 import io.jdev.miniprofiler.sql.ProfilingSpyLogDelegator;
 import io.jdev.miniprofiler.sql.log4jdbc.SpyLogFactory;
 import org.eclipse.persistence.config.SessionCustomizer;
@@ -38,16 +38,21 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  */
 public class ProfilingSessionCustomizer implements SessionCustomizer {
 
+    private final ProfilerProvider profilerProvider;
+
     public ProfilingSessionCustomizer() {
-        this(new StaticProfilerProvider());
+        this.profilerProvider = null;
     }
 
     public ProfilingSessionCustomizer(ProfilerProvider profilerProvider) {
-        SpyLogFactory.setSpyLogDelegator(new ProfilingSpyLogDelegator(profilerProvider));
+        this.profilerProvider = profilerProvider;
     }
 
     @Override
     public void customize(Session session) throws Exception {
+        ProfilerProvider provider = profilerProvider != null ? profilerProvider : ProfilerProviderLocator.findProvider();
+        SpyLogFactory.setSpyLogDelegator(new ProfilingSpyLogDelegator(provider));
+
         DatasourceLogin login = session.getLogin();
         login.setConnector(new ProfilingConnector(login.getConnector()));
         if (session instanceof ServerSession) {

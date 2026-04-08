@@ -24,6 +24,10 @@ dependencies {
     compileOnly(libs.eclipselink) {
         isTransitive = false
     }
+    testImplementation(projects.test)
+    testImplementation(libs.eclipselink) {
+        isTransitive = false
+    }
 }
 
 publishing {

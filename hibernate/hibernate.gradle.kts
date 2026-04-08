@@ -24,6 +24,10 @@ dependencies {
     compileOnly(libs.hibernate) {
         isTransitive = false
     }
+    testImplementation(projects.test)
+    testImplementation(libs.hibernate) {
+        isTransitive = false
+    }
 }
 
 publishing {
