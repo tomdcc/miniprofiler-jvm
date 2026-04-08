@@ -72,6 +72,7 @@ abstract class AbstractMiniProfilerHandlerBrowserSpec extends GebReportingSpec {
         def child = p.step('child step')
         child.addCustomTiming('sql', 'reader', 'select * from people', 50L)
         child.stop()
+        p.stop(true)
         server.addProfile(p)
         return p.id
     }
