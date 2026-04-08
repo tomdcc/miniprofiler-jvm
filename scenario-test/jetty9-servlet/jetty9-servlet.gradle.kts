@@ -29,6 +29,7 @@ dependencies {
     }
     implementation(libs.h2)
 
+    scenarioTestImplementation(projects.testlibIntegration)
     scenarioTestRuntimeOnly(scenarioTestFixtures(projects.javaxServlet))
 }
 

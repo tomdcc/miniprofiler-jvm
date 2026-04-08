@@ -16,7 +16,6 @@
 
 package io.jdev.miniprofiler.integtest
 
-import groovy.json.JsonSlurper
 import spock.lang.AutoCleanup
 import spock.lang.Requires
 import spock.lang.Shared
@@ -34,6 +33,9 @@ abstract class AbstractProfilingHandlerIntegrationSpec extends Specification {
     @AutoCleanup
     InProcessTestedServer server
 
+    @Shared
+    TestMiniProfilerHttpClient client
+
     /**
      * Subclasses implement this to start the specific handler implementation under test.
      * The server must be ready to accept requests when this method returns.
@@ -42,49 +44,34 @@ abstract class AbstractProfilingHandlerIntegrationSpec extends Specification {
 
     def setupSpec() {
         server = createServer()
+        client = new TestMiniProfilerHttpClient(server.serverUrl)
     }
 
     def setup() {
         server.clearProfiles()
     }
 
-    private HttpURLConnection connect(String path, String accept = null) {
-        HttpURLConnection conn = new URL("${server.serverUrl}${path}").openConnection() as HttpURLConnection
-        conn.instanceFollowRedirects = false
-        conn.connectTimeout = 5_000
-        conn.readTimeout = 10_000
-        if (accept) {
-            conn.setRequestProperty('Accept', accept)
-        }
-        conn
-    }
-
     @Requires({ instance.server.profiledPagePath })
     void 'profiled request returns X-MiniProfiler-Ids header'() {
         when:
-        def conn = connect(server.profiledPagePath)
+        def response = client.get(server.profiledPagePath)
 
         then:
-        conn.responseCode == 200
-        def idsHeader = conn.getHeaderField('X-MiniProfiler-Ids')
-        idsHeader != null
-        def ids = new JsonSlurper().parseText(idsHeader) as List
-        ids.size() == 1
-        UUID.fromString(ids[0] as String) != null
+        response.statusCode() == 200
+        def id = response.miniProfilerId()
+        UUID.fromString(id) != null
     }
 
     @Requires({ instance.server.profiledPagePath })
     void 'profiled request JSON results contain correct timing structure'() {
         when:
-        def pageConn = connect(server.profiledPagePath)
-        def idsHeader = pageConn.getHeaderField('X-MiniProfiler-Ids')
-        def ids = new JsonSlurper().parseText(idsHeader) as List
-        def conn = connect("miniprofiler/results?id=${ids[0]}", 'application/json')
-        def profiler = new JsonSlurper().parse(conn.inputStream)
+        def pageResponse = client.get(server.profiledPagePath)
+        def resultResponse = client.getResultsJson(pageResponse.miniProfilerId())
+        def profiler = resultResponse.bodyAsJson()
 
         then:
-        conn.responseCode == 200
-        conn.contentType.contains('application/json')
+        resultResponse.statusCode() == 200
+        resultResponse.contentType().orElse('').contains('application/json')
         profiler.Name != null
         profiler.Root != null
         profiler.Root.Children != null
@@ -96,25 +83,24 @@ abstract class AbstractProfilingHandlerIntegrationSpec extends Specification {
         given:
         def profiler = server.profilerProvider.start('test-request')
         profiler.stop()
-        def listConn = connect('miniprofiler/results-list')
-        def list = new JsonSlurper().parse(listConn.inputStream) as List
+        def list = client.getResultsList().bodyAsJson() as List
         def knownId = list[0].Id
 
         when:
-        def conn = connect("miniprofiler/results?id=${knownId}")
+        def response = client.getResultsHtml(knownId as String)
 
         then:
-        conn.responseCode == 200
-        conn.contentType.contains('text/html')
-        conn.inputStream.text.contains('<html>')
+        response.statusCode() == 200
+        response.contentType().orElse('').contains('text/html')
+        response.body().contains('<html>')
     }
 
     void 'results endpoint returns 404 for unknown id'() {
         when:
-        def conn = connect("miniprofiler/results?id=${UUID.randomUUID()}")
+        def response = client.getResultsHtml(UUID.randomUUID().toString())
 
         then:
-        conn.responseCode == 404
+        response.statusCode() == 404
     }
 
     void 'results-list returns JSON array of stored profiles'() {
@@ -123,11 +109,11 @@ abstract class AbstractProfilingHandlerIntegrationSpec extends Specification {
         profiler.stop()
 
         when:
-        def conn = connect('miniprofiler/results-list')
-        def results = new JsonSlurper().parse(conn.inputStream) as List
+        def response = client.getResultsList()
+        def results = response.bodyAsJson() as List
 
         then:
-        conn.responseCode == 200
+        response.statusCode() == 200
         results.size() == 1
         results[0].Id == profiler.id.toString()
         results[0].Name == 'test-request'
@@ -142,60 +128,57 @@ abstract class AbstractProfilingHandlerIntegrationSpec extends Specification {
         second.stop()
 
         when:
-        def conn = connect("miniprofiler/results-list?last-id=${first.id.toString()}")
-        def results = new JsonSlurper().parse(conn.inputStream) as List
+        def response = client.getResultsList(first.id.toString())
+        def results = response.bodyAsJson() as List
 
         then:
-        conn.responseCode == 200
+        response.statusCode() == 200
         results.size() == 1
         results[0].Id == second.id.toString()
     }
 
     void 'results-index returns HTML'() {
         when:
-        def conn = connect('miniprofiler/results-index')
+        def response = client.getResultsIndex()
 
         then:
-        conn.responseCode == 200
-        conn.contentType.contains('text/html')
+        response.statusCode() == 200
+        response.contentType().orElse('').contains('text/html')
     }
 
     void 'static resource is served'() {
         when:
-        def conn = connect('miniprofiler/includes.min.js')
+        def response = client.getStaticResource('includes.min.js')
 
         then:
-        conn.responseCode == 200
-        conn.contentType.contains('javascript')
-        conn.inputStream.bytes.length > 0
+        response.statusCode() == 200
+        response.contentType().orElse('').contains('javascript')
+        !response.body().empty
     }
 
     void 'unknown static resource returns 404'() {
         when:
-        def conn = connect('miniprofiler/nonexistent.js')
+        def response = client.getStaticResource('nonexistent.js')
 
         then:
-        conn.responseCode == 404
+        response.statusCode() == 404
     }
 
     @Requires({ instance.server.ajaxEndpointPath })
     void 'ajax endpoint is profiled with X-MiniProfiler-Ids header'() {
         when:
-        def conn = connect(server.ajaxEndpointPath)
+        def response = client.get(server.ajaxEndpointPath)
 
         then:
-        conn.responseCode == 200
-        def idsHeader = conn.getHeaderField('X-MiniProfiler-Ids')
-        idsHeader != null
-        def ids = new JsonSlurper().parseText(idsHeader) as List
-        ids.size() == 1
+        response.statusCode() == 200
+        response.miniProfilerIds().size() == 1
 
         when:
-        def jsonConn = connect("miniprofiler/results?id=${ids[0]}", 'application/json')
-        def profiler = new JsonSlurper().parse(jsonConn.inputStream)
+        def resultResponse = client.getResultsJson(response.miniProfilerId())
+        def profiler = resultResponse.bodyAsJson()
 
         then:
-        jsonConn.responseCode == 200
+        resultResponse.statusCode() == 200
         profiler.Root != null
     }
 }

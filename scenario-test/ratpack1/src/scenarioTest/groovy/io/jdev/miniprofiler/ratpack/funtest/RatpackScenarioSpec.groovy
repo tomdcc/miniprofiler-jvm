@@ -16,16 +16,12 @@
 
 package io.jdev.miniprofiler.ratpack.funtest
 
-import groovy.json.JsonSlurper
+import io.jdev.miniprofiler.integtest.TestMiniProfilerHttpClient
 import ratpack.test.MainClassApplicationUnderTest
 import ratpack.test.ServerBackedApplicationUnderTest
 import spock.lang.AutoCleanup
 import spock.lang.Shared
 import spock.lang.Specification
-
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 
 class RatpackScenarioSpec extends Specification {
 
@@ -34,36 +30,24 @@ class RatpackScenarioSpec extends Specification {
     ServerBackedApplicationUnderTest aut
 
     @Shared
-    String baseUrl
-
-    @Shared
-    HttpClient client = HttpClient.newHttpClient()
+    TestMiniProfilerHttpClient client
 
     void setupSpec() {
         aut = new MainClassApplicationUnderTest(Main)
-        baseUrl = aut.address.toString()
-    }
-
-    private HttpResponse<String> get(String url, Map<String, String> headers = [:]) {
-        def builder = HttpRequest.newBuilder(URI.create(url))
-        headers.each { k, v -> builder.header(k, v) }
-        client.send(builder.build(), HttpResponse.BodyHandlers.ofString())
+        client = new TestMiniProfilerHttpClient(aut.address.toString())
     }
 
     void "profiling data returned for page request"() {
         when: 'hit the page endpoint'
-        def response = get("${baseUrl}page")
+        def response = client.get('page')
 
         then: 'response is OK with profiler IDs header'
         response.statusCode() == 200
-        def idsHeader = response.headers().firstValue('X-MiniProfiler-Ids')
-        idsHeader.present
-        def ids = new JsonSlurper().parseText(idsHeader.get()) as List
-        ids.size() == 1
+        response.miniProfilerIds().size() == 1
 
         when: 'fetch the profiler result as JSON'
-        def resultResponse = get("${baseUrl}miniprofiler/results?id=${ids[0]}", [Accept: 'application/json'])
-        def profiler = new JsonSlurper().parseText(resultResponse.body())
+        def resultResponse = client.getResultsJson(response.miniProfilerId())
+        def profiler = resultResponse.bodyAsJson()
 
         then: 'profiler has expected timing structure'
         resultResponse.statusCode() == 200
@@ -85,34 +69,31 @@ class RatpackScenarioSpec extends Specification {
 
     void "second request also produces profiling data"() {
         when: 'hit the page endpoint twice'
-        get("${baseUrl}page")
-        def secondResponse = get("${baseUrl}page")
+        client.get('page')
+        def secondResponse = client.get('page')
 
         then: 'second response also has profiler IDs header'
         secondResponse.statusCode() == 200
-        def idsHeader = secondResponse.headers().firstValue('X-MiniProfiler-Ids')
-        idsHeader.present
-        def ids = new JsonSlurper().parseText(idsHeader.get()) as List
-        ids.size() >= 1
+        secondResponse.miniProfilerIds().size() >= 1
     }
 
     void "results list endpoint returns profiler entries"() {
         given: 'a profile exists'
-        get("${baseUrl}page")
+        client.get('page')
 
         when: 'fetch the results list'
-        def response = get("${baseUrl}miniprofiler/results-list")
+        def response = client.getResultsList()
 
         then:
         response.statusCode() == 200
-        def results = new JsonSlurper().parseText(response.body()) as List
+        def results = response.bodyAsJson() as List
         results.size() >= 1
         results[0].Name != null
     }
 
     void "results index page returns HTML"() {
         when:
-        def response = get("${baseUrl}miniprofiler/results-index")
+        def response = client.getResultsIndex()
 
         then:
         response.statusCode() == 200
@@ -121,11 +102,10 @@ class RatpackScenarioSpec extends Specification {
 
     void "single result page returns HTML"() {
         given: 'a profile exists'
-        def homeResponse = get("${baseUrl}page")
-        def ids = new JsonSlurper().parseText(homeResponse.headers().firstValue('X-MiniProfiler-Ids').get()) as List
+        def pageResponse = client.get('page')
 
         when: 'fetch the single result page as HTML'
-        def response = get("${baseUrl}miniprofiler/results?id=${ids[0]}")
+        def response = client.getResultsHtml(pageResponse.miniProfilerId())
 
         then:
         response.statusCode() == 200

@@ -33,5 +33,6 @@ dependencies {
     implementation(libs.h2)
 
     scenarioTestImplementation(project)
+    scenarioTestImplementation(projects.testlibIntegration)
     scenarioTestImplementation(libs.ratpack.test)
 }

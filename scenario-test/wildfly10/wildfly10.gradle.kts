@@ -26,6 +26,7 @@ dependencies {
     implementation(projects.javaxServlet)
     implementation(projects.hibernate)
 
+    scenarioTestImplementation(projects.testlibIntegration)
     scenarioTestRuntimeOnly(scenarioTestFixtures(projects.javaxEe))
 }
 

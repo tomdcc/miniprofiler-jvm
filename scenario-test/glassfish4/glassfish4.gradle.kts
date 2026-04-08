@@ -27,6 +27,7 @@ dependencies {
     implementation(projects.javaxServlet)
     implementation(projects.eclipselink)
 
+    scenarioTestImplementation(projects.testlibIntegration)
     scenarioTestRuntimeOnly(scenarioTestFixtures(projects.javaxEe))
 }
 

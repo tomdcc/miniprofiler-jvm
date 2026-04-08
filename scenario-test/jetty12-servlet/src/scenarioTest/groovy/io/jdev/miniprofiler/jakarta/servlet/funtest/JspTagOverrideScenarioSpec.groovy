@@ -16,12 +16,9 @@
 
 package io.jdev.miniprofiler.jakarta.servlet.funtest
 
+import io.jdev.miniprofiler.integtest.TestMiniProfilerHttpClient
 import spock.lang.Shared
 import spock.lang.Specification
-
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 
 class JspTagOverrideScenarioSpec extends Specification {
 
@@ -29,14 +26,11 @@ class JspTagOverrideScenarioSpec extends Specification {
     String baseUrl = System.getProperty("scenarioTest.baseUrl") ?: 'http://127.0.0.1:8080/jakarta-servlet/'
 
     @Shared
-    HttpClient client = HttpClient.newHttpClient()
+    TestMiniProfilerHttpClient client = new TestMiniProfilerHttpClient(baseUrl)
 
     void "can override properties on script tag"() {
         when:
-        def response = client.send(
-            HttpRequest.newBuilder(URI.create("${baseUrl}?override=true")).build(),
-            HttpResponse.BodyHandlers.ofString()
-        )
+        def response = client.get('?override=true')
 
         then: 'response is OK and contains miniprofiler script'
         response.statusCode() == 200

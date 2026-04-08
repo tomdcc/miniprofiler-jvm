@@ -16,13 +16,9 @@
 
 package io.jdev.miniprofiler.jakarta.servlet.funtest
 
-import groovy.json.JsonSlurper
+import io.jdev.miniprofiler.integtest.TestMiniProfilerHttpClient
 import spock.lang.Shared
 import spock.lang.Specification
-
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 
 class JakartaServletScenarioSpec extends Specification {
 
@@ -30,28 +26,19 @@ class JakartaServletScenarioSpec extends Specification {
     String baseUrl = System.getProperty("scenarioTest.baseUrl") ?: 'http://127.0.0.1:8080/jakarta-servlet/'
 
     @Shared
-    HttpClient client = HttpClient.newHttpClient()
-
-    private HttpResponse<String> get(String url, Map<String, String> headers = [:]) {
-        def builder = HttpRequest.newBuilder(URI.create(url))
-        headers.each { k, v -> builder.header(k, v) }
-        client.send(builder.build(), HttpResponse.BodyHandlers.ofString())
-    }
+    TestMiniProfilerHttpClient client = new TestMiniProfilerHttpClient(baseUrl)
 
     void "profiling data returned for request"() {
         when: 'hit the home page'
-        def response = get(baseUrl)
+        def response = client.get('')
 
         then: 'response is OK with profiler IDs header'
         response.statusCode() == 200
-        def idsHeader = response.headers().firstValue('X-MiniProfiler-Ids')
-        idsHeader.present
-        def ids = new JsonSlurper().parseText(idsHeader.get()) as List
-        ids.size() == 1
+        response.miniProfilerIds().size() == 1
 
         when: 'fetch the profiler result as JSON'
-        def resultResponse = get("${baseUrl}miniprofiler/results?id=${ids[0]}", [Accept: 'application/json'])
-        def profiler = new JsonSlurper().parseText(resultResponse.body())
+        def resultResponse = client.getResultsJson(response.miniProfilerId())
+        def profiler = resultResponse.bodyAsJson()
 
         then: 'profiler has expected timing structure'
         resultResponse.statusCode() == 200
@@ -69,21 +56,21 @@ class JakartaServletScenarioSpec extends Specification {
 
     void "results list endpoint returns profiler entries"() {
         given: 'a profile exists'
-        get(baseUrl)
+        client.get('')
 
         when: 'fetch the results list'
-        def response = get("${baseUrl}miniprofiler/results-list")
+        def response = client.getResultsList()
 
         then:
         response.statusCode() == 200
-        def results = new JsonSlurper().parseText(response.body()) as List
+        def results = response.bodyAsJson() as List
         results.size() >= 1
         results[0].Name != null
     }
 
     void "results index page returns HTML"() {
         when:
-        def response = get("${baseUrl}miniprofiler/results-index")
+        def response = client.getResultsIndex()
 
         then:
         response.statusCode() == 200
@@ -92,11 +79,10 @@ class JakartaServletScenarioSpec extends Specification {
 
     void "single result page returns HTML"() {
         given: 'a profile exists'
-        def homeResponse = get(baseUrl)
-        def ids = new JsonSlurper().parseText(homeResponse.headers().firstValue('X-MiniProfiler-Ids').get()) as List
+        def homeResponse = client.get('')
 
         when: 'fetch the single result page as HTML'
-        def response = get("${baseUrl}miniprofiler/results?id=${ids[0]}")
+        def response = client.getResultsHtml(homeResponse.miniProfilerId())
 
         then:
         response.statusCode() == 200

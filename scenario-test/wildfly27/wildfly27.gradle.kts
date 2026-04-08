@@ -32,6 +32,7 @@ dependencies {
     implementation(projects.jakartaServlet)
     implementation(projects.hibernate)
 
+    scenarioTestImplementation(projects.testlibIntegration)
     scenarioTestRuntimeOnly(scenarioTestFixtures(projects.jakartaEe))
 }
 
