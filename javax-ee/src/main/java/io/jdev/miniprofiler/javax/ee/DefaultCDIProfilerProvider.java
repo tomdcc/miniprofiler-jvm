@@ -18,8 +18,10 @@ package io.jdev.miniprofiler.javax.ee;
 
 import io.jdev.miniprofiler.DefaultProfilerProvider;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
 
+@ApplicationScoped
 @Default
 public class DefaultCDIProfilerProvider extends DefaultProfilerProvider {
 }

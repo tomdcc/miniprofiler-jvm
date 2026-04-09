@@ -14,14 +14,24 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.jakarta.ee;
+package io.jdev.miniprofiler;
 
-import io.jdev.miniprofiler.DefaultProfilerProvider;
+import java.util.Optional;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Default;
+/**
+ * Fallback {@link ProfilerProviderLocator} that always returns a
+ * {@link StaticProfilerProvider}, delegating to whatever has been configured
+ * on {@link MiniProfiler}.
+ */
+public class StaticProfilerProviderLocator implements ProfilerProviderLocator {
 
-@ApplicationScoped
-@Default
-public class DefaultCDIProfilerProvider extends DefaultProfilerProvider {
+    @Override
+    public int getOrder() {
+        return 100;
+    }
+
+    @Override
+    public Optional<ProfilerProvider> locate() {
+        return Optional.of(new StaticProfilerProvider());
+    }
 }

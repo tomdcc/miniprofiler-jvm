@@ -17,7 +17,7 @@
 package io.jdev.miniprofiler.hibernate;
 
 import io.jdev.miniprofiler.ProfilerProvider;
-import io.jdev.miniprofiler.StaticProfilerProvider;
+import io.jdev.miniprofiler.ProfilerProviderLocator;
 import io.jdev.miniprofiler.sql.ProfilingSpyLogDelegator;
 import io.jdev.miniprofiler.sql.log4jdbc.ConnectionSpy;
 import io.jdev.miniprofiler.sql.log4jdbc.SpyLogFactory;
@@ -25,18 +25,31 @@ import org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProvid
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Map;
 
 public class ProfilingDatasourceConnectionProvider extends DatasourceConnectionProviderImpl {
 
-    private final ProfilerProvider profilerProvider;
+    private boolean profilingConfigured;
 
     public ProfilingDatasourceConnectionProvider() {
-        this(new StaticProfilerProvider());
     }
 
     public ProfilingDatasourceConnectionProvider(ProfilerProvider profilerProvider) {
-        this.profilerProvider = profilerProvider;
+        setupProfiling(profilerProvider);
+    }
+
+    @Override
+    @SuppressWarnings("rawtypes")
+    public void configure(Map configValues) {
+        if (!profilingConfigured) {
+            setupProfiling(ProfilerProviderLocator.findProvider());
+        }
+        super.configure(configValues);
+    }
+
+    private void setupProfiling(ProfilerProvider profilerProvider) {
         SpyLogFactory.setSpyLogDelegator(new ProfilingSpyLogDelegator(profilerProvider));
+        profilingConfigured = true;
     }
 
     @Override

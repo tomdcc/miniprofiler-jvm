@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,26 +18,28 @@ package io.jdev.miniprofiler.eclipselink;
 
 import io.jdev.miniprofiler.ProfilerProvider;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.SessionCustomizer;
 
 /**
- * An EclipseLink SessionCustomizer that installs a
- * {@link ProfilingConnector} onto EclipseLink's read and write pools.
+ * A {@link org.eclipse.persistence.config.SessionCustomizer} for EclipseLink 2.x
+ * and 3.x, where the {@code org.eclipse.persistence.config.SessionCustomizer}
+ * interface is the primary customizer contract.
  *
- * <p>The customizer can be installed by setting the
- * <code>eclipselink.session.customizer</code> property to this class name
- * <code>io.jdev.miniprofiler.eclipselink.ProfilingSessionCustomizer</code>
- * </p>
+ * <p>For EclipseLink 4.x and later, use {@link ProfilingSessionCustomizer} which
+ * implements the newer {@code org.eclipse.persistence.sessions.SessionCustomizer}
+ * interface.</p>
+ *
+ * @see ProfilingSessionCustomizer
  */
-public class ProfilingSessionCustomizer implements SessionCustomizer {
+@SuppressWarnings("deprecation")
+public class LegacyProfilingSessionCustomizer implements org.eclipse.persistence.config.SessionCustomizer {
 
     private final ProfilerProvider profilerProvider;
 
-    public ProfilingSessionCustomizer() {
+    public LegacyProfilingSessionCustomizer() {
         this.profilerProvider = null;
     }
 
-    public ProfilingSessionCustomizer(ProfilerProvider profilerProvider) {
+    public LegacyProfilingSessionCustomizer(ProfilerProvider profilerProvider) {
         this.profilerProvider = profilerProvider;
     }
 
