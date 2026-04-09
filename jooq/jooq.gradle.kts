@@ -28,6 +28,65 @@ dependencies {
     testImplementation(libs.h2)
 }
 
+val crossVersionTestJooqV3_0 = addCrossVersionTestSuite("crossVersionTestJooqV3_0", 8) {
+    // jOOQ 3.0.0: compile target, minimum supported version (Java 8)
+    dependencies {
+        implementation(libs.jooq.v300)
+        implementation(libs.h2)
+    }
+}
+addCrossVersionTestSuite("crossVersionTestJooqV3_14", 8) {
+    // jOOQ 3.14.16: last Java 8 version
+    dependencies {
+        implementation(libs.jooq.v314)
+        implementation(libs.h2)
+    }
+}
+addCrossVersionTestSuite("crossVersionTestJooqV3_16", 11) {
+    // jOOQ 3.16.10: last Java 11 version
+    dependencies {
+        implementation(libs.jooq.v316)
+        implementation(libs.h2)
+    }
+}
+addCrossVersionTestSuite("crossVersionTestJooqV3_19", 17) {
+    // jOOQ 3.19.31: last Java 17 version (last open-source before Java 21 was required)
+    dependencies {
+        implementation(libs.jooq.v319)
+        implementation(libs.h2)
+    }
+}
+addCrossVersionTestSuite("crossVersionTestJooqV3_21", 21) {
+    // jOOQ 3.21.1: latest version (Java 21)
+    dependencies {
+        implementation(libs.jooq.v321)
+        implementation(libs.h2)
+    }
+}
+
+// The v3_0 suite tests the minimum supported version and runs as part of regular check
+tasks.named("check") { dependsOn(crossVersionTestJooqV3_0) }
+
+// Force each suite to use its specific jOOQ version, overriding the 3.14.16 inherited
+// from testImplementation and the 3.0.0 compile-only dependency
+listOf("CompileClasspath", "RuntimeClasspath").forEach { suffix ->
+    configurations.named("crossVersionTestJooqV3_0$suffix") {
+        resolutionStrategy.force("org.jooq:jooq:3.0.0")
+    }
+    configurations.named("crossVersionTestJooqV3_14$suffix") {
+        resolutionStrategy.force("org.jooq:jooq:3.14.16")
+    }
+    configurations.named("crossVersionTestJooqV3_16$suffix") {
+        resolutionStrategy.force("org.jooq:jooq:3.16.10")
+    }
+    configurations.named("crossVersionTestJooqV3_19$suffix") {
+        resolutionStrategy.force("org.jooq:jooq:3.19.31")
+    }
+    configurations.named("crossVersionTestJooqV3_21$suffix") {
+        resolutionStrategy.force("org.jooq:jooq:3.21.1")
+    }
+}
+
 publishing {
     publications.named<MavenPublication>("maven") {
         from(components["java"])
