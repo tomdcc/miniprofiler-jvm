@@ -8,8 +8,10 @@ import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.plugins.jvm.JvmTestSuite
+import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.provider.Provider
 import org.gradle.api.reporting.ReportingExtension
+import org.gradle.api.tasks.GroovySourceDirectorySet
 import org.gradle.api.tasks.compile.GroovyCompile
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.toolchain.JavaLanguageVersion
@@ -113,6 +115,26 @@ fun Project.addTestSuite(suiteName: String, minJavaVersion: Int, configure: Acti
     }
 
     return suite!!
+}
+
+fun Project.addCrossVersionTestSuite(
+    suiteName: String, minJavaVersion: Int, configure: Action<JvmTestSuite> = Action {}
+): Provider<JvmTestSuite> {
+    val sourceSets = extensions.getByType(SourceSetContainer::class.java)
+    val suite = addTestSuite(suiteName, minJavaVersion) {
+        dependencies {
+            implementation(sourceSets.named("main").get().output)
+        }
+        configure.execute(this)
+    }
+    sourceSets.named(suiteName) {
+        java.setSrcDirs(emptyList<String>())
+        extensions.getByType(GroovySourceDirectorySet::class.java)
+            .setSrcDirs(listOf("src/crossVersionTest/groovy"))
+        resources.setSrcDirs(listOf("src/crossVersionTest/resources"))
+    }
+    tasks.named("fullCheck") { dependsOn(suite) }
+    return suite
 }
 
 fun DependencyHandlerScope.scenarioTestFixtures(dependency: ProjectDependency): ProjectDependency {
