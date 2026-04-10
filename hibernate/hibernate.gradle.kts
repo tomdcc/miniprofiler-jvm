@@ -15,6 +15,7 @@
  */
 
 plugins {
+    id("build.cross-version-test")
     id("build.java-module")
     id("build.publish")
 }
@@ -28,37 +29,28 @@ dependencies {
     testImplementation(libs.hibernate.v5)
 }
 
-val crossVersionTestHibernate5 = addCrossVersionTestSuite("crossVersionTestHibernate5", 8) {
-    dependencies {
+crossVersionTests {
+    configureEach {
+        implementation(libs.bundles.testing.groovy4)
+        runtimeOnly(libs.bundles.testing.runtime)
+        implementation(projects.test)
+        implementation(libs.h2)
+    }
+    register("crossVersionTestHibernate5") {
+        minJavaVersion = 8
         implementation(libs.hibernate.v5)
-        implementation(libs.h2)
     }
-}
-addCrossVersionTestSuite("crossVersionTestHibernate6", 11) {
-    dependencies {
+    register("crossVersionTestHibernate6") {
+        minJavaVersion = 11
         implementation(libs.hibernate.v6)
-        implementation(libs.h2)
     }
-}
-addCrossVersionTestSuite("crossVersionTestHibernate7", 17) {
-    dependencies {
+    register("crossVersionTestHibernate7") {
+        minJavaVersion = 17
         implementation(libs.hibernate.v7)
-        implementation(libs.h2)
     }
 }
 
-tasks.named("check") { dependsOn(crossVersionTestHibernate5) }
-
-configurations {
-    // Exclude the compile-time Hibernate (org.hibernate:hibernate-core) from suites that use
-    // Hibernate 6+, which changed groupId to org.hibernate.orm
-    "crossVersionTestHibernate6Implementation" {
-        exclude(group = "org.hibernate", module = "hibernate-core")
-    }
-    "crossVersionTestHibernate7Implementation" {
-        exclude(group = "org.hibernate", module = "hibernate-core")
-    }
-}
+tasks.named("check") { dependsOn("crossVersionTestHibernate5") }
 
 publishing {
     publications.named<MavenPublication>("maven") {

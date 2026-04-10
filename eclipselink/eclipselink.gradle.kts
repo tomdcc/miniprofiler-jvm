@@ -15,6 +15,7 @@
  */
 
 plugins {
+    id("build.cross-version-test")
     id("build.java-module")
     id("build.publish")
 }
@@ -45,42 +46,32 @@ dependencies {
     }
 }
 
-addCrossVersionTestSuite("crossVersionTestEclipseLink2", 8) {
-    dependencies {
+crossVersionTests {
+    configureEach {
+        implementation(libs.bundles.testing.groovy4)
+        runtimeOnly(libs.bundles.testing.runtime)
+        implementation(projects.test)
+        implementation(libs.h2)
+    }
+    register("crossVersionTestEclipseLink2") {
+        minJavaVersion = 8
         implementation(libs.eclipselink.v2)
-        implementation(libs.h2)
     }
-}
-addCrossVersionTestSuite("crossVersionTestEclipseLink3", 11) {
-    dependencies {
+    register("crossVersionTestEclipseLink3") {
+        minJavaVersion = 11
         implementation(libs.eclipselink.v3)
-        implementation(libs.h2)
     }
-}
-val crossVersionTestEclipseLink4 = addCrossVersionTestSuite("crossVersionTestEclipseLink4", 11) {
-    dependencies {
+    register("crossVersionTestEclipseLink4") {
+        minJavaVersion = 11
         implementation(libs.eclipselink.v4)
-        implementation(libs.h2)
     }
-}
-addCrossVersionTestSuite("crossVersionTestEclipseLink5", 17) {
-    dependencies {
+    register("crossVersionTestEclipseLink5") {
+        minJavaVersion = 17
         implementation(libs.eclipselink.v5)
-        implementation(libs.h2)
     }
 }
 
-tasks.named("check") { dependsOn(crossVersionTestEclipseLink4) }
-
-// Force older EclipseLink versions in suites where the inherited v4 would otherwise win
-listOf("CompileClasspath", "RuntimeClasspath").forEach { suffix ->
-    configurations.named("crossVersionTestEclipseLink2$suffix") {
-        resolutionStrategy.force("org.eclipse.persistence:eclipselink:2.7.12")
-    }
-    configurations.named("crossVersionTestEclipseLink3$suffix") {
-        resolutionStrategy.force("org.eclipse.persistence:eclipselink:3.0.4")
-    }
-}
+tasks.named("check") { dependsOn("crossVersionTestEclipseLink4") }
 
 publishing {
     publications.named<MavenPublication>("maven") {
