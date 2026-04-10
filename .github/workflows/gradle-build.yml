@@ -30,10 +30,10 @@ jobs:
         with:
           geckodriver-version: 0.36.0
 
-      - name: Build
-        run: ./gradlew assemble
+      - name: Build and run fast tests
+        run: ./gradlew assemble check --continue
 
-      - name: Run tests
+      - name: Run slow tests
         uses: GabrielBB/xvfb-action@v1.7
         with:
           run: ./gradlew fullCheck --continue
