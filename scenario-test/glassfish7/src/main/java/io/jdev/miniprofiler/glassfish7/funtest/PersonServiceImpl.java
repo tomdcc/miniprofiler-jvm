@@ -26,6 +26,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
 
+/** EJB implementation of {@link PersonService} for the GlassFish 7 functional test application. */
 @Stateless
 @Profiled
 public class PersonServiceImpl implements PersonService {

@@ -127,13 +127,19 @@ public class MiniProfilerServer implements AutoCloseable {
         httpServer.start();
     }
 
-    /** Returns the TCP port this server is listening on. */
+    /**
+     * Returns the TCP port this server is listening on.
+     *
+     * @return the TCP port this server is listening on
+     */
     public int getPort() {
         return httpServer.getAddress().getPort();
     }
 
     /**
      * Returns the base URL for this server, e.g. {@code http://127.0.0.1:12345/}.
+     *
+     * @return the base URL, e.g. {@code "http://127.0.0.1:12345/"}
      */
     public String getBaseUrl() {
         return "http://127.0.0.1:" + getPort() + "/";
@@ -286,6 +292,8 @@ public class MiniProfilerServer implements AutoCloseable {
 
     /**
      * Returns the underlying {@link ProfilerProvider}.
+     *
+     * @return the underlying {@link ProfilerProvider}
      */
     public ProfilerProvider getProvider() {
         return provider;

@@ -93,6 +93,10 @@ tasks.named("sanityCheck") {
     dependsOn(tasks.withType<Javadoc>())
 }
 
+tasks.withType<Javadoc>().configureEach {
+    (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:all,-missing/private")
+}
+
 tasks.named("fullCheck") {
     dependsOn(tasks.named("check"))
 }

@@ -64,6 +64,7 @@ public final class ProfilerDsl {
      * @param name         the expected profiler name
      * @param minDurationMs minimum expected duration in milliseconds
      * @param spec         spec that configures the root timing's children and custom timings
+     * @return the built {@link ExpectedProfiler}
      */
     public static ExpectedProfiler profiler(String name, long minDurationMs, Consumer<TimingBuilder> spec) {
         TimingBuilder rootBuilder = new TimingBuilder(name, minDurationMs);
@@ -74,6 +75,10 @@ public final class ProfilerDsl {
     /**
      * Creates an {@link ExpectedProfiler} with the given name and no minimum duration
      * constraint, configured by the given spec.
+     *
+     * @param name the expected profiler name
+     * @param spec spec that configures the root timing's children and custom timings
+     * @return the built {@link ExpectedProfiler}
      */
     public static ExpectedProfiler profiler(String name, Consumer<TimingBuilder> spec) {
         return profiler(name, 0, spec);
@@ -82,6 +87,10 @@ public final class ProfilerDsl {
     /**
      * Creates an {@link ExpectedProfiler} with the given name and a minimum duration
      * but no children or custom timings.
+     *
+     * @param name the expected profiler name
+     * @param minDurationMs minimum expected duration in milliseconds
+     * @return the built {@link ExpectedProfiler}
      */
     public static ExpectedProfiler profiler(String name, long minDurationMs) {
         return profiler(name, minDurationMs, b -> {
@@ -91,6 +100,9 @@ public final class ProfilerDsl {
     /**
      * Creates an {@link ExpectedProfiler} with the given name and no minimum duration,
      * children, or custom timings.
+     *
+     * @param name the expected profiler name
+     * @return the built {@link ExpectedProfiler}
      */
     public static ExpectedProfiler profiler(String name) {
         return profiler(name, 0, b -> {
@@ -114,6 +126,11 @@ public final class ProfilerDsl {
 
         /**
          * Adds a child timing step with a minimum duration, configured by the given spec.
+         *
+         * @param stepName the name of the timing step
+         * @param stepMinDurationMs minimum expected duration in milliseconds
+         * @param spec spec that configures the step's children and custom timings
+         * @return this builder
          */
         public TimingBuilder step(String stepName, long stepMinDurationMs, Consumer<TimingBuilder> spec) {
             TimingBuilder child = new TimingBuilder(stepName, stepMinDurationMs);
@@ -124,6 +141,10 @@ public final class ProfilerDsl {
 
         /**
          * Adds a child timing step with no minimum duration constraint, configured by the given spec.
+         *
+         * @param stepName the name of the timing step
+         * @param spec spec that configures the step's children and custom timings
+         * @return this builder
          */
         public TimingBuilder step(String stepName, Consumer<TimingBuilder> spec) {
             return step(stepName, 0, spec);
@@ -131,6 +152,9 @@ public final class ProfilerDsl {
 
         /**
          * Adds a child timing step with no minimum duration and no children or custom timings.
+         *
+         * @param stepName the name of the timing step
+         * @return this builder
          */
         public TimingBuilder step(String stepName) {
             return step(stepName, 0, b -> {
@@ -144,6 +168,7 @@ public final class ProfilerDsl {
          * @param executeType   the execute type (e.g. {@code "reader"})
          * @param commandString the command string; whitespace will be normalised during comparison
          * @param minDurationMs minimum expected duration in milliseconds
+         * @return this builder
          */
         public TimingBuilder customTiming(String type, String executeType, String commandString, long minDurationMs) {
             customTimings.computeIfAbsent(type, k -> new ArrayList<>())
@@ -153,6 +178,11 @@ public final class ProfilerDsl {
 
         /**
          * Adds an expected custom timing entry with no minimum duration constraint.
+         *
+         * @param type the custom timing type key (e.g. {@code "sql"})
+         * @param executeType the execute type (e.g. {@code "reader"})
+         * @param commandString the command string; whitespace will be normalised during comparison
+         * @return this builder
          */
         public TimingBuilder customTiming(String type, String executeType, String commandString) {
             return customTiming(type, executeType, commandString, 0);

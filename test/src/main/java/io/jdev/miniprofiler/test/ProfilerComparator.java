@@ -49,6 +49,8 @@ public final class ProfilerComparator {
     /**
      * Verifies that {@code actual} matches {@code expected}.
      *
+     * @param actual the profiler to verify
+     * @param expected the expected profiler shape to verify against
      * @throws AssertionError if any aspect of the actual profiler does not match
      */
     public static void verify(ProfilerImpl actual, ExpectedProfiler expected) {

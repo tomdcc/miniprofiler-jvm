@@ -26,6 +26,8 @@ public interface TestedServer extends Closeable {
 
     /**
      * Returns the base URL of this server, e.g. {@code "http://127.0.0.1:12345/"}.
+     *
+     * @return the base URL, e.g. {@code "http://127.0.0.1:12345/"}
      */
     String getServerUrl();
 

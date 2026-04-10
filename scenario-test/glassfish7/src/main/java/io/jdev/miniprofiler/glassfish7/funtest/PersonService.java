@@ -18,8 +18,11 @@ package io.jdev.miniprofiler.glassfish7.funtest;
 
 import java.util.List;
 
+/** Service interface for managing {@link Person} entities in the GlassFish 7 test application. */
 public interface PersonService {
+    /** Returns all people in the database. */
     List<Person> getAllPeople();
 
+    /** Creates and persists a new person with the given name. */
     Person createPerson(String firstName, String lastName);
 }

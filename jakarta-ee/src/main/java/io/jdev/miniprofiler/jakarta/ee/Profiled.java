@@ -24,6 +24,10 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+/**
+ * Marks a method or class for MiniProfiler step profiling via
+ * {@link ProfilingEJBInterceptor}.
+ */
 @InterceptorBinding
 @Target({METHOD, TYPE})
 @Retention(RUNTIME)

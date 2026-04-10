@@ -43,12 +43,16 @@ public interface ProfilerProviderLocator {
 
     /**
      * Returns the order of this locator. Lower values are consulted first.
+     *
+     * @return the order value; lower values are consulted first
      */
     int getOrder();
 
     /**
      * Attempts to locate a {@link ProfilerProvider}. Returns an empty
      * {@link Optional} if this locator is not applicable in the current environment.
+     *
+     * @return an {@link Optional} containing the provider, or empty if not applicable
      */
     Optional<ProfilerProvider> locate();
 
@@ -59,6 +63,8 @@ public interface ProfilerProviderLocator {
      *
      * <p>Falls back to a new {@link StaticProfilerProvider} if no locator succeeds,
      * though in practice the {@link StaticProfilerProviderLocator} always succeeds.</p>
+     *
+     * @return the located {@link ProfilerProvider}
      */
     static ProfilerProvider findProvider() {
         List<ProfilerProviderLocator> locators = new ArrayList<>();

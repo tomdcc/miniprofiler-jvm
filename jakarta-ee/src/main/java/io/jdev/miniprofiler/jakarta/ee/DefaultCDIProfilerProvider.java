@@ -21,6 +21,10 @@ import io.jdev.miniprofiler.DefaultProfilerProvider;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Default;
 
+/**
+ * CDI {@link jakarta.enterprise.context.ApplicationScoped} implementation of
+ * {@link io.jdev.miniprofiler.DefaultProfilerProvider} for use in Jakarta EE applications.
+ */
 @ApplicationScoped
 @Default
 public class DefaultCDIProfilerProvider extends DefaultProfilerProvider {
