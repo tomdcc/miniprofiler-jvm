@@ -15,77 +15,56 @@
  */
 
 plugins {
+    id("build.cross-version-test")
     id("build.java-module")
     id("build.publish")
 }
 
 dependencies {
 	api(projects.core)
-	compileOnly(libs.jooq.compile)
+	compileOnly(libs.jooq.v300)
 
     testImplementation(projects.test)
-    testImplementation(libs.jooq.test)
+    testImplementation(libs.jooq.v314)
     testImplementation(libs.h2)
 }
 
-val crossVersionTestJooqV3_0 = addCrossVersionTestSuite("crossVersionTestJooqV3_0", 8) {
-    // jOOQ 3.0.0: compile target, minimum supported version (Java 8)
-    dependencies {
+crossVersionTests {
+    configureEach {
+        implementation(libs.bundles.testing.groovy4)
+        runtimeOnly(libs.bundles.testing.runtime)
+        implementation(projects.test)
+        implementation(libs.h2)
+    }
+    register("crossVersionTestJooqV3_0") {
+        // jOOQ 3.0.0: compile target, minimum supported version (Java 8)
+        minJavaVersion = 8
         implementation(libs.jooq.v300)
-        implementation(libs.h2)
     }
-}
-addCrossVersionTestSuite("crossVersionTestJooqV3_14", 8) {
-    // jOOQ 3.14.16: last Java 8 version
-    dependencies {
+    register("crossVersionTestJooqV3_14") {
+        // jOOQ 3.14.16: last Java 8 version
+        minJavaVersion = 8
         implementation(libs.jooq.v314)
-        implementation(libs.h2)
     }
-}
-addCrossVersionTestSuite("crossVersionTestJooqV3_16", 11) {
-    // jOOQ 3.16.10: last Java 11 version
-    dependencies {
+    register("crossVersionTestJooqV3_16") {
+        // jOOQ 3.16.10: last Java 11 version
+        minJavaVersion = 11
         implementation(libs.jooq.v316)
-        implementation(libs.h2)
     }
-}
-addCrossVersionTestSuite("crossVersionTestJooqV3_19", 17) {
-    // jOOQ 3.19.31: last Java 17 version (last open-source before Java 21 was required)
-    dependencies {
+    register("crossVersionTestJooqV3_19") {
+        // jOOQ 3.19.31: last Java 17 version (last open-source before Java 21 was required)
+        minJavaVersion = 17
         implementation(libs.jooq.v319)
-        implementation(libs.h2)
     }
-}
-addCrossVersionTestSuite("crossVersionTestJooqV3_21", 21) {
-    // jOOQ 3.21.1: latest version (Java 21)
-    dependencies {
+    register("crossVersionTestJooqV3_21") {
+        // jOOQ 3.21.1: latest version (Java 21)
+        minJavaVersion = 21
         implementation(libs.jooq.v321)
-        implementation(libs.h2)
     }
 }
 
 // The v3_0 suite tests the minimum supported version and runs as part of regular check
-tasks.named("check") { dependsOn(crossVersionTestJooqV3_0) }
-
-// Force each suite to use its specific jOOQ version, overriding the 3.14.16 inherited
-// from testImplementation and the 3.0.0 compile-only dependency
-listOf("CompileClasspath", "RuntimeClasspath").forEach { suffix ->
-    configurations.named("crossVersionTestJooqV3_0$suffix") {
-        resolutionStrategy.force("org.jooq:jooq:3.0.0")
-    }
-    configurations.named("crossVersionTestJooqV3_14$suffix") {
-        resolutionStrategy.force("org.jooq:jooq:3.14.16")
-    }
-    configurations.named("crossVersionTestJooqV3_16$suffix") {
-        resolutionStrategy.force("org.jooq:jooq:3.16.10")
-    }
-    configurations.named("crossVersionTestJooqV3_19$suffix") {
-        resolutionStrategy.force("org.jooq:jooq:3.19.31")
-    }
-    configurations.named("crossVersionTestJooqV3_21$suffix") {
-        resolutionStrategy.force("org.jooq:jooq:3.21.1")
-    }
-}
+tasks.named("check") { dependsOn("crossVersionTestJooqV3_0") }
 
 publishing {
     publications.named<MavenPublication>("maven") {

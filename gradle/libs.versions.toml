@@ -42,9 +42,6 @@ javax-servlet-api-v2 = "2.3"
 javax-servlet-api-v4 = "4.0.1"
 jetty9 = "9.4.57.v20241219"
 jetty12 = "12.0.21"
-jooq-compile = "3.0.0"
-# jOOQ 3.15+ requires Java 11, so we stay on 3.14.x for Java 8 compatibility
-jooq-test = "3.14.16"
 # Cross-version test versions — one per supported JDK generation
 jooq-v300 = "3.0.0"   # Compile target: minimum supported version (Java 8)
 jooq-v314 = "3.14.16" # Last Java 8 version
@@ -102,8 +99,6 @@ jetty9-server        = { module = "org.eclipse.jetty:jetty-server",            v
 jetty9-servlet       = { module = "org.eclipse.jetty:jetty-servlet",           version.ref = "jetty9"  }
 jetty12-server       = { module = "org.eclipse.jetty:jetty-server",            version.ref = "jetty12" }
 jetty12-ee10-servlet = { module = "org.eclipse.jetty.ee10:jetty-ee10-servlet", version.ref = "jetty12" }
-jooq-compile = { module = "org.jooq:jooq", version.ref = "jooq-compile" }
-jooq-test = { module = "org.jooq:jooq", version.ref = "jooq-test" }
 jooq-v300 = { module = "org.jooq:jooq", version.ref = "jooq-v300" }
 jooq-v314 = { module = "org.jooq:jooq", version.ref = "jooq-v314" }
 jooq-v316 = { module = "org.jooq:jooq", version.ref = "jooq-v316" }
@@ -137,6 +132,11 @@ testcontainers-core   = { module = "org.testcontainers:testcontainers",   versio
 testcontainers-junit5 = { module = "org.testcontainers:testcontainers-junit-jupiter", version.ref = "testcontainers" }
 weld-se-v3 = { module = "org.jboss.weld.se:weld-se-core", version.ref = "weld-se-v3" }
 weld-se-v5 = { module = "org.jboss.weld.se:weld-se-core", version.ref = "weld-se-v5" }
+
+[bundles]
+testing-groovy3 = ["groovy-v3", "spock-groovy3", "junit-jupiter", "awaitility"]
+testing-groovy4 = ["groovy-v4", "spock-groovy4", "junit-jupiter", "awaitility"]
+testing-runtime = ["byte-buddy", "logback"]
 
 [plugins]
 asciidoctor = { id = "org.asciidoctor.jvm.convert", version.ref = "asciidoctor" }

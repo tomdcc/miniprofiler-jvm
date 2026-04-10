@@ -54,8 +54,7 @@ sourceSets.named("browserTest") {
 
 dependencies {
     "browserTestImplementation"(projects.core)
-    "browserTestImplementation"(libs.groovy.v3)
-    "browserTestImplementation"(libs.spock.groovy3)
+    "browserTestImplementation"(libs.bundles.testing.groovy3)
 }
 
 // build.java-module adds org.apache.groovy (groovy.v4) — exclude all of it so only groovy.v3 is on the browserTest classpath
