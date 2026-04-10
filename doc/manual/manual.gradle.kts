@@ -38,7 +38,7 @@ val api by tasks.registering(Javadoc::class) {
     group = "manual"
     description = "Generate combined Javadoc for all published modules"
 
-    destinationDir = file("$buildDir/api")
+    destinationDir = layout.buildDirectory.dir("api").get().asFile
 
     val javadocTasks = rootProject.subprojects
         .filter { it.plugins.hasPlugin("java") && it.plugins.hasPlugin("build.publish") }
@@ -59,7 +59,7 @@ val packageManual by tasks.registering(Sync::class) {
     group = "manual"
     description = "Brings together manual and API reference"
 
-    into("$buildDir/manual")
+    into(layout.buildDirectory.dir("manual"))
     from(tasks.asciidoctor)
 
     into("api") {
@@ -91,13 +91,10 @@ val manualZip by tasks.registering(Zip::class) {
     from(packageManual)
 }
 
-artifacts {
-    archives(manualZip)
-}
-
 publishing {
     publications.named<MavenPublication>("maven") {
         artifactId = "miniprofiler-manual"
+        artifact(manualZip)
         pom {
             name = "MiniProfiler Manual"
             description = "The manual for MiniProfiler JVM"

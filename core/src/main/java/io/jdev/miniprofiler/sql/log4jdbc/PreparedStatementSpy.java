@@ -50,7 +50,7 @@ public class PreparedStatementSpy extends StatementSpy implements PreparedStatem
   /**
    * holds list of bind variables for tracing
    */
-  protected final List argTrace = new ArrayList();
+  protected final List<String> argTrace = new ArrayList<>();
 
   // a way to turn on and off type help...
   // todo:  make this a configurable parameter
@@ -119,7 +119,7 @@ public class PreparedStatementSpy extends StatementSpy implements PreparedStatem
       {
         try
         {
-          arg = (String) argTrace.get(argIdx);
+          arg = argTrace.get(argIdx);
         }
         catch (IndexOutOfBoundsException e)
         {
@@ -1115,6 +1115,7 @@ public class PreparedStatementSpy extends StatementSpy implements PreparedStatem
     reportReturn(methodCall);
   }
 
+  @SuppressWarnings("unchecked")
   public <T> T unwrap(Class<T> iface) throws SQLException {
     String methodCall = "unwrap(" + (iface==null?"null":iface.getName()) + ")";
     try

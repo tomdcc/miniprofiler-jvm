@@ -1013,7 +1013,7 @@ public class CallableStatementSpy extends PreparedStatementSpy implements Callab
     }
   }
 
-  public Object getObject(int i, Map map) throws SQLException
+  public Object getObject(int i, Map<String, Class<?>> map) throws SQLException
   {
     String methodCall = "getObject(" + i + ", " + map + ")";
     try
@@ -1666,6 +1666,7 @@ public class CallableStatementSpy extends PreparedStatementSpy implements Callab
     reportReturn(methodCall);
   }
 
+  @SuppressWarnings("unchecked")
   public <T> T unwrap(Class<T> iface) throws SQLException {
     String methodCall = "unwrap(" + (iface==null?"null":iface.getName()) + ")";
     try

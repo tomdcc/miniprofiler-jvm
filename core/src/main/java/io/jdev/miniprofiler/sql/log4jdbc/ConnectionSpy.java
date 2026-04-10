@@ -69,7 +69,7 @@ public class ConnectionSpy implements Connection, Spy
    * Contains a Mapping of connectionNumber to currently open ConnectionSpy
    * objects.
    */
-  private static final Map connectionTracker = new HashMap();
+  private static final Map<Integer, ConnectionSpy> connectionTracker = new HashMap<>();
 
   /**
    * Get a dump of how many connections are open, and which connection numbers
@@ -89,7 +89,7 @@ public class ConnectionSpy implements Connection, Spy
       {
         return "open connections:  none";
       }
-      Set keys = connectionTracker.keySet();
+      Set<Integer> keys = connectionTracker.keySet();
       keysArr = (Integer[]) keys.toArray(new Integer[keys.size()]);
     }
 
@@ -742,6 +742,7 @@ public class ConnectionSpy implements Connection, Spy
     }
   }
 
+  @SuppressWarnings("unchecked")
   public Map<String,Class<?>> getTypeMap() throws SQLException
   {
     String methodCall = "getTypeMap()";
@@ -911,6 +912,7 @@ public class ConnectionSpy implements Connection, Spy
     reportReturn(methodCall);
   }
 
+  @SuppressWarnings("unchecked")
   public <T> T unwrap(Class<T> iface) throws SQLException {
     String methodCall = "unwrap(" + (iface==null?"null":iface.getName()) + ")";
     try

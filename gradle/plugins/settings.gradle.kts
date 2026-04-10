@@ -24,4 +24,6 @@ dependencyResolutionManagement {
 
 include("build-parameters")
 
+rootProject.name = "plugins"
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

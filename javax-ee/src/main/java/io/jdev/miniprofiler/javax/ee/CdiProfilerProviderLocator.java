@@ -39,6 +39,7 @@ public class CdiProfilerProviderLocator implements ProfilerProviderLocator {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Optional<ProfilerProvider> locate() {
         try {
             Object lookedUp = lookupBeanManagerFromJndi();

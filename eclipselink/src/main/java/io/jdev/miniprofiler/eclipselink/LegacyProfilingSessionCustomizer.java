@@ -30,7 +30,7 @@ import org.eclipse.persistence.sessions.Session;
  *
  * @see ProfilingSessionCustomizer
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"deprecation", "removal"})
 public class LegacyProfilingSessionCustomizer implements org.eclipse.persistence.config.SessionCustomizer {
 
     private final ProfilerProvider profilerProvider;

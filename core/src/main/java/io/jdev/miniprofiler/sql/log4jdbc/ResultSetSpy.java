@@ -1860,7 +1860,7 @@ public class ResultSetSpy implements ResultSet, Spy
     }
   }
 
-  public Object getObject(String colName, Map map) throws SQLException
+  public Object getObject(String colName, Map<String, Class<?>> map) throws SQLException
   {
     String methodCall = "getObject(" + colName + ", " + map + ")";
     try
@@ -2914,6 +2914,7 @@ public class ResultSetSpy implements ResultSet, Spy
     }
   }
 
+  @SuppressWarnings("unchecked")
   public <T> T unwrap(Class<T> iface) throws SQLException {
     String methodCall = "unwrap(" + (iface==null?"null":iface.getName()) + ")";
     try
