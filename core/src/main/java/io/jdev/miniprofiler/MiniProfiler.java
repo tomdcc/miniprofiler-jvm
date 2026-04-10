@@ -41,7 +41,7 @@ import java.util.ServiceLoader;
  * might be instrumented code.</p>
  */
 public class MiniProfiler {
-    private static ProfilerProvider profilerProvider;
+    private static volatile ProfilerProvider profilerProvider;
     private static String version;
 
     /**
@@ -82,7 +82,11 @@ public class MiniProfiler {
 
     static ProfilerProvider getOrCreateProfilerProvider() {
         if (profilerProvider == null) {
-            profilerProvider = bootstrapProfilerProvider();
+            synchronized (MiniProfiler.class) {
+                if (profilerProvider == null) {
+                    profilerProvider = bootstrapProfilerProvider();
+                }
+            }
         }
         return profilerProvider;
     }
