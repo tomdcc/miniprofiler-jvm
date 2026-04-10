@@ -24,6 +24,8 @@ import io.jdev.miniprofiler.ratpack.MiniProfilerStartProfilingHandlers;
 import ratpack.guice.Guice;
 import ratpack.handlebars.HandlebarsModule;
 import ratpack.server.*;
+import ratpack.service.Service;
+import ratpack.service.StartEvent;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

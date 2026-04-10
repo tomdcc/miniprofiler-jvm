@@ -18,8 +18,11 @@ package io.jdev.miniprofiler.wildfly27.funtest;
 
 import java.util.List;
 
+/** Service interface for managing {@link Person} entities in the WildFly 27 test application. */
 public interface PersonService {
+    /** Returns all people in the database. */
     List<Person> getAllPeople();
 
+    /** Creates and persists a new person with the given name. */
     Person createPerson(String firstName, String lastName);
 }

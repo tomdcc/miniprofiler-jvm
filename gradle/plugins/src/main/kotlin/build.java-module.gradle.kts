@@ -93,6 +93,18 @@ tasks.named("sanityCheck") {
     dependsOn(tasks.withType<Javadoc>())
 }
 
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.add("-Werror")
+}
+
+tasks.withType<GroovyCompile>().configureEach {
+    options.compilerArgs.add("-Werror")
+}
+
+tasks.withType<Javadoc>().configureEach {
+    (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:all,-missing/private")
+}
+
 tasks.named("fullCheck") {
     dependsOn(tasks.named("check"))
 }

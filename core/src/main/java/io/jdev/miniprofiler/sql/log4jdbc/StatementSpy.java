@@ -433,7 +433,7 @@ public class StatementSpy implements Statement, Spy
    * Tracking of current batch (see addBatch, clearBatch and executeBatch)
    * //todo: should access to this List be synchronized?
    */
-  protected List currentBatch = new ArrayList();
+  protected List<String> currentBatch = new ArrayList<>();
 
   public void addBatch(String sql) throws SQLException
   {
@@ -509,7 +509,7 @@ public class StatementSpy implements Statement, Spy
     String sql;
     for (int i=0; i < j;)
     {
-      sql = (String) currentBatch.get(i);
+      sql = currentBatch.get(i);
       batchReport.append("\n");
       batchReport.append(Utilities.rightJustify(fieldSize,""+(++i)));
       batchReport.append(":  ");
@@ -987,6 +987,7 @@ public class StatementSpy implements Statement, Spy
     }
   }
 
+  @SuppressWarnings("unchecked")
   public <T> T unwrap(Class<T> iface) throws SQLException {
     String methodCall = "unwrap(" + (iface==null?"null":iface.getName()) + ")";
     try

@@ -45,9 +45,10 @@ dependencies {
 }
 
 tasks.named<ProcessResources>("processResources") {
+    val projectVersion = version.toString()
 	filesMatching("**/miniprofiler-version.txt") {
 		filter(mapOf("tokens" to mapOf(
-            "version" to project.version
+            "version" to projectVersion
         )), ReplaceTokens::class.java)
 	}
     inputs.property("version", version)

@@ -21,6 +21,7 @@ import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 
+/** Populates initial test data on application startup for the WildFly 27 functional test application. */
 @WebListener
 public class Startup implements ServletContextListener {
 

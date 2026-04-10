@@ -34,6 +34,8 @@ public interface InProcessTestedServer extends TestedServer {
     /**
      * Returns the profiler provider used by this server.
      * Cast to {@link io.jdev.miniprofiler.BaseProfilerProvider} to access storage.
+     *
+     * @return the profiler provider
      */
     ProfilerProvider getProfilerProvider();
 
@@ -41,6 +43,8 @@ public interface InProcessTestedServer extends TestedServer {
      * Returns the URL path (relative to serverUrl) of a page that serves an HTML response
      * with the MiniProfiler floating button widget, profiled with a child step and SQL timing.
      * Returns {@code null} for implementations that don't serve application pages (e.g. the viewer).
+     *
+     * @return the URL path, or {@code null} if not applicable
      */
     default String getProfiledPagePath() {
         return null;
@@ -51,6 +55,8 @@ public interface InProcessTestedServer extends TestedServer {
      * the {@code X-MiniProfiler-Ids} response header, suitable for testing AJAX profiling.
      * Returns {@code null} for implementations that don't profile application requests
      * (e.g. core server, viewer).
+     *
+     * @return the URL path, or {@code null} if not applicable
      */
     default String getAjaxEndpointPath() {
         return null;

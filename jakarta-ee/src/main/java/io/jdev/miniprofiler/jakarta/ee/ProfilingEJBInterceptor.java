@@ -25,6 +25,10 @@ import jakarta.interceptor.AroundInvoke;
 import jakarta.interceptor.Interceptor;
 import jakarta.interceptor.InvocationContext;
 
+/**
+ * CDI interceptor that wraps EJB method invocations in a MiniProfiler timing step.
+ * Apply {@link Profiled} to a class or method to enable profiling.
+ */
 @Interceptor
 @Profiled
 public class ProfilingEJBInterceptor {
@@ -32,6 +36,13 @@ public class ProfilingEJBInterceptor {
     @Inject
     private ProfilerProvider profilerProvider;
 
+    /**
+     * Wraps the intercepted method in a MiniProfiler {@link io.jdev.miniprofiler.Timing} step.
+     *
+     * @param ctx the invocation context
+     * @return the result of {@link jakarta.interceptor.InvocationContext#proceed()}
+     * @throws Exception if the intercepted method throws
+     */
     @AroundInvoke
     public Object profile(InvocationContext ctx) throws Exception {
         Profiler profiler = profilerProvider.current();

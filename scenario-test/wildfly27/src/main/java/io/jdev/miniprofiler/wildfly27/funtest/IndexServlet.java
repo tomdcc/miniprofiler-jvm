@@ -24,12 +24,21 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/** Servlet that renders the index page listing all people, for the WildFly 27 functional test application. */
 @WebServlet("")
 public class IndexServlet extends HttpServlet {
 
     @EJB
     private PersonService personService;
 
+    /**
+     * Handles GET requests by loading all people and forwarding to the index JSP.
+     *
+     * @param req  the HTTP request
+     * @param resp the HTTP response
+     * @throws ServletException if the request cannot be handled
+     * @throws IOException      on I/O error
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setAttribute("people", personService.getAllPeople());

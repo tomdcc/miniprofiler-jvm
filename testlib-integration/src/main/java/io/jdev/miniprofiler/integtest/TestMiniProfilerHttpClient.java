@@ -62,6 +62,8 @@ public class TestMiniProfilerHttpClient {
      * Sends a GET request to {@code baseUrl + path}.
      *
      * @param path path relative to the base URL, e.g. {@code ""} for the root, {@code "page"} for {@code /page}
+     * @return the response
+     * @throws IOException on network error
      */
     public TestHttpResponse get(String path) throws IOException {
         return get(path, Collections.<String, String>emptyMap());
@@ -69,6 +71,11 @@ public class TestMiniProfilerHttpClient {
 
     /**
      * Sends a GET request to {@code baseUrl + path} with the given request headers.
+     *
+     * @param path path relative to the base URL
+     * @param headers the extra request headers
+     * @return the response
+     * @throws IOException on network error
      */
     public TestHttpResponse get(String path, Map<String, String> headers) throws IOException {
         HttpURLConnection conn = (HttpURLConnection) new URL(baseUrl + path).openConnection();
@@ -87,6 +94,10 @@ public class TestMiniProfilerHttpClient {
     /**
      * Fetches a MiniProfiler result as JSON: {@code GET miniprofiler/results?id=<id>}
      * with {@code Accept: application/json}.
+     *
+     * @param id the profiler result ID
+     * @return the response
+     * @throws IOException on network error
      */
     public TestHttpResponse getResultsJson(String id) throws IOException {
         return get(profilerPath + "/results?id=" + id, Collections.singletonMap("Accept", "application/json"));
@@ -94,6 +105,10 @@ public class TestMiniProfilerHttpClient {
 
     /**
      * Fetches a MiniProfiler result as HTML: {@code GET <profilerPath>/results?id=<id>}.
+     *
+     * @param id the profiler result ID
+     * @return the response
+     * @throws IOException on network error
      */
     public TestHttpResponse getResultsHtml(String id) throws IOException {
         return get(profilerPath + "/results?id=" + id);
@@ -101,6 +116,9 @@ public class TestMiniProfilerHttpClient {
 
     /**
      * Fetches the full results list: {@code GET <profilerPath>/results-list}.
+     *
+     * @return the response
+     * @throws IOException on network error
      */
     public TestHttpResponse getResultsList() throws IOException {
         return get(profilerPath + "/results-list");
@@ -108,6 +126,10 @@ public class TestMiniProfilerHttpClient {
 
     /**
      * Fetches results after a given profile ID: {@code GET <profilerPath>/results-list?last-id=<lastId>}.
+     *
+     * @param lastId the last seen ID for pagination
+     * @return the response
+     * @throws IOException on network error
      */
     public TestHttpResponse getResultsList(String lastId) throws IOException {
         return get(profilerPath + "/results-list?last-id=" + lastId);
@@ -115,6 +137,9 @@ public class TestMiniProfilerHttpClient {
 
     /**
      * Fetches the results index page: {@code GET <profilerPath>/results-index}.
+     *
+     * @return the response
+     * @throws IOException on network error
      */
     public TestHttpResponse getResultsIndex() throws IOException {
         return get(profilerPath + "/results-index");
@@ -122,6 +147,10 @@ public class TestMiniProfilerHttpClient {
 
     /**
      * Fetches a static resource: {@code GET <profilerPath>/<name>}.
+     *
+     * @param name the resource file name
+     * @return the response
+     * @throws IOException on network error
      */
     public TestHttpResponse getStaticResource(String name) throws IOException {
         return get(profilerPath + "/" + name);

@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/** Sets up the in-memory H2 database and registers a {@link ProfilingDataSource} on application startup. */
 public class Startup implements ServletContextListener {
 
     @Override

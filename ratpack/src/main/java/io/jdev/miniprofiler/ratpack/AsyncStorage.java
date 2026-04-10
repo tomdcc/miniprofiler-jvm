@@ -51,6 +51,7 @@ public interface AsyncStorage extends Storage {
      * Stores the given profiling information
      *
      * @param profiler the profiling information to store
+     * @return an operation that performs the save
      */
     default Operation saveAsync(ProfilerImpl profiler) {
         return Blocking.op(() -> save(profiler));
@@ -71,6 +72,7 @@ public interface AsyncStorage extends Storage {
      *
      * @param user the user
      * @param id   the id of the session
+     * @return an operation that marks the session as un-viewed
      */
     default Operation setUnviewedAsync(String user, UUID id) {
         return Blocking.op(() -> setUnviewed(user, id));
@@ -81,6 +83,7 @@ public interface AsyncStorage extends Storage {
      *
      * @param user the user
      * @param id   the id of the session
+     * @return an operation that marks the session as viewed
      */
     default Operation setViewedAsync(String user, UUID id) {
         return Blocking.op(() -> setViewed(user, id));

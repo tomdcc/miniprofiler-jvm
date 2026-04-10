@@ -48,7 +48,11 @@ public final class ExpectedTiming {
         return minDurationMs;
     }
 
-    /** Child timings in order. Never null; may be empty. */
+    /**
+     * Child timings in order. Never null; may be empty.
+     *
+     * @return child timings in order; never null, may be empty
+     */
     public List<ExpectedTiming> getChildren() {
         return children;
     }
@@ -56,6 +60,8 @@ public final class ExpectedTiming {
     /**
      * Custom timings keyed by type (e.g. {@code "sql"}).
      * Never null; may be empty.
+     *
+     * @return custom timings keyed by type; never null, may be empty
      */
     public Map<String, List<ExpectedCustomTiming>> getCustomTimings() {
         return customTimings;

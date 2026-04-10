@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.integtest;
+import org.gradle.process.CommandLineArgumentProvider
 
-import java.io.Closeable;
-
-/**
- * Represents a server running a MiniProfiler implementation.
- *
- */
-public interface TestedServer extends Closeable {
-
-    /**
-     * Returns the base URL of this server, e.g. {@code "http://127.0.0.1:12345/"}.
-     *
-     * @return the base URL, e.g. {@code "http://127.0.0.1:12345/"}
-     */
-    String getServerUrl();
-
+// Guice 4.x (a transitive dependency of ratpack) uses ClassLoader.defineClass via reflection,
+// which is illegal on Java 9+ without an explicit open. The argument is a no-op on Java 8.
+project.tasks.withType<Test>().configureEach {
+    jvmArgumentProviders.add(CommandLineArgumentProvider {
+        val version = javaLauncher.orNull?.metadata?.languageVersion?.asInt()
+            ?: JavaVersion.current().majorVersion.toInt()
+        if (version >= 9) listOf("--add-opens=java.base/java.lang=ALL-UNNAMED") else emptyList()
+    })
 }

@@ -61,10 +61,15 @@ public class ProfilingFilter implements Filter {
     private static final String CONTENT_TYPE_JSON = "application/json";
     private static final String ID_PARAM = "id";
 
+    /** The profiler provider used to start and retrieve profiling sessions. */
     protected ProfilerProvider profilerProvider = new StaticProfilerProvider();
+    /** The URL path prefix for MiniProfiler resources, e.g. {@code "/miniprofiler"}. */
     protected String profilerPath = DEFAULT_PROFILER_PATH;
+    /** Allowed {@code Origin} for CORS, or {@code null} to disallow cross-origin requests. */
     protected String allowedOrigin;
+    /** Helper for serving MiniProfiler static resources. */
     protected ResourceHelper resourceHelper = new ResourceHelper();
+    /** The servlet context this filter is registered in. */
     protected ServletContext servletContext;
 
     @Override
@@ -268,6 +273,13 @@ public class ProfilingFilter implements Filter {
         }
     }
 
+    /**
+     * Starts a new profiling session for the given request.
+     *
+     * @param id      the profiler session ID
+     * @param request the current HTTP request
+     * @return the started {@link Profiler}
+     */
     protected Profiler startProfiling(UUID id, HttpServletRequest request) {
         return profilerProvider.start(id, request.getRequestURI());
     }

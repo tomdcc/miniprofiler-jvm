@@ -40,12 +40,20 @@ public class TestHttpResponse {
         this.headers = headers;
     }
 
-    /** Returns the HTTP status code. */
+    /**
+     * Returns the HTTP status code.
+     *
+     * @return the HTTP status code
+     */
     public int statusCode() {
         return statusCode;
     }
 
-    /** Returns the response body as a string. */
+    /**
+     * Returns the response body as a string.
+     *
+     * @return the response body as a string
+     */
     public String body() {
         return body;
     }
@@ -53,6 +61,9 @@ public class TestHttpResponse {
     /**
      * Returns the first value of the named response header, or empty if not present.
      * Header name matching is case-insensitive.
+     *
+     * @param name the header name (case-insensitive)
+     * @return the first value, or empty if not present
      */
     public Optional<String> header(String name) {
         String lower = name.toLowerCase(Locale.ROOT);
@@ -70,12 +81,18 @@ public class TestHttpResponse {
     /**
      * Parses the response body as JSON using Groovy's {@code JsonSlurper}.
      * Returns a {@code Map} for JSON objects or a {@code List} for JSON arrays.
+     *
+     * @return the parsed JSON as a {@code Map} or {@code List}
      */
     public Object bodyAsJson() {
         return new JsonSlurper().parseText(body);
     }
 
-    /** Returns the value of the {@code Content-Type} response header, or empty if not present. */
+    /**
+     * Returns the value of the {@code Content-Type} response header, or empty if not present.
+     *
+     * @return the Content-Type header value, or empty if absent
+     */
     public Optional<String> contentType() {
         return header("content-type");
     }
@@ -83,6 +100,8 @@ public class TestHttpResponse {
     /**
      * Parses the {@code X-MiniProfiler-Ids} response header and returns all profiler IDs.
      * Throws {@link AssertionError} if the header is absent or malformed.
+     *
+     * @return all profiler IDs
      */
     public List<String> miniProfilerIds() {
         String headerValue = header("X-MiniProfiler-Ids")
@@ -109,6 +128,8 @@ public class TestHttpResponse {
     /**
      * Returns the single profiler ID from the {@code X-MiniProfiler-Ids} response header.
      * Throws {@link AssertionError} if the header is absent, malformed, or contains more than one ID.
+     *
+     * @return the single profiler ID
      */
     public String miniProfilerId() {
         List<String> ids = miniProfilerIds();

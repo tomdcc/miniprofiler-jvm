@@ -18,6 +18,7 @@ package io.jdev.miniprofiler.glassfish7.funtest;
 
 import jakarta.persistence.*;
 
+/** JPA entity representing a person in the GlassFish 7 functional test application. */
 @Entity
 public class Person {
 
@@ -31,26 +32,32 @@ public class Person {
     @Column(nullable = false)
     private String lastName;
 
+    /** Returns the person's ID. */
     public Long getId() {
         return id;
     }
 
+    /** Sets the person's ID. */
     public void setId(Long id) {
         this.id = id;
     }
 
+    /** Returns the person's first name. */
     public String getFirstName() {
         return firstName;
     }
 
+    /** Sets the person's first name. */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
+    /** Returns the person's last name. */
     public String getLastName() {
         return lastName;
     }
 
+    /** Sets the person's last name. */
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
