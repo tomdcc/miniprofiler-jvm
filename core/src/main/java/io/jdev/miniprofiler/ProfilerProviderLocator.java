@@ -35,6 +35,13 @@ import java.util.ServiceLoader;
 public interface ProfilerProviderLocator {
 
     /**
+     * Sentinel order value reserved for {@link StaticProfilerProviderLocator}.
+     * Any locator returning this value (or higher) is excluded from
+     * {@link MiniProfiler}'s own bootstrap scan to avoid a bootstrap cycle.
+     */
+    int MINIPROFILER_STATIC_LOCATOR_ORDER = Integer.MAX_VALUE;
+
+    /**
      * Returns the order of this locator. Lower values are consulted first.
      */
     int getOrder();
