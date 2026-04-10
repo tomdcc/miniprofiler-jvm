@@ -27,7 +27,7 @@ public class StaticProfilerProviderLocator implements ProfilerProviderLocator {
 
     @Override
     public int getOrder() {
-        return 100;
+        return MINIPROFILER_STATIC_LOCATOR_ORDER;
     }
 
     @Override

@@ -21,6 +21,8 @@ import io.jdev.miniprofiler.storage.Storage;
 import io.jdev.miniprofiler.util.ResourceHelper;
 
 import java.io.IOException;
+import java.util.Optional;
+import java.util.ServiceLoader;
 
 /**
  * Convenience class for static access to profiling functions.
@@ -39,7 +41,7 @@ import java.io.IOException;
  * might be instrumented code.</p>
  */
 public class MiniProfiler {
-    private static ProfilerProvider profilerProvider;
+    private static volatile ProfilerProvider profilerProvider;
     private static String version;
 
     /**
@@ -80,10 +82,31 @@ public class MiniProfiler {
 
     static ProfilerProvider getOrCreateProfilerProvider() {
         if (profilerProvider == null) {
-            // default to something hopefully sane
-            profilerProvider = new DefaultProfilerProvider();
+            synchronized (MiniProfiler.class) {
+                if (profilerProvider == null) {
+                    profilerProvider = bootstrapProfilerProvider();
+                }
+            }
         }
         return profilerProvider;
+    }
+
+    private static ProfilerProvider bootstrapProfilerProvider() {
+        ProfilerProviderLocator best = null;
+        for (ProfilerProviderLocator locator : ServiceLoader.load(ProfilerProviderLocator.class)) {
+            if (locator.getOrder() < ProfilerProviderLocator.MINIPROFILER_STATIC_LOCATOR_ORDER) {
+                if (best == null || locator.getOrder() < best.getOrder()) {
+                    best = locator;
+                }
+            }
+        }
+        if (best != null) {
+            Optional<ProfilerProvider> provider = best.locate();
+            if (provider.isPresent()) {
+                return provider.get();
+            }
+        }
+        return new DefaultProfilerProvider();
     }
 
     /**

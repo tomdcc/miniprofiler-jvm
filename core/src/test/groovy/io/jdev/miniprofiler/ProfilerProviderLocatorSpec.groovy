@@ -20,9 +20,9 @@ import spock.lang.Specification
 
 class ProfilerProviderLocatorSpec extends Specification {
 
-    void "StaticProfilerProviderLocator has order 100"() {
+    void "StaticProfilerProviderLocator has order MINIPROFILER_STATIC_LOCATOR_ORDER"() {
         expect:
-        new StaticProfilerProviderLocator().order == 100
+        new StaticProfilerProviderLocator().order == ProfilerProviderLocator.MINIPROFILER_STATIC_LOCATOR_ORDER
     }
 
     void "StaticProfilerProviderLocator returns a StaticProfilerProvider"() {
