@@ -18,6 +18,7 @@ plugins {
     id("build.browser-test")
     id("build.java-module")
     id("build.publish")
+    id("build.ratpack")
     id("java-test-fixtures")
 }
 

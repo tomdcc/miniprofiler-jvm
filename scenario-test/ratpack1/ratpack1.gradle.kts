@@ -17,6 +17,7 @@
 plugins {
     id("build.scenario-test")
     id("build.java-module")
+    id("build.ratpack")
     id("application")
 }
 
