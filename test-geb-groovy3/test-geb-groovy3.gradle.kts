@@ -17,7 +17,7 @@
 plugins {
     id("build.base")
     id("build.build-parameters")
-    id("build.java-module")
+    id("build.groovy-module")
     id("build.publish")
 }
 
