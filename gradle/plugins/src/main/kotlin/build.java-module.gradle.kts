@@ -90,7 +90,6 @@ tasks.named("sanityCheck") {
     dependsOn(tasks.withType<AbstractCompile>())
     dependsOn(tasks.withType<Checkstyle>())
     dependsOn(tasks.withType<CodeNarc>())
-    dependsOn(tasks.withType<Javadoc>())
 }
 
 tasks.withType<JavaCompile>().configureEach {
@@ -101,8 +100,21 @@ tasks.withType<GroovyCompile>().configureEach {
     options.compilerArgs.add("-Werror")
 }
 
-tasks.withType<Javadoc>().configureEach {
-    (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:all,-missing/private")
+plugins.withId("build.publish") {
+    tasks.withType<Javadoc>().configureEach {
+        (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:all,-missing/private")
+    }
+    tasks.named("sanityCheck") {
+        dependsOn(tasks.withType<Javadoc>())
+    }
+}
+
+afterEvaluate {
+    if (!plugins.hasPlugin("build.publish")) {
+        tasks.withType<Javadoc>().configureEach {
+            enabled = false
+        }
+    }
 }
 
 tasks.named("fullCheck") {
