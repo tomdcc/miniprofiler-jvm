@@ -16,7 +16,7 @@
 
 plugins {
     id("build.browser-test")
-    id("build.java-module")
+    id("build.groovy-module")
     id("build.publish")
 }
 
