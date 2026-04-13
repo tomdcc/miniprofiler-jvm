@@ -33,11 +33,17 @@ import java.util.Set;
  */
 public class CdiProfilerProviderLocator implements ProfilerProviderLocator {
 
+    /** Default constructor. */
+    public CdiProfilerProviderLocator() {
+    }
+
+    /** {@inheritDoc} Returns {@code 20}. */
     @Override
     public int getOrder() {
         return 20;
     }
 
+    /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
     public Optional<ProfilerProvider> locate() {

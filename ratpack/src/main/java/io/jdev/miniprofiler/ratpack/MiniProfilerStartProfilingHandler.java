@@ -32,6 +32,11 @@ public class MiniProfilerStartProfilingHandler implements Handler {
 
     private final ProfilerProvider profilerProvider;
 
+    /**
+     * Creates a new instance using the given profiler provider.
+     *
+     * @param profilerProvider the profiler provider to use
+     */
     public MiniProfilerStartProfilingHandler(ProfilerProvider profilerProvider) {
         this.profilerProvider = profilerProvider;
     }

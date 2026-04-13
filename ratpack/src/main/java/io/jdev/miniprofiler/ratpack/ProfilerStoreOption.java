@@ -16,7 +16,10 @@
 
 package io.jdev.miniprofiler.ratpack;
 
+/** Controls whether profiling results are stored after a request completes. */
 public enum ProfilerStoreOption {
+    /** Store profiling results so they can be viewed later. */
     STORE_RESULTS,
+    /** Discard profiling results after the request completes. */
     DISCARD_RESULTS
 }

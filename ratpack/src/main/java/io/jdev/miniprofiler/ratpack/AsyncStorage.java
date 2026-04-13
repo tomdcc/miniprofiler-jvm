@@ -99,6 +99,12 @@ public interface AsyncStorage extends Storage {
         return Blocking.get(() -> getUnviewedIds(user));
     }
 
+    /**
+     * Wraps the given {@link Storage} as an {@link AsyncStorage}, returning it unchanged if it already is one.
+     *
+     * @param storage the storage to wrap
+     * @return the given storage as an {@link AsyncStorage}
+     */
     static AsyncStorage adapt(Storage storage) {
         if (storage instanceof AsyncStorage) {
             return (AsyncStorage) storage;

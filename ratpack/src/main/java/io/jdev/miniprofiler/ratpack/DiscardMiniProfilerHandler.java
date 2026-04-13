@@ -28,6 +28,9 @@ import ratpack.handling.Handler;
  */
 public class DiscardMiniProfilerHandler implements Handler {
 
+    /** Default constructor. */
+    public DiscardMiniProfilerHandler() {}
+
     @Override
     public void handle(Context ctx) throws Exception {
         Execution.current().add(ProfilerStoreOption.class, ProfilerStoreOption.DISCARD_RESULTS);

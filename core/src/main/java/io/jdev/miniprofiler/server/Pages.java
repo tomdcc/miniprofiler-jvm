@@ -27,8 +27,17 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
+/** Utility class for rendering MiniProfiler HTML pages. */
 public final class Pages {
 
+    /**
+     * Renders an HTML page showing the results for a single profiler session.
+     *
+     * @param profiler the profiler session to display
+     * @param provider the profiler provider to use for the script tag
+     * @param path the MiniProfiler resource path, or empty to use the provider's default
+     * @return the HTML page as a string
+     */
     public static String renderSingleResultPage(Profiler profiler, ProfilerProvider provider, Optional<String> path) {
         StringBuilder out = new StringBuilder();
         out.append("<html>");
@@ -46,6 +55,13 @@ public final class Pages {
         return out.toString();
     }
 
+    /**
+     * Renders an HTML page showing the list of recent profiler sessions.
+     *
+     * @param provider the profiler provider to use for the script tag
+     * @param path the MiniProfiler resource path, or empty to use the provider's default
+     * @return the HTML page as a string
+     */
     public static String renderResultListPage(ProfilerProvider provider, Optional<String> path) {
         ProfilerUiConfig config = provider.getUiConfig();
         String resolvedPath = resolvePath(provider, path);
@@ -64,6 +80,13 @@ public final class Pages {
         return out.toString();
     }
 
+    /**
+     * Renders a JSON array of profiler session summaries for the given IDs.
+     *
+     * @param ids the profiler session IDs to include
+     * @param storage the storage to load profiler sessions from
+     * @return the JSON array as a string
+     */
     public static String renderResultListJson(Collection<UUID> ids, Storage storage) {
         StringBuilder sb = new StringBuilder("[");
         boolean first = true;

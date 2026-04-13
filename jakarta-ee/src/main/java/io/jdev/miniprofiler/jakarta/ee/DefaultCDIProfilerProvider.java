@@ -28,4 +28,8 @@ import jakarta.enterprise.inject.Default;
 @ApplicationScoped
 @Default
 public class DefaultCDIProfilerProvider extends DefaultProfilerProvider {
+
+    /** Default constructor for CDI. */
+    public DefaultCDIProfilerProvider() {
+    }
 }

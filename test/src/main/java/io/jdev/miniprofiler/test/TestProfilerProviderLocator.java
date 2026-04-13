@@ -33,6 +33,10 @@ import java.util.Optional;
  */
 public class TestProfilerProviderLocator implements ProfilerProviderLocator {
 
+    /** Default constructor. */
+    public TestProfilerProviderLocator() {
+    }
+
     private static volatile boolean enabled;
     private static volatile ProfilerProvider provider;
 
@@ -49,11 +53,17 @@ public class TestProfilerProviderLocator implements ProfilerProviderLocator {
         return Optional.empty();
     }
 
+    /**
+     * Activates this locator so that {@link #locate()} returns the given provider.
+     *
+     * @param profilerProvider the provider to return from {@link #locate()}
+     */
     public static void activate(ProfilerProvider profilerProvider) {
         provider = profilerProvider;
         enabled = true;
     }
 
+    /** Deactivates this locator so that {@link #locate()} returns empty. */
     public static void deactivate() {
         enabled = false;
         provider = null;

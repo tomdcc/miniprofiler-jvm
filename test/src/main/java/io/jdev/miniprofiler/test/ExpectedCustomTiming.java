@@ -36,14 +36,29 @@ public final class ExpectedCustomTiming {
         this.minDurationMs = minDurationMs;
     }
 
+    /**
+     * Returns the execute type (e.g. {@code "sql"}).
+     *
+     * @return the execute type
+     */
     public String getExecuteType() {
         return executeType;
     }
 
+    /**
+     * Returns the command string (e.g. the SQL query), with whitespace normalised for comparison.
+     *
+     * @return the command string
+     */
     public String getCommandString() {
         return commandString;
     }
 
+    /**
+     * Returns the minimum expected duration in milliseconds.
+     *
+     * @return the minimum duration in milliseconds
+     */
     public long getMinDurationMs() {
         return minDurationMs;
     }

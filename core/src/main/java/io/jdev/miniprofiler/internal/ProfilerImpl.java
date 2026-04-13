@@ -310,6 +310,11 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         return this.toJSONString();
     }
 
+    /**
+     * Returns a JSON representation suitable for the results list endpoint.
+     *
+     * @return a JSON string for the results list
+     */
     public String asListJson() {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("Id", id.toString());
@@ -391,14 +396,29 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         return name;
     }
 
+    /**
+     * Returns the name of the machine that produced this profiler session.
+     *
+     * @return the machine name
+     */
     public String getMachineName() {
         return machineName;
     }
 
+    /**
+     * Sets the name of the machine that produced this profiler session.
+     *
+     * @param machineName the machine name
+     */
     public void setMachineName(String machineName) {
         this.machineName = machineName;
     }
 
+    /**
+     * Returns the profiling level for this session.
+     *
+     * @return the profiling level
+     */
     public ProfileLevel getLevel() {
         return level;
     }
@@ -408,6 +428,11 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         return root;
     }
 
+    /**
+     * Returns whether this profiler session contains any custom query timings.
+     *
+     * @return true if there are custom query timings
+     */
     public boolean hasQueryTimings() {
         return hasQueryTimings;
     }
@@ -421,6 +446,11 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         this.head = head;
     }
 
+    /**
+     * Returns the epoch millisecond timestamp when this session started.
+     *
+     * @return the start timestamp in milliseconds
+     */
     public long getStarted() {
         return started;
     }
@@ -435,6 +465,11 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         this.user = user;
     }
 
+    /**
+     * Sets whether this profiler session contains any custom query timings.
+     *
+     * @param hasQueryTimings true if there are custom query timings
+     */
     public void setHasQueryTimings(boolean hasQueryTimings) {
         this.hasQueryTimings = hasQueryTimings;
     }

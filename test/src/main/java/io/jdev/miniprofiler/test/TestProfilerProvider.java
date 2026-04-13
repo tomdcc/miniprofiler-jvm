@@ -30,9 +30,15 @@ public class TestProfilerProvider extends BaseProfilerProvider {
     private Profiler profiler;
     private boolean discarded;
 
+    /** Creates a new instance with no initial profiler. */
     public TestProfilerProvider() {
     }
 
+    /**
+     * Creates a new instance that returns the given profiler as the current session.
+     *
+     * @param profiler the profiler to return as the current session
+     */
     public TestProfilerProvider(Profiler profiler) {
         this.profiler = profiler;
     }
@@ -57,6 +63,11 @@ public class TestProfilerProvider extends BaseProfilerProvider {
         super.stopSession(profilingSession, discardResults);
     }
 
+    /**
+     * Returns true if the last stopped profiling session was discarded.
+     *
+     * @return {@code true} if the last session was discarded
+     */
     public boolean wasDiscarded() {
         return discarded;
     }

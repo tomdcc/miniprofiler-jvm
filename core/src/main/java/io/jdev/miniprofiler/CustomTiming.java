@@ -23,14 +23,35 @@ import java.io.Closeable;
  */
 public interface CustomTiming extends Closeable {
 
+    /**
+     * Returns the type of custom timing (e.g. "sql", "memcache").
+     *
+     * @return the execute type string
+     */
     String getExecuteType();
 
+    /**
+     * Returns the command string being timed (e.g. the SQL query).
+     *
+     * @return the command string
+     */
     String getCommandString();
 
+    /**
+     * Returns the start time in milliseconds since the profiler session started.
+     *
+     * @return the start time in milliseconds
+     */
     long getStartMilliseconds();
 
+    /**
+     * Returns the duration in milliseconds, or null if the timing has not yet stopped.
+     *
+     * @return the duration in milliseconds, or null
+     */
     Long getDurationMilliseconds();
 
+    /** Stops this timing and records its duration. */
     void stop();
 
     /**

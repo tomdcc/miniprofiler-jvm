@@ -24,6 +24,7 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+/** Marks a class or method for profiling via {@link ProfilingEJBInterceptor}. */
 @InterceptorBinding
 @Target({METHOD, TYPE})
 

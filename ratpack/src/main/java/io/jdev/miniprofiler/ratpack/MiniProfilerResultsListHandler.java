@@ -39,6 +39,11 @@ public class MiniProfilerResultsListHandler implements Handler {
 
     private final ProfilerProvider provider;
 
+    /**
+     * Creates a new instance using the given profiler provider.
+     *
+     * @param provider the profiler provider to use
+     */
     @Inject
     public MiniProfilerResultsListHandler(ProfilerProvider provider) {
         this.provider = provider;

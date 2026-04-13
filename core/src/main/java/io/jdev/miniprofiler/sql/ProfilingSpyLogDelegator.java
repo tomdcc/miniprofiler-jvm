@@ -21,14 +21,21 @@ import io.jdev.miniprofiler.StaticProfilerProvider;
 import io.jdev.miniprofiler.sql.log4jdbc.Spy;
 import io.jdev.miniprofiler.sql.log4jdbc.SpyLogDelegator;
 
+/** A {@link SpyLogDelegator} that records SQL query timings in MiniProfiler. */
 public class ProfilingSpyLogDelegator implements SpyLogDelegator {
 
     private final ProfilerProvider profilerProvider;
 
+    /** Creates a new instance using the static {@link io.jdev.miniprofiler.MiniProfiler} profiler provider. */
     public ProfilingSpyLogDelegator() {
         this(null);
     }
 
+    /**
+     * Creates a new instance using the given profiler provider.
+     *
+     * @param profilerProvider the profiler provider to use, or null to use the static {@link io.jdev.miniprofiler.MiniProfiler} provider
+     */
     public ProfilingSpyLogDelegator(ProfilerProvider profilerProvider) {
         this.profilerProvider = profilerProvider == null ? new StaticProfilerProvider() : profilerProvider;
     }

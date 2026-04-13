@@ -198,7 +198,6 @@ public interface Profiler extends Closeable {
     void stop(boolean discardResults);
 
     /**
-     /**
      * Same as calling {@link #stop()}.
      *
      * <p>

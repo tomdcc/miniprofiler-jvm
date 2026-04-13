@@ -22,9 +22,16 @@ import org.jooq.ExecuteType;
 import org.jooq.impl.DSL;
 import org.jooq.tools.StringUtils;
 
+/** Utility class for rendering jOOQ SQL statements for MiniProfiler. */
 @SuppressWarnings("WeakerAccess")
 public final class MiniProfilerJooqUtil {
 
+    /**
+     * Returns the SQL statement from the given execute context with parameters inlined, or null if unavailable.
+     *
+     * @param ctx the jOOQ execute context
+     * @return the inlined SQL statement, or {@code null} if unavailable
+     */
     public static String renderInlined(ExecuteContext ctx) {
         Configuration configuration = ctx.configuration();
         if (ctx.type() == ExecuteType.BATCH) {

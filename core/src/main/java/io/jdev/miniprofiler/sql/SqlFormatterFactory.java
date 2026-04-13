@@ -18,14 +18,31 @@ package io.jdev.miniprofiler.sql;
 
 import io.jdev.miniprofiler.sql.hibernate.BasicFormatterImpl;
 
-public class SqlFormatterFactory {
+/**
+ * Factory for obtaining and configuring the global {@link SqlFormatter} used
+ * to format SQL statements in profiling output.
+ */
+public final class SqlFormatterFactory {
 
     private static SqlFormatter formatter = new BasicFormatterImpl();
 
+    private SqlFormatterFactory() {
+    }
+
+    /**
+     * Returns the current global SQL formatter.
+     *
+     * @return the SQL formatter
+     */
     public static SqlFormatter getFormatter() {
         return formatter;
     }
 
+    /**
+     * Sets the global SQL formatter.
+     *
+     * @param formatter the SQL formatter to use
+     */
     public static void setFormatter(SqlFormatter formatter) {
         SqlFormatterFactory.formatter = formatter;
     }

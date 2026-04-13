@@ -24,6 +24,10 @@ import ratpack.handling.Chain;
  */
 public class MiniProfilerHandlerChain implements Action<Chain> {
 
+    /** Creates a new handler chain. */
+    public MiniProfilerHandlerChain() {
+    }
+
     /** The default URI prefix that this handler chain should be installed under. */
     public static final String DEFAULT_PREFIX = "miniprofiler";
 

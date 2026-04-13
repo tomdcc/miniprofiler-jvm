@@ -41,6 +41,7 @@ import java.util.concurrent.Callable;
  */
 public class NullProfiler implements Profiler {
 
+    /** Shared singleton instance. */
     public static final NullProfiler INSTANCE = new NullProfiler();
 
     private NullProfiler() {

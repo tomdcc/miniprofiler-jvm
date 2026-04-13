@@ -30,6 +30,9 @@ import java.util.Optional;
  */
 public class RatpackContextProfilerProvider extends BaseProfilerProvider {
 
+    /** Default constructor. */
+    public RatpackContextProfilerProvider() {}
+
     /**
      * Adds the given rofiler to the current {@link Execution}.
      *
@@ -73,6 +76,12 @@ public class RatpackContextProfilerProvider extends BaseProfilerProvider {
         }
     }
 
+    /**
+     * Returns the current profiler from the given execution, or empty if none is present.
+     *
+     * @param execution the current Ratpack execution
+     * @return the current profiler, or empty if not present
+     */
     protected Optional<Profiler> lookupCurrentProfiler(Execution execution) {
         return execution.maybeGet(Profiler.class);
     }

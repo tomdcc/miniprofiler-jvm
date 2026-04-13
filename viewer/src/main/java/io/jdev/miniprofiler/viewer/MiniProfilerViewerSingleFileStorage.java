@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.UUID;
 
+/** A read-only {@link Storage} backed by a single MiniProfiler JSON file on disk. */
 public class MiniProfilerViewerSingleFileStorage implements Storage {
 
     private final UUID uuid;
@@ -38,6 +39,12 @@ public class MiniProfilerViewerSingleFileStorage implements Storage {
         this.profiler = profiler;
     }
 
+    /**
+     * Creates a storage instance by reading and deserializing the profile JSON at the given path.
+     *
+     * @param path the path to the MiniProfiler JSON file
+     * @return a new storage instance backed by the file
+     */
     public static MiniProfilerViewerSingleFileStorage forFile(Path path) {
         if (!path.toFile().isFile()) {
             throw new IllegalArgumentException("File not found: " + path);
@@ -52,10 +59,16 @@ public class MiniProfilerViewerSingleFileStorage implements Storage {
         }
     }
 
+    /**
+     * Returns the UUID of the single profiling session stored in this instance.
+     *
+     * @return the UUID of the stored profiling session
+     */
     public UUID getUuid() {
         return uuid;
     }
 
+    /** {@inheritDoc} Returns the single stored session if its start time falls within the given range. */
     @Override
     public Collection<UUID> list(int maxResults, Date start, Date finish, ListResultsOrder orderBy) {
         long started = profiler.getStarted();
@@ -65,23 +78,28 @@ public class MiniProfilerViewerSingleFileStorage implements Storage {
         return Collections.emptyList();
     }
 
+    /** {@inheritDoc} No-op: this storage is read-only. */
     @Override
     public void save(ProfilerImpl profiler) {
     }
 
+    /** {@inheritDoc} Returns the stored profiler if the given id matches, otherwise null. */
     @Override
     public ProfilerImpl load(UUID id) {
         return uuid.equals(id) ? profiler : null;
     }
 
+    /** {@inheritDoc} No-op. */
     @Override
     public void setUnviewed(String user, UUID id) {
     }
 
+    /** {@inheritDoc} No-op. */
     @Override
     public void setViewed(String user, UUID id) {
     }
 
+    /** {@inheritDoc} Always returns an empty collection. */
     @Override
     public Collection<UUID> getUnviewedIds(String user) {
         return Collections.emptyList();

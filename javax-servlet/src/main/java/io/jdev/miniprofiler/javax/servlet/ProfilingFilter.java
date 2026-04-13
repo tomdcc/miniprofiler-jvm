@@ -52,6 +52,9 @@ import java.util.UUID;
  */
 public class ProfilingFilter implements Filter {
 
+    /** Default constructor. */
+    public ProfilingFilter() {}
+
     private static final String DEFAULT_PROFILER_PATH = "/miniprofiler/";
     private static final String PROFILER_PATH_PARAM = "path";
     private static final String ALLOWED_ORIGIN_PARAM = "allowed-origin";
@@ -61,10 +64,15 @@ public class ProfilingFilter implements Filter {
     private static final String CONTENT_TYPE_JSON = "application/json";
     private static final String ID_PARAM = "id";
 
+    /** The profiler provider used to start new profiling sessions. */
     protected ProfilerProvider profilerProvider = new StaticProfilerProvider();
+    /** The URL path prefix under which MiniProfiler resources are served. */
     protected String profilerPath = DEFAULT_PROFILER_PATH;
+    /** The value of the {@code Access-Control-Allow-Origin} header, or null to omit it. */
     protected String allowedOrigin;
+    /** Helper for loading and serving MiniProfiler static resources. */
     protected ResourceHelper resourceHelper = new ResourceHelper();
+    /** The servlet context, set during filter initialisation. */
     protected ServletContext servletContext;
 
     @Override
@@ -268,6 +276,13 @@ public class ProfilingFilter implements Filter {
         }
     }
 
+    /**
+     * Starts a new profiling session for the given request. Override to customise session creation.
+     *
+     * @param id the UUID to use for the new profiler
+     * @param request the current HTTP request
+     * @return the new profiler
+     */
     protected Profiler startProfiling(UUID id, HttpServletRequest request) {
         return profilerProvider.start(id, request.getRequestURI());
     }

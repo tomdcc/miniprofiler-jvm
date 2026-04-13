@@ -16,7 +16,11 @@
 
 package io.jdev.miniprofiler.sql;
 
+/** A no-op {@link SqlFormatter} that returns the SQL unchanged. */
 public class NullFormatter implements SqlFormatter {
+
+    /** Creates a new instance. */
+    public NullFormatter() {}
 
     @Override
     public String format(String sql) {

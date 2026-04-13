@@ -16,6 +16,13 @@
 
 package io.jdev.miniprofiler.sql;
 
+/** Formats SQL strings for display in the MiniProfiler UI. */
 public interface SqlFormatter {
+    /**
+     * Returns the formatted version of the given SQL string.
+     *
+     * @param sql the SQL string to format
+     * @return the formatted SQL string
+     */
     String format(String sql);
 }

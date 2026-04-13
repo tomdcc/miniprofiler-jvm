@@ -22,18 +22,34 @@ import org.json.simple.parser.ParseException;
 
 import java.util.UUID;
 
+/**
+ * Represents a request for profiling results, parsed from a JSON payload.
+ */
 public final class ResultsRequest {
 
+    /** The unique identifier of the requested profiling session. */
     public final UUID id;
 
     private ResultsRequest(UUID id) {
         this.id = id;
     }
 
+    /**
+     * Returns the profiling session id.
+     *
+     * @return the session UUID
+     */
     public UUID getId() {
         return id;
     }
 
+    /**
+     * Parses a JSON request string into a {@code ResultsRequest}.
+     *
+     * @param request the JSON string containing an "Id" property
+     * @return the parsed results request
+     * @throws IllegalArgumentException if the JSON is invalid or missing a valid Id
+     */
     public static ResultsRequest from(String request) {
         Object requestObj;
         try {

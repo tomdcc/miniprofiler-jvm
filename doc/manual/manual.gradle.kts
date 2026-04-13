@@ -20,7 +20,7 @@ import org.gradle.jvm.toolchain.JavaToolchainService
 plugins {
     id("build.base")
     id("build.publish")
-    `java-base`
+    id("java-base")
     alias(libs.plugins.asciidoctor)
 }
 
@@ -34,6 +34,7 @@ tasks.asciidoctor.configure {
 
 tasks.named("sanityCheck") {
     dependsOn(tasks.named("asciidoctor"))
+    dependsOn(api)
 }
 
 val api by tasks.registering(Javadoc::class) {
@@ -53,12 +54,18 @@ val api by tasks.registering(Javadoc::class) {
     javadocTasks.forEach { source(it.source) }
     classpath = files(javadocTasks.map { it.classpath })
 
+    javadocTool = javaToolchains.javadocToolFor {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
     (options as StandardJavadocDocletOptions).run {
         isUse = true
-        addStringOption("Xdoclint:all,-missing/private")
-        links("http://docs.oracle.com/javase/8/docs/api/")
+        links("https://docs.oracle.com/en/java/javase/25/docs/api/")
         windowTitle = "MiniProfiler JVM API ($project.version)"
         docTitle =  "MiniProfiler JVM API ($project.version)"
+        memberLevel = JavadocMemberLevel.PROTECTED
+        addBooleanOption("Xdoclint:all", true)
+        addBooleanOption("Xdoclint/package:-io.jdev.miniprofiler.internal,-io.jdev.miniprofiler.ratpack.internal", true)
+        addBooleanOption("Xwerror", true)
     }
 }
 

@@ -27,13 +27,21 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
+/** A Hibernate {@link DatasourceConnectionProviderImpl} that records SQL query timings in MiniProfiler. */
 public class ProfilingDatasourceConnectionProvider extends DatasourceConnectionProviderImpl {
 
+    /** Whether profiling has been configured for this connection provider. */
     private boolean profilingConfigured;
 
+    /** Creates a new instance using the static {@link io.jdev.miniprofiler.MiniProfiler} profiler provider. */
     public ProfilingDatasourceConnectionProvider() {
     }
 
+    /**
+     * Creates a new instance using the given profiler provider.
+     *
+     * @param profilerProvider the profiler provider to use
+     */
     public ProfilingDatasourceConnectionProvider(ProfilerProvider profilerProvider) {
         setupProfiling(profilerProvider);
     }

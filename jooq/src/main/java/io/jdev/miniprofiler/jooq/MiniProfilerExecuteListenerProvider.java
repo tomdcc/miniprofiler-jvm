@@ -35,6 +35,7 @@ import org.jooq.ExecuteListenerProvider;
  */
 public class MiniProfilerExecuteListenerProvider implements ExecuteListenerProvider {
 
+    /** The profiler provider used to create listeners. */
     protected final ProfilerProvider provider;
 
     /**
@@ -45,6 +46,7 @@ public class MiniProfilerExecuteListenerProvider implements ExecuteListenerProvi
         this.provider = provider;
     }
 
+    /** Returns a new {@link MiniProfilerExecuteListener} for profiling the current execution. */
     @Override
     public ExecuteListener provide() {
         return new MiniProfilerExecuteListener(provider);

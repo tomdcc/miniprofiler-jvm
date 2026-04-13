@@ -25,6 +25,10 @@ import java.util.Optional;
  */
 public class StaticProfilerProviderLocator implements ProfilerProviderLocator {
 
+    /** Creates a new static profiler provider locator. */
+    public StaticProfilerProviderLocator() {
+    }
+
     @Override
     public int getOrder() {
         return MINIPROFILER_STATIC_LOCATOR_ORDER;

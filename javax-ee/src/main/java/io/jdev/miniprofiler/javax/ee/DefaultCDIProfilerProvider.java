@@ -21,7 +21,12 @@ import io.jdev.miniprofiler.DefaultProfilerProvider;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
 
+/** Default CDI-managed {@link io.jdev.miniprofiler.ProfilerProvider} for use with javax CDI containers. */
 @ApplicationScoped
 @Default
 public class DefaultCDIProfilerProvider extends DefaultProfilerProvider {
+
+    /** Default constructor for CDI. */
+    public DefaultCDIProfilerProvider() {
+    }
 }

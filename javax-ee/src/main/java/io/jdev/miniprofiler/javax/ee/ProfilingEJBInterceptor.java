@@ -25,13 +25,25 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 
+/** EJB interceptor that profiles method invocations annotated with {@link Profiled}. */
 @Interceptor
 @Profiled
 public class ProfilingEJBInterceptor {
 
+    /** Default constructor for CDI. */
+    public ProfilingEJBInterceptor() {
+    }
+
     @Inject
     private ProfilerProvider profilerProvider;
 
+    /**
+     * Profiles the intercepted method invocation.
+     *
+     * @param ctx the invocation context
+     * @return the result of the intercepted method
+     * @throws Exception if the intercepted method throws
+     */
     @AroundInvoke
     public Object profile(InvocationContext ctx) throws Exception {
         Profiler profiler = profilerProvider.current();

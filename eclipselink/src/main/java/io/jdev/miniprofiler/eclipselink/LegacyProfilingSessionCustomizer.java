@@ -35,10 +35,16 @@ public class LegacyProfilingSessionCustomizer implements org.eclipse.persistence
 
     private final ProfilerProvider profilerProvider;
 
+    /** Creates a new instance using the static {@link io.jdev.miniprofiler.MiniProfiler} profiler provider. */
     public LegacyProfilingSessionCustomizer() {
         this.profilerProvider = null;
     }
 
+    /**
+     * Creates a new instance using the given profiler provider.
+     *
+     * @param profilerProvider the profiler provider to use
+     */
     public LegacyProfilingSessionCustomizer(ProfilerProvider profilerProvider) {
         this.profilerProvider = profilerProvider;
     }

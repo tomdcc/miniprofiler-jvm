@@ -33,10 +33,16 @@ public class ProfilingSessionCustomizer implements SessionCustomizer {
 
     private final ProfilerProvider profilerProvider;
 
+    /** Creates a new instance using the static {@link io.jdev.miniprofiler.MiniProfiler} profiler provider. */
     public ProfilingSessionCustomizer() {
         this.profilerProvider = null;
     }
 
+    /**
+     * Creates a new instance using the given profiler provider.
+     *
+     * @param profilerProvider the profiler provider to use
+     */
     public ProfilingSessionCustomizer(ProfilerProvider profilerProvider) {
         this.profilerProvider = profilerProvider;
     }

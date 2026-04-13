@@ -33,6 +33,10 @@ import jakarta.interceptor.InvocationContext;
 @Profiled
 public class ProfilingEJBInterceptor {
 
+    /** Default constructor for CDI. */
+    public ProfilingEJBInterceptor() {
+    }
+
     @Inject
     private ProfilerProvider profilerProvider;
 

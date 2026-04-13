@@ -32,6 +32,11 @@ import java.util.UUID;
  * the current profiler.
  */
 public abstract class BaseProfilerProvider implements ProfilerProvider {
+
+    /** Creates a new instance. */
+    protected BaseProfilerProvider() {}
+
+    /** Storage used to persist completed profiler sessions. */
     protected Storage storage = new MapStorage();
     private String machineName = getDefaultHostname();
     private UserProvider userProvider;
@@ -183,6 +188,11 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
         }
     }
 
+    /**
+     * Saves the given profiler session to storage.
+     *
+     * @param currentProfiler the profiler session to save
+     */
     protected void saveProfiler(ProfilerImpl currentProfiler) {
         storage.save(currentProfiler);
     }

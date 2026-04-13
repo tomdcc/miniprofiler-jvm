@@ -44,6 +44,10 @@ import ratpack.handling.Handler;
  */
 public class MiniProfilerAjaxHeaderHandler implements Handler {
 
+    /** Creates a new AJAX header handler. */
+    public MiniProfilerAjaxHeaderHandler() {
+    }
+
     @Override
     public void handle(Context ctx) throws Exception {
         ctx.maybeGet(Profiler.class).ifPresent(profiler -> {

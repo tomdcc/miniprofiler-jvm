@@ -37,19 +37,40 @@ public class MiniProfilerH2Module extends H2Module {
         this.suppressProfiling = suppressProfiling;
     }
 
+    /** Creates a module with default settings and profiling enabled. */
     public MiniProfilerH2Module() {
         this(false);
     }
 
+    /**
+     * Creates a module with the given H2 credentials and URL, and profiling enabled.
+     *
+     * @param username the H2 username
+     * @param password the H2 password
+     * @param url      the H2 JDBC URL
+     */
     public MiniProfilerH2Module(String username, String password, String url) {
         this(username, password, url, false);
     }
 
+    /**
+     * Creates a module with the given H2 credentials, URL, and suppress-profiling flag.
+     *
+     * @param username          the H2 username
+     * @param password          the H2 password
+     * @param url               the H2 JDBC URL
+     * @param suppressProfiling whether to suppress profiling
+     */
     public MiniProfilerH2Module(String username, String password, String url, boolean suppressProfiling) {
         super(username, password, url);
         this.suppressProfiling = suppressProfiling;
     }
 
+    /**
+     * Returns a {@link ProfilingDataSource} wrapping the H2 data source, unless profiling is suppressed.
+     *
+     * @return the data source, optionally wrapped for profiling
+     */
     protected DataSource createDataSource() {
         DataSource ds = super.createDataSource();
         return suppressProfiling ? ds : new ProfilingDataSource(ds);

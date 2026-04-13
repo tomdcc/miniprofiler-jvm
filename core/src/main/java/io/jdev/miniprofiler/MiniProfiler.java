@@ -41,6 +41,10 @@ import java.util.ServiceLoader;
  * might be instrumented code.</p>
  */
 public class MiniProfiler {
+
+    /** Use the static methods on this class. */
+    private MiniProfiler() {}
+
     private static volatile ProfilerProvider profilerProvider;
     private static String version;
 

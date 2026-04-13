@@ -30,6 +30,7 @@ public class MiniProfilerHikariModule extends HikariModule {
 
     private final boolean suppressProfiling;
 
+    /** Creates a module with default settings and profiling enabled. */
     public MiniProfilerHikariModule() {
         this(false);
     }
@@ -42,6 +43,12 @@ public class MiniProfilerHikariModule extends HikariModule {
         this.suppressProfiling = suppressProfiling;
     }
 
+    /**
+     * Returns a {@link ProfilingDataSource} wrapping the Hikari data source, unless profiling is suppressed.
+     *
+     * @param service the HikariService to get the base data source from
+     * @return the data source, optionally wrapped for profiling
+     */
     protected DataSource getDataSource(HikariService service) {
         DataSource ds = super.getDataSource(service);
         return suppressProfiling ? ds : new ProfilingDataSource(ds);

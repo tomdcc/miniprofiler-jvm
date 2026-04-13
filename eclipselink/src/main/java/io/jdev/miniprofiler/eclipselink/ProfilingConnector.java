@@ -30,8 +30,14 @@ import java.util.Properties;
  */
 public class ProfilingConnector implements Connector {
 
+    /** The underlying connector being wrapped. */
     private Connector target;
 
+    /**
+     * Creates a new connector wrapping the given target.
+     *
+     * @param target the connector to wrap
+     */
     public ProfilingConnector(Connector target) {
         this.target = target;
     }

@@ -34,7 +34,10 @@ public interface Storage {
      * Which order to list results in.
      */
     public static enum ListResultsOrder {
-        Ascending, Descending
+        /** Results listed in ascending chronological order. */
+        Ascending,
+        /** Results listed in descending chronological order. */
+        Descending
     }
 
     /**

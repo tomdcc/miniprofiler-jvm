@@ -26,6 +26,14 @@ import java.util.UUID;
  */
 public abstract class DelegatingProfilerProvider implements ProfilerProvider {
 
+    /** Creates a new instance. */
+    protected DelegatingProfilerProvider() {}
+
+    /**
+     * Returns the delegate profiler provider to which all calls are forwarded.
+     *
+     * @return the delegate profiler provider
+     */
     protected abstract ProfilerProvider getDelegate();
 
     @Override
@@ -88,6 +96,7 @@ public abstract class DelegatingProfilerProvider implements ProfilerProvider {
         return getDelegate().getUiConfig();
     }
 
+    @Override
     public void setUiConfig(ProfilerUiConfig uiConfig) {
         getDelegate().setUiConfig(uiConfig);
     }
