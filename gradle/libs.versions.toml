@@ -41,7 +41,7 @@ javax-jsp-api = "2.3.3"
 javax-servlet-api-v2 = "2.3"
 javax-servlet-api-v4 = "4.0.1"
 jetty9 = "9.4.57.v20241219"
-jetty12 = "12.0.21"
+jetty12 = "12.1.8"
 # Cross-version test versions — one per supported JDK generation
 jooq-v300 = "3.0.0"   # Compile target: minimum supported version (Java 8)
 jooq-v314 = "3.14.16" # Last Java 8 version
