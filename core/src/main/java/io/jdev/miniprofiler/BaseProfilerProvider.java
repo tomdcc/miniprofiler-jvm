@@ -18,8 +18,8 @@ package io.jdev.miniprofiler;
 
 import io.jdev.miniprofiler.internal.NullProfiler;
 import io.jdev.miniprofiler.internal.ProfilerImpl;
-import io.jdev.miniprofiler.storage.MapStorage;
 import io.jdev.miniprofiler.storage.Storage;
+import io.jdev.miniprofiler.storage.StorageLocator;
 import io.jdev.miniprofiler.user.UserProvider;
 
 import java.net.InetAddress;
@@ -36,8 +36,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
     /** Creates a new instance. */
     protected BaseProfilerProvider() {}
 
-    /** Storage used to persist completed profiler sessions. */
-    protected Storage storage = new MapStorage();
+    private volatile Storage storage;
     private String machineName = getDefaultHostname();
     private UserProvider userProvider;
     private ProfilerUiConfig uiConfig;
@@ -194,7 +193,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
      * @param currentProfiler the profiler session to save
      */
     protected void saveProfiler(ProfilerImpl currentProfiler) {
-        storage.save(currentProfiler);
+        getStorage().save(currentProfiler);
     }
 
     /**
@@ -202,11 +201,10 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
      * <p>The profiler storage is where profiler sessions are stored
      * to be retrieved later, either by an AJAX call immediately
      * after a page render, or for later debugging.</p>
-     * <p> By default, the storage property is set to an in-memory
-     * {@link MapStorage}.</p>
      *
      * @param storage the storage option to use
      * @see Storage
+     * @see #getStorage()
      */
     @Override
     public void setStorage(Storage storage) {
@@ -216,10 +214,22 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
     /**
      * Return the current storage implementation.
      *
+     * <p>If no storage has been explicitly set via {@link #setStorage(Storage)},
+     * the first call will use {@link StorageLocator#findStorage()} to discover
+     * a storage implementation via the {@link java.util.ServiceLoader}. The default
+     * is an in-memory {@link io.jdev.miniprofiler.storage.MapStorage MapStorage}.</p>
+     *
      * @return current storage
      */
     @Override
     public Storage getStorage() {
+        if (storage == null) {
+            synchronized (this) {
+                if (storage == null) {
+                    storage = StorageLocator.findStorage();
+                }
+            }
+        }
         return storage;
     }
 
