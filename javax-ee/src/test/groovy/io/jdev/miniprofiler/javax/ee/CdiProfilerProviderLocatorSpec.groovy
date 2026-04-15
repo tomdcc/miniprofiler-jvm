@@ -16,12 +16,7 @@
 
 package io.jdev.miniprofiler.javax.ee
 
-import io.jdev.miniprofiler.ProfilerProvider
 import spock.lang.Specification
-
-import javax.enterprise.context.spi.CreationalContext
-import javax.enterprise.inject.spi.Bean
-import javax.enterprise.inject.spi.BeanManager
 
 class CdiProfilerProviderLocatorSpec extends Specification {
 
@@ -33,45 +28,9 @@ class CdiProfilerProviderLocatorSpec extends Specification {
     }
 
     void "locator returns empty optional when CDI is not available"() {
-        // In a plain unit test environment there is no JNDI BeanManager
+        // In a plain unit test environment there is no CDI container
         when:
         def result = locator.locate()
-
-        then:
-        !result.present
-    }
-
-    void "locator returns empty optional when JNDI returns a BeanManager of the wrong type"() {
-        given: 'a locator that simulates finding a jakarta BeanManager instead of javax'
-        def wrongTypeLocator = new CdiProfilerProviderLocator() {
-            @Override
-            Object lookupBeanManagerFromJndi() {
-                return "not a javax BeanManager" // simulates jakarta BeanManager on classpath
-            }
-        }
-
-        when:
-        def result = wrongTypeLocator.locate()
-
-        then:
-        !result.present
-    }
-
-    void "locator returns empty optional when CDI returns wrong ProfilerProvider type"() {
-        given: 'a locator that finds a valid BeanManager but the resolved bean is not a ProfilerProvider'
-        def bm = Mock(BeanManager)
-        def wrongTypeLocator = new CdiProfilerProviderLocator() {
-            @Override
-            Object lookupBeanManagerFromJndi() { return bm }
-        }
-
-        bm.getBeans(ProfilerProvider) >> ([Mock(Bean)] as Set)
-        bm.resolve(_) >> Mock(Bean)
-        bm.createCreationalContext(_) >> Mock(CreationalContext)
-        bm.getReference(_, _, _) >> "not a ProfilerProvider"
-
-        when:
-        def result = wrongTypeLocator.locate()
 
         then:
         !result.present
