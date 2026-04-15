@@ -29,7 +29,7 @@ class CdiProfilerProviderLocatorIntegrationSpec extends Specification {
 
     void setupSpec() {
         container = SeContainerInitializer.newInstance()
-            .addBeanClasses(DefaultCDIProfilerProvider)
+            .addBeanClasses(DefaultCdiProfilerProvider)
             .initialize()
     }
 
@@ -37,17 +37,9 @@ class CdiProfilerProviderLocatorIntegrationSpec extends Specification {
         container?.close()
     }
 
-    CdiProfilerProviderLocator locatorWithContainerBeanManager() {
-        def beanManager = container.beanManager
-        return new CdiProfilerProviderLocator() {
-            @Override
-            Object lookupBeanManagerFromJndi() { return beanManager }
-        }
-    }
-
     void "locator finds ProfilerProvider from CDI container"() {
         when:
-        def result = locatorWithContainerBeanManager().locate()
+        def result = new CdiProfilerProviderLocator().locate()
 
         then:
         result.present
@@ -56,7 +48,7 @@ class CdiProfilerProviderLocatorIntegrationSpec extends Specification {
 
     void "locator returns the CDI-managed singleton ProfilerProvider"() {
         given:
-        def locatorProvider = locatorWithContainerBeanManager().locate().get()
+        def locatorProvider = new CdiProfilerProviderLocator().locate().get()
         def containerProvider = container.select(ProfilerProvider).get()
 
         when:

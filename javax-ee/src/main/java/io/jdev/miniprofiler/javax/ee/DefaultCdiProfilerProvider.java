@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 the original author or authors.
+ * Copyright 2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.jakarta.ee;
+package io.jdev.miniprofiler.javax.ee;
 
 import io.jdev.miniprofiler.DefaultProfilerProvider;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Default;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Default;
 
-/**
- * CDI {@link jakarta.enterprise.context.ApplicationScoped} implementation of
- * {@link io.jdev.miniprofiler.DefaultProfilerProvider} for use in Jakarta EE applications.
- */
+/** Default CDI-managed {@link io.jdev.miniprofiler.ProfilerProvider} for use with javax CDI containers. */
 @ApplicationScoped
 @Default
-public class DefaultCDIProfilerProvider extends DefaultProfilerProvider {
+public class DefaultCdiProfilerProvider extends DefaultProfilerProvider {
 
     /** Default constructor for CDI. */
-    public DefaultCDIProfilerProvider() {
+    public DefaultCdiProfilerProvider() {
     }
 }

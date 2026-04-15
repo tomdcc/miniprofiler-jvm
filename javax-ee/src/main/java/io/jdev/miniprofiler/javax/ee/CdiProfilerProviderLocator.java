@@ -19,17 +19,14 @@ package io.jdev.miniprofiler.javax.ee;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.ProfilerProviderLocator;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.naming.InitialContext;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.CDI;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * {@link ProfilerProviderLocator} that looks up a {@link ProfilerProvider} from the
- * javax CDI container via JNDI. Returns an empty {@link Optional} if the javax CDI
- * API is not available or no {@link ProfilerProvider} bean is registered.
+ * javax CDI container using {@link CDI#current()}. Returns an empty {@link Optional}
+ * if the javax CDI API is not available or no {@link ProfilerProvider} bean is registered.
  */
 public class CdiProfilerProviderLocator implements ProfilerProviderLocator {
 
@@ -45,31 +42,16 @@ public class CdiProfilerProviderLocator implements ProfilerProviderLocator {
 
     /** {@inheritDoc} */
     @Override
-    @SuppressWarnings("unchecked")
     public Optional<ProfilerProvider> locate() {
         try {
-            Object lookedUp = lookupBeanManagerFromJndi();
-            if (!(lookedUp instanceof BeanManager)) {
-                return Optional.empty();
+            CDI<Object> cdi = CDI.current();
+            Instance<ProfilerProvider> instance = cdi.select(ProfilerProvider.class);
+            if (!instance.isUnsatisfied() && !instance.isAmbiguous()) {
+                return Optional.of(instance.get());
             }
-            BeanManager bm = (BeanManager) lookedUp;
-            Set<Bean<?>> beans = bm.getBeans(ProfilerProvider.class);
-            if (beans.isEmpty()) {
-                return Optional.empty();
-            }
-            Bean<ProfilerProvider> bean = (Bean<ProfilerProvider>) bm.resolve(beans);
-            CreationalContext<ProfilerProvider> ctx = bm.createCreationalContext(bean);
-            Object reference = bm.getReference(bean, ProfilerProvider.class, ctx);
-            if (!(reference instanceof ProfilerProvider)) {
-                return Optional.empty();
-            }
-            return Optional.of((ProfilerProvider) reference);
+            return Optional.empty();
         } catch (Exception | NoClassDefFoundError e) {
             return Optional.empty();
         }
-    }
-
-    Object lookupBeanManagerFromJndi() throws Exception {
-        return new InitialContext().lookup("java:comp/BeanManager");
     }
 }

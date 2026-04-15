@@ -30,7 +30,7 @@ class ProfilingEJBInterceptorIntegrationSpec extends Specification {
     void setupSpec() {
         container = SeContainerInitializer.newInstance()
             .addBeanClasses(
-                DefaultCDIProfilerProvider,
+                DefaultCdiProfilerProvider,
                 ProfilingEJBInterceptor,
                 ProfiledService,
                 ProfiledClassLevelService
