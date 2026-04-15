@@ -34,8 +34,6 @@ import spock.lang.AutoCleanup
 import spock.lang.Specification
 
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 import static org.awaitility.Awaitility.await
@@ -143,21 +141,25 @@ class MiniProfilerExecInitializerSpec extends Specification {
         def harness = new DefaultExecHarness(execController)
 
         when: "run handler with initializer on handler which forks execution"
-        def latch = new CountDownLatch(3)
         harness.run { e ->
             // do forked execution
-            Execution.fork().onComplete { latch.countDown() }.start(Action.noop())
+            Execution.fork().start(Action.noop())
             // and something running in a blocking thread and then completed
-            Promise.value("").blockingMap{ v -> v }.then { latch.countDown() }
-            latch.countDown()
+            Promise.value("").blockingMap{ v -> v }.then {}
         }
-        harness.close()
-        latch.await(2, TimeUnit.SECONDS)
 
         then: "each execution only completed once"
-        completes.values().each {
-            assert it.get() == 1
+        // The initializer's cleanup runs as an execution closeable, which fires after
+        // the execution's main onComplete handler (which is what harness.run waits for).
+        // So harness.run may return before executionComplete has been called on all
+        // executions; wait for both executions' cleanup to have run before asserting.
+        await().untilAsserted {
+            assert completes.size() == 2
+            completes.values().each { assert it.get() == 1 }
         }
+
+        cleanup:
+        harness.close()
     }
 
 
