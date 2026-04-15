@@ -29,7 +29,7 @@ class CdiProfilerProviderLocatorIntegrationSpec extends Specification {
 
     void setupSpec() {
         container = SeContainerInitializer.newInstance()
-            .addBeanClasses(DefaultCDIProfilerProvider)
+            .addBeanClasses(DefaultCdiProfilerProvider)
             .initialize()
     }
 

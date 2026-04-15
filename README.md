@@ -116,20 +116,26 @@ You can change this by passing it an `init-param` of `path`. Be sure to pass the
 
 The filter can also be configured to accept cross-origin requests by passing an `allowed-origin` `init-param` with the value that you would like the `Access-Control-Allow-Origin` header to be.
 
-Inclusion in Java EE applications with CDI
-------------------------------------------
-There are a couple of extra pieces of support for modern Java EE applications. Simply include the `miniprofiler-javaee` module:
+Inclusion in Java EE / Jakarta EE applications with CDI
+--------------------------------------------------------
+There are a couple of extra pieces of support for Java EE and Jakarta EE applications. Include the appropriate module for your platform:
+
+For **Jakarta EE** (Jakarta CDI / EJB):
 
     groupId: io.jdev.miniprofiler
-    artifactId: miniprofiler-javaee
-    version: 0.11.1
+    artifactId: miniprofiler-jakarta-ee
 
-That module contains a `DefaultCDIProfilerProvider` which is a `ProfilerProvider` instance ready to be injected into your CDI-managed beans.
+For **Javax EE** (legacy javax CDI / EJB):
 
-It also contains an interceptor for profiling EJB calls. Add the following to your `beans.xml`:
+    groupId: io.jdev.miniprofiler
+    artifactId: miniprofiler-javax-ee
+
+Each module contains a `DefaultCdiProfilerProvider` which is a `ProfilerProvider` instance ready to be injected into your CDI-managed beans.
+
+They also contain an interceptor for profiling EJB calls. Add the following to your `beans.xml` (using the appropriate package):
 
     <interceptors>
-        <class>io.jdev.miniprofiler.javaee.ProfilingEJBInterceptor</class>
+        <class>io.jdev.miniprofiler.jakarta.ee.ProfilingEJBInterceptor</class>
     </interceptors>
 
 Then add the `@Profiled` annotation to any EJB that you want profiled, and EJB method calls will appear in your profiler output.
