@@ -85,6 +85,16 @@ tasks.named<ShadowJar>("shadowJar").configure {
     configurations = listOf(project.configurations["bundled"])
     relocate("org.json.simple", "io.jdev.miniprofiler.shadowed.org.json.simple")
     relocate("com.github.vertical_blank.sqlformatter", "io.jdev.miniprofiler.shadowed.com.github.vertical_blank.sqlformatter")
+
+    // include licenses for the bundled third-party dependencies
+    from("licenses/sql-formatter-LICENSE.txt") {
+        into("META-INF/licenses/sql-formatter")
+        rename { "LICENSE" }
+    }
+    from("licenses/json-simple-LICENSE.txt") {
+        into("META-INF/licenses/json-simple")
+        rename { "LICENSE" }
+    }
 }
 
 publishing {

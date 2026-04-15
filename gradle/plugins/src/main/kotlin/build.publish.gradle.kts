@@ -82,6 +82,16 @@ tasks.withType<GenerateModuleMetadata> {
     enabled = false
 }
 
+// bundle the project LICENSE into all published code jars (skip sources/javadoc jars)
+tasks.withType<Jar>().configureEach {
+    if (name != "sourcesJar" && name != "javadocJar") {
+        from(rootProject.file("LICENSE.txt")) {
+            into("META-INF")
+            rename { "LICENSE" }
+        }
+    }
+}
+
 tasks.register("publishSnapshots") {
     if (isSnapshot) {
         dependsOn(tasks.named("publishToSonatype"))
