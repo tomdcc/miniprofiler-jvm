@@ -51,7 +51,8 @@ class ServletScenarioSpec extends Specification {
         profiler.Root.CustomTimings.size() >= 1
         def sqlTimings = profiler.Root.CustomTimings.values().flatten()
         sqlTimings.size() == 1
-        sqlTimings[0].CommandString =~ /(?i)select\s+\*\s+from\s+people/
+        // miniprofiler.properties sets sql.format.uppercase=true and sql.format.indent.width=4
+        sqlTimings[0].CommandString == 'SELECT\n    *\nFROM\n    people'
     }
 
     void "results list endpoint returns profiler entries"() {

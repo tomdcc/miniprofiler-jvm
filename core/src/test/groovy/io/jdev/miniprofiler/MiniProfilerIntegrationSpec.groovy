@@ -117,7 +117,7 @@ class MiniProfilerIntegrationSpec extends Specification {
         nestedChild.CustomTimings.sql.size() == 1
 
         def sqlTiming = nestedChild.CustomTimings.sql[0]
-        verifyCustomTiming(sqlTiming, [CommandString: '\n    select\n        * \n    from\n        "foo"', ExecuteType: 'query'])
+        verifyCustomTiming(sqlTiming, [CommandString: 'select\n  *\nfrom\n  "foo"', ExecuteType: 'query'])
 
         def trivialChild = firstChild.Children[1]
         verifyTiming(trivialChild, [Name: 'trivial'])

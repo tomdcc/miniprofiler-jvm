@@ -36,6 +36,7 @@ dependencies {
     bundled(libs.json.simple) {
         exclude(group = "junit", module = "junit")
     }
+    bundled(libs.sql.formatter)
 
     testImplementation(projects.test)
     testImplementation(libs.jackson.databind)
@@ -55,19 +56,13 @@ tasks.named<ProcessResources>("processResources") {
 }
 
 
-// exclude vendored log4jdbc and hibernate SQL formatter from Javadoc - these are
-// third-party code included for implementation purposes, not part of the public API
+// exclude vendored log4jdbc from Javadoc - these are third-party code
+// included for implementation purposes, not part of the public API
 tasks.named<Javadoc>("javadoc") {
     exclude("io/jdev/miniprofiler/sql/log4jdbc/**")
-    exclude("io/jdev/miniprofiler/sql/hibernate/**")
 }
 
-// include hibernate builder source, since it's LGPL and we don't want to add any
-// extra burden on people who might be bundling this library in
 tasks.named<Jar>("jar").configure {
-	from(sourceSets["main"].allJava) {
-        include("io/jdev/miniprofiler/sql/hibernate/*")
-    }
     archiveClassifier.set("plain")
 }
 
@@ -83,6 +78,17 @@ tasks.named<ShadowJar>("shadowJar").configure {
     archiveClassifier.set("")
     configurations = listOf(project.configurations["bundled"])
     relocate("org.json.simple", "io.jdev.miniprofiler.shadowed.org.json.simple")
+    relocate("com.github.vertical_blank.sqlformatter", "io.jdev.miniprofiler.shadowed.com.github.vertical_blank.sqlformatter")
+
+    // include licenses for the bundled third-party dependencies
+    from("licenses/sql-formatter-LICENSE.txt") {
+        into("META-INF/licenses/sql-formatter")
+        rename { "LICENSE" }
+    }
+    from("licenses/json-simple-LICENSE.txt") {
+        into("META-INF/licenses/json-simple")
+        rename { "LICENSE" }
+    }
 }
 
 publishing {

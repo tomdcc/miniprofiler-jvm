@@ -6,9 +6,6 @@
 
 <suppressions>
 
-  <!-- hibernate sql formatter -->
-  <suppress checks="." files=".*[\\/]BasicFormatterImpl.java"/>
-
   <!-- log4jdbc classes -->
   <suppress checks="." files="io[\\/]jdev[\\/]miniprofiler[\\/]sql[\\/]log4jdbc[\\/]"/>
 
