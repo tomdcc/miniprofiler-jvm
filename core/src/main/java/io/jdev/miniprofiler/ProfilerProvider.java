@@ -16,10 +16,12 @@
 
 package io.jdev.miniprofiler;
 
+import io.jdev.miniprofiler.format.CommandFormatter;
 import io.jdev.miniprofiler.internal.NullProfiler;
 import io.jdev.miniprofiler.internal.ProfilerImpl;
 import io.jdev.miniprofiler.storage.Storage;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -153,5 +155,31 @@ public interface ProfilerProvider {
      * @param uiConfig the UI config to use
      */
     void setUiConfig(ProfilerUiConfig uiConfig);
+
+    /**
+     * Returns the {@link CommandFormatter} for the given custom timing type.
+     *
+     * <p>If no formatter has been explicitly set for the type, one is discovered
+     * via {@link io.jdev.miniprofiler.format.CommandFormatterLocator} and cached.</p>
+     *
+     * @param type the custom timing type (e.g. "sql")
+     * @return the formatter for the type
+     */
+    CommandFormatter getCommandFormatter(String type);
+
+    /**
+     * Replaces the entire command formatter map.
+     *
+     * @param formatters the formatters keyed by custom timing type
+     */
+    void setCommandFormatters(Map<String, CommandFormatter> formatters);
+
+    /**
+     * Sets the {@link CommandFormatter} for a specific custom timing type.
+     *
+     * @param type      the custom timing type (e.g. "sql")
+     * @param formatter the formatter to use for the type
+     */
+    void setCommandFormatter(String type, CommandFormatter formatter);
 
 }

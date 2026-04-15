@@ -17,26 +17,21 @@
 package io.jdev.miniprofiler.internal
 
 import io.jdev.miniprofiler.ProfileLevel
-import io.jdev.miniprofiler.sql.NullFormatter
-import io.jdev.miniprofiler.sql.SqlFormatterFactory
+import io.jdev.miniprofiler.format.NoopCommandFormatter
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import spock.lang.Specification
 
 class ProfilerImplFromJsonSpec extends Specification {
 
-    def originalFormatter = SqlFormatterFactory.formatter
+    def provider = new TestProfilerProvider()
 
     void setup() {
-        SqlFormatterFactory.formatter = new NullFormatter()
-    }
-
-    void cleanup() {
-        SqlFormatterFactory.formatter = originalFormatter
+        provider.setCommandFormatter("sql", NoopCommandFormatter.INSTANCE)
     }
 
     void "round-trip basic profiler with no children or custom timings"() {
         given:
-        def profiler = new ProfilerImpl("test-request", ProfileLevel.Info, new TestProfilerProvider())
+        def profiler = new ProfilerImpl("test-request", ProfileLevel.Info, provider)
         profiler.machineName = 'testhost'
         profiler.stop()
 
@@ -57,7 +52,7 @@ class ProfilerImplFromJsonSpec extends Specification {
 
     void "round-trip profiler with nested child timings"() {
         given:
-        def profiler = new ProfilerImpl("test-request", ProfileLevel.Info, new TestProfilerProvider())
+        def profiler = new ProfilerImpl("test-request", ProfileLevel.Info, provider)
         profiler.machineName = 'testhost'
         def step1 = profiler.step('child1')
         def step2 = profiler.step('grandchild')
@@ -80,7 +75,7 @@ class ProfilerImplFromJsonSpec extends Specification {
 
     void "round-trip profiler with custom timings"() {
         given:
-        def profiler = new ProfilerImpl("test-request", ProfileLevel.Info, new TestProfilerProvider())
+        def profiler = new ProfilerImpl("test-request", ProfileLevel.Info, provider)
         profiler.machineName = 'testhost'
         def step = profiler.step('db-step')
         step.addCustomTiming('sql', 'query', 'select * from people', 5)
@@ -102,7 +97,7 @@ class ProfilerImplFromJsonSpec extends Specification {
 
     void "deserialized profiler produces valid UI json"() {
         given:
-        def profiler = new ProfilerImpl("test-request", ProfileLevel.Info, new TestProfilerProvider())
+        def profiler = new ProfilerImpl("test-request", ProfileLevel.Info, provider)
         profiler.machineName = 'testhost'
         profiler.step('child').stop()
         profiler.stop()
@@ -122,7 +117,7 @@ class ProfilerImplFromJsonSpec extends Specification {
 
     void "fromJson preserves started timestamp"() {
         given:
-        def profiler = new ProfilerImpl("test-request", ProfileLevel.Info, new TestProfilerProvider())
+        def profiler = new ProfilerImpl("test-request", ProfileLevel.Info, provider)
         profiler.stop()
 
         when:
@@ -134,7 +129,7 @@ class ProfilerImplFromJsonSpec extends Specification {
 
     void "round-trip profiler with multiple custom timing types"() {
         given:
-        def profiler = new ProfilerImpl("test-request", ProfileLevel.Info, new TestProfilerProvider())
+        def profiler = new ProfilerImpl("test-request", ProfileLevel.Info, provider)
         def step = profiler.step('step1')
         step.addCustomTiming('sql', 'query', 'select 1', 3)
         step.addCustomTiming('http', 'GET', 'http://example.com', 10)
@@ -153,7 +148,7 @@ class ProfilerImplFromJsonSpec extends Specification {
 
     void "deserialized timing depth is correct"() {
         given:
-        def profiler = new ProfilerImpl("test-request", ProfileLevel.Info, new TestProfilerProvider())
+        def profiler = new ProfilerImpl("test-request", ProfileLevel.Info, provider)
         def child = profiler.step('child')
         def grandchild = profiler.step('grandchild')
         grandchild.stop()

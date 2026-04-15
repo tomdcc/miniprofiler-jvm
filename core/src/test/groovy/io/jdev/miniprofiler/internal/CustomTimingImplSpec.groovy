@@ -20,16 +20,20 @@ package io.jdev.miniprofiler.internal
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jdev.miniprofiler.ProfileLevel
 import io.jdev.miniprofiler.ProfilerProvider
+import io.jdev.miniprofiler.format.NoopCommandFormatter
 import spock.lang.Specification
 
 class CustomTimingImplSpec extends Specification {
 
-    ProfilerImpl profiler = new ProfilerImpl("hi there", ProfileLevel.Info, Mock(ProfilerProvider))
+    ProfilerProvider provider = Mock(ProfilerProvider) {
+        getCommandFormatter(_) >> NoopCommandFormatter.INSTANCE
+    }
+    ProfilerImpl profiler = new ProfilerImpl("hi there", ProfileLevel.Info, provider)
     TimingImpl timing = profiler.root as TimingImpl
 
     void "calculates start milliseconds correctly when duration set initially"() {
         when: 'create query timing with duration'
-        def ct = CustomTimingImpl.forDurationFrom(timing, "query", "select * from foo", 5, profiler.started + 77)
+        def ct = CustomTimingImpl.forDurationFrom(timing, "sql", "query", "select * from foo", 5, profiler.started + 77)
 
         then:
         ct.startMilliseconds == 72
@@ -39,7 +43,7 @@ class CustomTimingImplSpec extends Specification {
     void "calculates start milliseconds correctly when duration not set initially"() {
         given:
         when: 'create query timing'
-        def ct = CustomTimingImpl.from(timing, "query", "select * from foo", profiler.started + 77)
+        def ct = CustomTimingImpl.from(timing, "sql", "query", "select * from foo", profiler.started + 77)
         ct.stop(profiler.started + 83)
 
         then:
@@ -49,7 +53,7 @@ class CustomTimingImplSpec extends Specification {
 
     void "json is in expected order"() {
         given:
-        def ct = CustomTimingImpl.from(timing, "query", "select * from foo", profiler.started + 77)
+        def ct = CustomTimingImpl.from(timing, "sql", "query", "select * from foo", profiler.started + 77)
 
         when:
         def parsed = new ObjectMapper().readTree(ct.toJSONString())

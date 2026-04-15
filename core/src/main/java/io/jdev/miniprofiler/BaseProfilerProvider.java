@@ -16,6 +16,8 @@
 
 package io.jdev.miniprofiler;
 
+import io.jdev.miniprofiler.format.CommandFormatter;
+import io.jdev.miniprofiler.format.CommandFormatterLocator;
 import io.jdev.miniprofiler.internal.NullProfiler;
 import io.jdev.miniprofiler.internal.ProfilerImpl;
 import io.jdev.miniprofiler.storage.Storage;
@@ -24,7 +26,9 @@ import io.jdev.miniprofiler.user.UserProvider;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Support class for profiler providers. This provides most functionality
@@ -37,6 +41,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
     protected BaseProfilerProvider() {}
 
     private volatile Storage storage;
+    private volatile Map<String, CommandFormatter> commandFormatters = new ConcurrentHashMap<>();
     private String machineName = getDefaultHostname();
     private UserProvider userProvider;
     private ProfilerUiConfig uiConfig;
@@ -231,6 +236,28 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
             }
         }
         return storage;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>If no formatter has been explicitly set for the given type,
+     * one is discovered via {@link CommandFormatterLocator#findFormatter(String)}
+     * and cached for future lookups.</p>
+     */
+    @Override
+    public CommandFormatter getCommandFormatter(String type) {
+        return commandFormatters.computeIfAbsent(type, CommandFormatterLocator::findFormatter);
+    }
+
+    @Override
+    public void setCommandFormatters(Map<String, CommandFormatter> formatters) {
+        this.commandFormatters = new ConcurrentHashMap<>(formatters);
+    }
+
+    @Override
+    public void setCommandFormatter(String type, CommandFormatter formatter) {
+        commandFormatters.put(type, formatter);
     }
 
     /**

@@ -148,8 +148,8 @@ class MiniProfilerIntegrationSpec extends Specification {
         def json = new JsonSlurper().parseText(jsonString)
         def customTimings = json.Root.CustomTimings
         customTimings.keySet() == ['the type'] as Set
-        verifyCustomTiming(customTimings['the type'][0], [CommandString: '\n    the command', ExecuteType: 'the execute type'])
-        verifyCustomTiming(customTimings['the type'][1], [CommandString: '\n    the command 2', ExecuteType: 'the execute type 2'])
+        verifyCustomTiming(customTimings['the type'][0], [CommandString: 'the command', ExecuteType: 'the execute type'])
+        verifyCustomTiming(customTimings['the type'][1], [CommandString: 'the command 2', ExecuteType: 'the execute type 2'])
 
         where:
         passedIn << [true, false]

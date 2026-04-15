@@ -17,7 +17,6 @@
 package io.jdev.miniprofiler.internal;
 
 import io.jdev.miniprofiler.CustomTiming;
-import io.jdev.miniprofiler.sql.SqlFormatterFactory;
 import org.json.simple.JSONObject;
 
 import java.io.Serializable;
@@ -30,6 +29,7 @@ class CustomTimingImpl implements CustomTiming, Serializable, Jsonable {
 
     private final TimingInternal parentTiming;
     private final UUID id;
+    private final String type;
     private final String executeType;
     private final String commandString;
     private final long startMilliseconds;
@@ -37,17 +37,18 @@ class CustomTimingImpl implements CustomTiming, Serializable, Jsonable {
     // TODO: stack traces
     // TODO FirstFetchDurationMilliseconds
 
-    private CustomTimingImpl(UUID id, TimingInternal parentTiming, String executeType, String commandString, long startMilliseconds, Long durationMilliseconds) {
+    private CustomTimingImpl(UUID id, TimingInternal parentTiming, String type, String executeType, String commandString, long startMilliseconds, Long durationMilliseconds) {
         this.id = id;
         this.parentTiming = parentTiming;
+        this.type = type;
         this.executeType = executeType;
         this.commandString = commandString;
         this.startMilliseconds = startMilliseconds;
         this.durationMilliseconds = durationMilliseconds;
     }
 
-    private CustomTimingImpl(TimingInternal parentTiming, String executeType, String commandString, long startMilliseconds, Long durationMilliseconds) {
-        this(UUID.randomUUID(), parentTiming, executeType, commandString, startMilliseconds, durationMilliseconds);
+    private CustomTimingImpl(TimingInternal parentTiming, String type, String executeType, String commandString, long startMilliseconds, Long durationMilliseconds) {
+        this(UUID.randomUUID(), parentTiming, type, executeType, commandString, startMilliseconds, durationMilliseconds);
     }
 
     static CustomTimingImpl fromJson(TimingInternal parent, JSONObject obj) {
@@ -57,23 +58,23 @@ class CustomTimingImpl implements CustomTiming, Serializable, Jsonable {
         long startMilliseconds = ((Number) obj.get("StartMilliseconds")).longValue();
         Long durationMilliseconds = obj.get("DurationMilliseconds") != null
             ? ((Number) obj.get("DurationMilliseconds")).longValue() : null;
-        return new CustomTimingImpl(id, parent, executeType, commandString, startMilliseconds, durationMilliseconds);
+        return new CustomTimingImpl(id, parent, null, executeType, commandString, startMilliseconds, durationMilliseconds);
     }
 
-    static CustomTimingImpl forDuration(TimingImpl parentTiming, String executeType, String command, long duration) {
-        return forDurationFrom(parentTiming, executeType, command, duration, System.currentTimeMillis());
+    static CustomTimingImpl forDuration(TimingImpl parentTiming, String type, String executeType, String command, long duration) {
+        return forDurationFrom(parentTiming, type, executeType, command, duration, System.currentTimeMillis());
     }
 
-    static CustomTimingImpl forDurationFrom(TimingImpl parentTiming, String executeType, String command, long duration, long start) {
-        return new CustomTimingImpl(parentTiming, executeType, command, relativeToProfilerStart(parentTiming, start) - duration, duration);
+    static CustomTimingImpl forDurationFrom(TimingImpl parentTiming, String type, String executeType, String command, long duration, long start) {
+        return new CustomTimingImpl(parentTiming, type, executeType, command, relativeToProfilerStart(parentTiming, start) - duration, duration);
     }
 
-    static CustomTimingImpl fromNow(TimingImpl parentTiming, String executeType, String command) {
-        return from(parentTiming, executeType, command, System.currentTimeMillis());
+    static CustomTimingImpl fromNow(TimingImpl parentTiming, String type, String executeType, String command) {
+        return from(parentTiming, type, executeType, command, System.currentTimeMillis());
     }
 
-    static CustomTimingImpl from(TimingImpl parentTiming, String executeType, String command, long start) {
-        return new CustomTimingImpl(parentTiming, executeType, command, relativeToProfilerStart(parentTiming, start), null);
+    static CustomTimingImpl from(TimingImpl parentTiming, String type, String executeType, String command, long start) {
+        return new CustomTimingImpl(parentTiming, type, executeType, command, relativeToProfilerStart(parentTiming, start), null);
     }
 
     private static long relativeToProfilerStart(TimingInternal parentTiming, long time) {
@@ -87,11 +88,21 @@ class CustomTimingImpl implements CustomTiming, Serializable, Jsonable {
         if (executeType != null) {
             map.put("ExecuteType", executeType);
         }
-        map.put("CommandString", SqlFormatterFactory.getFormatter().format(commandString));
+        map.put("CommandString", formatCommandString());
         map.put("StartMilliseconds", getStartMilliseconds());
         map.put("DurationMilliseconds", durationMilliseconds);
         map.put("StackTraceSnippet", "");
         return map;
+    }
+
+    private String formatCommandString() {
+        if (type == null) {
+            // Deserialized from JSON — command string is already formatted
+            return commandString;
+        }
+        return parentTiming.getProfiler().getProfilerProvider()
+            .getCommandFormatter(type)
+            .format(commandString);
     }
 
     public UUID getId() {

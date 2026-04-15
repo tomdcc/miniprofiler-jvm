@@ -16,9 +16,11 @@
 
 package io.jdev.miniprofiler;
 
+import io.jdev.miniprofiler.format.CommandFormatter;
 import io.jdev.miniprofiler.internal.ProfilerImpl;
 import io.jdev.miniprofiler.storage.Storage;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -99,6 +101,21 @@ public abstract class DelegatingProfilerProvider implements ProfilerProvider {
     @Override
     public void setUiConfig(ProfilerUiConfig uiConfig) {
         getDelegate().setUiConfig(uiConfig);
+    }
+
+    @Override
+    public CommandFormatter getCommandFormatter(String type) {
+        return getDelegate().getCommandFormatter(type);
+    }
+
+    @Override
+    public void setCommandFormatters(Map<String, CommandFormatter> formatters) {
+        getDelegate().setCommandFormatters(formatters);
+    }
+
+    @Override
+    public void setCommandFormatter(String type, CommandFormatter formatter) {
+        getDelegate().setCommandFormatter(type, formatter);
     }
 
 }

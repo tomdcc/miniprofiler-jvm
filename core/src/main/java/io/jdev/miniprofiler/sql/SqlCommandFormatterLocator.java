@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,28 @@
 
 package io.jdev.miniprofiler.sql;
 
-/** A no-op {@link SqlFormatter} that returns the SQL unchanged. */
-public class NullFormatter implements SqlFormatter {
+import io.jdev.miniprofiler.format.CommandFormatter;
+import io.jdev.miniprofiler.format.CommandFormatterLocator;
+
+import java.util.Optional;
+
+/**
+ * {@link CommandFormatterLocator} that returns a {@link SqlCommandFormatter}
+ * for SQL command formatting.
+ */
+public class SqlCommandFormatterLocator implements CommandFormatterLocator {
 
     /** Creates a new instance. */
-    public NullFormatter() {}
+    public SqlCommandFormatterLocator() {
+    }
 
     @Override
-    public String format(String sql) {
-        return sql;
+    public int getOrder() {
+        return 100;
+    }
+
+    @Override
+    public Optional<CommandFormatter> locate() {
+        return Optional.of(new SqlCommandFormatter());
     }
 }

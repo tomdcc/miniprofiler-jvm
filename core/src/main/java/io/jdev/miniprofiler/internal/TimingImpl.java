@@ -131,12 +131,12 @@ public class TimingImpl implements TimingInternal, Serializable, Jsonable {
 
     @Override
     public void addCustomTiming(String type, String executeType, String command, long duration) {
-        addCustomTiming(type, CustomTimingImpl.forDuration(this, executeType, command, duration));
+        addCustomTiming(type, CustomTimingImpl.forDuration(this, type, executeType, command, duration));
     }
 
     @Override
     public CustomTiming customTiming(String type, String executeType, String command) {
-        return addCustomTiming(type, CustomTimingImpl.fromNow(this, executeType, command));
+        return addCustomTiming(type, CustomTimingImpl.fromNow(this, type, executeType, command));
     }
 
     @Override
