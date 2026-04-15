@@ -17,6 +17,7 @@
 package io.jdev.miniprofiler.scenariotest
 
 import io.jdev.miniprofiler.integtest.TestedServer
+import org.testcontainers.containers.Container
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.MountableFile
@@ -71,6 +72,33 @@ class DockerGlassfish7Server implements TestedServer {
             exec("create-jdbc-resource",
                 "--connectionpoolid", "MiniprofilerPool",
                 "jdbc/DataSource")
+
+            // Provision a test user in the default file realm so the scenario tests
+            // can hit BASIC-auth-protected endpoints. asadmin reads the new user's
+            // password from a properties file via --passwordfile, which must be passed
+            // as a utility option (i.e. before the subcommand).
+            // Once --passwordfile is given, asadmin stops using the local-password
+            // shortcut and demands an explicit AS_ADMIN_PASSWORD. Read the local-password
+            // token straight off disk so asadmin authenticates as the running server's
+            // admin without us having to know any real admin credentials.
+            container.execInContainer("/bin/sh", "-c",
+                "printf 'AS_ADMIN_PASSWORD=%s\\nAS_ADMIN_USERPASSWORD=secret\\n' " +
+                    "\"\$(cat /opt/glassfish7/glassfish/domains/domain1/config/local-password)\" > /tmp/pw.txt")
+            Container.ExecResult userResult = container.execInContainer(
+                "/opt/glassfish7/bin/asadmin",
+                "--user", "admin",
+                "--passwordfile", "/tmp/pw.txt",
+                "create-file-user",
+                "--groups", "user",
+                "alice")
+            println "asadmin create-file-user stdout: ${userResult.stdout}"
+            if (userResult.stderr) {
+                println "asadmin create-file-user stderr: ${userResult.stderr}"
+            }
+            if (userResult.exitCode != 0) {
+                throw new RuntimeException(
+                    "asadmin create-file-user failed (exit ${userResult.exitCode}): ${userResult.stdout} / ${userResult.stderr}")
+            }
 
             // Now deploy the WAR at the root context
             container.copyFileToContainer(

@@ -72,6 +72,28 @@ class DockerGlassfish4Server implements TestedServer {
                 "--connectionpoolid", "MiniprofilerPool",
                 "jdbc/DataSource")
 
+            // Provision a test user in the default file realm so the scenario tests
+            // can hit BASIC-auth-protected endpoints. asadmin reads the new user's
+            // password from a properties file via --passwordfile, which must be passed
+            // as a utility option (i.e. before the subcommand).
+            container.execInContainer("/bin/sh", "-c",
+                "echo 'AS_ADMIN_USERPASSWORD=secret' > /tmp/pw.txt")
+            Container.ExecResult userResult = container.execInContainer(
+                "/usr/local/glassfish4/bin/asadmin",
+                "--user", "admin",
+                "--passwordfile", "/tmp/pw.txt",
+                "create-file-user",
+                "--groups", "user",
+                "alice")
+            println "asadmin create-file-user stdout: ${userResult.stdout}"
+            if (userResult.stderr) {
+                println "asadmin create-file-user stderr: ${userResult.stderr}"
+            }
+            if (userResult.exitCode != 0) {
+                throw new RuntimeException(
+                    "asadmin create-file-user failed (exit ${userResult.exitCode}): ${userResult.stdout} / ${userResult.stderr}")
+            }
+
             // Now deploy the WAR at the root context
             container.copyFileToContainer(
                 MountableFile.forHostPath(war.absolutePath), "/tmp/ROOT.war")

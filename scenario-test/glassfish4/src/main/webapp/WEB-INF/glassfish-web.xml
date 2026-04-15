@@ -14,7 +14,11 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<jboss-web>
-    <context-root>/</context-root>
-    <security-domain>other</security-domain>
-</jboss-web>
+<!DOCTYPE glassfish-web-app PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.1 Servlet 3.0//EN"
+        "http://glassfish.org/dtds/glassfish-web-app_3_0-1.dtd">
+<glassfish-web-app>
+    <security-role-mapping>
+        <role-name>user</role-name>
+        <group-name>user</group-name>
+    </security-role-mapping>
+</glassfish-web-app>

@@ -19,8 +19,10 @@ package io.jdev.miniprofiler.scenariotest
 import io.jdev.miniprofiler.integtest.TestedServer
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
+import org.testcontainers.images.builder.Transferable
 import org.testcontainers.utility.MountableFile
 
+import java.security.MessageDigest
 import java.time.Duration
 
 class DockerWildfly27Server implements TestedServer {
@@ -37,8 +39,21 @@ class DockerWildfly27Server implements TestedServer {
         // the jakarta.* namespace. It ships with Hibernate 6. The WAR is dropped
         // into the deployments directory and picked up by WildFly's hot-deploy
         // scanner on startup. We wait for the "Deployed ROOT.war" log line.
+        //
+        // Provision a test user in the default ApplicationRealm (still backed by
+        // application-users.properties under Elytron) so the BASIC-auth-protected
+        // endpoint is reachable as soon as the WAR deploys.
+        String userHash = md5Hex("alice:ApplicationRealm:secret")
         container = new GenericContainer<>("quay.io/wildfly/wildfly:27.0.1.Final-jdk17")
             .withExposedPorts(8080)
+            .withCopyToContainer(
+                Transferable.of("alice=" + userHash + "\n"),
+                "/opt/jboss/wildfly/standalone/configuration/application-users.properties"
+            )
+            .withCopyToContainer(
+                Transferable.of("alice=user\n"),
+                "/opt/jboss/wildfly/standalone/configuration/application-roles.properties"
+            )
             .withCopyFileToContainer(
                 MountableFile.forHostPath(war.absolutePath),
                 "/opt/jboss/wildfly/standalone/deployments/ROOT.war"
@@ -53,6 +68,14 @@ class DockerWildfly27Server implements TestedServer {
         baseUrl = "http://" + container.host + ":" + container.getMappedPort(8080) + "/"
 
         System.setProperty("scenarioTest.baseUrl", baseUrl)
+    }
+
+    private static String md5Hex(String input) {
+        StringBuilder sb = new StringBuilder()
+        for (byte b : MessageDigest.getInstance("MD5").digest(input.bytes)) {
+            sb.append(String.format("%02x", b))
+        }
+        return sb.toString()
     }
 
     @Override
