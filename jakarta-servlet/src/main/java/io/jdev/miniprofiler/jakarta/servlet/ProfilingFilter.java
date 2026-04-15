@@ -120,16 +120,21 @@ public class ProfilingFilter implements Filter {
                     // ignore, just generate it then
                 }
             }
-            Profiler profiler = startProfiling(id, request);
+            ServletRequestHolder.set(request);
             try {
-                // add header, this is mostly for ajax
-                id = profiler.getId();
-                if (id != null) {
-                    response.addHeader("X-MiniProfiler-Ids", "[\"" + id.toString() + "\"]");
+                Profiler profiler = startProfiling(id, request);
+                try {
+                    // add header, this is mostly for ajax
+                    id = profiler.getId();
+                    if (id != null) {
+                        response.addHeader("X-MiniProfiler-Ids", "[\"" + id.toString() + "\"]");
+                    }
+                    filterChain.doFilter(servletRequest, servletResponse);
+                } finally {
+                    profiler.stop();
                 }
-                filterChain.doFilter(servletRequest, servletResponse);
             } finally {
-                profiler.stop();
+                ServletRequestHolder.clear();
             }
         }
     }

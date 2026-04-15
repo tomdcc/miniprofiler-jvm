@@ -27,6 +27,7 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.mock.web.MockFilterConfig
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
@@ -35,6 +36,7 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 import java.nio.charset.StandardCharsets
+import java.security.Principal
 
 class ProfilingFilterSpec extends Specification {
 
@@ -276,6 +278,50 @@ class ProfilingFilterSpec extends Specification {
         json*.Id.contains(p2.id.toString())
         json*.Id.contains(p3.id.toString())
         !json*.Id.contains(p1.id.toString())
+    }
+
+    void "binds the request to ServletRequestHolder during chain invocation and clears it afterwards"() {
+        given: 'request and a chain that captures the bound request'
+        request.requestURI = '/foo'
+        request.userPrincipal = { 'alice' } as Principal
+        HttpServletRequest holderDuringChain = null
+        def captured = new FilterChain() {
+            @Override
+            void doFilter(ServletRequest req, ServletResponse resp) throws IOException, ServletException {
+                holderDuringChain = ServletRequestHolder.current()
+                profilerProvider.current().step('MockFilterChain').close()
+            }
+        }
+
+        when: 'invoked'
+        filter.doFilter(request, response, captured)
+
+        then: 'holder pointed at the request during the chain'
+        holderDuringChain.is(request)
+
+        and: 'holder is cleared once the filter returns'
+        ServletRequestHolder.current() == null
+
+        and: 'captured user is recorded on the profile'
+        storage.profiler.user == 'alice'
+    }
+
+    void "clears ServletRequestHolder even when the chain throws"() {
+        given:
+        request.requestURI = '/boom'
+        def boomChain = new FilterChain() {
+            @Override
+            void doFilter(ServletRequest req, ServletResponse resp) throws IOException, ServletException {
+                throw new ServletException('boom')
+            }
+        }
+
+        when:
+        filter.doFilter(request, response, boomChain)
+
+        then:
+        thrown(ServletException)
+        ServletRequestHolder.current() == null
     }
 
     void "serves standalone results"() {
