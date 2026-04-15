@@ -21,7 +21,6 @@ import com.sun.net.httpserver.HttpServer;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.internal.ProfilerImpl;
 import io.jdev.miniprofiler.storage.Storage;
-import io.jdev.miniprofiler.util.ResourceHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

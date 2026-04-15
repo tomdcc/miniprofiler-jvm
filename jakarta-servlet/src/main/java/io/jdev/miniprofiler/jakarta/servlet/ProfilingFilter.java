@@ -25,7 +25,7 @@ import io.jdev.miniprofiler.internal.ProfilerImpl;
 import io.jdev.miniprofiler.server.IdParser;
 import io.jdev.miniprofiler.sql.DriverUtil;
 import io.jdev.miniprofiler.storage.Storage;
-import io.jdev.miniprofiler.util.ResourceHelper;
+import io.jdev.miniprofiler.server.ResourceHelper;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;

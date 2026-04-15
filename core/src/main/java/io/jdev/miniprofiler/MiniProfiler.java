@@ -18,7 +18,7 @@ package io.jdev.miniprofiler;
 
 import io.jdev.miniprofiler.internal.NullProfiler;
 import io.jdev.miniprofiler.storage.Storage;
-import io.jdev.miniprofiler.util.ResourceHelper;
+import io.jdev.miniprofiler.server.ResourceHelper;
 
 import java.io.IOException;
 import java.util.Optional;
