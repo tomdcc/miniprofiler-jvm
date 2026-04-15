@@ -1,4 +1,5 @@
 import java.awt.Desktop.getDesktop
+import org.gradle.jvm.toolchain.JavaToolchainService
 
 /*
  * Copyright 2015 the original author or authors.
@@ -19,6 +20,7 @@ import java.awt.Desktop.getDesktop
 plugins {
     id("build.base")
     id("build.publish")
+    `java-base`
     alias(libs.plugins.asciidoctor)
 }
 
@@ -40,6 +42,10 @@ val api by tasks.registering(Javadoc::class) {
 
     destinationDir = layout.buildDirectory.dir("api").get().asFile
 
+    javadocTool = project.extensions.getByType<JavaToolchainService>().javadocToolFor {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+
     val javadocTasks = rootProject.subprojects
         .filter { it.plugins.hasPlugin("java") && it.plugins.hasPlugin("build.publish") }
         .map { it.tasks.named<Javadoc>("javadoc").get() }
@@ -49,6 +55,7 @@ val api by tasks.registering(Javadoc::class) {
 
     (options as StandardJavadocDocletOptions).run {
         isUse = true
+        addStringOption("Xdoclint:all,-missing/private")
         links("http://docs.oracle.com/javase/8/docs/api/")
         windowTitle = "MiniProfiler JVM API ($project.version)"
         docTitle =  "MiniProfiler JVM API ($project.version)"
