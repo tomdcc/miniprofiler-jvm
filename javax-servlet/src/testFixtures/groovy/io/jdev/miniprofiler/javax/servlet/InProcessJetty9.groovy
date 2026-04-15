@@ -20,11 +20,18 @@ import io.jdev.miniprofiler.DefaultProfilerProvider
 import io.jdev.miniprofiler.ProfilerProvider
 import io.jdev.miniprofiler.ScriptTagWriter
 import io.jdev.miniprofiler.integtest.InProcessTestedServer
+import org.eclipse.jetty.security.ConstraintMapping
+import org.eclipse.jetty.security.ConstraintSecurityHandler
+import org.eclipse.jetty.security.HashLoginService
+import org.eclipse.jetty.security.UserStore
+import org.eclipse.jetty.security.authentication.BasicAuthenticator
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.servlet.DefaultServlet
 import org.eclipse.jetty.servlet.FilterHolder
 import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHolder
+import org.eclipse.jetty.util.security.Constraint
+import org.eclipse.jetty.util.security.Password
 
 import javax.servlet.DispatcherType
 import javax.servlet.http.HttpServlet
@@ -47,6 +54,7 @@ class InProcessJetty9 implements InProcessTestedServer {
     InProcessJetty9() {
         server = new Server(0)
         new ServletContextHandler(server, '/', false, false).tap {
+            securityHandler = buildSecurityHandler()
             addServlet(new ServletHolder(new HttpServlet() {
                 @Override
                 protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -76,6 +84,15 @@ class InProcessJetty9 implements InProcessTestedServer {
                     resp.writer.write('{"status":"ok"}')
                 }
             }), '/ajax-endpoint')
+            addServlet(new ServletHolder(new HttpServlet() {
+                @Override
+                protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+                        throws IOException {
+                    profilerProvider.current().step('secure step').close()
+                    resp.setContentType('text/plain')
+                    resp.writer.write("hello ${req.remoteUser}")
+                }
+            }), '/secure/hello')
             addServlet(DefaultServlet, '/')
             addFilter(
                 new FilterHolder(new ProfilingFilter(profilerProvider: profilerProvider)),
@@ -84,6 +101,29 @@ class InProcessJetty9 implements InProcessTestedServer {
             )
         }
         server.start()
+    }
+
+    private static ConstraintSecurityHandler buildSecurityHandler() {
+        def loginService = new HashLoginService('miniprofiler-test')
+        def userStore = new UserStore()
+        userStore.addUser('alice', new Password('secret'), ['user'] as String[])
+        loginService.userStore = userStore
+
+        def constraint = new Constraint()
+        constraint.name = Constraint.__BASIC_AUTH
+        constraint.roles = ['user'] as String[]
+        constraint.authenticate = true
+
+        def mapping = new ConstraintMapping()
+        mapping.constraint = constraint
+        mapping.pathSpec = '/secure/*'
+
+        new ConstraintSecurityHandler().tap {
+            authenticator = new BasicAuthenticator()
+            realmName = 'miniprofiler-test'
+            it.loginService = loginService
+            constraintMappings = [mapping]
+        }
     }
 
     @Override

@@ -23,13 +23,20 @@ import java.util.Optional;
 import java.util.ServiceLoader;
 
 /**
- * SPI for locating the current {@link UserProvider} implementation. Implementations are
- * discovered via {@link ServiceLoader} and consulted in ascending {@link #getOrder()}
- * order. The first implementation that returns a non-empty {@link Optional} wins.
+ * SPI for locating {@link UserProvider} implementations. Implementations are discovered
+ * via {@link ServiceLoader} and consulted in ascending {@link #getOrder()} order.
+ *
+ * <p>Unlike the other locator SPIs in miniprofiler (which resolve a single canonical
+ * owner of state), {@link #findUserProvider()} <em>combines</em> the providers returned
+ * by every locator into a chain. At lookup time each provider is asked for the current
+ * user in order, and the first non-null, non-empty answer wins. This lets request-bound
+ * providers (e.g. a servlet provider that needs an in-flight {@code HttpServletRequest})
+ * cleanly fall through to providers with broader applicability (e.g. a CDI-based one) on
+ * threads where the more specific context is missing.</p>
  *
  * <p>An {@link UnknownUserProviderLocator} is registered by default in
  * {@code miniprofiler-core} at order {@link #UNKNOWN_USER_PROVIDER_LOCATOR_ORDER}
- * as a fallback.</p>
+ * as the terminal fallback in the chain.</p>
  */
 public interface UserProviderLocator {
 
@@ -55,11 +62,13 @@ public interface UserProviderLocator {
 
     /**
      * Discovers all registered {@link UserProviderLocator} implementations via
-     * {@link ServiceLoader}, sorts them by {@link #getOrder()}, and returns the
-     * result of the first one that returns a non-empty {@link Optional}.
+     * {@link ServiceLoader}, sorts them by {@link #getOrder()}, collects every
+     * provider returned by a non-empty {@link #locate()}, and wraps them in a
+     * chain that returns the first non-null, non-empty result from
+     * {@link UserProvider#getUser()}.
      *
-     * <p>Falls back to an {@link UnknownUserProvider} if no locator succeeds,
-     * though in practice the {@link UnknownUserProviderLocator} always succeeds.</p>
+     * <p>{@link UnknownUserProviderLocator} provides the terminal {@code null}
+     * answer at the end of the chain.</p>
      *
      * @return the located {@link UserProvider}
      */
@@ -69,12 +78,13 @@ public interface UserProviderLocator {
             locators.add(locator);
         }
         locators.sort(Comparator.comparingInt(UserProviderLocator::getOrder));
+        List<UserProvider> providers = new ArrayList<>();
         for (UserProviderLocator locator : locators) {
-            Optional<UserProvider> provider = locator.locate();
-            if (provider.isPresent()) {
-                return provider.get();
-            }
+            locator.locate().ifPresent(providers::add);
         }
-        throw new IllegalStateException("No UserProviderLocator returned a provider. Ensure miniprofiler-core is on the classpath.");
+        if (providers.isEmpty()) {
+            throw new IllegalStateException("No UserProviderLocator returned a provider. Ensure miniprofiler-core is on the classpath.");
+        }
+        return new CompositeUserProvider(providers);
     }
 }

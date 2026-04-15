@@ -1,0 +1,58 @@
+/*
+ * Copyright 2026 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.jdev.miniprofiler.javax.ee
+
+import spock.lang.AutoCleanup
+import spock.lang.Shared
+import spock.lang.Specification
+
+import javax.enterprise.context.ApplicationScoped
+import javax.enterprise.inject.Produces
+import javax.enterprise.inject.se.SeContainer
+import javax.enterprise.inject.se.SeContainerInitializer
+import java.security.Principal
+
+class CdiPrincipalUserProviderIntegrationSpec extends Specification {
+
+    @Shared
+    @AutoCleanup('close')
+    SeContainer container
+
+    void setupSpec() {
+        container = SeContainerInitializer.newInstance()
+            .addBeanClasses(TestPrincipalProducer)
+            .initialize()
+    }
+
+    void "provider returns the principal name resolved from CDI"() {
+        expect:
+        new CdiPrincipalUserProvider().user == 'alice'
+    }
+
+    void "locator returns a provider in a CDI environment"() {
+        expect:
+        new CdiPrincipalUserProviderLocator().locate().present
+    }
+
+    @ApplicationScoped
+    static class TestPrincipalProducer {
+        @Produces
+        Principal currentPrincipal() {
+            return { 'alice' } as Principal
+        }
+    }
+}

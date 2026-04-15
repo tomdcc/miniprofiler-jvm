@@ -47,43 +47,10 @@ class UserProviderLocatorSpec extends Specification {
         provider != null
     }
 
-    void "findUserProvider returns provider from lowest-order locator"() {
-        given: 'a low-order locator returning a specific provider'
-        def expectedProvider = Mock(UserProvider)
-        def lowOrderLocator = new UserProviderLocator() {
-            int getOrder() { return 1 }
-            Optional<UserProvider> locate() { Optional.of(expectedProvider) }
-        }
-        def highOrderLocator = new UserProviderLocator() {
-            int getOrder() { return 99 }
-            Optional<UserProvider> locate() { throw new AssertionError("should not be called") }
-        }
-
-        when:
-        def locators = [highOrderLocator, lowOrderLocator].sort { it.order }
-        def result = locators.findResult { it.locate().orElse(null) }
-
-        then:
-        result == expectedProvider
-    }
-
-    void "findUserProvider skips locators returning empty optional"() {
-        given:
-        def expectedProvider = Mock(UserProvider)
-        def emptyLocator = new UserProviderLocator() {
-            int getOrder() { return 1 }
-            Optional<UserProvider> locate() { Optional.empty() }
-        }
-        def successLocator = new UserProviderLocator() {
-            int getOrder() { return 2 }
-            Optional<UserProvider> locate() { Optional.of(expectedProvider) }
-        }
-
-        when:
-        def locators = [emptyLocator, successLocator].sort { it.order }
-        def result = locators.findResult { it.locate().orElse(null) }
-
-        then:
-        result == expectedProvider
+    void "findUserProvider returns the unknown provider when only the fallback is registered"() {
+        // The bundled META-INF/services registration only contains UnknownUserProviderLocator,
+        // so the resolved chain reports no user.
+        expect:
+        UserProviderLocator.findUserProvider().user == null
     }
 }

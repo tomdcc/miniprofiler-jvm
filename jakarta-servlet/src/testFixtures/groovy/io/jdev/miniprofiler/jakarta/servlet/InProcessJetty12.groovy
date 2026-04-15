@@ -26,7 +26,14 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.eclipse.jetty.ee10.servlet.DefaultServlet
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler
+import org.eclipse.jetty.ee10.servlet.security.ConstraintMapping
+import org.eclipse.jetty.ee10.servlet.security.ConstraintSecurityHandler
+import org.eclipse.jetty.security.Constraint
+import org.eclipse.jetty.security.HashLoginService
+import org.eclipse.jetty.security.UserStore
+import org.eclipse.jetty.security.authentication.BasicAuthenticator
 import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.util.security.Password
 
 /**
  * An {@link InProcessTestedServer} running an embedded Jetty 12 EE10 server with a
@@ -43,6 +50,7 @@ class InProcessJetty12 implements InProcessTestedServer {
     InProcessJetty12() {
         server = new Server(0).tap {
             server.handler = new ServletContextHandler('/').tap {
+                securityHandler = buildSecurityHandler()
                 addServlet(new HttpServlet() {
                     @Override
                     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -72,6 +80,15 @@ class InProcessJetty12 implements InProcessTestedServer {
                         resp.writer.write('{"status":"ok"}')
                     }
                 }, '/ajax-endpoint')
+                addServlet(new HttpServlet() {
+                    @Override
+                    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+                            throws IOException {
+                        profilerProvider.current().step('secure step').close()
+                        resp.setContentType('text/plain')
+                        resp.writer.write("hello ${req.remoteUser}")
+                    }
+                }, '/secure/hello')
                 addServlet(DefaultServlet, '/')
                 addFilter(
                     new ProfilingFilter(profilerProvider: profilerProvider),
@@ -80,6 +97,26 @@ class InProcessJetty12 implements InProcessTestedServer {
                 )
             }
             start()
+        }
+    }
+
+    private static ConstraintSecurityHandler buildSecurityHandler() {
+        def loginService = new HashLoginService('miniprofiler-test')
+        def userStore = new UserStore()
+        userStore.addUser('alice', new Password('secret'), ['user'] as String[])
+        loginService.userStore = userStore
+
+        def constraint = Constraint.from('user', 'user')
+
+        def mapping = new ConstraintMapping()
+        mapping.constraint = constraint
+        mapping.pathSpec = '/secure/*'
+
+        new ConstraintSecurityHandler().tap {
+            authenticator = new BasicAuthenticator()
+            realmName = 'miniprofiler-test'
+            it.loginService = loginService
+            constraintMappings = [mapping]
         }
     }
 
