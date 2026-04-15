@@ -23,8 +23,6 @@
  */
 package io.jdev.miniprofiler.sql.hibernate;
 
-import io.jdev.miniprofiler.sql.SqlFormatter;
-
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -36,7 +34,7 @@ import java.util.StringTokenizer;
  * @author Gavin King
  * @author Steve Ebersole
  */
-public class BasicFormatterImpl implements SqlFormatter {
+public class BasicFormatterImpl {
 	private static final String WHITESPACE = " \n\r\f\t";
 
 	private static final Set<String> BEGIN_CLAUSES = new HashSet<String>();
@@ -87,7 +85,12 @@ public class BasicFormatterImpl implements SqlFormatter {
 	private static final String INDENT_STRING = "    ";
 	private static final String INITIAL = "\n    ";
 
-	@Override
+	/**
+	 * Returns the formatted version of the given SQL string.
+	 *
+	 * @param source the SQL string to format
+	 * @return the formatted SQL string
+	 */
 	public String format(String source) {
 		return new FormatProcess( source ).perform();
 	}

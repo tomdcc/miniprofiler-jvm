@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,26 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.sql;
+package io.jdev.miniprofiler.storage;
 
-/** Formats SQL strings for display in the MiniProfiler UI. */
-public interface SqlFormatter {
-    /**
-     * Returns the formatted version of the given SQL string.
-     *
-     * @param sql the SQL string to format
-     * @return the formatted SQL string
-     */
-    String format(String sql);
+import java.util.Optional;
+
+/**
+ * Fallback {@link StorageLocator} that always returns a new {@link MapStorage}.
+ */
+public class MapStorageLocator implements StorageLocator {
+
+    /** Creates a new map storage locator. */
+    public MapStorageLocator() {
+    }
+
+    @Override
+    public int getOrder() {
+        return MAP_STORAGE_LOCATOR_ORDER;
+    }
+
+    @Override
+    public Optional<Storage> locate() {
+        return Optional.of(new MapStorage());
+    }
 }

@@ -16,15 +16,20 @@
 
 package io.jdev.miniprofiler;
 
+import io.jdev.miniprofiler.format.CommandFormatter;
+import io.jdev.miniprofiler.format.CommandFormatterLocator;
 import io.jdev.miniprofiler.internal.NullProfiler;
 import io.jdev.miniprofiler.internal.ProfilerImpl;
-import io.jdev.miniprofiler.storage.MapStorage;
 import io.jdev.miniprofiler.storage.Storage;
+import io.jdev.miniprofiler.storage.StorageLocator;
 import io.jdev.miniprofiler.user.UserProvider;
+import io.jdev.miniprofiler.user.UserProviderLocator;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Support class for profiler providers. This provides most functionality
@@ -36,10 +41,10 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
     /** Creates a new instance. */
     protected BaseProfilerProvider() {}
 
-    /** Storage used to persist completed profiler sessions. */
-    protected Storage storage = new MapStorage();
+    private volatile Storage storage;
+    private volatile Map<String, CommandFormatter> commandFormatters = new ConcurrentHashMap<>();
+    private volatile UserProvider userProvider;
     private String machineName = getDefaultHostname();
-    private UserProvider userProvider;
     private ProfilerUiConfig uiConfig;
 
     /**
@@ -146,8 +151,9 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
     public Profiler start(UUID id, String rootName, ProfileLevel level) {
         ProfilerImpl profiler = new ProfilerImpl(id, rootName, rootName, level, this);
         profiler.setMachineName(machineName);
-        if (userProvider != null) {
-            profiler.setUser(userProvider.getUser());
+        String user = getUserProvider().getUser();
+        if (user != null) {
+            profiler.setUser(user);
         }
         profilerCreated(profiler);
         return profiler;
@@ -177,7 +183,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
     @Override
     public void stopSession(ProfilerImpl profilingSession, boolean discardResults) {
         profilingSession.stop();
-        String currentUser = userProvider != null ? userProvider.getUser() : null;
+        String currentUser = getUserProvider().getUser();
         if (currentUser != null && profilingSession.getUser() == null) {
             // user wasn't available at profile start, but is now
             profilingSession.setUser(currentUser);
@@ -194,7 +200,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
      * @param currentProfiler the profiler session to save
      */
     protected void saveProfiler(ProfilerImpl currentProfiler) {
-        storage.save(currentProfiler);
+        getStorage().save(currentProfiler);
     }
 
     /**
@@ -202,11 +208,10 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
      * <p>The profiler storage is where profiler sessions are stored
      * to be retrieved later, either by an AJAX call immediately
      * after a page render, or for later debugging.</p>
-     * <p> By default, the storage property is set to an in-memory
-     * {@link MapStorage}.</p>
      *
      * @param storage the storage option to use
      * @see Storage
+     * @see #getStorage()
      */
     @Override
     public void setStorage(Storage storage) {
@@ -216,11 +221,45 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
     /**
      * Return the current storage implementation.
      *
+     * <p>If no storage has been explicitly set via {@link #setStorage(Storage)},
+     * the first call will use {@link StorageLocator#findStorage()} to discover
+     * a storage implementation via the {@link java.util.ServiceLoader}. The default
+     * is an in-memory {@link io.jdev.miniprofiler.storage.MapStorage MapStorage}.</p>
+     *
      * @return current storage
      */
     @Override
     public Storage getStorage() {
+        if (storage == null) {
+            synchronized (this) {
+                if (storage == null) {
+                    storage = StorageLocator.findStorage();
+                }
+            }
+        }
         return storage;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>If no formatter has been explicitly set for the given type,
+     * one is discovered via {@link CommandFormatterLocator#findFormatter(String)}
+     * and cached for future lookups.</p>
+     */
+    @Override
+    public CommandFormatter getCommandFormatter(String type) {
+        return commandFormatters.computeIfAbsent(type, CommandFormatterLocator::findFormatter);
+    }
+
+    @Override
+    public void setCommandFormatters(Map<String, CommandFormatter> formatters) {
+        this.commandFormatters = new ConcurrentHashMap<>(formatters);
+    }
+
+    @Override
+    public void setCommandFormatter(String type, CommandFormatter formatter) {
+        commandFormatters.put(type, formatter);
     }
 
     /**
@@ -243,11 +282,27 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
     }
 
     /**
-     * Sets the user provider for this profiler provider.
+     * {@inheritDoc}
      *
-     * @param userProvider The user provider to use.
-     * @see UserProvider
+     * <p>If no user provider has been explicitly set via {@link #setUserProvider(UserProvider)},
+     * the first call will use {@link UserProviderLocator#findUserProvider()} to discover
+     * a user provider implementation via the {@link java.util.ServiceLoader}. The default
+     * is an {@link io.jdev.miniprofiler.user.UnknownUserProvider UnknownUserProvider}
+     * which always returns {@code null}.</p>
      */
+    @Override
+    public UserProvider getUserProvider() {
+        if (userProvider == null) {
+            synchronized (this) {
+                if (userProvider == null) {
+                    userProvider = UserProviderLocator.findUserProvider();
+                }
+            }
+        }
+        return userProvider;
+    }
+
+    @Override
     public void setUserProvider(UserProvider userProvider) {
         this.userProvider = userProvider;
     }

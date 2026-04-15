@@ -58,6 +58,10 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
     private boolean stopped;
     private final ProfilerProvider profilerProvider;
 
+    ProfilerProvider getProfilerProvider() {
+        return profilerProvider;
+    }
+
     /**
      * Construct a new profiling session.
      *

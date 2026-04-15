@@ -1,0 +1,2 @@
+io.jdev.miniprofiler.sql.SqlCommandFormatterLocator
+io.jdev.miniprofiler.format.NoopCommandFormatterLocator

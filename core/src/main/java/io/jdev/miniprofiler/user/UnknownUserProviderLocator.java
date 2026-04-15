@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,27 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.sql;
+package io.jdev.miniprofiler.user;
 
-/** A no-op {@link SqlFormatter} that returns the SQL unchanged. */
-public class NullFormatter implements SqlFormatter {
+import java.util.Optional;
+
+/**
+ * Fallback {@link UserProviderLocator} that always returns an
+ * {@link UnknownUserProvider}.
+ */
+public class UnknownUserProviderLocator implements UserProviderLocator {
 
     /** Creates a new instance. */
-    public NullFormatter() {}
+    public UnknownUserProviderLocator() {
+    }
 
     @Override
-    public String format(String sql) {
-        return sql;
+    public int getOrder() {
+        return UNKNOWN_USER_PROVIDER_LOCATOR_ORDER;
+    }
+
+    @Override
+    public Optional<UserProvider> locate() {
+        return Optional.of(UnknownUserProvider.INSTANCE);
     }
 }
