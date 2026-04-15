@@ -20,7 +20,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
+/** Internal helper for reading configuration properties. */
 public class ConfigHelper {
+
+    /** Use the static methods on this class. */
+    private ConfigHelper() {}
 
     private static final Set<String> NULL_VALUES = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
         "none",
@@ -28,26 +32,68 @@ public class ConfigHelper {
         ""
     )));
 
+    /**
+     * Returns the String property value, or {@code defaultValue} if not set.
+     *
+     * @param props the ordered list of property sources to search
+     * @param key the property key
+     * @param defaultValue the value to return if the property is not found
+     * @return the property value, or {@code defaultValue}
+     */
     public static String getProperty(List<PropertiesWithPrefix> props, String key, String defaultValue) {
         Result r = getProperty(props, key);
         return r != null ? r.value : defaultValue;
     }
 
+    /**
+     * Returns the boolean property value, or {@code defaultValue} if not set.
+     *
+     * @param props the ordered list of property sources to search
+     * @param key the property key
+     * @param defaultValue the value to return if the property is not found
+     * @return the property value, or {@code defaultValue}
+     */
     public static boolean getProperty(List<PropertiesWithPrefix> props, String key, boolean defaultValue) {
         Result r = getProperty(props, key);
         return r != null ? Boolean.parseBoolean(r.value) : defaultValue;
     }
 
+    /**
+     * Returns the Integer property value, or {@code defaultValue} if not set.
+     *
+     * @param props the ordered list of property sources to search
+     * @param key the property key
+     * @param defaultValue the value to return if the property is not found
+     * @return the property value, or {@code defaultValue}
+     */
     public static Integer getProperty(List<PropertiesWithPrefix> props, String key, Integer defaultValue) {
         Result r = getProperty(props, key);
         return r != null ? (r.value == null ? null : Integer.valueOf(r.value)) : defaultValue;
     }
 
+    /**
+     * Returns the enum property value, or {@code defaultValue} if not set.
+     *
+     * @param <T> the enum type
+     * @param props the ordered list of property sources to search
+     * @param key the property key
+     * @param enumClass the enum class to convert the value to
+     * @param defaultValue the value to return if the property is not found
+     * @return the property value, or {@code defaultValue}
+     */
     public static <T extends Enum<T>> T getProperty(List<PropertiesWithPrefix> props, String key, Class<T> enumClass, T defaultValue) {
         Result r = getProperty(props, key);
         return r != null ? (r.value == null ? null : findEnum(enumClass, r.value)) : defaultValue;
     }
 
+    /**
+     * Finds the enum constant matching {@code value}, case-insensitively.
+     *
+     * @param <T> the enum type
+     * @param enumClass the enum class to search
+     * @param value the string to match
+     * @return the matching enum constant
+     */
     public static <T extends Enum<T>> T findEnum(Class<T> enumClass, String value) {
         try {
             return Enum.valueOf(enumClass, value);
@@ -79,16 +125,31 @@ public class ConfigHelper {
         return null;
     }
 
+    /** A {@link Properties} instance paired with a prefix to apply to all key lookups. */
     public static class PropertiesWithPrefix {
+        /** The underlying properties. */
         public final Properties props;
+        /** The key prefix applied to all lookups in this properties instance. */
         public final String prefix;
 
+        /**
+         * Creates a new instance.
+         *
+         * @param properties the underlying properties
+         * @param prefix the key prefix to apply to all lookups
+         */
         public PropertiesWithPrefix(Properties properties, String prefix) {
             this.props = properties;
             this.prefix = prefix;
         }
     }
 
+    /**
+     * Loads a properties file from the classpath, returning null if not found.
+     *
+     * @param resourceName the classpath resource name of the properties file
+     * @return the loaded properties, or null if the resource does not exist
+     */
     public static Properties loadPropertiesFile(String resourceName) {
         InputStream resourceStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName);
         if (resourceStream == null) {

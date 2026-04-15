@@ -37,18 +37,26 @@ public class MapStorage extends BaseStorage {
 
     private final Map<UUID, ProfilerImpl> cache;
 
+    /** Creates a new instance with the default maximum size of {@value DEFAULT_MAX_SIZE} entries. */
     public MapStorage() {
         this(DEFAULT_MAX_SIZE);
     }
 
+    /**
+     * Creates a new instance with the given maximum number of cached profiler sessions.
+     *
+     * @param maxSize the maximum number of profiler sessions to retain
+     */
     public MapStorage(int maxSize) {
         cache = Collections.synchronizedMap(new LRUMapCache(maxSize));
     }
 
+    @Override
     public void save(ProfilerImpl profiler) {
         cache.put(profiler.getId(), profiler);
     }
 
+    @Override
     public ProfilerImpl load(UUID id) {
         return cache.get(id);
     }
@@ -74,6 +82,7 @@ public class MapStorage extends BaseStorage {
             .collect(Collectors.toList());
     }
 
+    /** Removes all cached profiler sessions. */
     public void clear() {
         cache.clear();
     }

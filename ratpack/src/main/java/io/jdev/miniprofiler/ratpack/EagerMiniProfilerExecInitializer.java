@@ -25,10 +25,21 @@ import ratpack.exec.Execution;
  */
 public class EagerMiniProfilerExecInitializer extends MiniProfilerExecInitializer {
 
+    /**
+     * Creates a new initializer with the given provider and store option.
+     *
+     * @param provider the profiler provider
+     * @param defaultProfilerStoreOption the default store option
+     */
     public EagerMiniProfilerExecInitializer(ProfilerProvider provider, ProfilerStoreOption defaultProfilerStoreOption) {
         super(provider, defaultProfilerStoreOption);
     }
 
+    /**
+     * Creates a new initializer with the given provider, defaulting to storing results.
+     *
+     * @param provider the profiler provider
+     */
     public EagerMiniProfilerExecInitializer(ProfilerProvider provider) {
         super(provider);
     }

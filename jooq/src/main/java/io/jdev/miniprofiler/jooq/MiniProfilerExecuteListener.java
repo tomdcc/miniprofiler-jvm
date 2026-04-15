@@ -40,7 +40,9 @@ import static io.jdev.miniprofiler.jooq.MiniProfilerJooqUtil.renderInlined;
 @SuppressWarnings("WeakerAccess")
 public class MiniProfilerExecuteListener extends DefaultExecuteListener {
 
+    /** The profiler provider used to record SQL timings. */
     protected final ProfilerProvider provider;
+    /** The start time in milliseconds of the current SQL execution. */
     private long start;
 
     /**
@@ -51,11 +53,13 @@ public class MiniProfilerExecuteListener extends DefaultExecuteListener {
         this.provider = provider;
     }
 
+    /** Records the start time of the SQL execution. */
     @Override
     public void start(ExecuteContext ctx) {
         start = System.currentTimeMillis();
     }
 
+    /** Records the timing if a profiler is active and the context contains a SQL statement. */
     @Override
     public void end(ExecuteContext ctx) {
         if (provider.hasCurrent()) {
@@ -64,6 +68,12 @@ public class MiniProfilerExecuteListener extends DefaultExecuteListener {
         }
     }
 
+    /**
+     * Adds a timing if the context contains a renderable SQL statement. Override to customise filtering.
+     *
+     * @param ctx the jOOQ execute context
+     * @param duration the duration of the execution in milliseconds
+     */
     protected void maybeAddTiming(ExecuteContext ctx, long duration) {
         String query = renderInlined(ctx);
         if (query != null) {
@@ -71,6 +81,13 @@ public class MiniProfilerExecuteListener extends DefaultExecuteListener {
         }
     }
 
+    /**
+     * Records the given SQL query and duration in the current profiler session. Override to customise recording.
+     *
+     * @param ctx the jOOQ execute context
+     * @param query the SQL query string to record
+     * @param duration the duration of the execution in milliseconds
+     */
     @SuppressWarnings("unused")
     protected void addTiming(ExecuteContext ctx, String query, long duration) {
         provider.current().addCustomTiming("sql", "query", query, duration);

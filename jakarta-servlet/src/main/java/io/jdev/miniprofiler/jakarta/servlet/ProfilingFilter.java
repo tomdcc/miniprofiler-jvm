@@ -52,6 +52,9 @@ import java.util.UUID;
  */
 public class ProfilingFilter implements Filter {
 
+    /** Default constructor. */
+    public ProfilingFilter() {}
+
     private static final String DEFAULT_PROFILER_PATH = "/miniprofiler/";
     private static final String PROFILER_PATH_PARAM = "path";
     private static final String ALLOWED_ORIGIN_PARAM = "allowed-origin";

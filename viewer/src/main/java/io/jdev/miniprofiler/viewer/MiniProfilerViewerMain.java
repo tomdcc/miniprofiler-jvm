@@ -19,8 +19,19 @@ package io.jdev.miniprofiler.viewer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/** Entry point for the standalone MiniProfiler viewer application. */
 public final class MiniProfilerViewerMain {
 
+    private MiniProfilerViewerMain() {
+    }
+
+    /**
+     * Starts the viewer server for the profile file given as the first argument
+     * or via the {@code miniprofiler.viewer.file} system property.
+     *
+     * @param args command-line arguments; the first element, if present, is the path to the profile file
+     * @throws Exception if the server fails to start or the file cannot be read
+     */
     public static void main(String... args) throws Exception {
         String filePath = args.length > 0 ? args[0] : System.getProperty("miniprofiler.viewer.file");
         if (filePath == null) {

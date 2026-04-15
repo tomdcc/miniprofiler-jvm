@@ -111,6 +111,12 @@ public class MiniProfilerExecInitializer implements ExecInitializer {
         }
     }
 
+    /**
+     * Returns the current profiler for the given execution, if any.
+     *
+     * @param execution the execution to look up the profiler for
+     * @return the current profiler, or empty if none
+     */
     protected Optional<Profiler> maybeCurrentProfiler(Execution execution) {
         if (provider instanceof RatpackContextProfilerProvider) {
             return ((RatpackContextProfilerProvider) provider).lookupCurrentProfiler(execution);
@@ -119,10 +125,21 @@ public class MiniProfilerExecInitializer implements ExecInitializer {
         }
     }
 
+    /**
+     * Called when execution completes; stops the profiler if one is present.
+     *
+     * @param execution the completed execution
+     */
     protected void executionComplete(Execution execution) {
         maybeCurrentProfiler(execution).ifPresent(profiler -> stopProfiler(execution, profiler));
     }
 
+    /**
+     * Stops the given profiler, discarding or storing results based on the execution's store option.
+     *
+     * @param execution the execution context
+     * @param profiler the profiler to stop
+     */
     protected void stopProfiler(Execution execution, Profiler profiler) {
         ProfilerStoreOption store = execution.maybeGet(ProfilerStoreOption.class).orElse(defaultProfilerStoreOption);
         profiler.stop(store == ProfilerStoreOption.DISCARD_RESULTS);

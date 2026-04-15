@@ -26,6 +26,10 @@ import ratpack.http.Response;
  */
 public class MiniProfilerResourceHandler implements Handler {
 
+    /** Creates a new resource handler. */
+    public MiniProfilerResourceHandler() {
+    }
+
     private final ResourceHelper resourceHelper = new ResourceHelper();
 
     /**

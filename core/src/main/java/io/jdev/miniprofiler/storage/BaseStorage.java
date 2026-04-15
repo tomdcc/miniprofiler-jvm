@@ -27,9 +27,13 @@ import java.util.UUID;
  */
 public abstract class BaseStorage implements Storage {
 
+    /** Creates a new instance. */
+    protected BaseStorage() {}
+
     /**
      * Default implementation. Returns no results
      */
+    @Override
     public Collection<UUID> list(int maxResults, Date start, Date finish, ListResultsOrder orderBy) {
         return Collections.emptyList();
     }
@@ -37,18 +41,21 @@ public abstract class BaseStorage implements Storage {
     /**
      * Default implementation. Does nothing.
      */
+    @Override
     public void setUnviewed(String user, UUID id) {
     }
 
     /**
      * Default implementation. Does nothing.
      */
+    @Override
     public void setViewed(String user, UUID id) {
     }
 
     /**
      * Default implementation. Returns no results
      */
+    @Override
     public Collection<UUID> getUnviewedIds(String user) {
         return Collections.emptyList();
     }

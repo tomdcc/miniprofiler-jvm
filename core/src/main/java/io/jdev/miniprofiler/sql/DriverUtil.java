@@ -21,12 +21,23 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
 
+/** Utility class for managing JDBC driver registration. */
 public class DriverUtil {
 
+    /** Use the static methods on this class. */
+    private DriverUtil() {}
+
+    /** Deregisters the MiniProfiler SQL spy driver from the current classloader. */
     public static void deregisterDriverSpy() {
         deregisterDriverFromClassloader("io.jdev.miniprofiler.sql.log4jdbc.DriverSpy", Thread.currentThread().getContextClassLoader());
     }
 
+    /**
+     * Deregisters the named JDBC driver from the given classloader.
+     *
+     * @param driverClassName the fully-qualified class name of the driver to deregister
+     * @param cl the classloader the driver was loaded from
+     */
     public static void deregisterDriverFromClassloader(String driverClassName, ClassLoader cl) {
         // pass a class name through rather than a class so that we don't end up loading it accidentally
 

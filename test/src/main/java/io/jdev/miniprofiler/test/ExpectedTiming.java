@@ -40,10 +40,20 @@ public final class ExpectedTiming {
         this.customTimings = Collections.unmodifiableMap(customTimings);
     }
 
+    /**
+     * Returns the expected timing step name.
+     *
+     * @return the expected name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns the minimum expected duration in milliseconds.
+     *
+     * @return the minimum duration in milliseconds
+     */
     public long getMinDurationMs() {
         return minDurationMs;
     }

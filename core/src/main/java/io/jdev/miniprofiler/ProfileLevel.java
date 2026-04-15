@@ -22,5 +22,8 @@ package io.jdev.miniprofiler;
  * @see Profiler#step(String, ProfileLevel)
  */
 public enum ProfileLevel {
-    Info, Verbose
+    /** Normal level of profiling detail. */
+    Info,
+    /** Verbose level of profiling detail. */
+    Verbose
 }

@@ -276,6 +276,15 @@ public class MiniProfilerServer implements AutoCloseable {
         return baos.toByteArray();
     }
 
+    /**
+     * Sends an HTTP response with the given status, content type, and body.
+     *
+     * @param exchange the HTTP exchange to respond to
+     * @param status the HTTP status code
+     * @param contentType the value of the {@code Content-Type} response header
+     * @param body the response body bytes
+     * @throws IOException if writing the response fails
+     */
     public static void sendResponse(HttpExchange exchange, int status, String contentType, byte[] body)
             throws IOException {
         exchange.getResponseHeaders().set("Content-Type", contentType);
@@ -285,6 +294,13 @@ public class MiniProfilerServer implements AutoCloseable {
         }
     }
 
+    /**
+     * Sends an HTTP error response with the given status code and no body.
+     *
+     * @param exchange the HTTP exchange to respond to
+     * @param status the HTTP status code
+     * @throws IOException if writing the response fails
+     */
     public static void sendError(HttpExchange exchange, int status) throws IOException {
         exchange.sendResponseHeaders(status, 0);
         exchange.getResponseBody().close();

@@ -29,6 +29,9 @@ import ratpack.handling.Handler;
  */
 public class StoreMiniProfilerHandler implements Handler {
 
+    /** Default constructor. */
+    public StoreMiniProfilerHandler() {}
+
     @Override
     public void handle(Context ctx) throws Exception {
         Execution.current().add(ProfilerStoreOption.class, ProfilerStoreOption.STORE_RESULTS);

@@ -22,6 +22,10 @@ package io.jdev.miniprofiler;
  */
 public class StaticProfilerProvider extends DelegatingProfilerProvider {
 
+    /** Creates a new static profiler provider. */
+    public StaticProfilerProvider() {
+    }
+
     @Override
     protected ProfilerProvider getDelegate() {
         return MiniProfiler.getOrCreateProfilerProvider();

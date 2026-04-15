@@ -87,6 +87,7 @@ public class BasicFormatterImpl implements SqlFormatter {
 	private static final String INDENT_STRING = "    ";
 	private static final String INITIAL = "\n    ";
 
+	@Override
 	public String format(String source) {
 		return new FormatProcess( source ).perform();
 	}

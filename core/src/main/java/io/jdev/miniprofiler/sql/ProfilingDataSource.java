@@ -32,14 +32,26 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
+/** A {@link DataSource} wrapper that records SQL query timings in MiniProfiler. */
 public class ProfilingDataSource implements DataSource, Closeable {
 
     private final DataSource targetDataSource;
 
+    /**
+     * Creates a new instance using the static {@link io.jdev.miniprofiler.MiniProfiler} profiler provider.
+     *
+     * @param targetDataSource the data source to wrap
+     */
     public ProfilingDataSource(DataSource targetDataSource) {
         this(targetDataSource, new StaticProfilerProvider());
     }
 
+    /**
+     * Creates a new instance using the given profiler provider.
+     *
+     * @param targetDataSource the data source to wrap
+     * @param profilerProvider the profiler provider to use for recording timings
+     */
     public ProfilingDataSource(DataSource targetDataSource, ProfilerProvider profilerProvider) {
         this.targetDataSource = targetDataSource;
         SpyLogFactory.setSpyLogDelegator(new ProfilingSpyLogDelegator(profilerProvider));

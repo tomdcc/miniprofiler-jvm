@@ -102,7 +102,15 @@ tasks.withType<GroovyCompile>().configureEach {
 
 plugins.withId("build.publish") {
     tasks.withType<Javadoc>().configureEach {
-        (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:all,-missing/private")
+        javadocTool = javaToolchains.javadocToolFor {
+            languageVersion = JavaLanguageVersion.of(25)
+        }
+        (options as StandardJavadocDocletOptions).run {
+            memberLevel = JavadocMemberLevel.PROTECTED
+            addBooleanOption("Xdoclint:all", true)
+            addBooleanOption("Xdoclint/package:-io.jdev.miniprofiler.internal,-io.jdev.miniprofiler.ratpack.internal", true)
+            addBooleanOption("Xwerror", true)
+        }
     }
     tasks.named("sanityCheck") {
         dependsOn(tasks.withType<Javadoc>())

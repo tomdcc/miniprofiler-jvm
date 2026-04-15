@@ -30,10 +30,20 @@ public final class ExpectedProfiler {
         this.root = root;
     }
 
+    /**
+     * Returns the expected profiling session name.
+     *
+     * @return the expected name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns the expected root timing step.
+     *
+     * @return the expected root timing
+     */
     public ExpectedTiming getRoot() {
         return root;
     }

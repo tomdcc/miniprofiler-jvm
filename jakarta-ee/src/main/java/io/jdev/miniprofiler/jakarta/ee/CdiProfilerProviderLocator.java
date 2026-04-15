@@ -33,6 +33,10 @@ import java.util.Set;
  */
 public class CdiProfilerProviderLocator implements ProfilerProviderLocator {
 
+    /** Default constructor. */
+    public CdiProfilerProviderLocator() {
+    }
+
     @Override
     public int getOrder() {
         return 10;

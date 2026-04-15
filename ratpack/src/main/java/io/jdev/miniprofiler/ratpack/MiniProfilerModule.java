@@ -40,6 +40,10 @@ import ratpack.guice.ConfigurableModule;
  */
 public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Config> {
 
+    /** Creates a new MiniProfiler Guice module. */
+    public MiniProfilerModule() {
+    }
+
     /**
      * Installs Ratpack / MiniProfiler support code.
      */
@@ -73,24 +77,53 @@ public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Co
         return true;
     }
 
+    /**
+     * Provides the {@link ExecInitializer} that starts profiling for each Ratpack execution.
+     *
+     * @param provider the profiler provider
+     * @param config   the module configuration
+     * @return the exec initializer
+     */
     @ProvidesIntoSet
     @Singleton
     public ExecInitializer initializer(ProfilerProvider provider, Config config) {
         return createInitializer(provider, config);
     }
 
+    /**
+     * Provides the handler that starts profiling for each request.
+     *
+     * @param provider the profiler provider
+     * @return the start-profiling handler
+     */
     @Provides
     @Singleton
     public MiniProfilerStartProfilingHandler startProfilingHandler(ProfilerProvider provider) {
         return new MiniProfilerStartProfilingHandler(provider);
     }
 
+    /**
+     * Creates the {@link MiniProfilerExecInitializer} used by this module.
+     *
+     * <p>Subclasses can override this method to customize the initializer.</p>
+     *
+     * @param provider the profiler provider
+     * @param config   the module configuration
+     * @return the exec initializer
+     */
     protected MiniProfilerExecInitializer createInitializer(ProfilerProvider provider, Config config) {
         return new MiniProfilerExecInitializer(provider, config.defaultProfilerStoreOption);
     }
 
+    /** Configuration for {@link MiniProfilerModule}. */
     public static class Config {
+        /** Creates a new configuration with default settings. */
+        public Config() {
+        }
+
+        /** The default store option applied to each request; defaults to {@link ProfilerStoreOption#STORE_RESULTS}. */
         public ProfilerStoreOption defaultProfilerStoreOption = ProfilerStoreOption.STORE_RESULTS;
+        /** The UI configuration to use when rendering the MiniProfiler widget. */
         public ProfilerUiConfig uiConfig = ProfilerUiConfig.create();
     }
 

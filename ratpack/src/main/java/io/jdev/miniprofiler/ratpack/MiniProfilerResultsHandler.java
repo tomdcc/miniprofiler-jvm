@@ -41,6 +41,11 @@ public class MiniProfilerResultsHandler implements Handler {
 
     private final ProfilerProvider provider;
 
+    /**
+     * Creates a new instance using the given profiler provider.
+     *
+     * @param provider the profiler provider to use for loading results
+     */
     @Inject
     public MiniProfilerResultsHandler(ProfilerProvider provider) {
         this.provider = provider;
@@ -59,6 +64,11 @@ public class MiniProfilerResultsHandler implements Handler {
         );
     }
 
+    /**
+     * Handles a GET or POST request by serving the profiling results for the requested id.
+     *
+     * @param ctx the current context
+     */
     public void handleRequest(Context ctx) {
         Response response = ctx.getResponse();
 

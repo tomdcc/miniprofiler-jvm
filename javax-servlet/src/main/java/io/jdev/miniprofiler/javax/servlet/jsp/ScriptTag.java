@@ -33,22 +33,36 @@ import java.io.IOException;
 @SuppressWarnings("WeakerAccess")
 public class ScriptTag extends TagSupport {
 
+    /** The profiler provider used to retrieve the current profiler. */
     private ProfilerProvider profilerProvider;
+    /** Writer used to render the script tag. */
     private ScriptTagWriter scriptTagWriter;
 
+    /** The path to the MiniProfiler resources. */
     private String path;
 
+    /** The UI widget position. */
     private ProfilerUiConfig.Position position;
+    /** The UI color scheme. */
     private ProfilerUiConfig.ColorScheme colorScheme;
+    /** The keyboard shortcut to toggle the UI. */
     private String toggleShortcut;
+    /** The maximum number of traces to show. */
     private Integer maxTraces;
+    /** The threshold in milliseconds below which timings are considered trivial. */
     private Integer trivialMilliseconds;
+    /** Whether trivial timings are shown by default. */
     private Boolean trivial;
+    /** Whether child timings are shown by default. */
     private Boolean children;
+    /** Whether the controls panel is shown. */
     private Boolean controls;
+    /** Whether the current user is authorized to view profiling results. */
     private Boolean authorized;
+    /** Whether the MiniProfiler UI starts hidden. */
     private Boolean startHidden;
 
+    /** Creates a new instance using the static {@link MiniProfiler} profiler provider. */
     public ScriptTag() {
         setProfilerProvider(MiniProfiler.getProfilerProvider());
     }
@@ -114,51 +128,111 @@ public class ScriptTag extends TagSupport {
         return config;
     }
 
+    /**
+     * Sets the profiler provider to use when rendering the script tag.
+     *
+     * @param profilerProvider the profiler provider to use
+     */
     public void setProfilerProvider(ProfilerProvider profilerProvider) {
         this.profilerProvider = profilerProvider;
         this.scriptTagWriter = new ScriptTagWriter(profilerProvider);
     }
 
+    /**
+     * Sets the path to the MiniProfiler resources, overriding the provider default.
+     *
+     * @param path the path to the MiniProfiler resources
+     */
     public void setPath(String path) {
         this.path = path;
     }
 
+    /**
+     * Sets the UI position (e.g. {@code "Left"}, {@code "Right"}).
+     *
+     * @param position the UI widget position
+     */
     public void setPosition(String position) {
         this.position = position == null ? null : ConfigHelper.findEnum(ProfilerUiConfig.Position.class, position);
     }
 
+    /**
+     * Sets the UI color scheme (e.g. {@code "Light"}, {@code "Dark"}).
+     *
+     * @param scheme the UI color scheme
+     */
     public void setColorScheme(String scheme) {
         this.colorScheme = scheme == null ? null : ConfigHelper.findEnum(ProfilerUiConfig.ColorScheme.class, scheme);
     }
 
+    /**
+     * Sets the keyboard shortcut to toggle the MiniProfiler UI.
+     *
+     * @param toggleShortcut the keyboard shortcut string
+     */
     public void setToggleShortcut(String toggleShortcut) {
         this.toggleShortcut = toggleShortcut;
     }
 
+    /**
+     * Sets the maximum number of traces to show in the UI.
+     *
+     * @param maxTraces the maximum number of traces
+     */
     public void setMaxTraces(Integer maxTraces) {
         this.maxTraces = maxTraces;
     }
 
+    /**
+     * Sets the threshold in milliseconds below which timings are considered trivial.
+     *
+     * @param trivialMilliseconds the trivial threshold in milliseconds
+     */
     public void setTrivialMilliseconds(Integer trivialMilliseconds) {
         this.trivialMilliseconds = trivialMilliseconds;
     }
 
+    /**
+     * Sets whether trivial timings are shown by default.
+     *
+     * @param trivial true to show trivial timings by default
+     */
     public void setTrivial(boolean trivial) {
         this.trivial = trivial;
     }
 
+    /**
+     * Sets whether child timings are shown by default.
+     *
+     * @param children true to show child timings by default
+     */
     public void setChildren(boolean children) {
         this.children = children;
     }
 
+    /**
+     * Sets whether the controls panel is shown.
+     *
+     * @param controls true to show the controls panel
+     */
     public void setControls(boolean controls) {
         this.controls = controls;
     }
 
+    /**
+     * Sets whether the current user is authorized to view profiling results.
+     *
+     * @param authorized true if the user is authorized
+     */
     public void setAuthorized(boolean authorized) {
         this.authorized = authorized;
     }
 
+    /**
+     * Sets whether the MiniProfiler UI starts hidden.
+     *
+     * @param startHidden true to start the UI hidden
+     */
     public void setStartHidden(boolean startHidden) {
         this.startHidden = startHidden;
     }

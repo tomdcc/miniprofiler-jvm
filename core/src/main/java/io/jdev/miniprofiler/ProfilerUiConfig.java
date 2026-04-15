@@ -25,14 +25,29 @@ import java.util.Properties;
 import static io.jdev.miniprofiler.internal.ConfigHelper.getProperty;
 import static io.jdev.miniprofiler.internal.ConfigHelper.loadPropertiesFile;
 
+/** Configuration options for the MiniProfiler UI. */
 public class ProfilerUiConfig {
 
+    /** Where the MiniProfiler popup appears on screen. */
     public enum Position {
-        Left, Right, BottomLeft, BottomRight
+        /** Positioned at the top left. */
+        Left,
+        /** Positioned at the top right. */
+        Right,
+        /** Positioned at the bottom left. */
+        BottomLeft,
+        /** Positioned at the bottom right. */
+        BottomRight
     }
 
+    /** The color theme for the MiniProfiler UI. */
     public enum ColorScheme {
-        Light, Dark, Auto
+        /** Light color scheme. */
+        Light,
+        /** Dark color scheme. */
+        Dark,
+        /** Follow the system preference. */
+        Auto
     }
 
     private String path;
@@ -47,10 +62,20 @@ public class ProfilerUiConfig {
     private boolean authorized;
     private boolean startHidden;
 
+    /**
+     * Returns the URL path at which the MiniProfiler UI is served.
+     *
+     * @return the URL path
+     */
     public String getPath() {
         return path;
     }
 
+    /**
+     * Sets the URL path at which the MiniProfiler UI is served.
+     *
+     * @param path the URL path
+     */
     public void setPath(String path) {
         if (path == null) {
             throw new IllegalArgumentException((String) null);
@@ -58,10 +83,20 @@ public class ProfilerUiConfig {
         this.path = path;
     }
 
+    /**
+     * Returns the screen position of the MiniProfiler popup.
+     *
+     * @return the screen position
+     */
     public Position getPosition() {
         return position;
     }
 
+    /**
+     * Sets the screen position of the MiniProfiler popup.
+     *
+     * @param position the screen position
+     */
     public void setPosition(Position position) {
         if (position == null) {
             throw new IllegalArgumentException((String) null);
@@ -69,10 +104,20 @@ public class ProfilerUiConfig {
         this.position = position;
     }
 
+    /**
+     * Returns the color scheme for the MiniProfiler UI.
+     *
+     * @return the color scheme
+     */
     public ColorScheme getColorScheme() {
         return colorScheme;
     }
 
+    /**
+     * Sets the color scheme for the MiniProfiler UI.
+     *
+     * @param colorScheme the color scheme
+     */
     public void setColorScheme(ColorScheme colorScheme) {
         if (colorScheme == null) {
             throw new IllegalArgumentException((String) null);
@@ -80,72 +125,157 @@ public class ProfilerUiConfig {
         this.colorScheme = colorScheme;
     }
 
+    /**
+     * Returns the keyboard shortcut to toggle the MiniProfiler UI, or null if none.
+     *
+     * @return the keyboard shortcut, or null
+     */
     public String getToggleShortcut() {
         return toggleShortcut;
     }
 
+    /**
+     * Sets the keyboard shortcut to toggle the MiniProfiler UI.
+     *
+     * @param toggleShortcut the keyboard shortcut string
+     */
     public void setToggleShortcut(String toggleShortcut) {
         this.toggleShortcut = toggleShortcut;
     }
 
+    /**
+     * Returns the maximum number of traces to show, or null to use the default.
+     *
+     * @return the maximum number of traces, or null
+     */
     public Integer getMaxTraces() {
         return maxTraces;
     }
 
+    /**
+     * Sets the maximum number of traces to show.
+     *
+     * @param maxTraces the maximum number of traces
+     */
     public void setMaxTraces(Integer maxTraces) {
         this.maxTraces = maxTraces;
     }
 
+    /**
+     * Returns the threshold in milliseconds below which a step is considered trivial, or null for the default.
+     *
+     * @return the trivial threshold in milliseconds, or null
+     */
     public Integer getTrivialMilliseconds() {
         return trivialMilliseconds;
     }
 
+    /**
+     * Sets the threshold in milliseconds below which a step is considered trivial.
+     *
+     * @param trivialMilliseconds the trivial threshold in milliseconds
+     */
     public void setTrivialMilliseconds(Integer trivialMilliseconds) {
         this.trivialMilliseconds = trivialMilliseconds;
     }
 
+    /**
+     * Returns whether trivial timings are shown.
+     *
+     * @return true if trivial timings are shown
+     */
     public boolean isTrivial() {
         return trivial;
     }
 
+    /**
+     * Sets whether trivial timings are shown.
+     *
+     * @param trivial true to show trivial timings
+     */
     public void setTrivial(boolean trivial) {
         this.trivial = trivial;
     }
 
+    /**
+     * Returns whether child timings are shown by default.
+     *
+     * @return true if child timings are shown
+     */
     public boolean isChildren() {
         return children;
     }
 
+    /**
+     * Sets whether child timings are shown by default.
+     *
+     * @param children true to show child timings by default
+     */
     public void setChildren(boolean children) {
         this.children = children;
     }
 
+    /**
+     * Returns whether the expand/collapse controls are shown.
+     *
+     * @return true if controls are shown
+     */
     public boolean isControls() {
         return controls;
     }
 
+    /**
+     * Sets whether the expand/collapse controls are shown.
+     *
+     * @param controls true to show the expand/collapse controls
+     */
     public void setControls(boolean controls) {
         this.controls = controls;
     }
 
+    /**
+     * Returns whether the current user is authorized to view profiling data.
+     *
+     * @return true if the current user is authorized
+     */
     public boolean isAuthorized() {
         return authorized;
     }
 
+    /**
+     * Sets whether the current user is authorized to view profiling data.
+     *
+     * @param authorized true if the user is authorized
+     */
     public void setAuthorized(boolean authorized) {
         this.authorized = authorized;
     }
 
+    /**
+     * Returns whether the MiniProfiler popup starts hidden.
+     *
+     * @return true if the popup starts hidden
+     */
     public boolean isStartHidden() {
         return startHidden;
     }
 
+    /**
+     * Sets whether the MiniProfiler popup starts hidden.
+     *
+     * @param startHidden true to start the popup hidden
+     */
     public void setStartHidden(boolean startHidden) {
         this.startHidden = startHidden;
     }
 
     private ProfilerUiConfig() {}
 
+    /**
+     * Returns a {@link ProfilerUiConfig} populated with default values.
+     *
+     * @return a new config with defaults
+     */
     public static ProfilerUiConfig defaults() {
         ProfilerUiConfig config = new ProfilerUiConfig();
         config.path = "/miniprofiler";
@@ -165,6 +295,11 @@ public class ProfilerUiConfig {
     private static final String SYSTEM_PROP_PREFIX = "miniprofiler.";
     private static final String MINIPROFILER_RESOURCE_NAME = "/miniprofiler.properties";
 
+    /**
+     * Creates a {@link ProfilerUiConfig} from system properties and {@code miniprofiler.properties}, falling back to defaults.
+     *
+     * @return a new config populated from system properties and the properties file
+     */
     public static ProfilerUiConfig create() {
         return create(System.getProperties(), loadPropertiesFile(MINIPROFILER_RESOURCE_NAME));
     }

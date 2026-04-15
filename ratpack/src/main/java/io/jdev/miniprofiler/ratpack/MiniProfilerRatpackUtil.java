@@ -29,6 +29,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class MiniProfilerRatpackUtil {
 
+    private MiniProfilerRatpackUtil() {
+    }
+
     /**
      * Add a profiling step for the promise, starting with when the promise is first subscribed-to and finishing
      * when the promise supplies results.

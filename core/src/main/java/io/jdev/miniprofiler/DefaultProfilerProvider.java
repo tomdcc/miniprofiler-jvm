@@ -23,6 +23,9 @@ package io.jdev.miniprofiler;
  */
 public class DefaultProfilerProvider extends BaseProfilerProvider {
 
+    /** Creates a new instance. */
+    public DefaultProfilerProvider() {}
+
     private static final ThreadLocal<Profiler> PROFILER_HOLDER = new ThreadLocal<Profiler>();
 
     @Override

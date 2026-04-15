@@ -30,10 +30,18 @@ public class ScriptTagWriter {
 
     private final ProfilerProvider provider;
 
+    /**
+     * Creates a new script tag writer using the given profiler provider.
+     *
+     * @param provider the profiler provider to use
+     */
     public ScriptTagWriter(ProfilerProvider provider) {
         this.provider = provider;
     }
 
+    /**
+     * Creates a new script tag writer using a default {@link StaticProfilerProvider}.
+     */
     public ScriptTagWriter() {
         this(new StaticProfilerProvider());
     }

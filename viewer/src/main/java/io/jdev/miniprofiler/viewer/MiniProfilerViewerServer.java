@@ -25,12 +25,19 @@ import io.jdev.miniprofiler.storage.Storage;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+/** Embedded HTTP server that serves the MiniProfiler viewer UI for a given storage or provider. */
 public class MiniProfilerViewerServer implements AutoCloseable {
 
     static final String DEFAULT_PREFIX = "/miniprofiler";
 
     private final MiniProfilerServer server;
 
+    /**
+     * Creates a new viewer server backed by the given storage.
+     *
+     * @param storage the storage to serve profiles from
+     * @throws IOException if the HTTP server cannot be started
+     */
     public MiniProfilerViewerServer(Storage storage) throws IOException {
         this(makeProvider(storage));
     }
@@ -46,6 +53,12 @@ public class MiniProfilerViewerServer implements AutoCloseable {
         return provider;
     }
 
+    /**
+     * Creates a new viewer server backed by the given profiler provider.
+     *
+     * @param provider the profiler provider to serve profiles from
+     * @throws IOException if the HTTP server cannot be started
+     */
     public MiniProfilerViewerServer(ProfilerProvider provider) throws IOException {
         String indexPath = provider.getUiConfig().getPath() + "/results-index";
         server = new MiniProfilerServer(provider, httpServer ->
@@ -68,6 +81,11 @@ public class MiniProfilerViewerServer implements AutoCloseable {
         );
     }
 
+    /**
+     * Returns the local port on which the server is listening.
+     *
+     * @return the local port number
+     */
     public int getPort() {
         return server.getPort();
     }

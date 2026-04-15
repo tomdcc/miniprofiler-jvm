@@ -19,7 +19,13 @@ package io.jdev.miniprofiler.ratpack;
 import ratpack.func.Action;
 import ratpack.handling.Chain;
 
+/**
+ * A Ratpack {@link ratpack.func.Action} that installs MiniProfiler start-profiling handlers into a handler chain.
+ */
 public class MiniProfilerStartProfilingHandlers implements Action<Chain> {
+
+    /** Default constructor. */
+    public MiniProfilerStartProfilingHandlers() {}
 
     @Override
     public void execute(Chain chain) throws Exception {
