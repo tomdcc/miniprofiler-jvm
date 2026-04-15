@@ -20,6 +20,7 @@ import io.jdev.miniprofiler.format.CommandFormatter;
 import io.jdev.miniprofiler.internal.NullProfiler;
 import io.jdev.miniprofiler.internal.ProfilerImpl;
 import io.jdev.miniprofiler.storage.Storage;
+import io.jdev.miniprofiler.user.UserProvider;
 
 import java.util.Map;
 import java.util.UUID;
@@ -181,5 +182,23 @@ public interface ProfilerProvider {
      * @param formatter the formatter to use for the type
      */
     void setCommandFormatter(String type, CommandFormatter formatter);
+
+    /**
+     * Returns the {@link UserProvider} associated with this provider.
+     *
+     * <p>If no user provider has been explicitly set, one is discovered
+     * via {@link io.jdev.miniprofiler.user.UserProviderLocator} on first access.</p>
+     *
+     * @return the user provider
+     */
+    UserProvider getUserProvider();
+
+    /**
+     * Sets the {@link UserProvider} for this provider to use.
+     *
+     * @param userProvider the user provider to use
+     * @see UserProvider
+     */
+    void setUserProvider(UserProvider userProvider);
 
 }

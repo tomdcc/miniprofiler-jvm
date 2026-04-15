@@ -23,6 +23,7 @@ import io.jdev.miniprofiler.internal.ProfilerImpl;
 import io.jdev.miniprofiler.storage.Storage;
 import io.jdev.miniprofiler.storage.StorageLocator;
 import io.jdev.miniprofiler.user.UserProvider;
+import io.jdev.miniprofiler.user.UserProviderLocator;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -42,8 +43,8 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
 
     private volatile Storage storage;
     private volatile Map<String, CommandFormatter> commandFormatters = new ConcurrentHashMap<>();
+    private volatile UserProvider userProvider;
     private String machineName = getDefaultHostname();
-    private UserProvider userProvider;
     private ProfilerUiConfig uiConfig;
 
     /**
@@ -150,8 +151,9 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
     public Profiler start(UUID id, String rootName, ProfileLevel level) {
         ProfilerImpl profiler = new ProfilerImpl(id, rootName, rootName, level, this);
         profiler.setMachineName(machineName);
-        if (userProvider != null) {
-            profiler.setUser(userProvider.getUser());
+        String user = getUserProvider().getUser();
+        if (user != null) {
+            profiler.setUser(user);
         }
         profilerCreated(profiler);
         return profiler;
@@ -181,7 +183,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
     @Override
     public void stopSession(ProfilerImpl profilingSession, boolean discardResults) {
         profilingSession.stop();
-        String currentUser = userProvider != null ? userProvider.getUser() : null;
+        String currentUser = getUserProvider().getUser();
         if (currentUser != null && profilingSession.getUser() == null) {
             // user wasn't available at profile start, but is now
             profilingSession.setUser(currentUser);
@@ -280,11 +282,27 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
     }
 
     /**
-     * Sets the user provider for this profiler provider.
+     * {@inheritDoc}
      *
-     * @param userProvider The user provider to use.
-     * @see UserProvider
+     * <p>If no user provider has been explicitly set via {@link #setUserProvider(UserProvider)},
+     * the first call will use {@link UserProviderLocator#findUserProvider()} to discover
+     * a user provider implementation via the {@link java.util.ServiceLoader}. The default
+     * is an {@link io.jdev.miniprofiler.user.UnknownUserProvider UnknownUserProvider}
+     * which always returns {@code null}.</p>
      */
+    @Override
+    public UserProvider getUserProvider() {
+        if (userProvider == null) {
+            synchronized (this) {
+                if (userProvider == null) {
+                    userProvider = UserProviderLocator.findUserProvider();
+                }
+            }
+        }
+        return userProvider;
+    }
+
+    @Override
     public void setUserProvider(UserProvider userProvider) {
         this.userProvider = userProvider;
     }
