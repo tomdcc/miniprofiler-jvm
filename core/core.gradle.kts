@@ -56,19 +56,13 @@ tasks.named<ProcessResources>("processResources") {
 }
 
 
-// exclude vendored log4jdbc and hibernate SQL formatter from Javadoc - these are
-// third-party code included for implementation purposes, not part of the public API
+// exclude vendored log4jdbc from Javadoc - these are third-party code
+// included for implementation purposes, not part of the public API
 tasks.named<Javadoc>("javadoc") {
     exclude("io/jdev/miniprofiler/sql/log4jdbc/**")
-    exclude("io/jdev/miniprofiler/sql/hibernate/**")
 }
 
-// include hibernate builder source, since it's LGPL and we don't want to add any
-// extra burden on people who might be bundling this library in
 tasks.named<Jar>("jar").configure {
-	from(sourceSets["main"].allJava) {
-        include("io/jdev/miniprofiler/sql/hibernate/*")
-    }
     archiveClassifier.set("plain")
 }
 
