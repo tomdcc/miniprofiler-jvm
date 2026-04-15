@@ -36,6 +36,7 @@ dependencies {
     bundled(libs.json.simple) {
         exclude(group = "junit", module = "junit")
     }
+    bundled(libs.sql.formatter)
 
     testImplementation(projects.test)
     testImplementation(libs.jackson.databind)
@@ -83,6 +84,7 @@ tasks.named<ShadowJar>("shadowJar").configure {
     archiveClassifier.set("")
     configurations = listOf(project.configurations["bundled"])
     relocate("org.json.simple", "io.jdev.miniprofiler.shadowed.org.json.simple")
+    relocate("com.github.vertical_blank.sqlformatter", "io.jdev.miniprofiler.shadowed.com.github.vertical_blank.sqlformatter")
 }
 
 publishing {

@@ -59,6 +59,7 @@ ratpack = "1.10.0-milestone-39"
 selenium-groovy3 = "4.28.0"
 selenium-groovy4 = "4.41.0"
 shadow = "9.4.1"
+sql-formatter = "2.0.5"
 spock-groovy3 = "2.4-groovy-3.0"
 spock-groovy4 = "2.4-groovy-4.0"
 spring-v5 = "5.3.39"
@@ -124,6 +125,7 @@ selenium-support-groovy3 = { module = "org.seleniumhq.selenium:selenium-support"
 selenium-support-groovy4 = { module = "org.seleniumhq.selenium:selenium-support", version.ref = "selenium-groovy4" }
 spock-groovy3 = { module = "org.spockframework:spock-core", version.ref = "spock-groovy3" }
 spock-groovy4 = { module = "org.spockframework:spock-core", version.ref = "spock-groovy4" }
+sql-formatter = { module = "com.github.vertical-blank:sql-formatter", version.ref = "sql-formatter" }
 spring-v5-test = { module = "org.springframework:spring-test", version.ref = "spring-v5" }
 spring-v5-web = { module = "org.springframework:spring-web", version.ref = "spring-v5" }
 spring-v6-test = { module = "org.springframework:spring-test", version.ref = "spring-v6" }

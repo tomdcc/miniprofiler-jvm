@@ -16,16 +16,14 @@
 
 package io.jdev.miniprofiler.sql;
 
+import com.github.vertical_blank.sqlformatter.SqlFormatter;
 import io.jdev.miniprofiler.format.CommandFormatter;
-import io.jdev.miniprofiler.sql.hibernate.BasicFormatterImpl;
 
 /**
  * A {@link CommandFormatter} for SQL commands. Delegates formatting to
- * {@link BasicFormatterImpl}.
+ * {@link SqlFormatter}.
  */
 public class SqlCommandFormatter implements CommandFormatter {
-
-    private final BasicFormatterImpl delegate = new BasicFormatterImpl();
 
     /** Creates a new instance. */
     public SqlCommandFormatter() {
@@ -33,7 +31,7 @@ public class SqlCommandFormatter implements CommandFormatter {
 
     @Override
     public String format(String command) {
-        return delegate.format(command);
+        return SqlFormatter.format(command);
     }
 
     @Override
