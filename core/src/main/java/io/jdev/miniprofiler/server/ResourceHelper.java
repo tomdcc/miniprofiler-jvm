@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.util;
+package io.jdev.miniprofiler.server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

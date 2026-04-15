@@ -16,7 +16,7 @@
 
 package io.jdev.miniprofiler.ratpack;
 
-import io.jdev.miniprofiler.util.ResourceHelper;
+import io.jdev.miniprofiler.server.ResourceHelper;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
 import ratpack.http.Response;
