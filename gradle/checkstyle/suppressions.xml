@@ -6,9 +6,6 @@
 
 <suppressions>
 
-  <!-- log4jdbc classes -->
-  <suppress checks="." files="io[\\/]jdev[\\/]miniprofiler[\\/]sql[\\/]log4jdbc[\\/]"/>
-
   <!-- we actually need clone in here, thanks eclipselink! -->
   <suppress checks="NoClone" files=".*[\\/]ProfilingConnector.java"/>
 

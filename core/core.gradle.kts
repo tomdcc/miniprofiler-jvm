@@ -56,12 +56,6 @@ tasks.named<ProcessResources>("processResources") {
 }
 
 
-// exclude vendored log4jdbc from Javadoc - these are third-party code
-// included for implementation purposes, not part of the public API
-tasks.named<Javadoc>("javadoc") {
-    exclude("io/jdev/miniprofiler/sql/log4jdbc/**")
-}
-
 tasks.named<Jar>("jar").configure {
     archiveClassifier.set("plain")
 }
