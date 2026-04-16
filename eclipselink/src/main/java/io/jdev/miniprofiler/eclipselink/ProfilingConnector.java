@@ -16,7 +16,7 @@
 
 package io.jdev.miniprofiler.eclipselink;
 
-import io.jdev.miniprofiler.sql.log4jdbc.ConnectionSpy;
+import io.jdev.miniprofiler.jdbc.ProfilingConnectionWrapper;
 import org.eclipse.persistence.sessions.Connector;
 import org.eclipse.persistence.sessions.Session;
 
@@ -26,26 +26,30 @@ import java.util.Properties;
 
 /**
  * EclipseLink Connector implementation which returns Connection objects
- * that will profile JDBC queries.
+ * that will profile JDBC queries via datasource-proxy.
  */
 public class ProfilingConnector implements Connector {
 
     /** The underlying connector being wrapped. */
-    private Connector target;
+    private final Connector target;
+
+    /** Wraps connections for profiling. */
+    private final ProfilingConnectionWrapper connectionWrapper;
 
     /**
      * Creates a new connector wrapping the given target.
      *
      * @param target the connector to wrap
+     * @param connectionWrapper the wrapper used to add profiling to connections
      */
-    public ProfilingConnector(Connector target) {
+    public ProfilingConnector(Connector target, ProfilingConnectionWrapper connectionWrapper) {
         this.target = target;
+        this.connectionWrapper = connectionWrapper;
     }
 
     @Override
     public Connection connect(Properties properties, Session session) {
-        Connection orig = target.connect(properties, session);
-        return new ConnectionSpy(orig);
+        return connectionWrapper.wrap(target.connect(properties, session));
     }
 
     @Override

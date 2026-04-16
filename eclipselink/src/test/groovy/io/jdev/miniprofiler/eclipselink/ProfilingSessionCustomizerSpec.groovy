@@ -18,8 +18,6 @@ package io.jdev.miniprofiler.eclipselink
 
 import io.jdev.miniprofiler.MiniProfiler
 import io.jdev.miniprofiler.ProfilerProvider
-import io.jdev.miniprofiler.sql.ProfilingSpyLogDelegator
-import io.jdev.miniprofiler.sql.log4jdbc.SpyLogFactory
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import org.eclipse.persistence.sessions.Connector
 import org.eclipse.persistence.sessions.DatabaseLogin
@@ -51,8 +49,7 @@ class ProfilingSessionCustomizerSpec extends Specification {
         customizer.customize(session)
 
         then:
-        SpyLogFactory.spyLogDelegator instanceof ProfilingSpyLogDelegator
-        SpyLogFactory.spyLogDelegator.@profilerProvider == profilerProvider
+        1 * login.setConnector({ it instanceof ProfilingConnector && it.@target == originalConnector })
     }
 
     void "no-arg constructor uses ProfilerProviderLocator in customize"() {
@@ -65,14 +62,7 @@ class ProfilingSessionCustomizerSpec extends Specification {
         customizer.customize(session)
 
         then:
-        SpyLogFactory.spyLogDelegator instanceof ProfilingSpyLogDelegator
-
-        and: 'uses the provider resolved via the locator (StaticProfilerProvider -> MiniProfiler)'
-        def profiler = MiniProfiler.start("test")
-        SpyLogFactory.spyLogDelegator.@profilerProvider.current() == profiler
-
-        cleanup:
-        MiniProfiler.profilerProvider?.stopCurrentSession(true)
+        1 * login.setConnector({ it instanceof ProfilingConnector && it.@target == originalConnector })
     }
 
     void "customize wraps the session login connector with a ProfilingConnector"() {

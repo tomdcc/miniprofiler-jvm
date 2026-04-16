@@ -17,9 +17,7 @@
 package io.jdev.miniprofiler.eclipselink;
 
 import io.jdev.miniprofiler.ProfilerProvider;
-import io.jdev.miniprofiler.ProfilerProviderLocator;
-import io.jdev.miniprofiler.sql.ProfilingSpyLogDelegator;
-import io.jdev.miniprofiler.sql.log4jdbc.SpyLogFactory;
+import io.jdev.miniprofiler.jdbc.ProfilingConnectionWrapper;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.Session;
@@ -33,11 +31,12 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 class SessionCustomizerSupport {
 
     static void customize(ProfilerProvider explicitProvider, Session session) {
-        ProfilerProvider provider = explicitProvider != null ? explicitProvider : ProfilerProviderLocator.findProvider();
-        SpyLogFactory.setSpyLogDelegator(new ProfilingSpyLogDelegator(provider));
+        ProfilingConnectionWrapper connectionWrapper = explicitProvider != null
+            ? new ProfilingConnectionWrapper(explicitProvider)
+            : new ProfilingConnectionWrapper();
 
         DatasourceLogin login = session.getLogin();
-        login.setConnector(new ProfilingConnector(login.getConnector()));
+        login.setConnector(new ProfilingConnector(login.getConnector(), connectionWrapper));
         if (session instanceof ServerSession) {
             ServerSession serverSession = (ServerSession) session;
             ConnectionPool pool = serverSession.getReadConnectionPool();
@@ -45,7 +44,7 @@ class SessionCustomizerSupport {
                 Login poolLogin = pool.getLogin();
                 if (poolLogin instanceof DatasourceLogin) {
                     login = (DatasourceLogin) poolLogin;
-                    login.setConnector(new ProfilingConnector(login.getConnector()));
+                    login.setConnector(new ProfilingConnector(login.getConnector(), connectionWrapper));
                 }
             }
         }
