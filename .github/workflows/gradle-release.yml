@@ -57,7 +57,7 @@ jobs:
       - name: Run checks
         env:
           CI: true
-        run: ./gradlew check -x integrationTest
+        run: ./gradlew sanityCheck check
 
       - name: Commit release version
         run: |
