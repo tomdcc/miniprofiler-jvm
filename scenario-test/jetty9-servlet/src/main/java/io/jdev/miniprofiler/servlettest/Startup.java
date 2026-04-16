@@ -16,7 +16,7 @@
 
 package io.jdev.miniprofiler.servlettest;
 
-import io.jdev.miniprofiler.sql.ProfilingDataSource;
+import io.jdev.miniprofiler.jdbc.ProfilingDataSource;
 import org.h2.jdbcx.JdbcDataSource;
 
 import javax.servlet.ServletContextEvent;
