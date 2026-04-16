@@ -21,7 +21,7 @@ import com.google.inject.Guice
 import com.google.inject.Injector
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import io.jdev.miniprofiler.sql.ProfilingDataSource
+import io.jdev.miniprofiler.jdbc.ProfilingDataSource
 import org.h2.jdbcx.JdbcConnectionPool
 import org.h2.jdbcx.JdbcDataSource
 import ratpack.server.ServerConfig

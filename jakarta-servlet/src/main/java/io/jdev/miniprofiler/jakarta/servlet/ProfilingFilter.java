@@ -23,7 +23,6 @@ import io.jdev.miniprofiler.StaticProfilerProvider;
 import io.jdev.miniprofiler.server.Pages;
 import io.jdev.miniprofiler.internal.ProfilerImpl;
 import io.jdev.miniprofiler.server.IdParser;
-import io.jdev.miniprofiler.sql.DriverUtil;
 import io.jdev.miniprofiler.storage.Storage;
 import io.jdev.miniprofiler.server.ResourceHelper;
 
@@ -290,12 +289,6 @@ public class ProfilingFilter implements Filter {
      */
     protected Profiler startProfiling(UUID id, HttpServletRequest request) {
         return profilerProvider.start(id, request.getRequestURI());
-    }
-
-    @Override
-    public void destroy() {
-        // in shutdown, let's deregister the profiling jdbc driver
-        DriverUtil.deregisterDriverSpy();
     }
 
     /**

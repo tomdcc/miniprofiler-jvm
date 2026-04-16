@@ -27,6 +27,11 @@ class ProfilerImplSpec extends Specification {
 
     ProfilerImpl profiler = new ProfilerImpl("foo", ProfileLevel.Info, new TestProfilerProvider())
 
+    void "isActive returns true"() {
+        expect:
+        profiler.isActive()
+    }
+
     void "runnable step is profiled properly"() {
         when:
         profiler.step('foo', { -> profiler.step('bar').stop() })

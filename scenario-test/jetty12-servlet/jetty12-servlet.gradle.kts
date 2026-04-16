@@ -29,6 +29,7 @@ java {
 dependencies {
     compileOnly(libs.jakarta.servlet.api)
     implementation(projects.core)
+    implementation(projects.jdbc)
     // needs to be a jar to pick up tld automatically
     implementation(projects.jakartaServlet) {
         targetConfiguration = "jars"

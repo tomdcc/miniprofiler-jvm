@@ -28,7 +28,7 @@ import org.jooq.ExecuteListenerProvider;
  * </p>
  * <p>
  *     Using this class generally means that you won't need to use a JDBC driver wrapper such as
- *     {@link io.jdev.miniprofiler.sql.ProfilingDataSource} to capture SQL statements. jOOQ normally does
+ *     {@code ProfilingDataSource} to capture SQL statements. jOOQ normally does
  *     a good job at both formatting SQL and rendering queries with inlined paramters, so if using jOOQ
  *     this way is definitely recommended.
  * </p>

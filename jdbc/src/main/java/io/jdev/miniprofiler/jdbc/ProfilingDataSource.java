@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.sql;
+package io.jdev.miniprofiler.jdbc;
 
 import io.jdev.miniprofiler.ProfilerProvider;
-import io.jdev.miniprofiler.StaticProfilerProvider;
-import io.jdev.miniprofiler.sql.log4jdbc.ConnectionSpy;
-import io.jdev.miniprofiler.sql.log4jdbc.SpyLogFactory;
+import io.jdev.miniprofiler.ProfilerProviderLocator;
+import net.ttddyy.dsproxy.support.ProxyDataSource;
+import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
 
 import javax.sql.DataSource;
 import java.io.Closeable;
@@ -32,66 +32,77 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
-/** A {@link DataSource} wrapper that records SQL query timings in MiniProfiler. */
+/**
+ * A {@link DataSource} wrapper that records SQL query timings in MiniProfiler using
+ * <a href="https://github.com/jdbc-observations/datasource-proxy">datasource-proxy</a>.
+ *
+ * <p>Each instance wraps the target data source with a private
+ * {@link net.ttddyy.dsproxy.support.ProxyDataSource} and registers a
+ * {@link ProfilingQueryExecutionListener} tied to the supplied
+ * {@link ProfilerProvider}. There is no shared or static state, so multiple
+ * {@code ProfilingDataSource} instances with different providers may coexist.</p>
+ */
 public class ProfilingDataSource implements DataSource, Closeable {
 
-    private final DataSource targetDataSource;
+    private final DataSource delegate;
+    private final ProxyDataSource proxy;
 
     /**
-     * Creates a new instance using the static {@link io.jdev.miniprofiler.MiniProfiler} profiler provider.
+     * Creates a new instance resolving the {@link ProfilerProvider} via
+     * {@link ProfilerProviderLocator#findProvider()}.
      *
-     * @param targetDataSource the data source to wrap
+     * @param delegate the data source to wrap
      */
-    public ProfilingDataSource(DataSource targetDataSource) {
-        this(targetDataSource, new StaticProfilerProvider());
+    public ProfilingDataSource(DataSource delegate) {
+        this(delegate, ProfilerProviderLocator.findProvider());
     }
 
     /**
      * Creates a new instance using the given profiler provider.
      *
-     * @param targetDataSource the data source to wrap
-     * @param profilerProvider the profiler provider to use for recording timings
+     * @param delegate the data source to wrap
+     * @param profilerProvider the profiler provider used to record query timings
      */
-    public ProfilingDataSource(DataSource targetDataSource, ProfilerProvider profilerProvider) {
-        this.targetDataSource = targetDataSource;
-        SpyLogFactory.setSpyLogDelegator(new ProfilingSpyLogDelegator(profilerProvider));
+    public ProfilingDataSource(DataSource delegate, ProfilerProvider profilerProvider) {
+        this.delegate = delegate;
+        this.proxy = ProxyDataSourceBuilder.create(delegate)
+            .listener(new ProfilingQueryExecutionListener(profilerProvider))
+            .build();
     }
 
     @Override
     public Connection getConnection() throws SQLException {
-        Connection conn = targetDataSource.getConnection();
-        return new ConnectionSpy(conn);
+        return proxy.getConnection();
     }
 
     @Override
     public Connection getConnection(String username, String password) throws SQLException {
-        Connection conn = targetDataSource.getConnection(username, password);
-        return new ConnectionSpy(conn);
+        return proxy.getConnection(username, password);
     }
 
     @Override
     public PrintWriter getLogWriter() throws SQLException {
-        return targetDataSource.getLogWriter();
+        return delegate.getLogWriter();
     }
 
     @Override
     public void setLogWriter(PrintWriter out) throws SQLException {
-        targetDataSource.setLogWriter(out);
+        delegate.setLogWriter(out);
     }
 
     @Override
     public void setLoginTimeout(int seconds) throws SQLException {
-        targetDataSource.setLoginTimeout(seconds);
+        delegate.setLoginTimeout(seconds);
     }
 
     @Override
     public int getLoginTimeout() throws SQLException {
-        return targetDataSource.getLoginTimeout();
+        return delegate.getLoginTimeout();
     }
 
     @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        return targetDataSource.getParentLogger();
+        return delegate.getParentLogger();
     }
 
     @SuppressWarnings("unchecked")
@@ -99,33 +110,33 @@ public class ProfilingDataSource implements DataSource, Closeable {
     public <T> T unwrap(Class<T> iface) throws SQLException {
         if (iface.isAssignableFrom(getClass())) {
             return (T) this;
-        } else if(iface.isAssignableFrom(targetDataSource.getClass())) {
-            return (T) targetDataSource;
+        } else if (iface.isAssignableFrom(delegate.getClass())) {
+            return (T) delegate;
         } else {
-            return targetDataSource.unwrap(iface);
+            return delegate.unwrap(iface);
         }
     }
 
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return iface.isAssignableFrom(getClass())
-            || iface.isAssignableFrom(targetDataSource.getClass())
-            || targetDataSource.isWrapperFor(iface);
+            || iface.isAssignableFrom(delegate.getClass())
+            || delegate.isWrapperFor(iface);
     }
 
     @Override
     public void close() throws IOException {
-        if(targetDataSource instanceof Closeable) {
-            ((Closeable) targetDataSource).close();
+        if (delegate instanceof Closeable) {
+            ((Closeable) delegate).close();
         } else {
             try {
-                Method closeMethod = targetDataSource.getClass().getMethod("close");
-                closeMethod.invoke(targetDataSource);
+                Method closeMethod = delegate.getClass().getMethod("close");
+                closeMethod.invoke(delegate);
             } catch (NoSuchMethodException e) {
                 throw new UnsupportedOperationException("Data source has no close method", e);
             } catch (InvocationTargetException e) {
                 Throwable cause = e.getCause();
-                if(cause instanceof RuntimeException) {
+                if (cause instanceof RuntimeException) {
                     throw (RuntimeException) cause;
                 } else {
                     throw new RuntimeException("Error closing data source", cause);

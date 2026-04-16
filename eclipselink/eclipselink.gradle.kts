@@ -37,6 +37,7 @@ tasks.withType<JavaCompile>().matching { it.name == "compileJava" }.configureEac
 // LegacyProfilingSessionCustomizer to coexist in the same compilation unit.
 dependencies {
     api(projects.core)
+    api(projects.jdbc)
     compileOnly(libs.eclipselink.v4) {
         isTransitive = false
     }
@@ -51,6 +52,7 @@ crossVersionTests {
         implementation(libs.bundles.testing.groovy4)
         runtimeOnly(libs.bundles.testing.runtime)
         implementation(projects.test)
+        implementation(projects.jdbc)
         implementation(libs.h2)
     }
     register("crossVersionTestEclipseLink2") {

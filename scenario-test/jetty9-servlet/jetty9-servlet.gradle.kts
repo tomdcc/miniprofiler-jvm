@@ -23,6 +23,7 @@ plugins {
 dependencies {
     compileOnly(libs.javax.ee.api)
     implementation(projects.core)
+    implementation(projects.jdbc)
     // needs to be a jar to pick up tld automatically
     implementation(projects.javaxServlet) {
         targetConfiguration = "jars"

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2015-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.sql
+package io.jdev.miniprofiler.jdbc
 
+import io.jdev.miniprofiler.test.TestProfilerProvider
 import spock.lang.Specification
 
 import javax.sql.DataSource
@@ -23,10 +24,12 @@ import java.sql.SQLException
 
 class ProfilingDataSourceSpec extends Specification {
 
-    void "wrapper delegates close when appropriate underlying datasource implements Closeable"() {
-        given: 'closeable delegate ds'
+    def profilerProvider = new TestProfilerProvider()
+
+    void "wrapper delegates close when underlying datasource implements Closeable"() {
+        given:
         def ds = Mock(CloseableDataSource)
-        def pds = new ProfilingDataSource(ds)
+        def pds = new ProfilingDataSource(ds, profilerProvider)
 
         when:
         pds.close()
@@ -35,10 +38,10 @@ class ProfilingDataSourceSpec extends Specification {
         1 * ds.close()
     }
 
-    void "wrapper delegates close when appropriate underlying datasource has close method"() {
-        given: 'closeable delegate ds'
+    void "wrapper delegates close when underlying datasource has a close method"() {
+        given:
         def ds = Mock(DataSourceWithCloseMethod)
-        def pds = new ProfilingDataSource(ds)
+        def pds = new ProfilingDataSource(ds, profilerProvider)
 
         when:
         pds.close()
@@ -47,10 +50,10 @@ class ProfilingDataSourceSpec extends Specification {
         1 * ds.close()
     }
 
-    void "wrapper throws exception when underlying datasource does not have close method"() {
-        given: 'closeable delegate ds'
+    void "wrapper throws when underlying datasource has no close method"() {
+        given:
         def ds = Mock(DataSource)
-        def pds = new ProfilingDataSource(ds)
+        def pds = new ProfilingDataSource(ds, profilerProvider)
 
         when:
         pds.close()
@@ -63,7 +66,7 @@ class ProfilingDataSourceSpec extends Specification {
     static interface InnerDataSource extends DataSource { }
     static interface OtherDataSource extends DataSource { }
 
-    void "wrapper returns correct values for unwrap and isWrapperFor"() {
+    void "wrapper implements unwrap and isWrapperFor correctly"() {
         given:
         def outerDs = Mock(OuterDataSource)
         def innerDs = Mock(InnerDataSource)
@@ -71,7 +74,7 @@ class ProfilingDataSourceSpec extends Specification {
         _ * outerDs.unwrap(InnerDataSource) >> innerDs
         _ * outerDs.isWrapperFor(OtherDataSource) >> false
         _ * outerDs.unwrap(OtherDataSource) >> { clz -> throw new SQLException() }
-        def pds = new ProfilingDataSource(outerDs)
+        def pds = new ProfilingDataSource(outerDs, profilerProvider)
 
         expect:
         pds.isWrapperFor(ProfilingDataSource)
@@ -93,12 +96,10 @@ class ProfilingDataSourceSpec extends Specification {
 
         then:
         thrown(SQLException)
-
-
     }
 
+    static interface CloseableDataSource extends DataSource, Closeable { }
 
-    static interface CloseableDataSource extends DataSource, Closeable {}
     static interface DataSourceWithCloseMethod extends DataSource {
         void close()
     }

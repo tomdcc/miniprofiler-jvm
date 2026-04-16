@@ -152,4 +152,9 @@ public class NullProfiler implements Profiler {
         return INSTANCE;
     }
 
+    @Override
+    public boolean isActive() {
+        return false;
+    }
+
 }

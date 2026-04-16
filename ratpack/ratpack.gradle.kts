@@ -24,6 +24,7 @@ plugins {
 
 dependencies {
     api(projects.core)
+    api(projects.jdbc)
     compileOnly(libs.ratpack.core)
     compileOnly(libs.ratpack.guice)
     compileOnly(libs.ratpack.hikari)

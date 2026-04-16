@@ -80,8 +80,12 @@ The default code above uses a static reference to a global ProfilerProvider obje
 
 Profiling JDBC Queries
 ----------------------
-To see your SQL queries in your profiling output, just wrap your JDBC DataSource in the ProfilingDataSource, and call
-getConnection() on that data source as normal.
+Add the `miniprofiler-jdbc` module to your project:
+
+    groupId: io.jdev.miniprofiler
+    artifactId: miniprofiler-jdbc
+
+Then wrap your JDBC DataSource in a `ProfilingDataSource` and call `getConnection()` on it as normal.
 
 Seeing the output
 -----------------

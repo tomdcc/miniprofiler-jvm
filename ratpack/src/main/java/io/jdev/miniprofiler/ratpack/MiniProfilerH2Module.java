@@ -16,7 +16,7 @@
 
 package io.jdev.miniprofiler.ratpack;
 
-import io.jdev.miniprofiler.sql.ProfilingDataSource;
+import io.jdev.miniprofiler.jdbc.ProfilingDataSource;
 import ratpack.h2.H2Module;
 
 import javax.sql.DataSource;
