@@ -17,24 +17,21 @@
 package io.jdev.miniprofiler.hibernate;
 
 import io.jdev.miniprofiler.ProfilerProvider;
-import io.jdev.miniprofiler.ProfilerProviderLocator;
-import io.jdev.miniprofiler.sql.ProfilingSpyLogDelegator;
-import io.jdev.miniprofiler.sql.log4jdbc.ConnectionSpy;
-import io.jdev.miniprofiler.sql.log4jdbc.SpyLogFactory;
+import io.jdev.miniprofiler.jdbc.ProfilingConnectionWrapper;
 import org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Map;
 
 /** A Hibernate {@link DatasourceConnectionProviderImpl} that records SQL query timings in MiniProfiler. */
 public class ProfilingDatasourceConnectionProvider extends DatasourceConnectionProviderImpl {
 
-    /** Whether profiling has been configured for this connection provider. */
-    private boolean profilingConfigured;
+    /** Wraps connections for profiling. */
+    private final ProfilingConnectionWrapper connectionWrapper;
 
-    /** Creates a new instance using the static {@link io.jdev.miniprofiler.MiniProfiler} profiler provider. */
+    /** Creates a new instance. The profiler provider is resolved via the service locator on first use. */
     public ProfilingDatasourceConnectionProvider() {
+        connectionWrapper = new ProfilingConnectionWrapper();
     }
 
     /**
@@ -43,26 +40,12 @@ public class ProfilingDatasourceConnectionProvider extends DatasourceConnectionP
      * @param profilerProvider the profiler provider to use
      */
     public ProfilingDatasourceConnectionProvider(ProfilerProvider profilerProvider) {
-        setupProfiling(profilerProvider);
-    }
-
-    @Override
-    @SuppressWarnings("rawtypes")
-    public void configure(Map configValues) {
-        if (!profilingConfigured) {
-            setupProfiling(ProfilerProviderLocator.findProvider());
-        }
-        super.configure(configValues);
-    }
-
-    private void setupProfiling(ProfilerProvider profilerProvider) {
-        SpyLogFactory.setSpyLogDelegator(new ProfilingSpyLogDelegator(profilerProvider));
-        profilingConfigured = true;
+        connectionWrapper = new ProfilingConnectionWrapper(profilerProvider);
     }
 
     @Override
     public Connection getConnection() throws SQLException {
-        return new ConnectionSpy(super.getConnection());
+        return connectionWrapper.wrap(super.getConnection());
     }
 
 }

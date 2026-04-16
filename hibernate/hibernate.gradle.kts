@@ -22,6 +22,7 @@ plugins {
 
 dependencies {
     api(projects.core)
+    api(projects.jdbc)
     compileOnly(libs.hibernate.v5) {
         isTransitive = false
     }
@@ -34,6 +35,7 @@ crossVersionTests {
         implementation(libs.bundles.testing.groovy4)
         runtimeOnly(libs.bundles.testing.runtime)
         implementation(projects.test)
+        implementation(projects.jdbc)
         implementation(libs.h2)
     }
     register("crossVersionTestHibernate5") {

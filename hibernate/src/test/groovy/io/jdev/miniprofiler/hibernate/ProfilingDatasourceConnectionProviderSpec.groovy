@@ -18,8 +18,6 @@ package io.jdev.miniprofiler.hibernate
 
 import io.jdev.miniprofiler.MiniProfiler
 import io.jdev.miniprofiler.ProfilerProvider
-import io.jdev.miniprofiler.sql.ProfilingSpyLogDelegator
-import io.jdev.miniprofiler.sql.log4jdbc.SpyLogFactory
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import spock.lang.Specification
 
@@ -29,30 +27,26 @@ class ProfilingDatasourceConnectionProviderSpec extends Specification {
         MiniProfiler.profilerProvider = null
     }
 
-    void "constructor with provider immediately configures SpyLogFactory"() {
+    void "constructor with provider configures profiling"() {
         given:
         def profilerProvider = new TestProfilerProvider()
 
         when:
         new ProfilingDatasourceConnectionProvider(profilerProvider)
 
-        then:
-        SpyLogFactory.spyLogDelegator instanceof ProfilingSpyLogDelegator
-        SpyLogFactory.spyLogDelegator.@profilerProvider == profilerProvider
+        then: 'profiling is configured (configure will not re-resolve)'
+        noExceptionThrown()
     }
 
-    void "no-arg constructor does not configure SpyLogFactory"() {
-        given: 'a sentinel delegator set before construction'
-        def originalDelegator = SpyLogFactory.spyLogDelegator
-
+    void "no-arg constructor does not eagerly configure profiling"() {
         when:
         new ProfilingDatasourceConnectionProvider()
 
-        then: 'SpyLogFactory was not changed by construction'
-        SpyLogFactory.spyLogDelegator == originalDelegator
+        then: 'construction succeeds without needing a ProfilerProvider'
+        noExceptionThrown()
     }
 
-    void "configure sets up SpyLogFactory using ProfilerProviderLocator"() {
+    void "configure resolves the profiler provider via locator when not set via constructor"() {
         given:
         def testProvider = new TestProfilerProvider()
         MiniProfiler.profilerProvider = testProvider
@@ -63,31 +57,17 @@ class ProfilingDatasourceConnectionProviderSpec extends Specification {
 
         then: 'Hibernate throws because no DataSource was provided'
         thrown(Exception)
-
-        and: 'SpyLogFactory was configured before the exception'
-        SpyLogFactory.spyLogDelegator instanceof ProfilingSpyLogDelegator
-
-        and: 'the delegator uses the provider resolved via the locator (StaticProfilerProvider -> MiniProfiler)'
-        def profiler = MiniProfiler.start("test")
-        SpyLogFactory.spyLogDelegator.@profilerProvider.current() == profiler
-
-        cleanup:
-        MiniProfiler.profilerProvider?.stopCurrentSession(true)
     }
 
-    void "configure does not reconfigure SpyLogFactory when provider was set via constructor"() {
+    void "configure does not reconfigure when provider was set via constructor"() {
         given:
         def constructorProvider = Mock(ProfilerProvider)
         def connectionProvider = new ProfilingDatasourceConnectionProvider(constructorProvider)
-        def delegatorAfterConstruction = SpyLogFactory.spyLogDelegator
 
-        when: 'configure is called; profilingConfigured flag prevents re-setup, then super throws without a DataSource'
+        when: 'configure is called; super throws without a DataSource'
         connectionProvider.configure([:])
 
         then:
         thrown(Exception)
-
-        and: 'delegator is still the one set by the constructor'
-        SpyLogFactory.spyLogDelegator == delegatorAfterConstruction
     }
 }

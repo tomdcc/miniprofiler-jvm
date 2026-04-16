@@ -69,7 +69,7 @@ publishing {
         from(components["java"])
         pom {
             name = "MiniProfiler JDBC Module"
-            description = "JDBC query profiling for MiniProfiler using datasource-proxy."
+            description = "JDBC query profiling for MiniProfiler."
         }
     }
 }
