@@ -19,6 +19,7 @@ build-parameters-plugin = "1.4.5"
 byte-buddy = "1.18.8"
 checkstyle = "12.3.1"
 codenarc = "3.7.0-groovy-4.0"
+datasource-proxy = "1.11.0"
 develocity-plugin = "4.3.2"
 eclipselink-v2 = "2.7.12"
 eclipselink-v3 = "3.0.4"
@@ -73,6 +74,7 @@ awaitility = { module = "org.awaitility:awaitility-groovy", version.ref = "await
 byte-buddy = { module = "net.bytebuddy:byte-buddy", version.ref = "byte-buddy" }
 checkstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "checkstyle" }
 codenarc = { module = "org.codenarc:CodeNarc", version.ref = "codenarc" }
+datasource-proxy = { module = "net.ttddyy:datasource-proxy", version.ref = "datasource-proxy" }
 develocity-plugin = { module = "com.gradle:develocity-gradle-plugin", version.ref = "develocity-plugin" }
 eclipselink-v2 = { module = "org.eclipse.persistence:eclipselink", version.ref = "eclipselink-v2" }
 eclipselink-v3 = { module = "org.eclipse.persistence:eclipselink", version.ref = "eclipselink-v3" }
