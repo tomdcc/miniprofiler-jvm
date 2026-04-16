@@ -6,10 +6,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          # PR builds: fetch the merge commit + every PR commit so per-file `git log`
-          # can see each modified file's recent commits. Push builds (no PR context, e.g.
-          # snapshot publish on main): fall back to a full clone.
-          fetch-depth: ${{ github.event.pull_request.commits && github.event.pull_request.commits + 1 || 0 }}
+          # Full history so per-file `git log` (used by verifyCopyright) can reach
+          # each file's most recent substantive commit on PR and push builds alike.
+          fetch-depth: 0
           submodules: recursive
 
       - uses: actions/setup-java@v5
