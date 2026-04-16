@@ -263,4 +263,21 @@ public interface Profiler extends Closeable {
      * @return the plain text representation
      */
     String asPlainText();
+
+    /**
+     * Indicates whether this profiler is a live profiling session whose timings
+     * will be recorded. Returns {@code false} for
+     * {@link io.jdev.miniprofiler.internal.NullProfiler} &mdash; the no-op
+     * instance returned when no profiling session is active &mdash; and
+     * {@code true} for every real implementation.
+     *
+     * <p>Callers that would otherwise have to do non-trivial work to build the
+     * arguments to {@link #step(String)}, {@link #addCustomTiming}, etc. can
+     * short-circuit that work when {@code isActive()} returns {@code false}.</p>
+     *
+     * @return {@code true} if this profiler records timings, {@code false} for the null profiler
+     */
+    default boolean isActive() {
+        return true;
+    }
 }
