@@ -58,6 +58,13 @@ abstract class CopyrightTask : DefaultTask() {
     @get:Internal
     abstract val excludedDirectories: ListProperty<File>
 
+    /** When true, only the end (last) year is checked: a file is treated as out of date solely
+     *  when its declared end year is behind the latest substantive commit. The start year is
+     *  preserved as written. Intended for shallow CI clones where the file's true first commit
+     *  isn't reachable. */
+    @get:Internal
+    abstract val upperBoundOnly: Property<Boolean>
+
     @get:Inject
     protected abstract val workerExecutor: WorkerExecutor
 
@@ -132,6 +139,7 @@ abstract class CopyrightTask : DefaultTask() {
         queue.await()
 
         // Phase 3: assemble results on the main thread.
+        val lenient = upperBoundOnly.getOrElse(false)
         val outOfDate = mutableListOf<String>()
         val upToDate = mutableListOf<String>()
         val skipped = mutableListOf<String>()
@@ -142,11 +150,18 @@ abstract class CopyrightTask : DefaultTask() {
                 continue
             }
             val (firstYear, lastYear) = content.split(',').let { it[0].toInt() to it[1].toInt() }
-            if (firstYear == candidate.start && lastYear == candidate.currentEnd) {
+            val driftedStart = !lenient && firstYear != candidate.start
+            // In strict mode the end year must match exactly. In lenient mode (shallow CI clones)
+            // we only flag headers that are *behind* the most recent commit — claiming a later
+            // year than git can see is permitted because git can't see far enough to refute it.
+            val driftedEnd = if (lenient) lastYear > candidate.currentEnd else lastYear != candidate.currentEnd
+            if (!driftedStart && !driftedEnd) {
                 upToDate += candidate.relative
                 continue
             }
-            val replacement = formatReplacement(firstYear, lastYear)
+            val newStart = if (lenient) candidate.start else firstYear
+            val newEnd = if (lenient) maxOf(lastYear, candidate.currentEnd) else lastYear
+            val replacement = formatReplacement(newStart, newEnd)
             val updatedText = candidate.original.replaceRange(candidate.matchRange, replacement)
             outOfDate += "${candidate.relative}: ${candidate.matchText} -> $replacement"
             onOutOfDate(candidate.file, updatedText)
@@ -209,6 +224,15 @@ abstract class UpdateCopyrightTask : CopyrightTask() {
         preview = value
     }
 
+    @Option(
+        option = "upper-bound-only",
+        description = "Only update the end (last) year; preserve the existing start year. " +
+            "Useful in CI with shallow clones.",
+    )
+    fun setUpperBoundOnlyOption(value: Boolean) {
+        upperBoundOnly.set(value)
+    }
+
     override fun onOutOfDate(file: File, updatedText: String) {
         if (!preview) {
             file.writeText(updatedText, Charsets.UTF_8)
@@ -227,6 +251,15 @@ abstract class UpdateCopyrightTask : CopyrightTask() {
 /** Fails the build if any file's copyright year is behind the last substantive change. */
 @DisableCachingByDefault(because = "Reads git history on every invocation.")
 abstract class VerifyCopyrightTask : CopyrightTask() {
+
+    @Option(
+        option = "upper-bound-only",
+        description = "Only validate the end (last) year; skip first-year checks. " +
+            "Useful in CI with shallow clones.",
+    )
+    fun setUpperBoundOnlyOption(value: Boolean) {
+        upperBoundOnly.set(value)
+    }
 
     override fun onOutOfDate(file: File, updatedText: String) {
         // No-op: verification only reports; it never writes.
@@ -276,10 +309,12 @@ internal object CopyrightGit {
     private const val COMMIT_MARKER = "|COMMIT|"
 
     /** Matches on whole words so that class names like `CommandFormatter` or tool names
-     *  like `checkstyle` do not cause a substantive commit to be mistaken for a cosmetic one. */
+     *  like `checkstyle` do not cause a substantive commit to be mistaken for a cosmetic one.
+     *  `copyright` is included so that the update task's own bumping commits don't perpetually
+     *  show up as the file's most recent substantive change. */
     private val TRIVIAL_SUBJECT =
         Regex(
-            """\b(?:format|lint|style|whitespace|prettier|typo|reformat|cleanup|cosmetic)\b""",
+            """\b(?:format|lint|style|whitespace|prettier|typo|reformat|cleanup|cosmetic|copyright)\b""",
             RegexOption.IGNORE_CASE,
         )
 
