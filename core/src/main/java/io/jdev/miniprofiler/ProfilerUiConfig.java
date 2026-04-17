@@ -61,6 +61,7 @@ public class ProfilerUiConfig {
     private boolean controls;
     private boolean authorized;
     private boolean startHidden;
+    private int maxUnviewedProfiles;
 
     /**
      * Returns the URL path at which the MiniProfiler UI is served.
@@ -269,6 +270,26 @@ public class ProfilerUiConfig {
         this.startHidden = startHidden;
     }
 
+    /**
+     * Returns the maximum number of previously-unviewed profiler IDs to include in the
+     * {@code X-MiniProfiler-Ids} response header.
+     *
+     * @return the maximum number of unviewed profiles
+     */
+    public int getMaxUnviewedProfiles() {
+        return maxUnviewedProfiles;
+    }
+
+    /**
+     * Sets the maximum number of previously-unviewed profiler IDs to include in the
+     * {@code X-MiniProfiler-Ids} response header.
+     *
+     * @param maxUnviewedProfiles the maximum number of unviewed profiles
+     */
+    public void setMaxUnviewedProfiles(int maxUnviewedProfiles) {
+        this.maxUnviewedProfiles = maxUnviewedProfiles;
+    }
+
     private ProfilerUiConfig() {}
 
     /**
@@ -289,6 +310,7 @@ public class ProfilerUiConfig {
         config.controls = false;
         config.authorized = true;
         config.startHidden = false;
+        config.maxUnviewedProfiles = 20;
         return config;
     }
 
@@ -323,6 +345,7 @@ public class ProfilerUiConfig {
         config.controls = getProperty(propsList, "controls", config.controls);
         config.authorized = getProperty(propsList, "authorized", config.authorized);
         config.startHidden = getProperty(propsList, "start.hidden", config.startHidden);
+        config.maxUnviewedProfiles = getProperty(propsList, "max.unviewed.profiles", config.maxUnviewedProfiles);
         return config;
     }
 
@@ -350,6 +373,9 @@ public class ProfilerUiConfig {
             return false;
         }
         if (startHidden != that.startHidden) {
+            return false;
+        }
+        if (maxUnviewedProfiles != that.maxUnviewedProfiles) {
             return false;
         }
         if (!path.equals(that.path)) {
@@ -384,6 +410,7 @@ public class ProfilerUiConfig {
         result = 31 * result + (controls ? 1 : 0);
         result = 31 * result + (authorized ? 1 : 0);
         result = 31 * result + (startHidden ? 1 : 0);
+        result = 31 * result + maxUnviewedProfiles;
         return result;
     }
 
@@ -410,6 +437,7 @@ public class ProfilerUiConfig {
         copy.controls = this.controls;
         copy.authorized = this.authorized;
         copy.startHidden = this.startHidden;
+        copy.maxUnviewedProfiles = this.maxUnviewedProfiles;
         return copy;
     }
 }
