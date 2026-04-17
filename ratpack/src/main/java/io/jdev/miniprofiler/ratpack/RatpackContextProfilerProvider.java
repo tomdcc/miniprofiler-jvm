@@ -20,6 +20,7 @@ import io.jdev.miniprofiler.BaseProfilerProvider;
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.internal.ProfilerImpl;
 import ratpack.exec.Execution;
+import ratpack.exec.Operation;
 
 import java.util.Optional;
 
@@ -90,5 +91,14 @@ public class RatpackContextProfilerProvider extends BaseProfilerProvider {
      */
     protected Optional<Profiler> lookupCurrentProfiler(Execution execution) {
         return execution.maybeGet(Profiler.class);
+    }
+
+    /**
+     * Asynchronously closes the storage associated with this provider.
+     *
+     * @return an operation that closes the provider's storage
+     */
+    public Operation closeAsync() {
+        return AsyncStorage.adapt(getStorage()).closeAsync();
     }
 }
