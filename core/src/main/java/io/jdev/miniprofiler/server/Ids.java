@@ -17,16 +17,18 @@
 package io.jdev.miniprofiler.server;
 
 
+import io.jdev.miniprofiler.ProfilerProvider;
+
 import java.util.UUID;
 
 /**
- * Utility for parsing a profiler result UUID from an HTTP request.
+ * Utility for profiler ID parsing and header construction.
  *
  * <p>If the {@code Accept} header contains {@code application/json}, the UUID is extracted
  * from the JSON request body via {@link ResultsRequest}. Otherwise (or as a fallback) the
  * supplied {@code idParamValue} is parsed as a UUID.</p>
  */
-public final class IdParser {
+public final class Ids {
 
     /**
      * Parses a profiler UUID from an HTTP request.
@@ -56,6 +58,36 @@ public final class IdParser {
         return id;
     }
 
-    private IdParser() {
+    /**
+     * Builds the value of the {@code X-MiniProfiler-Ids} response header.
+     *
+     * <p>The header contains the current profiler's ID plus up to
+     * {@code provider.getUiConfig().getMaxUnviewedProfiles()} previously-unviewed IDs for the
+     * given user. If {@code user} is {@code null} only the current ID is included.</p>
+     *
+     * @param currentId the ID of the profiler for the current request (always first in the array)
+     * @param user      the current user (may be {@code null})
+     * @param provider  the profiler provider (used to read config and unviewed storage)
+     * @return a JSON array string suitable for use as the {@code X-MiniProfiler-Ids} header value
+     */
+    public static String buildIdsHeader(UUID currentId, String user, ProfilerProvider provider) {
+        StringBuilder sb = new StringBuilder("[\"").append(currentId).append('"');
+        if (user != null) {
+            int max = provider.getUiConfig().getMaxUnviewedProfiles();
+            int count = 0;
+            for (UUID uid : provider.getStorage().getUnviewedIds(user)) {
+                if (count >= max) {
+                    break;
+                }
+                if (!uid.equals(currentId)) {
+                    sb.append(",\"").append(uid).append('"');
+                    count++;
+                }
+            }
+        }
+        return sb.append(']').toString();
+    }
+
+    private Ids() {
     }
 }

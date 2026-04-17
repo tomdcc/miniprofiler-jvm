@@ -32,7 +32,10 @@
 
 package io.jdev.miniprofiler.ratpack;
 
+import com.google.inject.Inject;
 import io.jdev.miniprofiler.Profiler;
+import io.jdev.miniprofiler.ProfilerProvider;
+import io.jdev.miniprofiler.server.Ids;
 import ratpack.exec.Execution;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
@@ -44,15 +47,24 @@ import ratpack.handling.Handler;
  */
 public class MiniProfilerAjaxHeaderHandler implements Handler {
 
-    /** Creates a new AJAX header handler. */
-    public MiniProfilerAjaxHeaderHandler() {
+    private final ProfilerProvider provider;
+
+    /**
+     * Creates a new AJAX header handler.
+     *
+     * @param provider the profiler provider used to look up unviewed IDs and configuration
+     */
+    @Inject
+    public MiniProfilerAjaxHeaderHandler(ProfilerProvider provider) {
+        this.provider = provider;
     }
 
     @Override
     public void handle(Context ctx) throws Exception {
         ctx.maybeGet(Profiler.class).ifPresent(profiler -> {
             Execution.current().add(ProfilerStoreOption.class, ProfilerStoreOption.STORE_RESULTS);
-            ctx.getResponse().getHeaders().add("X-MiniProfiler-Ids", "[\"" + profiler.getId() + "\"]");
+            ctx.getResponse().getHeaders().add("X-MiniProfiler-Ids",
+                Ids.buildIdsHeader(profiler.getId(), profiler.getUser(), provider));
         });
         ctx.next();
     }

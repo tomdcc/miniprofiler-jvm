@@ -19,7 +19,7 @@ package io.jdev.miniprofiler.ratpack;
 import com.google.inject.Inject;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.internal.ProfilerImpl;
-import io.jdev.miniprofiler.server.IdParser;
+import io.jdev.miniprofiler.server.Ids;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
 import ratpack.http.Response;
@@ -75,7 +75,7 @@ public class MiniProfilerResultsHandler implements Handler {
         ctx.getRequest().getBody()
             .map(TypedData::getText)
             .then(body -> {
-                UUID requestedId = IdParser.parseId(
+                UUID requestedId = Ids.parseId(
                     ctx.getRequest().getHeaders().get(ACCEPT),
                     body,
                     ctx.getRequest().getQueryParams().get("id")
@@ -85,17 +85,24 @@ public class MiniProfilerResultsHandler implements Handler {
                     return;
                 }
 
-                AsyncStorage.adapt(provider.getStorage())
-                    .loadAsync(requestedId)
+                AsyncStorage asyncStorage = AsyncStorage.adapt(provider.getStorage());
+                asyncStorage.loadAsync(requestedId)
                     .then(profiler -> {
                         if (profiler != null) {
-                            if (isJsonRequest(ctx)) {
-                                renderJson(ctx, profiler);
+                            String user = profiler.getUser();
+                            Runnable render = () -> {
+                                if (isJsonRequest(ctx)) {
+                                    renderJson(ctx, profiler);
+                                } else {
+                                    renderSinglePageHtml(ctx, profiler);
+                                }
+                            };
+                            if (user != null) {
+                                asyncStorage.setViewedAsync(user, requestedId).then(render::run);
                             } else {
-                                renderSinglePageHtml(ctx, profiler);
+                                render.run();
                             }
                         } else {
-                            // not there
                             response.status(Status.NOT_FOUND).send();
                         }
                     });

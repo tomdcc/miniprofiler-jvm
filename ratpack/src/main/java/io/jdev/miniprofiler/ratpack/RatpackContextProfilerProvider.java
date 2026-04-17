@@ -57,9 +57,15 @@ public class RatpackContextProfilerProvider extends BaseProfilerProvider {
 
     @Override
     protected void saveProfiler(ProfilerImpl currentProfiler) {
-        AsyncStorage.adapt(getStorage())
-            .saveAsync(currentProfiler)
-            .then();
+        String user = currentProfiler.getUser();
+        AsyncStorage asyncStorage = AsyncStorage.adapt(getStorage());
+        if (user != null) {
+            asyncStorage.saveAsync(currentProfiler)
+                .next(asyncStorage.setUnviewedAsync(user, currentProfiler.getId()))
+                .then();
+        } else {
+            asyncStorage.saveAsync(currentProfiler).then();
+        }
     }
 
     /**

@@ -48,10 +48,16 @@ import javax.servlet.http.HttpServletResponse
  */
 class InProcessJetty9 implements InProcessTestedServer {
 
-    private final DefaultProfilerProvider profilerProvider = new DefaultProfilerProvider()
+    private final DefaultProfilerProvider profilerProvider
     private final Server server
+    private final String testUser
 
-    InProcessJetty9() {
+    InProcessJetty9(String testUser = null) {
+        this.testUser = testUser
+        profilerProvider = new DefaultProfilerProvider()
+        if (testUser != null) {
+            profilerProvider.setUserProvider { testUser }
+        }
         server = new Server(0)
         new ServletContextHandler(server, '/', false, false).tap {
             securityHandler = buildSecurityHandler()
@@ -125,6 +131,9 @@ class InProcessJetty9 implements InProcessTestedServer {
             constraintMappings = [mapping]
         }
     }
+
+    @Override
+    String getTestUser() { testUser }
 
     @Override
     String getProfiledPagePath() { 'test-page' }

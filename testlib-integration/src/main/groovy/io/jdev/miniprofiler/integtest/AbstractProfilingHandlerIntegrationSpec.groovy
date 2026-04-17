@@ -81,13 +81,10 @@ abstract class AbstractProfilingHandlerIntegrationSpec extends Specification {
 
     void 'results endpoint returns HTML for known id'() {
         given:
-        def profiler = server.profilerProvider.start('test-request')
-        profiler.stop()
-        def list = client.getResultsList().bodyAsJson() as List
-        def knownId = list[0].Id
+        def profiler = server.createProfile('test-request')
 
         when:
-        def response = client.getResultsHtml(knownId as String)
+        def response = client.getResultsHtml(profiler.id.toString())
 
         then:
         response.statusCode() == 200
@@ -105,8 +102,7 @@ abstract class AbstractProfilingHandlerIntegrationSpec extends Specification {
 
     void 'results-list returns JSON array of stored profiles'() {
         given:
-        def profiler = server.profilerProvider.start('test-request')
-        profiler.stop()
+        def profiler = server.createProfile('test-request')
 
         when:
         def response = client.getResultsList()
@@ -121,11 +117,9 @@ abstract class AbstractProfilingHandlerIntegrationSpec extends Specification {
 
     void 'results-list pagination with last-id filters results'() {
         given:
-        def first = server.profilerProvider.start('first-request')
-        first.stop()
+        def first = server.createProfile('first-request')
         Thread.sleep(10)
-        def second = server.profilerProvider.start('second-request')
-        second.stop()
+        def second = server.createProfile('second-request')
 
         when:
         def response = client.getResultsList(first.id.toString())
@@ -162,6 +156,52 @@ abstract class AbstractProfilingHandlerIntegrationSpec extends Specification {
 
         then:
         response.statusCode() == 404
+    }
+
+    @Requires({ instance.server.testUser && instance.server.profiledPagePath })
+    void 'unviewed id from previous request appears in X-MiniProfiler-Ids header of next request'() {
+        when: 'first request is made but results are not fetched'
+        def firstResponse = client.get(server.profiledPagePath)
+        def firstId = firstResponse.miniProfilerId()
+
+        and: 'wait for async save if needed'
+        server.waitForProfilerSave(UUID.fromString(firstId))
+
+        and: 'second request is made'
+        def secondResponse = client.get(server.profiledPagePath)
+
+        then: 'the second response header includes the first request id as unviewed'
+        secondResponse.miniProfilerIds().contains(firstId)
+    }
+
+    @Requires({ instance.server.testUser && instance.server.profiledPagePath })
+    void 'after a profiled request the profiler id appears in getUnviewedIds for the test user'() {
+        when:
+        def response = client.get(server.profiledPagePath)
+        def id = UUID.fromString(response.miniProfilerId())
+        server.waitForProfilerSave(id)
+
+        then:
+        response.statusCode() == 200
+        (server.profilerProvider.storage as io.jdev.miniprofiler.storage.MapStorage)
+            .getUnviewedIds(server.testUser).contains(id)
+    }
+
+    @Requires({ instance.server.testUser && instance.server.profiledPagePath })
+    void 'fetching results removes the profiler id from getUnviewedIds'() {
+        given:
+        def pageResponse = client.get(server.profiledPagePath)
+        def id = pageResponse.miniProfilerId()
+        server.waitForProfilerSave(UUID.fromString(id))
+        assert (server.profilerProvider.storage as io.jdev.miniprofiler.storage.MapStorage)
+            .getUnviewedIds(server.testUser).contains(UUID.fromString(id))
+
+        when:
+        client.getResultsJson(id)
+
+        then:
+        !(server.profilerProvider.storage as io.jdev.miniprofiler.storage.MapStorage)
+            .getUnviewedIds(server.testUser).contains(UUID.fromString(id))
     }
 
     @Requires({ instance.server.ajaxEndpointPath })

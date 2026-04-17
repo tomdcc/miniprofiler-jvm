@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2017 the original author or authors.
+ * Copyright 2013-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,16 +41,23 @@ public class TestStorage implements Storage {
         profiler.id == id ? profiler : null
     }
 
+    Map<String, Set<UUID>> unviewedByUser = [:]
+
     @Override
     public void setUnviewed(String user, UUID id) {
+        if (user == null) { return }
+        unviewedByUser.computeIfAbsent(user, { [] as LinkedHashSet }).add(id)
     }
 
     @Override
     public void setViewed(String user, UUID id) {
+        if (user == null) { return }
+        unviewedByUser[user]?.remove(id)
     }
 
     @Override
     public Collection<UUID> getUnviewedIds(String user) {
-        Collections.emptyList()
+        if (user == null) { return [] }
+        unviewedByUser[user] ?: []
     }
 }

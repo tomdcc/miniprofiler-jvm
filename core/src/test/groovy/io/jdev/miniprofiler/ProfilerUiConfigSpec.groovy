@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2022 the original author or authors.
+ * Copyright 2016-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ class ProfilerUiConfigSpec extends Specification {
             controls == false
             authorized == true
             startHidden == false
+            maxUnviewedProfiles == 20
         }
 
         when:
@@ -75,6 +76,17 @@ class ProfilerUiConfigSpec extends Specification {
 
         and: 'setting to null'
         config.maxTraces == null
+
+        and: 'max.unviewed.profiles not present — stays at default'
+        config.maxUnviewedProfiles == 20
+    }
+
+    void "maxUnviewedProfiles can be set via properties"() {
+        when:
+        def config = ProfilerUiConfig.create([:] as Properties, ['max.unviewed.profiles': '5'] as Properties)
+
+        then:
+        config.maxUnviewedProfiles == 5
     }
 
     void "cannot directly set non-nullable properties to null"() {
@@ -140,6 +152,7 @@ class ProfilerUiConfigSpec extends Specification {
             controls == config.controls
             authorized == config.authorized
             startHidden == config.startHidden
+            maxUnviewedProfiles == config.maxUnviewedProfiles
         }
     }
 
@@ -156,6 +169,7 @@ class ProfilerUiConfigSpec extends Specification {
             controls = true
             authorized = true
             startHidden = true
+            maxUnviewedProfiles = 7
             it
         }
     }

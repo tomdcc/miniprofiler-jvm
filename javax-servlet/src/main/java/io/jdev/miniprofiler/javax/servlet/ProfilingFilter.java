@@ -22,7 +22,7 @@ import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.StaticProfilerProvider;
 import io.jdev.miniprofiler.server.Pages;
 import io.jdev.miniprofiler.internal.ProfilerImpl;
-import io.jdev.miniprofiler.server.IdParser;
+import io.jdev.miniprofiler.server.Ids;
 import io.jdev.miniprofiler.storage.Storage;
 import io.jdev.miniprofiler.server.ResourceHelper;
 
@@ -126,7 +126,8 @@ public class ProfilingFilter implements Filter {
                     // add header, this is mostly for ajax
                     id = profiler.getId();
                     if (id != null) {
-                        response.addHeader("X-MiniProfiler-Ids", "[\"" + id.toString() + "\"]");
+                        response.addHeader("X-MiniProfiler-Ids",
+                            Ids.buildIdsHeader(id, profilerProvider.getUserProvider().getUser(), profilerProvider));
                     }
                     filterChain.doFilter(servletRequest, servletResponse);
                 } finally {
@@ -182,6 +183,10 @@ public class ProfilingFilter implements Filter {
         if (profiler == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
+        }
+        String user = profiler.getUser();
+        if (user != null) {
+            profilerProvider.getStorage().setViewed(user, id);
         }
 
         if (jsonRequest) {
@@ -242,7 +247,7 @@ public class ProfilingFilter implements Filter {
                 // fall through to id param
             }
         }
-        return IdParser.parseId(request.getHeader(ACCEPT_HEADER), body, request.getParameter(ID_PARAM));
+        return Ids.parseId(request.getHeader(ACCEPT_HEADER), body, request.getParameter(ID_PARAM));
     }
 
     private void renderJson(Profiler profiler, HttpServletResponse response) throws IOException {
