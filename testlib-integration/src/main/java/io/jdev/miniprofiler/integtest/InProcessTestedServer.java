@@ -16,6 +16,7 @@
 
 package io.jdev.miniprofiler.integtest;
 
+import io.jdev.miniprofiler.ProfileLevel;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.internal.ProfilerImpl;
 import io.jdev.miniprofiler.storage.MapStorage;
@@ -75,8 +76,37 @@ public interface InProcessTestedServer extends TestedServer {
         return null;
     }
 
+    /**
+     * Creates a stopped profiler with the given name and saves it directly to storage.
+     *
+     * <p>This bypasses the provider's {@code start()} lifecycle, making it safe to call
+     * from any thread (e.g. Ratpack providers require a managed thread for {@code start()}).</p>
+     *
+     * @param name the profiler name
+     * @return the saved profiler
+     */
+    default ProfilerImpl createProfile(String name) {
+        ProfilerImpl profiler = new ProfilerImpl(null, name, name, ProfileLevel.Info, null);
+        profiler.stop();
+        getProfilerProvider().getStorage().save(profiler);
+        return profiler;
+    }
+
     default void addProfile(ProfilerImpl profiler) {
         getProfilerProvider().getStorage().save(profiler);
+    }
+
+    /**
+     * Waits for a profiler with the given ID to be saved to storage.
+     *
+     * <p>The default implementation returns immediately, assuming synchronous saves.
+     * Implementations with asynchronous save paths (e.g. Ratpack) should override
+     * this to poll until the profiler appears in storage.</p>
+     *
+     * @param id the profiler ID to wait for
+     */
+    default void waitForProfilerSave(java.util.UUID id) {
+        // synchronous by default — no waiting needed
     }
 
     default void clearProfiles() {

@@ -16,11 +16,10 @@
 
 package io.jdev.miniprofiler.ratpack
 
-import io.jdev.miniprofiler.ProfileLevel
 import io.jdev.miniprofiler.ProfilerProvider
 import io.jdev.miniprofiler.ScriptTagWriter
 import io.jdev.miniprofiler.integtest.InProcessTestedServer
-import io.jdev.miniprofiler.internal.ProfilerImpl
+import io.jdev.miniprofiler.user.UserProvider
 import ratpack.func.Action
 import ratpack.guice.Guice
 import ratpack.server.RatpackServer
@@ -32,9 +31,18 @@ import ratpack.server.RatpackServerSpec
 class InProcessRatpack implements InProcessTestedServer {
 
     private final RatpackServer server
+    private final String testUser
 
     InProcessRatpack() {
+        this(null)
+    }
+
+    InProcessRatpack(String testUser) {
+        this.testUser = testUser
         server = RatpackServer.start(configure())
+        if (testUser != null) {
+            profilerProvider.userProvider = { testUser } as UserProvider
+        }
     }
 
     protected Action<? super RatpackServerSpec> configure() {
@@ -43,21 +51,22 @@ class InProcessRatpack implements InProcessTestedServer {
                 bindings.module(MiniProfilerModule)
             })
             spec.handlers { chain ->
-                chain.get('test-page') { ctx ->
-                    def provider = ctx.get(ProfilerProvider)
-                    def profiler = new ProfilerImpl('/test-page', ProfileLevel.Info, provider)
-                    def child = profiler.step('child step')
-                    child.addCustomTiming('sql', 'reader', 'select * from people', 50L)
-                    child.stop()
-                    profiler.stop()
-                    provider.storage.save(profiler)
-                    def scriptTag = new ScriptTagWriter(provider).printScriptTag(profiler)
-                    def html = """\
-                        <html><head>${scriptTag}</head><body>
-                        <h1>Test Page</h1>
-                        <button id="ajax-call" onclick="fetch('/ajax-endpoint').then(r => r.text())">Make AJAX Call</button>
-                        </body></html>""".stripIndent()
-                    ctx.response.send('text/html; charset=utf-8', html)
+                chain.prefix('test-page') { testPageChain ->
+                    testPageChain.insert(MiniProfilerStartProfilingHandlers)
+                    testPageChain.get { ctx ->
+                        def provider = ctx.get(ProfilerProvider)
+                        def profiler = provider.current()
+                        def child = profiler.step('child step')
+                        child.addCustomTiming('sql', 'reader', 'select * from people', 50L)
+                        child.stop()
+                        def scriptTag = new ScriptTagWriter(provider).printScriptTag(profiler)
+                        def html = """\
+                            <html><head>${scriptTag}</head><body>
+                            <h1>Test Page</h1>
+                            <button id="ajax-call" onclick="fetch('/ajax-endpoint').then(r => r.text())">Make AJAX Call</button>
+                            </body></html>""".stripIndent()
+                        ctx.response.send('text/html; charset=utf-8', html)
+                    }
                 }
                 chain.prefix('ajax-endpoint') { ajaxChain ->
                     ajaxChain.insert(MiniProfilerStartProfilingHandlers)
@@ -83,6 +92,38 @@ class InProcessRatpack implements InProcessTestedServer {
     @Override
     ProfilerProvider getProfilerProvider() {
         server.registry.get().get(ProfilerProvider)
+    }
+
+    @Override
+    String getTestUser() { testUser }
+
+    @Override
+    void waitForProfilerSave(UUID id) {
+        def storage = profilerProvider.storage as io.jdev.miniprofiler.storage.MapStorage
+        def deadline = System.currentTimeMillis() + 2000
+        // Wait for both the save and the setUnviewed to complete — they are chained
+        // asynchronously in RatpackContextProfilerProvider.saveProfiler()
+        while (System.currentTimeMillis() < deadline) {
+            if (storage.load(id) == null) {
+                Thread.sleep(50)
+                continue
+            }
+            if (testUser == null || !storage.getUnviewedIds(testUser).isEmpty()) {
+                break
+            }
+            Thread.sleep(50)
+        }
+    }
+
+    @Override
+    void clearProfiles() {
+        def storage = profilerProvider.storage as io.jdev.miniprofiler.storage.MapStorage
+        // Clear twice with a pause to drain any in-flight async saves from the previous test.
+        // RatpackContextProfilerProvider.saveProfiler() chains saveAsync → setUnviewedAsync
+        // asynchronously, so a setUnviewed call may land after the first clear.
+        storage.clear()
+        Thread.sleep(100)
+        storage.clear()
     }
 
     @Override

@@ -16,6 +16,7 @@
 
 plugins {
     id("build.browser-test")
+    id("build.integration-test")
     id("build.java-module")
     id("build.publish")
     id("build.ratpack")
@@ -37,6 +38,12 @@ dependencies {
     testImplementation(projects.test)
     testImplementation(libs.ratpack.test)
     testImplementation(libs.ratpack.groovy.test)
+
+    integrationTestImplementation(projects.core)
+    integrationTestImplementation(projects.testlibIntegration)
+    integrationTestImplementation(testFixtures(project))
+    integrationTestImplementation(libs.ratpack.core)
+    integrationTestImplementation(libs.ratpack.guice)
 
     testFixturesImplementation(projects.testlibIntegration)
     testFixturesImplementation(libs.groovy.v4)

@@ -18,6 +18,7 @@ package io.jdev.miniprofiler.ratpack
 
 import io.jdev.miniprofiler.ProfileLevel
 import io.jdev.miniprofiler.internal.ProfilerImpl
+import io.jdev.miniprofiler.storage.MapStorage
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import ratpack.func.Action
 import ratpack.test.handling.RequestFixture
@@ -114,6 +115,30 @@ class MiniProfilerResultsHandlerSpec extends Specification {
         then: '400 sent'
         result.sentResponse
         result.status.code == 400
+    }
+
+    void "handler marks profiler as viewed when serving results"() {
+        given:
+        def viewedProvider = new TestProfilerProvider()
+        def viewedProfiler = new ProfilerImpl("viewed-test", ProfileLevel.Info, viewedProvider)
+        viewedProfiler.setUser('alice')
+        viewedProfiler.stop()
+        def storage = (MapStorage) viewedProvider.storage
+        storage.save(viewedProfiler)
+        storage.setUnviewed('alice', viewedProfiler.id)
+        def viewedHandler = new MiniProfilerResultsHandler(viewedProvider)
+
+        when:
+        def result = handle(viewedHandler, { RequestFixture req ->
+            req.body("{\"Id\":\"$viewedProfiler.id\"}", APPLICATION_JSON)
+            req.header(ACCEPT, APPLICATION_JSON)
+        } as Action)
+
+        then:
+        result.status.code == 200
+
+        and: 'profiler is no longer unviewed'
+        storage.getUnviewedIds('alice').isEmpty()
     }
 
     void "handler serves standalone results page"() {
