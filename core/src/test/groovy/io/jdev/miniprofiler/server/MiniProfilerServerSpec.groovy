@@ -18,9 +18,12 @@ package io.jdev.miniprofiler.server
 
 import groovy.json.JsonSlurper
 import io.jdev.miniprofiler.Profiler
+import io.jdev.miniprofiler.storage.MapStorage
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import spock.lang.AutoCleanup
 import spock.lang.Specification
+
+import java.util.concurrent.atomic.AtomicInteger
 
 class MiniProfilerServerSpec extends Specification {
 
@@ -224,6 +227,40 @@ class MiniProfilerServerSpec extends Specification {
 
         then:
         conn.responseCode == 405
+    }
+
+    // ---- close / provider lifecycle --------------------------------------
+
+    void "close() closes the provider by default"() {
+        given:
+        def closeCount = new AtomicInteger(0)
+        def trackingStorage = new MapStorage() {
+            @Override void close() { closeCount.incrementAndGet() }
+        }
+        def localProvider = new TestProfilerProvider(storage: trackingStorage)
+        def localServer = new MiniProfilerServer(localProvider)
+
+        when:
+        localServer.close()
+
+        then:
+        closeCount.get() == 1
+    }
+
+    void "close() does not close the provider when closeProviderOnClose is false"() {
+        given:
+        def closeCount = new AtomicInteger(0)
+        def trackingStorage = new MapStorage() {
+            @Override void close() { closeCount.incrementAndGet() }
+        }
+        def localProvider = new TestProfilerProvider(storage: trackingStorage)
+        def localServer = new MiniProfilerServer(localProvider, null, false)
+
+        when:
+        localServer.close()
+
+        then:
+        closeCount.get() == 0
     }
 
     // ---- customizer ------------------------------------------------------

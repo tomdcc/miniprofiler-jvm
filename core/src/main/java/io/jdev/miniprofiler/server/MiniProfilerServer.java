@@ -60,6 +60,7 @@ public class MiniProfilerServer implements AutoCloseable {
     private final ProfilerProvider provider;
     private final HttpServer httpServer;
     private final ResourceHelper resourceHelper = new ResourceHelper();
+    private final boolean closeProviderOnClose;
 
     /**
      * Creates and starts a server on a random available port.
@@ -68,7 +69,7 @@ public class MiniProfilerServer implements AutoCloseable {
      * @throws IOException if the server cannot be started
      */
     public MiniProfilerServer(ProfilerProvider provider) throws IOException {
-        this(provider, null);
+        this(provider, null, true);
     }
 
     /**
@@ -81,7 +82,24 @@ public class MiniProfilerServer implements AutoCloseable {
      * @throws IOException if the server cannot be started
      */
     public MiniProfilerServer(ProfilerProvider provider, Consumer<HttpServer> customizer) throws IOException {
+        this(provider, customizer, true);
+    }
+
+    /**
+     * Creates and starts a server on a random available port.
+     *
+     * @param provider             the profiler provider supplying UI config, storage, and profiler results
+     * @param customizer           optional consumer called on the {@link HttpServer} before start;
+     *                             use it to register additional contexts
+     * @param closeProviderOnClose if {@code true}, {@link #close()} will also call
+     *                             {@link ProfilerProvider#close()} on the provider; set to
+     *                             {@code false} when the provider lifecycle is managed externally
+     * @throws IOException if the server cannot be started
+     */
+    public MiniProfilerServer(ProfilerProvider provider, Consumer<HttpServer> customizer,
+            boolean closeProviderOnClose) throws IOException {
         this.provider = provider;
+        this.closeProviderOnClose = closeProviderOnClose;
         String path = provider.getUiConfig().getPath();
         String basePath = path.endsWith("/") ? path : path + "/";
 
@@ -144,10 +162,13 @@ public class MiniProfilerServer implements AutoCloseable {
         return "http://127.0.0.1:" + getPort() + "/";
     }
 
-    /** Stops the server immediately. */
+    /** Stops the server and, if {@code closeProviderOnClose} is {@code true}, closes the provider. */
     @Override
     public void close() {
         httpServer.stop(0);
+        if (closeProviderOnClose) {
+            provider.close();
+        }
     }
 
     private void handleResults(HttpExchange exchange) throws IOException {
