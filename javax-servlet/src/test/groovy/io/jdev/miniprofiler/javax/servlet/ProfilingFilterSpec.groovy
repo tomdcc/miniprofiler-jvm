@@ -397,6 +397,18 @@ class ProfilingFilterSpec extends Specification {
         parsed.size() <= 3  // current + max 2 previous
     }
 
+    void "destroy closes the profiler provider"() {
+        given:
+        def mockProvider = Mock(ProfilerProvider)
+        filter.profilerProvider = mockProvider
+
+        when:
+        filter.destroy()
+
+        then:
+        1 * mockProvider.close()
+    }
+
     void "serveResults marks profiler as viewed"() {
         given: 'a profiler stored and marked unviewed for alice'
         storage.profiler = new ProfilerImpl("test", ProfileLevel.Info, profilerProvider).tap { p ->

@@ -413,6 +413,18 @@ class ProfilingFilterSpec extends Specification {
         then: 'profiler is no longer in unviewed set'
         !storage.getUnviewedIds('alice').contains(storage.profiler.id)
     }
+
+    void "destroy closes the profiler provider"() {
+        given:
+        def mockProvider = Mock(ProfilerProvider)
+        filter.profilerProvider = mockProvider
+
+        when:
+        filter.destroy()
+
+        then:
+        1 * mockProvider.close()
+    }
 }
 
 class MockFilterChain implements FilterChain {
