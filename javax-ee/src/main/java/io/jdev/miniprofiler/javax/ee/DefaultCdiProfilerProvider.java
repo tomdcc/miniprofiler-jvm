@@ -18,6 +18,7 @@ package io.jdev.miniprofiler.javax.ee;
 
 import io.jdev.miniprofiler.DefaultProfilerProvider;
 
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
 
@@ -28,5 +29,11 @@ public class DefaultCdiProfilerProvider extends DefaultProfilerProvider {
 
     /** Default constructor for CDI. */
     public DefaultCdiProfilerProvider() {
+    }
+
+    /** Called by the CDI container on application undeploy to release storage resources. */
+    @PreDestroy
+    public void shutdown() {
+        close();
     }
 }
