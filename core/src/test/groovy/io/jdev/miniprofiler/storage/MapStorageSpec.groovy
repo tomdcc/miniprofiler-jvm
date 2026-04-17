@@ -158,4 +158,126 @@ class MapStorageSpec extends Specification {
         then:
         result.toList() == [val2.id, val1.id]
     }
+
+    void "getUnviewedIds returns empty for unknown user"() {
+        expect:
+        storage.getUnviewedIds('alice').empty
+    }
+
+    void "getUnviewedIds returns empty for null user"() {
+        expect:
+        storage.getUnviewedIds(null).empty
+    }
+
+    void "setUnviewed and getUnviewedIds round-trip for one user"() {
+        given:
+        def p = new ProfilerImpl('test', ProfileLevel.Info, profilerProvider)
+        storage.save(p)
+
+        when:
+        storage.setUnviewed('alice', p.id)
+
+        then:
+        storage.getUnviewedIds('alice') as Set == [p.id] as Set
+    }
+
+    void "setUnviewed tracks independently per user"() {
+        given:
+        def p1 = new ProfilerImpl('test1', ProfileLevel.Info, profilerProvider)
+        def p2 = new ProfilerImpl('test2', ProfileLevel.Info, profilerProvider)
+        storage.save(p1)
+        storage.save(p2)
+
+        when:
+        storage.setUnviewed('alice', p1.id)
+        storage.setUnviewed('bob', p2.id)
+
+        then:
+        storage.getUnviewedIds('alice') as Set == [p1.id] as Set
+        storage.getUnviewedIds('bob') as Set == [p2.id] as Set
+    }
+
+    void "setViewed removes id from unviewed set"() {
+        given:
+        def p = new ProfilerImpl('test', ProfileLevel.Info, profilerProvider)
+        storage.save(p)
+        storage.setUnviewed('alice', p.id)
+
+        when:
+        storage.setViewed('alice', p.id)
+
+        then:
+        storage.getUnviewedIds('alice').empty
+    }
+
+    void "setViewed for unknown user is a no-op"() {
+        when:
+        storage.setViewed('nobody', UUID.randomUUID())
+
+        then:
+        noExceptionThrown()
+    }
+
+    void "setUnviewed ignores null user"() {
+        when:
+        storage.setUnviewed(null, UUID.randomUUID())
+
+        then:
+        noExceptionThrown()
+    }
+
+    void "setUnviewed ignores null id"() {
+        when:
+        storage.setUnviewed('alice', null)
+
+        then:
+        noExceptionThrown()
+        storage.getUnviewedIds('alice').empty
+    }
+
+    void "LRU-evicted ids are filtered out of getUnviewedIds"() {
+        given: 'maxSize=2 storage'
+        def p1 = new ProfilerImpl('test1', ProfileLevel.Info, profilerProvider)
+        def p2 = new ProfilerImpl('test2', ProfileLevel.Info, profilerProvider)
+        def p3 = new ProfilerImpl('test3', ProfileLevel.Info, profilerProvider)
+        storage.save(p1)
+        storage.save(p2)
+        storage.setUnviewed('alice', p1.id)
+
+        when: 'saving a third entry evicts p1'
+        storage.save(p3)
+
+        then:
+        !storage.getUnviewedIds('alice').contains(p1.id)
+    }
+
+    void "LRU-evicted ids are pruned from unviewedByUser on getUnviewedIds"() {
+        given: 'maxSize=2 storage'
+        def p1 = new ProfilerImpl('test1', ProfileLevel.Info, profilerProvider)
+        def p2 = new ProfilerImpl('test2', ProfileLevel.Info, profilerProvider)
+        def p3 = new ProfilerImpl('test3', ProfileLevel.Info, profilerProvider)
+        storage.save(p1)
+        storage.save(p2)
+        storage.setUnviewed('alice', p1.id)
+        storage.save(p3) // evicts p1
+
+        when:
+        storage.getUnviewedIds('alice')
+
+        then: 'stale entry is removed from the internal set'
+        !storage.unviewedByUser['alice'].contains(p1.id)
+    }
+
+    void "clear resets unviewed state"() {
+        given:
+        def p = new ProfilerImpl('test', ProfileLevel.Info, profilerProvider)
+        storage.save(p)
+        storage.setUnviewed('alice', p.id)
+
+        when:
+        storage.clear()
+
+        then:
+        storage.getUnviewedIds('alice').empty
+    }
 }
