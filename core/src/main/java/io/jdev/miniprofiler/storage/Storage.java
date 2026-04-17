@@ -18,6 +18,7 @@ package io.jdev.miniprofiler.storage;
 
 import io.jdev.miniprofiler.internal.ProfilerImpl;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
@@ -89,4 +90,15 @@ public interface Storage {
      * @return a list of ids that the user hasn't viewed
      */
     Collection<UUID> getUnviewedIds(String user);
+
+    /** Removes all stored profiling sessions and resets associated state. Default: no-op. */
+    default void clear() {}
+
+    /**
+     * Removes all profiling sessions that started before the given cutoff instant.
+     * Default: no-op.
+     *
+     * @param cutoff sessions started strictly before this instant are removed
+     */
+    default void expireOlderThan(Instant cutoff) {}
 }

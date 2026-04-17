@@ -18,11 +18,13 @@ package io.jdev.miniprofiler.storage;
 
 import io.jdev.miniprofiler.internal.ProfilerImpl;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -128,9 +130,29 @@ public class MapStorage extends BaseStorage {
     }
 
     /** Removes all cached profiler sessions and resets unviewed state. */
+    @Override
     public void clear() {
         cache.clear();
         unviewedByUser.clear();
+    }
+
+    @Override
+    public void expireOlderThan(Instant cutoff) {
+        long cutoffMs = cutoff.toEpochMilli();
+        Set<UUID> removed = new HashSet<>();
+        synchronized (cache) {
+            Iterator<Map.Entry<UUID, ProfilerImpl>> it = cache.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<UUID, ProfilerImpl> entry = it.next();
+                if (entry.getValue().getStarted() < cutoffMs) {
+                    removed.add(entry.getKey());
+                    it.remove();
+                }
+            }
+        }
+        if (!removed.isEmpty()) {
+            unviewedByUser.values().forEach(set -> set.removeAll(removed));
+        }
     }
 
     private static class LRUMapCache extends LinkedHashMap<UUID, ProfilerImpl> {
