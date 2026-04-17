@@ -23,6 +23,7 @@ import spock.lang.Specification
 
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicInteger
 
 class DefaultProfilerProviderSpec extends Specification {
 
@@ -73,6 +74,24 @@ class DefaultProfilerProviderSpec extends Specification {
 
         and: 'still current in that thread'
         otherProfiler == executorService.submit({ profilerProvider.current }).get()
+    }
+
+    void "close is idempotent: storage.close() called only once even if close() is called multiple times"() {
+        given:
+        def closeCount = new AtomicInteger(0)
+        def trackingStorage = new MapStorage() {
+            @Override
+            void close() { closeCount.incrementAndGet() }
+        }
+        profilerProvider.storage = trackingStorage
+
+        when:
+        profilerProvider.close()
+        profilerProvider.close()
+        profilerProvider.close()
+
+        then:
+        closeCount.get() == 1
     }
 
 }

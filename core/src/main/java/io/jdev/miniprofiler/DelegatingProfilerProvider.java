@@ -129,4 +129,9 @@ public abstract class DelegatingProfilerProvider implements ProfilerProvider {
         getDelegate().setUserProvider(userProvider);
     }
 
+    @Override
+    public void close() {
+        getDelegate().close();
+    }
+
 }

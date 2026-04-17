@@ -42,7 +42,7 @@ import java.util.UUID;
  * instance can be set using
  * {@link MiniProfiler#setProfilerProvider(ProfilerProvider)}.</p>
  */
-public interface ProfilerProvider {
+public interface ProfilerProvider extends AutoCloseable {
 
     /**
      * Start a new profiling session with the default {@link ProfileLevel#Info} level.
@@ -200,5 +200,23 @@ public interface ProfilerProvider {
      * @see UserProvider
      */
     void setUserProvider(UserProvider userProvider);
+
+    /**
+     * Releases resources held by this provider and its associated storage.
+     * Default: closes the provider's {@link Storage}.
+     *
+     * <p>Implementations must be idempotent: calling {@code close()} more than
+     * once must have no further effect after the first call. This is important
+     * because a provider may be registered with multiple container lifecycle hooks
+     * (e.g. a CDI {@code @PreDestroy} and a servlet {@code destroy()}) that
+     * both fire on application undeploy.</p>
+     *
+     * <p>{@link BaseProfilerProvider} provides an idempotent implementation via
+     * an {@link java.util.concurrent.atomic.AtomicBoolean} guard.</p>
+     */
+    @Override
+    default void close() {
+        getStorage().close();
+    }
 
 }

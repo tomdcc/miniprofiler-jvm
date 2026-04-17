@@ -30,6 +30,7 @@ import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Support class for profiler providers. This provides most functionality
@@ -46,6 +47,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
     private volatile UserProvider userProvider;
     private String machineName = getDefaultHostname();
     private ProfilerUiConfig uiConfig;
+    private final AtomicBoolean closed = new AtomicBoolean(false);
 
     /**
      * Called after a new profiler is created. Subclasses should
@@ -349,6 +351,17 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
     @Override
     public void setUiConfig(ProfilerUiConfig uiConfig) {
         this.uiConfig = uiConfig;
+    }
+
+    /**
+     * Closes this provider and its storage. Idempotent: only the first call
+     * has any effect; subsequent calls are silently ignored.
+     */
+    @Override
+    public void close() {
+        if (closed.compareAndSet(false, true)) {
+            getStorage().close();
+        }
     }
 
 }

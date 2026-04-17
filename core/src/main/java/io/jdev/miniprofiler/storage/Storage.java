@@ -91,7 +91,12 @@ public interface Storage extends AutoCloseable {
      */
     Collection<UUID> getUnviewedIds(String user);
 
-    /** Releases any resources held by this storage. Default: no-op. */
+    /**
+     * Releases any resources held by this storage. Default: no-op.
+     *
+     * <p>Implementations must be idempotent: calling {@code close()} more than
+     * once must have no further effect after the first call.</p>
+     */
     @Override
     default void close() {}
 
