@@ -347,6 +347,72 @@ class ProfilingFilterSpec extends Specification {
         and: 'serves includes script tag'
         body.contains("<script type='text/javascript' id='mini-profiler' src='/miniprofiler/includes.js?version=")
     }
+
+    void "X-MiniProfiler-Ids header includes previously unviewed ids for authenticated user"() {
+        given: 'a previous unviewed id'
+        def previousId = UUID.randomUUID()
+        storage.setUnviewed('alice', previousId)
+
+        and: 'an authenticated request'
+        request.requestURI = '/foo'
+        request.userPrincipal = { 'alice' } as Principal
+
+        when:
+        filter.doFilter(request, response, chain)
+
+        then: 'header contains both previous id and current profiler id'
+        def header = response.getHeader('X-MiniProfiler-Ids')
+        header.contains(previousId.toString())
+        header.contains(storage.profiler.id.toString())
+    }
+
+    void "X-MiniProfiler-Ids header contains only current id when no user"() {
+        given:
+        request.requestURI = '/foo'
+
+        when:
+        filter.doFilter(request, response, chain)
+
+        then:
+        response.getHeader('X-MiniProfiler-Ids') == """["${storage.profiler.id}"]"""
+    }
+
+    void "X-MiniProfiler-Ids header caps previously unviewed ids at maxUnviewedProfiles"() {
+        given:
+        profilerProvider.uiConfig.maxUnviewedProfiles = 2
+        5.times { storage.setUnviewed('alice', UUID.randomUUID()) }
+
+        and:
+        request.requestURI = '/foo'
+        request.userPrincipal = { 'alice' } as Principal
+
+        when:
+        filter.doFilter(request, response, chain)
+
+        then: 'header contains current id plus at most 2 previous ids'
+        def header = response.getHeader('X-MiniProfiler-Ids')
+        def parsed = new groovy.json.JsonSlurper().parseText(header) as List
+        parsed.contains(storage.profiler.id.toString())
+        parsed.size() <= 3  // current + max 2 previous
+    }
+
+    void "serveResults marks profiler as viewed"() {
+        given: 'a profiler stored and marked unviewed for alice'
+        storage.profiler = new ProfilerImpl("test", ProfileLevel.Info, profilerProvider).tap { p ->
+            p.user = 'alice'
+            stop()
+        }
+        storage.setUnviewed('alice', storage.profiler.id)
+
+        when: 'results are fetched'
+        request.requestURI = '/miniprofiler/results'
+        request.addHeader('Accept', 'application/json')
+        request.content = """{"Id":"${storage.profiler.id}"}""".bytes
+        filter.doFilter(request, response, chain)
+
+        then: 'profiler is no longer in unviewed set'
+        !storage.getUnviewedIds('alice').contains(storage.profiler.id)
+    }
 }
 
 class MockFilterChain implements FilterChain {

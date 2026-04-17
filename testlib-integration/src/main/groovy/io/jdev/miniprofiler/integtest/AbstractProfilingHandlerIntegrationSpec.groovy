@@ -164,6 +164,47 @@ abstract class AbstractProfilingHandlerIntegrationSpec extends Specification {
         response.statusCode() == 404
     }
 
+    @Requires({ instance.server.testUser && instance.server.profiledPagePath })
+    void 'unviewed id from previous request appears in X-MiniProfiler-Ids header of next request'() {
+        when: 'first request is made but results are not fetched'
+        def firstResponse = client.get(server.profiledPagePath)
+        def firstId = firstResponse.miniProfilerId()
+
+        and: 'second request is made'
+        def secondResponse = client.get(server.profiledPagePath)
+
+        then: 'the second response header includes the first request id as unviewed'
+        secondResponse.miniProfilerIds().contains(firstId)
+    }
+
+    @Requires({ instance.server.testUser && instance.server.profiledPagePath })
+    void 'after a profiled request the profiler id appears in getUnviewedIds for the test user'() {
+        when:
+        def response = client.get(server.profiledPagePath)
+
+        then:
+        response.statusCode() == 200
+        def id = UUID.fromString(response.miniProfilerId())
+        (server.profilerProvider.storage as io.jdev.miniprofiler.storage.MapStorage)
+            .getUnviewedIds(server.testUser).contains(id)
+    }
+
+    @Requires({ instance.server.testUser && instance.server.profiledPagePath })
+    void 'fetching results removes the profiler id from getUnviewedIds'() {
+        given:
+        def pageResponse = client.get(server.profiledPagePath)
+        def id = pageResponse.miniProfilerId()
+        assert (server.profilerProvider.storage as io.jdev.miniprofiler.storage.MapStorage)
+            .getUnviewedIds(server.testUser).contains(UUID.fromString(id))
+
+        when:
+        client.getResultsJson(id)
+
+        then:
+        !(server.profilerProvider.storage as io.jdev.miniprofiler.storage.MapStorage)
+            .getUnviewedIds(server.testUser).contains(UUID.fromString(id))
+    }
+
     @Requires({ instance.server.ajaxEndpointPath })
     void 'ajax endpoint is profiled with X-MiniProfiler-Ids header'() {
         when:

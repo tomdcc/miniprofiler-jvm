@@ -183,6 +183,21 @@ class MiniProfilerServerSpec extends Specification {
         conn.responseCode == 405
     }
 
+    void "handleResults marks profiler as viewed"() {
+        given: 'a profiler with a known user, stored and marked unviewed'
+        Profiler userProfiler = provider.start('user-request')
+        (userProfiler as io.jdev.miniprofiler.internal.ProfilerImpl).user = 'alice'
+        userProfiler.stop()
+        provider.storage.setUnviewed('alice', userProfiler.id)
+
+        when: 'results are fetched'
+        def conn = connect("miniprofiler/results?id=${userProfiler.id}", APPLICATION_JSON)
+        conn.responseCode  // consume
+
+        then: 'profiler is no longer in unviewed set'
+        provider.storage.getUnviewedIds('alice').empty
+    }
+
     // ---- static resources ------------------------------------------------
 
     void "GET static resource returns content with correct content type"() {

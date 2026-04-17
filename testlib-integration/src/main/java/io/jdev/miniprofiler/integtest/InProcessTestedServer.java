@@ -62,6 +62,19 @@ public interface InProcessTestedServer extends TestedServer {
         return null;
     }
 
+    /**
+     * Returns a fixed username configured on the server's {@code UserProvider}, or {@code null}
+     * if this server does not configure a user provider.
+     *
+     * <p>Integration tests gated on a non-null value can use this user to verify
+     * viewed/unviewed state.</p>
+     *
+     * @return the test user name, or {@code null}
+     */
+    default String getTestUser() {
+        return null;
+    }
+
     default void addProfile(ProfilerImpl profiler) {
         getProfilerProvider().getStorage().save(profiler);
     }

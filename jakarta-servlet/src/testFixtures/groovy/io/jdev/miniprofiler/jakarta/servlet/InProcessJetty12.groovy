@@ -44,10 +44,16 @@ import org.eclipse.jetty.util.security.Password
  */
 class InProcessJetty12 implements InProcessTestedServer {
 
-    private final DefaultProfilerProvider profilerProvider = new DefaultProfilerProvider()
+    private final DefaultProfilerProvider profilerProvider
     private final Server server
+    private final String testUser
 
-    InProcessJetty12() {
+    InProcessJetty12(String testUser = null) {
+        this.testUser = testUser
+        profilerProvider = new DefaultProfilerProvider()
+        if (testUser != null) {
+            profilerProvider.setUserProvider { testUser }
+        }
         server = new Server(0).tap {
             server.handler = new ServletContextHandler('/').tap {
                 securityHandler = buildSecurityHandler()
@@ -119,6 +125,9 @@ class InProcessJetty12 implements InProcessTestedServer {
             constraintMappings = [mapping]
         }
     }
+
+    @Override
+    String getTestUser() { testUser }
 
     @Override
     String getProfiledPagePath() { 'test-page' }

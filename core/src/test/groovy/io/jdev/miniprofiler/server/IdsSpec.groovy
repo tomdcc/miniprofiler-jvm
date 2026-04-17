@@ -18,7 +18,7 @@ package io.jdev.miniprofiler.server
 
 import spock.lang.Specification
 
-class IdParserSpec extends Specification {
+class IdsSpec extends Specification {
 
     static final UUID ID = UUID.fromString('12345678-1234-1234-1234-123456789abc')
     static final String JSON_BODY = """{"Id": "${ID}"}"""
@@ -27,67 +27,67 @@ class IdParserSpec extends Specification {
 
     void "parses id from JSON body when Accept is application/json"() {
         expect:
-        IdParser.parseId(APPLICATION_JSON, JSON_BODY, null) == ID
+        Ids.parseId(APPLICATION_JSON, JSON_BODY, null) == ID
     }
 
     void "parses id from JSON body when Accept contains application/json among other types"() {
         expect:
-        IdParser.parseId("$TEXT_HTML, $APPLICATION_JSON", JSON_BODY, null) == ID
+        Ids.parseId("$TEXT_HTML, $APPLICATION_JSON", JSON_BODY, null) == ID
     }
 
     void "falls back to id param when JSON body is valid JSON but has no Id field"() {
         expect:
-        IdParser.parseId(APPLICATION_JSON, '{"foo": "bar"}', ID.toString()) == ID
+        Ids.parseId(APPLICATION_JSON, '{"foo": "bar"}', ID.toString()) == ID
     }
 
     void "falls back to id param when JSON body is malformed JSON"() {
         expect:
-        IdParser.parseId(APPLICATION_JSON, 'not-json', ID.toString()) == ID
+        Ids.parseId(APPLICATION_JSON, 'not-json', ID.toString()) == ID
     }
 
     void "falls back to id param when JSON body is null"() {
         expect:
-        IdParser.parseId(APPLICATION_JSON, null, ID.toString()) == ID
+        Ids.parseId(APPLICATION_JSON, null, ID.toString()) == ID
     }
 
     void "falls back to id param when JSON body is empty"() {
         expect:
-        IdParser.parseId(APPLICATION_JSON, '', ID.toString()) == ID
+        Ids.parseId(APPLICATION_JSON, '', ID.toString()) == ID
     }
 
     void "parses id from id param when Accept is not JSON"() {
         expect:
-        IdParser.parseId(TEXT_HTML, null, ID.toString()) == ID
+        Ids.parseId(TEXT_HTML, null, ID.toString()) == ID
     }
 
     void "parses id from id param when Accept is null"() {
         expect:
-        IdParser.parseId(null, null, ID.toString()) == ID
+        Ids.parseId(null, null, ID.toString()) == ID
     }
 
     void "ignores JSON body when Accept is not JSON"() {
         expect:
         // Body is valid JSON but Accept is text/html, so body is ignored
-        IdParser.parseId(TEXT_HTML, JSON_BODY, ID.toString()) == ID
+        Ids.parseId(TEXT_HTML, JSON_BODY, ID.toString()) == ID
     }
 
     void "returns null when all inputs are null"() {
         expect:
-        IdParser.parseId(null, null, null) == null
+        Ids.parseId(null, null, null) == null
     }
 
     void "returns null when id param is null and no JSON body"() {
         expect:
-        IdParser.parseId(APPLICATION_JSON, null, null) == null
+        Ids.parseId(APPLICATION_JSON, null, null) == null
     }
 
     void "returns null when id param is empty"() {
         expect:
-        IdParser.parseId(null, null, '') == null
+        Ids.parseId(null, null, '') == null
     }
 
     void "returns null when id param is not a valid UUID"() {
         expect:
-        IdParser.parseId(null, null, 'not-a-uuid') == null
+        Ids.parseId(null, null, 'not-a-uuid') == null
     }
 }

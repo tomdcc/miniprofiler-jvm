@@ -41,16 +41,23 @@ public class TestStorage implements Storage {
         profiler.id == id ? profiler : null
     }
 
+    Map<String, Set<UUID>> unviewedByUser = [:]
+
     @Override
     public void setUnviewed(String user, UUID id) {
+        if (user == null) { return }
+        unviewedByUser.computeIfAbsent(user, { [] as LinkedHashSet }).add(id)
     }
 
     @Override
     public void setViewed(String user, UUID id) {
+        if (user == null) { return }
+        unviewedByUser[user]?.remove(id)
     }
 
     @Override
     public Collection<UUID> getUnviewedIds(String user) {
-        Collections.emptyList()
+        if (user == null) { return [] }
+        unviewedByUser[user] ?: []
     }
 }

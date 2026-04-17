@@ -200,7 +200,12 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
      * @param currentProfiler the profiler session to save
      */
     protected void saveProfiler(ProfilerImpl currentProfiler) {
-        getStorage().save(currentProfiler);
+        Storage storage = getStorage();
+        storage.save(currentProfiler);
+        String user = currentProfiler.getUser();
+        if (user != null) {
+            storage.setUnviewed(user, currentProfiler.getId());
+        }
     }
 
     /**

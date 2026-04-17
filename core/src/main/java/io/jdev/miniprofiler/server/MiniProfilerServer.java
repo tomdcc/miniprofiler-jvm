@@ -168,7 +168,7 @@ public class MiniProfilerServer implements AutoCloseable {
             }
         }
 
-        UUID id = IdParser.parseId(acceptHeader, body, extractQueryParam(exchange.getRequestURI().getRawQuery(), "id"));
+        UUID id = Ids.parseId(acceptHeader, body, extractQueryParam(exchange.getRequestURI().getRawQuery(), "id"));
         if (id == null) {
             sendError(exchange, 400);
             return;
@@ -178,6 +178,10 @@ public class MiniProfilerServer implements AutoCloseable {
         if (profiler == null) {
             sendError(exchange, 404);
             return;
+        }
+        String user = profiler.getUser();
+        if (user != null) {
+            provider.getStorage().setViewed(user, id);
         }
 
         if (jsonRequest) {
