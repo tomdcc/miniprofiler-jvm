@@ -29,7 +29,7 @@ import java.util.UUID;
  * <p>Profiling info is stored for later retrieval either by AJAX from the
  * mini-profiler UI on the same page, or later inspection.</p>
  */
-public interface Storage {
+public interface Storage extends AutoCloseable {
 
     /**
      * Which order to list results in.
@@ -90,6 +90,10 @@ public interface Storage {
      * @return a list of ids that the user hasn't viewed
      */
     Collection<UUID> getUnviewedIds(String user);
+
+    /** Releases any resources held by this storage. Default: no-op. */
+    @Override
+    default void close() {}
 
     /** Removes all stored profiling sessions and resets associated state. Default: no-op. */
     default void clear() {}
