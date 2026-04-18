@@ -26,10 +26,13 @@ abstract class BaseObjectStorageConfigSpec extends Specification {
 
     abstract BaseObjectStorageConfig createConfig(Properties sysprops, Properties fileProps)
 
+    /** The property key used for the bucket/container name. Defaults to {@code "bucket"}. */
+    String getBucketPropertyKey() { "bucket" }
+
     def "reads bucket from system property"() {
         given:
         def sysprops = new Properties()
-        sysprops["${systemPropPrefix}bucket"] = "my-bucket"
+        sysprops["${systemPropPrefix}${bucketPropertyKey}"] = "my-bucket"
 
         when:
         def config = createConfig(sysprops, null)
@@ -42,7 +45,7 @@ abstract class BaseObjectStorageConfigSpec extends Specification {
     def "reads bucket from file property"() {
         given:
         def fileProps = new Properties()
-        fileProps["${filePropPrefix}bucket"] = "file-bucket"
+        fileProps["${filePropPrefix}${bucketPropertyKey}"] = "file-bucket"
 
         when:
         def config = createConfig(new Properties(), fileProps)
@@ -54,9 +57,9 @@ abstract class BaseObjectStorageConfigSpec extends Specification {
     def "system property overrides file property"() {
         given:
         def sysprops = new Properties()
-        sysprops["${systemPropPrefix}bucket"] = "sys-bucket"
+        sysprops["${systemPropPrefix}${bucketPropertyKey}"] = "sys-bucket"
         def fileProps = new Properties()
-        fileProps["${filePropPrefix}bucket"] = "file-bucket"
+        fileProps["${filePropPrefix}${bucketPropertyKey}"] = "file-bucket"
 
         when:
         def config = createConfig(sysprops, fileProps)
@@ -77,7 +80,7 @@ abstract class BaseObjectStorageConfigSpec extends Specification {
     def "empty string bucket value treated as null (not configured)"() {
         given:
         def sysprops = new Properties()
-        sysprops["${systemPropPrefix}bucket"] = ""
+        sysprops["${systemPropPrefix}${bucketPropertyKey}"] = ""
 
         when:
         def config = createConfig(sysprops, null)

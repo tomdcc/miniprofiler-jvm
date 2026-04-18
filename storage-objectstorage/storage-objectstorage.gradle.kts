@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 the original author or authors.
+ * Copyright 2014-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,16 @@ dependencies {
     compileOnly(libs.aws.auth)
     compileOnly(libs.google.cloud.storage)
     compileOnly(libs.google.auth.oauth2)
+    compileOnly(libs.azure.storage.blob)
+    compileOnly(libs.azure.identity)
 
     // compileOnly deps are not inherited by integrationTest suite — re-declare them.
     integrationTestImplementation(libs.aws.s3)
     integrationTestImplementation(libs.aws.auth)
     integrationTestImplementation(libs.google.cloud.storage)
     integrationTestImplementation(libs.google.auth.oauth2)
+    integrationTestImplementation(libs.azure.storage.blob)
+    integrationTestImplementation(libs.azure.identity)
     integrationTestImplementation(libs.testcontainers.core)
     integrationTestImplementation(libs.testcontainers.junit5)
 }

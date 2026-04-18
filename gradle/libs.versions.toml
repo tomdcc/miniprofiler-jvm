@@ -16,6 +16,8 @@
 asciidoctor = "4.0.5"
 awaitility = "4.3.0"
 aws-sdk-v2 = "2.42.31"
+azure-identity = "1.18.2"
+azure-storage-blob = "12.33.3"
 build-parameters-plugin = "1.4.5"
 byte-buddy = "1.18.8"
 checkstyle = "12.3.1"
@@ -73,9 +75,11 @@ weld-se-v3 = "3.1.9.Final"
 weld-se-v5 = "5.1.3.Final"
 
 [libraries]
+awaitility = { module = "org.awaitility:awaitility-groovy", version.ref = "awaitility" }
 aws-auth = { module = "software.amazon.awssdk:auth",  version.ref = "aws-sdk-v2" }
 aws-s3   = { module = "software.amazon.awssdk:s3",    version.ref = "aws-sdk-v2" }
-awaitility = { module = "org.awaitility:awaitility-groovy", version.ref = "awaitility" }
+azure-identity     = { module = "com.azure:azure-identity",     version.ref = "azure-identity" }
+azure-storage-blob = { module = "com.azure:azure-storage-blob", version.ref = "azure-storage-blob" }
 byte-buddy = { module = "net.bytebuddy:byte-buddy", version.ref = "byte-buddy" }
 checkstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "checkstyle" }
 codenarc = { module = "org.codenarc:CodeNarc", version.ref = "codenarc" }
