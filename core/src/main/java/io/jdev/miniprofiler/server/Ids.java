@@ -19,6 +19,8 @@ package io.jdev.miniprofiler.server;
 
 import io.jdev.miniprofiler.ProfilerProvider;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 
 /**
@@ -71,18 +73,34 @@ public final class Ids {
      * @return a JSON array string suitable for use as the {@code X-MiniProfiler-Ids} header value
      */
     public static String buildIdsHeader(UUID currentId, String user, ProfilerProvider provider) {
+        Collection<UUID> unviewedIds = user != null
+            ? provider.getStorage().getUnviewedIds(user)
+            : Collections.emptyList();
+        int max = provider.getUiConfig().getMaxUnviewedProfiles();
+        return buildIdsHeader(currentId, unviewedIds, max);
+    }
+
+    /**
+     * Builds the value of the {@code X-MiniProfiler-Ids} response header from pre-fetched data.
+     *
+     * <p>This overload accepts already-fetched unviewed IDs, allowing callers in async
+     * frameworks (e.g.&nbsp;Ratpack) to retrieve them asynchronously before building the header.</p>
+     *
+     * @param currentId           the ID of the profiler for the current request (always first in the array)
+     * @param unviewedIds         previously-unviewed profiler IDs for the current user
+     * @param maxUnviewedProfiles the maximum number of unviewed IDs to include
+     * @return a JSON array string suitable for use as the {@code X-MiniProfiler-Ids} header value
+     */
+    public static String buildIdsHeader(UUID currentId, Collection<UUID> unviewedIds, int maxUnviewedProfiles) {
         StringBuilder sb = new StringBuilder("[\"").append(currentId).append('"');
-        if (user != null) {
-            int max = provider.getUiConfig().getMaxUnviewedProfiles();
-            int count = 0;
-            for (UUID uid : provider.getStorage().getUnviewedIds(user)) {
-                if (count >= max) {
-                    break;
-                }
-                if (!uid.equals(currentId)) {
-                    sb.append(",\"").append(uid).append('"');
-                    count++;
-                }
+        int count = 0;
+        for (UUID uid : unviewedIds) {
+            if (count >= maxUnviewedProfiles) {
+                break;
+            }
+            if (!uid.equals(currentId)) {
+                sb.append(",\"").append(uid).append('"');
+                count++;
             }
         }
         return sb.append(']').toString();

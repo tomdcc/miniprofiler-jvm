@@ -40,6 +40,9 @@ import ratpack.exec.Execution;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
 
+import java.util.Collections;
+import java.util.Optional;
+
 /**
  * Handler which adds the miniprofiler id for the current request as a response header.
  *
@@ -61,12 +64,32 @@ public class MiniProfilerAjaxHeaderHandler implements Handler {
 
     @Override
     public void handle(Context ctx) throws Exception {
-        ctx.maybeGet(Profiler.class).ifPresent(profiler -> {
-            Execution.current().add(ProfilerStoreOption.class, ProfilerStoreOption.STORE_RESULTS);
-            ctx.getResponse().getHeaders().add("X-MiniProfiler-Ids",
-                Ids.buildIdsHeader(profiler.getId(), profiler.getUser(), provider));
-        });
-        ctx.next();
+        Optional<Profiler> maybeProfiler = ctx.maybeGet(Profiler.class);
+        if (!maybeProfiler.isPresent()) {
+            ctx.next();
+            return;
+        }
+        Profiler profiler = maybeProfiler.get();
+        Execution.current().add(ProfilerStoreOption.class, ProfilerStoreOption.STORE_RESULTS);
+        String user = profiler.getUser();
+        if (user == null) {
+            ctx.getResponse().getHeaders().add(
+                "X-MiniProfiler-Ids",
+                Ids.buildIdsHeader(profiler.getId(), Collections.emptyList(), 0)
+            );
+            ctx.next();
+        } else {
+            AsyncStorage asyncStorage = AsyncStorage.adapt(provider.getStorage());
+            int max = provider.getUiConfig().getMaxUnviewedProfiles();
+            asyncStorage.getUnviewedIdsAsync(user)
+                .then(unviewedIds -> {
+                    ctx.getResponse().getHeaders().add(
+                        "X-MiniProfiler-Ids",
+                        Ids.buildIdsHeader(profiler.getId(), unviewedIds, max)
+                    );
+                    ctx.next();
+                });
+        }
     }
 
 }
