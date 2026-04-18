@@ -88,4 +88,42 @@ abstract class BaseObjectStorageConfigSpec extends Specification {
         then:
         !config.configured
     }
+
+    def "expiryHours defaults to 24"() {
+        given:
+        def sysprops = new Properties()
+        sysprops["${systemPropPrefix}${bucketPropertyKey}"] = "b"
+
+        when:
+        def config = createConfig(sysprops, null)
+
+        then:
+        config.expiryHours == 24
+    }
+
+    def "expiryHours can be overridden"() {
+        given:
+        def sysprops = new Properties()
+        sysprops["${systemPropPrefix}${bucketPropertyKey}"] = "b"
+        sysprops["${systemPropPrefix}expiryHours"] = "48"
+
+        when:
+        def config = createConfig(sysprops, null)
+
+        then:
+        config.expiryHours == 48
+    }
+
+    def "expiryHours zero disables expiry"() {
+        given:
+        def sysprops = new Properties()
+        sysprops["${systemPropPrefix}${bucketPropertyKey}"] = "b"
+        sysprops["${systemPropPrefix}expiryHours"] = "0"
+
+        when:
+        def config = createConfig(sysprops, null)
+
+        then:
+        config.expiryHours == 0
+    }
 }

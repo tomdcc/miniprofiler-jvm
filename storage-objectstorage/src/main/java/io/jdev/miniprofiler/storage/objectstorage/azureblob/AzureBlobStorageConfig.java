@@ -50,7 +50,19 @@ public class AzureBlobStorageConfig extends BaseObjectStorageConfig {
      * @param endpoint  the Azure Blob endpoint URL; may be {@code null}
      */
     public AzureBlobStorageConfig(String container, String prefix, String endpoint) {
-        super(container, prefix, null, endpoint);
+        this(container, prefix, endpoint, DEFAULT_EXPIRY_HOURS);
+    }
+
+    /**
+     * Creates a new instance with explicit values.
+     *
+     * @param container   the Azure Blob container name; may be {@code null}
+     * @param prefix      the optional key prefix; may be {@code null}
+     * @param endpoint    the Azure Blob endpoint URL; may be {@code null}
+     * @param expiryHours hours after which sessions are expired; zero or negative disables
+     */
+    public AzureBlobStorageConfig(String container, String prefix, String endpoint, int expiryHours) {
+        super(container, prefix, null, endpoint, expiryHours);
     }
 
     /**
@@ -78,9 +90,10 @@ public class AzureBlobStorageConfig extends BaseObjectStorageConfig {
         if (fileProps != null) {
             propsList.add(new ConfigHelper.PropertiesWithPrefix(fileProps, FILE_PROP_PREFIX));
         }
-        String container = getProperty(propsList, "container", (String) null);
-        String prefix    = getProperty(propsList, "prefix",    (String) null);
-        String endpoint  = getProperty(propsList, "endpoint",  (String) null);
-        return new AzureBlobStorageConfig(container, prefix, endpoint);
+        String container  = getProperty(propsList, "container",   (String) null);
+        String prefix     = getProperty(propsList, "prefix",      (String) null);
+        String endpoint   = getProperty(propsList, "endpoint",    (String) null);
+        int expiryHours   = getProperty(propsList, "expiryHours", DEFAULT_EXPIRY_HOURS);
+        return new AzureBlobStorageConfig(container, prefix, endpoint, expiryHours);
     }
 }

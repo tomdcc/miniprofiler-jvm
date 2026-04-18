@@ -24,24 +24,32 @@ package io.jdev.miniprofiler.storage.objectstorage;
  */
 public abstract class BaseObjectStorageConfig {
 
+    /** Default expiry age in hours. */
+    public static final int DEFAULT_EXPIRY_HOURS = 24;
+
     private final String bucketName;
     private final String prefix;
     private final String region;
     private final String endpoint;
+    private final int expiryHours;
 
     /**
      * Creates a new instance.
      *
-     * @param bucketName the name of the bucket or container; may be {@code null}
-     * @param prefix     optional key prefix prepended to all object keys; may be {@code null}
-     * @param region     optional cloud region; may be {@code null}
-     * @param endpoint   optional endpoint URL override; may be {@code null}
+     * @param bucketName  the name of the bucket or container; may be {@code null}
+     * @param prefix      optional key prefix prepended to all object keys; may be {@code null}
+     * @param region      optional cloud region; may be {@code null}
+     * @param endpoint    optional endpoint URL override; may be {@code null}
+     * @param expiryHours hours after which profiling sessions are automatically expired;
+     *                    zero or negative disables automatic expiry
      */
-    protected BaseObjectStorageConfig(String bucketName, String prefix, String region, String endpoint) {
+    protected BaseObjectStorageConfig(String bucketName, String prefix, String region,
+                                      String endpoint, int expiryHours) {
         this.bucketName = bucketName;
         this.prefix = prefix;
         this.region = region;
         this.endpoint = endpoint;
+        this.expiryHours = expiryHours;
     }
 
     /**
@@ -78,6 +86,16 @@ public abstract class BaseObjectStorageConfig {
      */
     public String getEndpoint() {
         return endpoint;
+    }
+
+    /**
+     * Returns the expiry age in hours. Profiling sessions older than this are automatically
+     * removed. Zero or negative means automatic expiry is disabled.
+     *
+     * @return the expiry age in hours
+     */
+    public int getExpiryHours() {
+        return expiryHours;
     }
 
     /**

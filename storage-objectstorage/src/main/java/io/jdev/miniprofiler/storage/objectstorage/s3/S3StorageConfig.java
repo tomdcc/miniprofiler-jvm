@@ -42,7 +42,7 @@ public class S3StorageConfig extends BaseObjectStorageConfig {
     private static final String MINIPROFILER_RESOURCE_NAME = "/miniprofiler.properties";
 
     /**
-     * Creates a new instance with explicit values.
+     * Creates a new instance with explicit values and default expiry.
      *
      * @param bucket   the S3 bucket name; may be {@code null}
      * @param prefix   the optional key prefix; may be {@code null}
@@ -50,7 +50,20 @@ public class S3StorageConfig extends BaseObjectStorageConfig {
      * @param endpoint the endpoint URL override; may be {@code null}
      */
     public S3StorageConfig(String bucket, String prefix, String region, String endpoint) {
-        super(bucket, prefix, region, endpoint);
+        this(bucket, prefix, region, endpoint, DEFAULT_EXPIRY_HOURS);
+    }
+
+    /**
+     * Creates a new instance with explicit values.
+     *
+     * @param bucket      the S3 bucket name; may be {@code null}
+     * @param prefix      the optional key prefix; may be {@code null}
+     * @param region      the AWS region; may be {@code null}
+     * @param endpoint    the endpoint URL override; may be {@code null}
+     * @param expiryHours hours after which sessions are expired; zero or negative disables
+     */
+    public S3StorageConfig(String bucket, String prefix, String region, String endpoint, int expiryHours) {
+        super(bucket, prefix, region, endpoint, expiryHours);
     }
 
     /**
@@ -69,10 +82,11 @@ public class S3StorageConfig extends BaseObjectStorageConfig {
         if (fileProps != null) {
             propsList.add(new ConfigHelper.PropertiesWithPrefix(fileProps, FILE_PROP_PREFIX));
         }
-        String bucket   = getProperty(propsList, "bucket",   (String) null);
-        String prefix   = getProperty(propsList, "prefix",   (String) null);
-        String region   = getProperty(propsList, "region",   (String) null);
-        String endpoint = getProperty(propsList, "endpoint", (String) null);
-        return new S3StorageConfig(bucket, prefix, region, endpoint);
+        String bucket    = getProperty(propsList, "bucket",      (String) null);
+        String prefix    = getProperty(propsList, "prefix",      (String) null);
+        String region    = getProperty(propsList, "region",      (String) null);
+        String endpoint  = getProperty(propsList, "endpoint",    (String) null);
+        int expiryHours  = getProperty(propsList, "expiryHours", DEFAULT_EXPIRY_HOURS);
+        return new S3StorageConfig(bucket, prefix, region, endpoint, expiryHours);
     }
 }

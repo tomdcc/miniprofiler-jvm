@@ -22,7 +22,12 @@ import io.jdev.miniprofiler.internal.ProfilerImpl
 import io.jdev.miniprofiler.storage.Storage
 import spock.lang.Specification
 
+import java.time.Duration
 import java.time.Instant
+import java.util.concurrent.ConcurrentHashMap
+
+import static org.awaitility.Awaitility.await
+import static java.util.concurrent.TimeUnit.SECONDS
 
 class BaseObjectStorageSpec extends Specification {
 
@@ -249,6 +254,54 @@ class BaseObjectStorageSpec extends Specification {
         storage.store.keySet().any { it.contains(String.format("%019d", 3000L)) }
     }
 
+    def "scheduler expires old entries automatically"() {
+        given:
+        def expiryAge = Duration.ofMillis(200)
+        def scheduleInterval = Duration.ofMillis(100)
+        def s = new InMemoryObjectStorage(new TestConfig("bucket", null), true, expiryAge, scheduleInterval)
+        // old profiler started 10 seconds ago — well past 200ms expiry
+        def old = profilerStartedAt(Instant.now().minusSeconds(10).toEpochMilli())
+        // recent profiler started just now
+        def recent = profilerStartedAt(Instant.now().toEpochMilli())
+        s.save(old)
+        s.save(recent)
+
+        expect:
+        await().atMost(5, SECONDS).until { s.load(old.id) == null }
+        s.load(recent.id) != null
+
+        cleanup:
+        s.close()
+    }
+
+    def "close shuts down scheduler without error"() {
+        given:
+        def s = new InMemoryObjectStorage(new TestConfig("bucket", null), true,
+            Duration.ofHours(1), Duration.ofHours(1))
+
+        when:
+        s.close()
+
+        then:
+        notThrown(Exception)
+        s.closeClientCallCount == 1
+    }
+
+    def "no scheduler when expiryHours is zero"() {
+        given:
+        def s = new InMemoryObjectStorage(new TestConfig("bucket", null, 0), true)
+        def old = profilerStartedAt(1000L)
+        s.save(old)
+
+        when:
+        s.close()
+
+        then:
+        notThrown(Exception)
+        // old profiler still there — no automatic expiry
+        s.load(old.id) != null
+    }
+
     private ProfilerImpl profilerStartedAt(long startedMs) {
         ProfilerImpl p = new ProfilerImpl("test", ProfileLevel.Info, profilerProvider)
         // reflect to set started to a known value
@@ -263,16 +316,25 @@ class BaseObjectStorageSpec extends Specification {
 
     static class TestConfig extends BaseObjectStorageConfig {
         TestConfig(String bucket, String prefix) {
-            super(bucket, prefix, null, null)
+            super(bucket, prefix, null, null, DEFAULT_EXPIRY_HOURS)
+        }
+
+        TestConfig(String bucket, String prefix, int expiryHours) {
+            super(bucket, prefix, null, null, expiryHours)
         }
     }
 
     static class InMemoryObjectStorage extends BaseObjectStorage {
-        final Map<String, byte[]> store = new LinkedHashMap<>()
+        final Map<String, byte[]> store = new ConcurrentHashMap<>()
         int closeClientCallCount = 0
 
         InMemoryObjectStorage(BaseObjectStorageConfig config, boolean ownsClient) {
             super(config, ownsClient)
+        }
+
+        InMemoryObjectStorage(BaseObjectStorageConfig config, boolean ownsClient,
+                              Duration expiryAge, Duration scheduleInterval) {
+            super(config, ownsClient, expiryAge, scheduleInterval)
         }
 
         @Override
