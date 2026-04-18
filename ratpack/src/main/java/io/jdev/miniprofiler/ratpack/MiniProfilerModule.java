@@ -50,7 +50,8 @@ public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Co
     @Override
     protected void configure() {
         if (bindDefaultProvider()) {
-            bind(ProfilerProvider.class).toProvider(ProviderProvider.class).in(Singleton.class);
+            bind(RatpackContextProfilerProvider.class).toProvider(ProviderProvider.class).in(Singleton.class);
+            bind(ProfilerProvider.class).to(RatpackContextProfilerProvider.class);
         }
 
         requestStaticInjection(MiniProfilerModule.class);
@@ -64,6 +65,23 @@ public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Co
         bind(MiniProfilerResultsIndexHandler.class).in(Scopes.SINGLETON);
         bind(MiniProfilerResultsListHandler.class).in(Scopes.SINGLETON);
         bind(MiniProfilerResourceHandler.class).in(Scopes.SINGLETON);
+
+        if (isShutdownStorageOnStop()) {
+            bind(MiniProfilerShutdownService.class).in(Scopes.SINGLETON);
+        }
+    }
+
+    /**
+     * Return whether to register a {@link MiniProfilerShutdownService} that closes the
+     * {@link RatpackContextProfilerProvider} (and its storage) when the Ratpack server stops.
+     *
+     * <p>Override to return {@code true} if your storage implementation requires explicit
+     * shutdown (e.g. a storage with a background expiry thread). Defaults to {@code false}.</p>
+     *
+     * @return true to register the shutdown service
+     */
+    protected boolean isShutdownStorageOnStop() {
+        return false;
     }
 
     /**
@@ -132,7 +150,7 @@ public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Co
         MiniProfiler.setProfilerProvider(provider);
     }
 
-    private static class ProviderProvider implements Provider<ProfilerProvider> {
+    private static class ProviderProvider implements Provider<RatpackContextProfilerProvider> {
         private final Config config;
 
         @Inject
@@ -140,9 +158,8 @@ public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Co
             this.config = config;
         }
 
-
         @Override
-        public ProfilerProvider get() {
+        public RatpackContextProfilerProvider get() {
             RatpackContextProfilerProvider provider = new RatpackContextProfilerProvider();
             provider.setUiConfig(config.uiConfig);
             return provider;

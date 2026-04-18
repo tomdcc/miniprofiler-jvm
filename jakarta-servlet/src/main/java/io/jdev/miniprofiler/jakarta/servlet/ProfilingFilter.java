@@ -324,6 +324,11 @@ public class ProfilingFilter implements Filter {
         }
     }
 
+    @Override
+    public void destroy() {
+        profilerProvider.close();
+    }
+
     /**
      * Here so that DI frameworks can inject a profiler provider, rather than
      * relying on {@link MiniProfiler#start(String)}.

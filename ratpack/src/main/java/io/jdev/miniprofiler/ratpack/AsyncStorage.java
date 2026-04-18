@@ -100,6 +100,15 @@ public interface AsyncStorage extends Storage {
     }
 
     /**
+     * Asynchronously closes this storage, wrapping {@link #close()} in a {@link Blocking#op}.
+     *
+     * @return an operation that closes this storage
+     */
+    default Operation closeAsync() {
+        return Blocking.op(this::close);
+    }
+
+    /**
      * Wraps the given {@link Storage} as an {@link AsyncStorage}, returning it unchanged if it already is one.
      *
      * @param storage the storage to wrap
@@ -138,6 +147,11 @@ public interface AsyncStorage extends Storage {
                 @Override
                 public Collection<UUID> getUnviewedIds(String user) {
                     return storage.getUnviewedIds(user);
+                }
+
+                @Override
+                public void close() {
+                    storage.close();
                 }
             };
         }

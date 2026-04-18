@@ -18,6 +18,7 @@ package io.jdev.miniprofiler.jakarta.ee;
 
 import io.jdev.miniprofiler.DefaultProfilerProvider;
 
+import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Default;
 
@@ -31,5 +32,11 @@ public class DefaultCdiProfilerProvider extends DefaultProfilerProvider {
 
     /** Default constructor for CDI. */
     public DefaultCdiProfilerProvider() {
+    }
+
+    /** Called by the CDI container on application undeploy to release storage resources. */
+    @PreDestroy
+    public void shutdown() {
+        close();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2017 the original author or authors.
+ * Copyright 2013-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import spock.lang.Specification
 
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicInteger
 
 class DefaultProfilerProviderSpec extends Specification {
 
@@ -73,6 +74,24 @@ class DefaultProfilerProviderSpec extends Specification {
 
         and: 'still current in that thread'
         otherProfiler == executorService.submit({ profilerProvider.current }).get()
+    }
+
+    void "close is idempotent: storage.close() called only once even if close() is called multiple times"() {
+        given:
+        def closeCount = new AtomicInteger(0)
+        def trackingStorage = new MapStorage() {
+            @Override
+            void close() { closeCount.incrementAndGet() }
+        }
+        profilerProvider.storage = trackingStorage
+
+        when:
+        profilerProvider.close()
+        profilerProvider.close()
+        profilerProvider.close()
+
+        then:
+        closeCount.get() == 1
     }
 
 }

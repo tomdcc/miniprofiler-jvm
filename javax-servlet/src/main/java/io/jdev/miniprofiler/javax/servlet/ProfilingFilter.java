@@ -298,6 +298,7 @@ public class ProfilingFilter implements Filter {
 
     @Override
     public void destroy() {
+        profilerProvider.close();
     }
 
     /**

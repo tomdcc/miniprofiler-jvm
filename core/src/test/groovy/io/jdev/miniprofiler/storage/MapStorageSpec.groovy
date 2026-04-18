@@ -22,6 +22,8 @@ import io.jdev.miniprofiler.ProfilerProvider
 import io.jdev.miniprofiler.storage.Storage.ListResultsOrder
 import spock.lang.Specification
 
+import java.time.Instant
+
 class MapStorageSpec extends Specification {
 
     MapStorage storage
@@ -279,5 +281,58 @@ class MapStorageSpec extends Specification {
 
         then:
         storage.getUnviewedIds('alice').empty
+    }
+
+    void "expireOlderThan removes sessions started before cutoff"() {
+        given:
+        storage = new MapStorage(10)
+        def val1 = new ProfilerImpl(null, 'test1', 'test1', ProfileLevel.Info, profilerProvider)
+        Thread.sleep(10)
+        def val2 = new ProfilerImpl(null, 'test2', 'test2', ProfileLevel.Info, profilerProvider)
+        Thread.sleep(10)
+        def val3 = new ProfilerImpl(null, 'test3', 'test3', ProfileLevel.Info, profilerProvider)
+        storage.save(val1)
+        storage.save(val2)
+        storage.save(val3)
+
+        when:
+        storage.expireOlderThan(Instant.ofEpochMilli(val2.started))
+
+        then:
+        !storage.load(val1.id)
+        storage.load(val2.id) == val2
+        storage.load(val3.id) == val3
+    }
+
+    void "expireOlderThan keeps session started at exactly the cutoff"() {
+        given:
+        storage = new MapStorage(10)
+        def val = new ProfilerImpl(null, 'test', 'test', ProfileLevel.Info, profilerProvider)
+        storage.save(val)
+
+        when:
+        storage.expireOlderThan(Instant.ofEpochMilli(val.started))
+
+        then:
+        storage.load(val.id) == val
+    }
+
+    void "expireOlderThan cleans up unviewed state for removed sessions"() {
+        given:
+        storage = new MapStorage(10)
+        def val1 = new ProfilerImpl(null, 'test1', 'test1', ProfileLevel.Info, profilerProvider)
+        Thread.sleep(10)
+        def val2 = new ProfilerImpl(null, 'test2', 'test2', ProfileLevel.Info, profilerProvider)
+        storage.save(val1)
+        storage.save(val2)
+        storage.setUnviewed('alice', val1.id)
+        storage.setUnviewed('alice', val2.id)
+
+        when:
+        storage.expireOlderThan(Instant.ofEpochMilli(val2.started))
+
+        then:
+        !storage.unviewedByUser['alice'].contains(val1.id)
+        storage.unviewedByUser['alice'].contains(val2.id)
     }
 }

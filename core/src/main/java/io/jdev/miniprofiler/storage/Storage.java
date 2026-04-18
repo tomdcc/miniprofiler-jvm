@@ -18,6 +18,7 @@ package io.jdev.miniprofiler.storage;
 
 import io.jdev.miniprofiler.internal.ProfilerImpl;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
@@ -28,7 +29,7 @@ import java.util.UUID;
  * <p>Profiling info is stored for later retrieval either by AJAX from the
  * mini-profiler UI on the same page, or later inspection.</p>
  */
-public interface Storage {
+public interface Storage extends AutoCloseable {
 
     /**
      * Which order to list results in.
@@ -89,4 +90,24 @@ public interface Storage {
      * @return a list of ids that the user hasn't viewed
      */
     Collection<UUID> getUnviewedIds(String user);
+
+    /**
+     * Releases any resources held by this storage. Default: no-op.
+     *
+     * <p>Implementations must be idempotent: calling {@code close()} more than
+     * once must have no further effect after the first call.</p>
+     */
+    @Override
+    default void close() {}
+
+    /** Removes all stored profiling sessions and resets associated state. Default: no-op. */
+    default void clear() {}
+
+    /**
+     * Removes all profiling sessions that started before the given cutoff instant.
+     * Default: no-op.
+     *
+     * @param cutoff sessions started strictly before this instant are removed
+     */
+    default void expireOlderThan(Instant cutoff) {}
 }
