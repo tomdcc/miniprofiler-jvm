@@ -14,35 +14,34 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.storage.objectstorage.s3
+package io.jdev.miniprofiler.storage.objectstorage.gcs
 
 import io.jdev.miniprofiler.storage.objectstorage.BaseObjectStorageConfig
 import io.jdev.miniprofiler.storage.objectstorage.BaseObjectStorageConfigSpec
 
-class S3StorageConfigSpec extends BaseObjectStorageConfigSpec {
+class GcsStorageConfigSpec extends BaseObjectStorageConfigSpec {
 
-    String getSystemPropPrefix() { "miniprofiler.storage.s3." }
-    String getFilePropPrefix() { "storage.s3." }
+    String getSystemPropPrefix() { "miniprofiler.storage.gcs." }
+    String getFilePropPrefix() { "storage.gcs." }
 
     BaseObjectStorageConfig createConfig(Properties sysprops, Properties fileProps) {
-        S3StorageConfig.create(sysprops, fileProps)
+        GcsStorageConfig.create(sysprops, fileProps)
     }
 
-    def "reads all properties including region"() {
+    def "reads all properties with no region"() {
         given:
         def sysprops = new Properties()
-        sysprops["miniprofiler.storage.s3.bucket"]   = "b"
-        sysprops["miniprofiler.storage.s3.prefix"]   = "p/"
-        sysprops["miniprofiler.storage.s3.region"]   = "us-east-1"
-        sysprops["miniprofiler.storage.s3.endpoint"] = "http://localhost:9090"
+        sysprops["miniprofiler.storage.gcs.bucket"]   = "b"
+        sysprops["miniprofiler.storage.gcs.prefix"]   = "p/"
+        sysprops["miniprofiler.storage.gcs.endpoint"] = "http://localhost:4443"
 
         when:
-        def config = S3StorageConfig.create(sysprops, null)
+        def config = GcsStorageConfig.create(sysprops, null)
 
         then:
         config.bucketName == "b"
         config.prefix == "p/"
-        config.region == "us-east-1"
-        config.endpoint == "http://localhost:9090"
+        config.region == null
+        config.endpoint == "http://localhost:4443"
     }
 }

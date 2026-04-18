@@ -14,51 +14,50 @@
  * limitations under the License.
  */
 
-package io.jdev.miniprofiler.storage.objectstorage.s3
+package io.jdev.miniprofiler.storage.objectstorage.gcs
 
+import com.google.cloud.NoCredentials
+import com.google.cloud.storage.BucketInfo
+import com.google.cloud.storage.StorageOptions
 import io.jdev.miniprofiler.storage.objectstorage.BaseObjectStorage
 import io.jdev.miniprofiler.storage.objectstorage.BaseObjectStorageIntegrationSpec
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
-import software.amazon.awssdk.regions.Region
-import software.amazon.awssdk.services.s3.S3Client
-import software.amazon.awssdk.services.s3.model.CreateBucketRequest
 import spock.lang.Shared
 
-class S3StorageIntegrationSpec extends BaseObjectStorageIntegrationSpec {
+class GcsStorageIntegrationSpec extends BaseObjectStorageIntegrationSpec {
 
     static final String BUCKET = "test-bucket"
-    static final int PORT = 9090
+    static final int PORT = 4443
 
     @Shared GenericContainer<?> container
-    @Shared S3Client s3Client
-    @Shared S3Storage s3Storage
+    @Shared com.google.cloud.storage.Storage gcsClient
+    @Shared GcsStorage gcsStorage
 
-    BaseObjectStorage getStorage() { s3Storage }
+    BaseObjectStorage getStorage() { gcsStorage }
 
     void setupSpec() {
-        container = new GenericContainer<>("adobe/s3mock:latest")
+        container = new GenericContainer<>("fsouza/fake-gcs-server:latest")
             .withExposedPorts(PORT)
+            .withCommand("-scheme", "http")
             .waitingFor(Wait.forListeningPort())
         container.start()
 
         String endpoint = "http://${container.host}:${container.getMappedPort(PORT)}"
-        def config = new S3StorageConfig(BUCKET, null, "us-east-1", endpoint)
-        s3Client = S3Client.builder()
-            .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create("test", "test")))
-            .region(Region.of("us-east-1"))
-            .endpointOverride(URI.create(endpoint))
-            .forcePathStyle(true)
+        gcsClient = StorageOptions.newBuilder()
+            .setHost(endpoint)
+            .setProjectId("test-project")
+            .setCredentials(NoCredentials.getInstance())
             .build()
-        s3Client.createBucket(CreateBucketRequest.builder().bucket(BUCKET).build())
-        s3Storage = new S3Storage(config, s3Client)
+            .getService()
+        gcsClient.create(BucketInfo.of(BUCKET))
+
+        def config = new GcsStorageConfig(BUCKET, null, endpoint)
+        gcsStorage = new GcsStorage(config, gcsClient)
     }
 
     void cleanupSpec() {
-        s3Storage?.close()
-        s3Client?.close()
+        gcsStorage?.close()
         container?.stop()
     }
 }

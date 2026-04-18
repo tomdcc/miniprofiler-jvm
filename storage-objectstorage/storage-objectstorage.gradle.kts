@@ -26,10 +26,14 @@ dependencies {
     // Cloud SDKs declared compileOnly — users bring their own versions.
     compileOnly(libs.aws.s3)
     compileOnly(libs.aws.auth)
+    compileOnly(libs.google.cloud.storage)
+    compileOnly(libs.google.auth.oauth2)
 
     // compileOnly deps are not inherited by integrationTest suite — re-declare them.
     integrationTestImplementation(libs.aws.s3)
     integrationTestImplementation(libs.aws.auth)
+    integrationTestImplementation(libs.google.cloud.storage)
+    integrationTestImplementation(libs.google.auth.oauth2)
     integrationTestImplementation(libs.testcontainers.core)
     integrationTestImplementation(libs.testcontainers.junit5)
 }

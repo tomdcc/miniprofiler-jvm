@@ -1,1 +1,2 @@
 io.jdev.miniprofiler.storage.objectstorage.s3.S3StorageLocator
+io.jdev.miniprofiler.storage.objectstorage.gcs.GcsStorageLocator
