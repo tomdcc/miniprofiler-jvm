@@ -23,6 +23,13 @@ plugins {
 dependencies {
     api(projects.core)
 
+    // Cloud SDKs declared compileOnly — users bring their own versions.
+    compileOnly(libs.aws.s3)
+    compileOnly(libs.aws.auth)
+
+    // compileOnly deps are not inherited by integrationTest suite — re-declare them.
+    integrationTestImplementation(libs.aws.s3)
+    integrationTestImplementation(libs.aws.auth)
     integrationTestImplementation(libs.testcontainers.core)
     integrationTestImplementation(libs.testcontainers.junit5)
 }
