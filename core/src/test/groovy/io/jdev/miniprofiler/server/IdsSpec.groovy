@@ -90,4 +90,55 @@ class IdsSpec extends Specification {
         expect:
         Ids.parseId(null, null, 'not-a-uuid') == null
     }
+
+    // --- buildIdsHeader(UUID, Collection<UUID>, int) ---
+
+    void "buildIdsHeader contains only current id when unviewed list is empty"() {
+        expect:
+        Ids.buildIdsHeader(ID, [], 10) == "[\"${ID}\"]"
+    }
+
+    void "buildIdsHeader includes unviewed ids"() {
+        given:
+        def other1 = UUID.randomUUID()
+        def other2 = UUID.randomUUID()
+
+        when:
+        def header = Ids.buildIdsHeader(ID, [other1, other2], 10)
+
+        then:
+        header == "[\"${ID}\",\"${other1}\",\"${other2}\"]"
+    }
+
+    void "buildIdsHeader caps at maxUnviewedProfiles"() {
+        given:
+        def others = (1..5).collect { UUID.randomUUID() }
+
+        when:
+        def header = Ids.buildIdsHeader(ID, others, 2)
+
+        then:
+        def ids = header.replaceAll('[\\[\\]"]', '').split(',')
+        ids.length == 3
+        ids[0] == ID.toString()
+    }
+
+    void "buildIdsHeader excludes current id from unviewed list"() {
+        given:
+        def other = UUID.randomUUID()
+
+        when:
+        def header = Ids.buildIdsHeader(ID, [ID, other], 10)
+
+        then:
+        header == "[\"${ID}\",\"${other}\"]"
+    }
+
+    void "buildIdsHeader with zero max returns only current id"() {
+        given:
+        def other = UUID.randomUUID()
+
+        expect:
+        Ids.buildIdsHeader(ID, [other], 0) == "[\"${ID}\"]"
+    }
 }
