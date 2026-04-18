@@ -353,8 +353,11 @@ internal object CopyrightGit {
             }
             val year = currentYear ?: continue
             if (currentTrivial) continue
-            // Skip pure renames/copies (R100, C100) where the file's content did not change.
-            if (line.startsWith("R100\t") || line.startsWith("C100\t")) continue
+            // A copy (C) means this file was created by copying from another file. Everything
+            // after this point in `git log --follow` is the history of that other file, not ours.
+            if (line.startsWith("C")) break
+            // Skip pure renames (R100) where the file's content did not change.
+            if (line.startsWith("R100\t")) continue
             if (lastYear == null) lastYear = year
             firstYear = year
         }
