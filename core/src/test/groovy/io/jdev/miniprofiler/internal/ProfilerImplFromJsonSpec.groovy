@@ -179,4 +179,64 @@ class ProfilerImplFromJsonSpec extends Specification {
         then:
         thrown(IllegalArgumentException)
     }
+
+    void "toJson without client timings has null ClientTimings"() {
+        given:
+        def profiler = new ProfilerImpl("test-request", ProfileLevel.Info, provider)
+        profiler.stop()
+
+        when:
+        def json = profiler.toJson()
+
+        then:
+        json.containsKey("ClientTimings")
+        json["ClientTimings"] == null
+    }
+
+    void "toJson with client timings has nested Timings list"() {
+        given:
+        def profiler = new ProfilerImpl("test-request", ProfileLevel.Info, provider)
+        profiler.stop()
+        profiler.setClientTimings([
+            new ClientTiming("fetchStart", 0L, 12L),
+            new ClientTiming("firstPaintTime", 380L, null)
+        ])
+
+        when:
+        def json = profiler.toJson()
+
+        then:
+        json["ClientTimings"] != null
+        json["ClientTimings"]["Timings"].size() == 2
+        json["ClientTimings"]["Timings"][0].toJson()["Name"] == "fetchStart"
+        json["ClientTimings"]["Timings"][0].toJson()["Duration"] == 12L
+        json["ClientTimings"]["Timings"][1].toJson()["Name"] == "firstPaintTime"
+        !json["ClientTimings"]["Timings"][1].toJson().containsKey("Duration")
+    }
+
+    void "round-trip toJson/fromJson preserves client timings with null duration"() {
+        given:
+        def profiler = new ProfilerImpl("test-request", ProfileLevel.Info, provider)
+        profiler.machineName = 'testhost'
+        profiler.stop()
+        profiler.setClientTimings([
+            new ClientTiming("fetchStart", 0L, 12L),
+            new ClientTiming("firstPaintTime", 380L, null)
+        ])
+
+        when:
+        def restored = ProfilerImpl.fromJson(profiler.asUiJson())
+
+        then:
+        def ct = restored.toJson()["ClientTimings"]
+        ct != null
+        def timings = ct["Timings"]
+        timings.size() == 2
+        timings[0].name == "fetchStart"
+        timings[0].start == 0L
+        timings[0].duration == 12L
+        timings[1].name == "firstPaintTime"
+        timings[1].start == 380L
+        timings[1].duration == null
+    }
 }
