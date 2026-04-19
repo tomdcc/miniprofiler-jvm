@@ -21,7 +21,6 @@ import io.jdev.miniprofiler.storage.BaseStorage;
 import io.jdev.miniprofiler.storage.Storage;
 
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,9 +28,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Abstract base class for object-storage-backed {@link Storage} implementations.
@@ -50,61 +46,25 @@ import java.util.concurrent.TimeUnit;
 public abstract class BaseObjectStorage extends BaseStorage {
 
     private static final byte[] EMPTY_BYTES = new byte[0];
-    private static final Duration DEFAULT_SCHEDULE_INTERVAL = Duration.ofHours(1);
 
     /** Key calculator for this storage instance. */
     protected final ObjectStorageKeys keys;
     /** The bucket or container name. */
     protected final String bucket;
     private final boolean ownsClient;
-    private final ScheduledExecutorService scheduler;
-    private final Duration expiryAge;
     private volatile boolean closed;
 
     /**
-     * Creates a new instance. If the config specifies a positive {@code expiryHours},
-     * a background scheduler is started that runs an hourly cleanup job.
+     * Creates a new instance.
      *
      * @param config     the storage configuration
      * @param ownsClient {@code true} if this instance owns the cloud client and should
      *                   close it when {@link #close()} is called
      */
     protected BaseObjectStorage(BaseObjectStorageConfig config, boolean ownsClient) {
-        this(config, ownsClient,
-            config.getExpiryHours() > 0 ? Duration.ofHours(config.getExpiryHours()) : null,
-            DEFAULT_SCHEDULE_INTERVAL);
-    }
-
-    /**
-     * Creates a new instance with explicit expiry age and schedule interval. Intended
-     * for testing with short durations.
-     *
-     * @param config           the storage configuration
-     * @param ownsClient       {@code true} if this instance owns the cloud client
-     * @param expiryAge        maximum age of profiling sessions; {@code null} or non-positive
-     *                         disables automatic expiry
-     * @param scheduleInterval interval between expiry runs; must not be {@code null} when
-     *                         {@code expiryAge} is positive
-     */
-    protected BaseObjectStorage(BaseObjectStorageConfig config, boolean ownsClient,
-                                Duration expiryAge, Duration scheduleInterval) {
         this.keys = new ObjectStorageKeys(config.getPrefix());
         this.bucket = config.getBucketName();
         this.ownsClient = ownsClient;
-        if (expiryAge != null && !expiryAge.isNegative() && !expiryAge.isZero()) {
-            this.expiryAge = expiryAge;
-            this.scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
-                Thread t = new Thread(r, "miniprofiler-storage-expiry");
-                t.setDaemon(true);
-                return t;
-            });
-            long intervalMs = scheduleInterval.toMillis();
-            this.scheduler.scheduleAtFixedRate(this::runExpiry, intervalMs, intervalMs,
-                TimeUnit.MILLISECONDS);
-        } else {
-            this.expiryAge = null;
-            this.scheduler = null;
-        }
     }
 
     /**
@@ -235,23 +195,16 @@ public abstract class BaseObjectStorage extends BaseStorage {
         return result;
     }
 
-    /** {@inheritDoc} Idempotent. Shuts down the expiry scheduler and closes the underlying client if this instance owns it. */
+    /** {@inheritDoc} Idempotent. Closes the underlying client if this instance owns it. */
     @Override
     public void close() {
         if (closed) {
             return;
         }
         closed = true;
-        if (scheduler != null) {
-            scheduler.shutdownNow();
-        }
         if (ownsClient) {
             closeClient();
         }
-    }
-
-    private void runExpiry() {
-        expireOlderThan(Instant.now().minus(expiryAge));
     }
 
     @Override

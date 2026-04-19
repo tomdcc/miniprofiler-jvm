@@ -28,7 +28,7 @@ import java.util.Properties;
  * (prefix {@code miniprofiler.}) take precedence over {@code miniprofiler.properties} on the classpath.</p>
  *
  * <p>Supported keys: {@code storage.gcs.bucket}, {@code storage.gcs.prefix},
- * {@code storage.gcs.endpoint}, {@code storage.gcs.expiryHours}.
+ * {@code storage.gcs.endpoint}.
  * GCS is a global service so no {@code region} property is used.</p>
  */
 public class GcsStorageConfig extends BaseObjectStorageConfig {
@@ -41,19 +41,7 @@ public class GcsStorageConfig extends BaseObjectStorageConfig {
      * @param endpoint the optional host override for the GCS client; may be {@code null}
      */
     public GcsStorageConfig(String bucket, String prefix, String endpoint) {
-        this(bucket, prefix, endpoint, DEFAULT_EXPIRY_HOURS);
-    }
-
-    /**
-     * Creates a new instance with explicit values.
-     *
-     * @param bucket      the GCS bucket name; may be {@code null}
-     * @param prefix      the optional key prefix; may be {@code null}
-     * @param endpoint    the optional host override for the GCS client; may be {@code null}
-     * @param expiryHours hours after which sessions are expired; zero or negative disables
-     */
-    public GcsStorageConfig(String bucket, String prefix, String endpoint, int expiryHours) {
-        super(bucket, prefix, null, endpoint, expiryHours);
+        super(bucket, prefix, null, endpoint);
     }
 
     /**
@@ -71,10 +59,9 @@ public class GcsStorageConfig extends BaseObjectStorageConfig {
     }
 
     static GcsStorageConfig create(MiniProfilerConfig props) {
-        String bucket   = props.getProperty("storage.gcs.bucket",      (String) null);
-        String prefix   = props.getProperty("storage.gcs.prefix",      (String) null);
-        String endpoint = props.getProperty("storage.gcs.endpoint",    (String) null);
-        int expiryHours = props.getProperty("storage.gcs.expiryHours", DEFAULT_EXPIRY_HOURS);
-        return new GcsStorageConfig(bucket, prefix, endpoint, expiryHours);
+        String bucket   = props.getProperty("storage.gcs.bucket",   (String) null);
+        String prefix   = props.getProperty("storage.gcs.prefix",   (String) null);
+        String endpoint = props.getProperty("storage.gcs.endpoint", (String) null);
+        return new GcsStorageConfig(bucket, prefix, endpoint);
     }
 }
