@@ -28,12 +28,12 @@ import java.util.Properties;
  * (prefix {@code miniprofiler.}) take precedence over {@code miniprofiler.properties} on the classpath.</p>
  *
  * <p>Supported keys: {@code storage.s3.bucket}, {@code storage.s3.prefix},
- * {@code storage.s3.region}, {@code storage.s3.endpoint}, {@code storage.s3.expiryHours}.</p>
+ * {@code storage.s3.region}, {@code storage.s3.endpoint}.</p>
  */
 public class S3StorageConfig extends BaseObjectStorageConfig {
 
     /**
-     * Creates a new instance with explicit values and default expiry.
+     * Creates a new instance with explicit values.
      *
      * @param bucket   the S3 bucket name; may be {@code null}
      * @param prefix   the optional key prefix; may be {@code null}
@@ -41,20 +41,7 @@ public class S3StorageConfig extends BaseObjectStorageConfig {
      * @param endpoint the endpoint URL override; may be {@code null}
      */
     public S3StorageConfig(String bucket, String prefix, String region, String endpoint) {
-        this(bucket, prefix, region, endpoint, DEFAULT_EXPIRY_HOURS);
-    }
-
-    /**
-     * Creates a new instance with explicit values.
-     *
-     * @param bucket      the S3 bucket name; may be {@code null}
-     * @param prefix      the optional key prefix; may be {@code null}
-     * @param region      the AWS region; may be {@code null}
-     * @param endpoint    the endpoint URL override; may be {@code null}
-     * @param expiryHours hours after which sessions are expired; zero or negative disables
-     */
-    public S3StorageConfig(String bucket, String prefix, String region, String endpoint, int expiryHours) {
-        super(bucket, prefix, region, endpoint, expiryHours);
+        super(bucket, prefix, region, endpoint);
     }
 
     /**
@@ -72,11 +59,10 @@ public class S3StorageConfig extends BaseObjectStorageConfig {
     }
 
     static S3StorageConfig create(MiniProfilerConfig props) {
-        String bucket   = props.getProperty("storage.s3.bucket",      (String) null);
-        String prefix   = props.getProperty("storage.s3.prefix",      (String) null);
-        String region   = props.getProperty("storage.s3.region",      (String) null);
-        String endpoint = props.getProperty("storage.s3.endpoint",    (String) null);
-        int expiryHours = props.getProperty("storage.s3.expiryHours", DEFAULT_EXPIRY_HOURS);
-        return new S3StorageConfig(bucket, prefix, region, endpoint, expiryHours);
+        String bucket   = props.getProperty("storage.s3.bucket",   (String) null);
+        String prefix   = props.getProperty("storage.s3.prefix",   (String) null);
+        String region   = props.getProperty("storage.s3.region",   (String) null);
+        String endpoint = props.getProperty("storage.s3.endpoint", (String) null);
+        return new S3StorageConfig(bucket, prefix, region, endpoint);
     }
 }

@@ -28,7 +28,7 @@ import java.util.Properties;
  * (prefix {@code miniprofiler.}) take precedence over {@code miniprofiler.properties} on the classpath.</p>
  *
  * <p>Supported keys: {@code storage.azure-blob.container}, {@code storage.azure-blob.prefix},
- * {@code storage.azure-blob.endpoint}, {@code storage.azure-blob.expiryHours}.
+ * {@code storage.azure-blob.endpoint}.
  * The {@code container} property maps to the base class {@code bucketName} field.</p>
  */
 public class AzureBlobStorageConfig extends BaseObjectStorageConfig {
@@ -41,19 +41,7 @@ public class AzureBlobStorageConfig extends BaseObjectStorageConfig {
      * @param endpoint  the Azure Blob endpoint URL; may be {@code null}
      */
     public AzureBlobStorageConfig(String container, String prefix, String endpoint) {
-        this(container, prefix, endpoint, DEFAULT_EXPIRY_HOURS);
-    }
-
-    /**
-     * Creates a new instance with explicit values.
-     *
-     * @param container   the Azure Blob container name; may be {@code null}
-     * @param prefix      the optional key prefix; may be {@code null}
-     * @param endpoint    the Azure Blob endpoint URL; may be {@code null}
-     * @param expiryHours hours after which sessions are expired; zero or negative disables
-     */
-    public AzureBlobStorageConfig(String container, String prefix, String endpoint, int expiryHours) {
-        super(container, prefix, null, endpoint, expiryHours);
+        super(container, prefix, null, endpoint);
     }
 
     /**
@@ -80,10 +68,9 @@ public class AzureBlobStorageConfig extends BaseObjectStorageConfig {
     }
 
     static AzureBlobStorageConfig create(MiniProfilerConfig props) {
-        String container = props.getProperty("storage.azure-blob.container",   (String) null);
-        String prefix    = props.getProperty("storage.azure-blob.prefix",      (String) null);
-        String endpoint  = props.getProperty("storage.azure-blob.endpoint",    (String) null);
-        int expiryHours  = props.getProperty("storage.azure-blob.expiryHours", DEFAULT_EXPIRY_HOURS);
-        return new AzureBlobStorageConfig(container, prefix, endpoint, expiryHours);
+        String container = props.getProperty("storage.azure-blob.container", (String) null);
+        String prefix    = props.getProperty("storage.azure-blob.prefix",    (String) null);
+        String endpoint  = props.getProperty("storage.azure-blob.endpoint",  (String) null);
+        return new AzureBlobStorageConfig(container, prefix, endpoint);
     }
 }

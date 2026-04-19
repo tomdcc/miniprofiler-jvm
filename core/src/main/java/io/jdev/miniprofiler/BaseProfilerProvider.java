@@ -21,12 +21,14 @@ import io.jdev.miniprofiler.format.CommandFormatterLocator;
 import io.jdev.miniprofiler.internal.NullProfiler;
 import io.jdev.miniprofiler.internal.ProfilerImpl;
 import io.jdev.miniprofiler.storage.Storage;
+import io.jdev.miniprofiler.storage.StorageExpiryService;
 import io.jdev.miniprofiler.storage.StorageLocator;
 import io.jdev.miniprofiler.user.UserProvider;
 import io.jdev.miniprofiler.user.UserProviderLocator;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,6 +50,9 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
     private String machineName = getDefaultHostname();
     private ProfilerUiConfig uiConfig;
     private final AtomicBoolean closed = new AtomicBoolean(false);
+    private volatile int expiryMaxAgeDays;
+    private volatile Duration expiryCleanupInterval;
+    private volatile StorageExpiryService expiryService;
 
     /**
      * Called after a new profiler is created. Subclasses should
@@ -223,6 +228,35 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
     @Override
     public void setStorage(Storage storage) {
         this.storage = storage;
+        maybeStartExpiryService();
+    }
+
+    /**
+     * Sets the expiry age for profiling sessions. When set (and positive), a background
+     * scheduler will periodically call {@link Storage#expireOlderThan} to remove old sessions.
+     *
+     * <p>If not set programmatically, the {@code storage.expiry.maxAgeDays} property is read from
+     * {@link MiniProfilerConfig} when storage is first configured. A value of zero or negative
+     * disables automatic expiry. The cleanup interval defaults to one hour but can be overridden
+     * via {@code storage.expiry.cleanupInterval} or {@link #setExpiryCleanupInterval(Duration)}.</p>
+     *
+     * @param expiryMaxAgeDays the maximum age of profiling sessions in days; zero or negative disables expiry
+     */
+    public void setExpiryMaxAgeDays(int expiryMaxAgeDays) {
+        this.expiryMaxAgeDays = expiryMaxAgeDays;
+        maybeStartExpiryService();
+    }
+
+    /**
+     * Sets the interval between automatic expiry runs. When not set, falls back to
+     * {@code storage.expiry.intervalHours} from {@link MiniProfilerConfig}, then the
+     * {@link StorageExpiryService} default of one hour.
+     *
+     * @param expiryCleanupInterval the interval between expiry runs; {@code null} uses the config/default
+     */
+    public void setExpiryCleanupInterval(Duration expiryCleanupInterval) {
+        this.expiryCleanupInterval = expiryCleanupInterval;
+        maybeStartExpiryService();
     }
 
     /**
@@ -241,6 +275,7 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
             synchronized (this) {
                 if (storage == null) {
                     storage = StorageLocator.findStorage();
+                    maybeStartExpiryService();
                 }
             }
         }
@@ -360,7 +395,38 @@ public abstract class BaseProfilerProvider implements ProfilerProvider {
     @Override
     public void close() {
         if (closed.compareAndSet(false, true)) {
+            StorageExpiryService svc = this.expiryService;
+            if (svc != null) {
+                svc.close();
+            }
             getStorage().close();
+        }
+    }
+
+    private synchronized void maybeStartExpiryService() {
+        if (storage == null) {
+            return;
+        }
+        MiniProfilerConfig config = new MiniProfilerConfig();
+        int maxAgeDays = this.expiryMaxAgeDays;
+        if (maxAgeDays <= 0) {
+            maxAgeDays = config.getProperty("storage.expiry.maxAgeDays", 0);
+        }
+        Duration maxAge = maxAgeDays > 0 ? Duration.ofDays(maxAgeDays) : null;
+        if (maxAge != null && !maxAge.isNegative() && !maxAge.isZero()) {
+            Duration cleanupInterval = this.expiryCleanupInterval;
+            if (cleanupInterval == null) {
+                int intervalHours = config.getProperty("storage.expiry.cleanupInterval", 0);
+                if (intervalHours > 0) {
+                    cleanupInterval = Duration.ofHours(intervalHours);
+                }
+            }
+            StorageExpiryService old = this.expiryService;
+            this.expiryService = new StorageExpiryService(storage, maxAge,
+                cleanupInterval != null ? cleanupInterval : StorageExpiryService.DEFAULT_SCHEDULE_INTERVAL);
+            if (old != null) {
+                old.close();
+            }
         }
     }
 
