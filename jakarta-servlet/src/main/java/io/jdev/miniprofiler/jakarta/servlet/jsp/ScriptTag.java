@@ -20,7 +20,7 @@ import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.ProfilerUiConfig;
 import io.jdev.miniprofiler.ScriptTagWriter;
-import io.jdev.miniprofiler.internal.ConfigHelper;
+import io.jdev.miniprofiler.MiniProfilerConfig;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.jsp.JspException;
@@ -153,7 +153,7 @@ public class ScriptTag extends TagSupport {
      * @param position the UI widget position
      */
     public void setPosition(String position) {
-        this.position = position == null ? null : ConfigHelper.findEnum(ProfilerUiConfig.Position.class, position);
+        this.position = position == null ? null : MiniProfilerConfig.findEnum(ProfilerUiConfig.Position.class, position);
     }
 
     /**
@@ -162,7 +162,7 @@ public class ScriptTag extends TagSupport {
      * @param scheme the UI color scheme
      */
     public void setColorScheme(String scheme) {
-        this.colorScheme = scheme == null ? null : ConfigHelper.findEnum(ProfilerUiConfig.ColorScheme.class, scheme);
+        this.colorScheme = scheme == null ? null : MiniProfilerConfig.findEnum(ProfilerUiConfig.ColorScheme.class, scheme);
     }
 
     /**

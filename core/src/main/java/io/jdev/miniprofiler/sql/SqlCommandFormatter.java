@@ -19,15 +19,10 @@ package io.jdev.miniprofiler.sql;
 import com.github.vertical_blank.sqlformatter.SqlFormatter;
 import com.github.vertical_blank.sqlformatter.core.FormatConfig;
 import com.github.vertical_blank.sqlformatter.languages.Dialect;
+import io.jdev.miniprofiler.MiniProfilerConfig;
 import io.jdev.miniprofiler.format.CommandFormatter;
-import io.jdev.miniprofiler.internal.ConfigHelper.PropertiesWithPrefix;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
-
-import static io.jdev.miniprofiler.internal.ConfigHelper.getProperty;
-import static io.jdev.miniprofiler.internal.ConfigHelper.loadPropertiesFile;
 
 /**
  * A {@link CommandFormatter} for SQL commands. Delegates formatting to
@@ -46,9 +41,6 @@ import static io.jdev.miniprofiler.internal.ConfigHelper.loadPropertiesFile;
  */
 public class SqlCommandFormatter implements CommandFormatter {
 
-    private static final String SYSTEM_PROP_PREFIX = "miniprofiler.";
-    private static final String MINIPROFILER_RESOURCE_NAME = "/miniprofiler.properties";
-
     private final SqlFormatter.Formatter formatter;
     private final FormatConfig formatConfig;
 
@@ -57,25 +49,22 @@ public class SqlCommandFormatter implements CommandFormatter {
      * {@code /miniprofiler.properties} on the classpath.
      */
     public SqlCommandFormatter() {
-        this(System.getProperties(), loadPropertiesFile(MINIPROFILER_RESOURCE_NAME));
+        this(new MiniProfilerConfig());
     }
 
     SqlCommandFormatter(Properties systemProps, Properties propsFileProps) {
-        // system props >> miniprofiler.properties >> defaults
-        List<PropertiesWithPrefix> propsList = new ArrayList<PropertiesWithPrefix>(2);
-        propsList.add(new PropertiesWithPrefix(systemProps, SYSTEM_PROP_PREFIX));
-        if (propsFileProps != null) {
-            propsList.add(new PropertiesWithPrefix(propsFileProps, ""));
-        }
+        this(new MiniProfilerConfig(systemProps, propsFileProps));
+    }
 
-        Dialect dialect = getProperty(propsList, "sql.format.dialect", Dialect.class, Dialect.StandardSql);
+    private SqlCommandFormatter(MiniProfilerConfig props) {
+        Dialect dialect = props.getProperty("sql.format.dialect", Dialect.class, Dialect.StandardSql);
         this.formatter = SqlFormatter.of(dialect);
-        int indentWidth = getProperty(propsList, "sql.format.indent.width", Integer.valueOf(2));
+        int indentWidth = props.getProperty("sql.format.indent.width", 2);
         this.formatConfig = FormatConfig.builder()
             .indent(spaces(indentWidth))
-            .uppercase(getProperty(propsList, "sql.format.uppercase", false))
-            .linesBetweenQueries(getProperty(propsList, "sql.format.lines.between.queries", Integer.valueOf(1)))
-            .maxColumnLength(getProperty(propsList, "sql.format.max.column.length", Integer.valueOf(FormatConfig.DEFAULT_COLUMN_MAX_LENGTH)))
+            .uppercase(props.getProperty("sql.format.uppercase", false))
+            .linesBetweenQueries(props.getProperty("sql.format.lines.between.queries", 1))
+            .maxColumnLength(props.getProperty("sql.format.max.column.length", FormatConfig.DEFAULT_COLUMN_MAX_LENGTH))
             .build();
     }
 

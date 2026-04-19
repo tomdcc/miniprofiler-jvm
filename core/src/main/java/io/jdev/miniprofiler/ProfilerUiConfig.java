@@ -16,14 +16,7 @@
 
 package io.jdev.miniprofiler;
 
-import io.jdev.miniprofiler.internal.ConfigHelper;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
-
-import static io.jdev.miniprofiler.internal.ConfigHelper.getProperty;
-import static io.jdev.miniprofiler.internal.ConfigHelper.loadPropertiesFile;
 
 /** Configuration options for the MiniProfiler UI. */
 public class ProfilerUiConfig {
@@ -314,38 +307,33 @@ public class ProfilerUiConfig {
         return config;
     }
 
-    private static final String SYSTEM_PROP_PREFIX = "miniprofiler.";
-    private static final String MINIPROFILER_RESOURCE_NAME = "/miniprofiler.properties";
-
     /**
      * Creates a {@link ProfilerUiConfig} from system properties and {@code miniprofiler.properties}, falling back to defaults.
      *
      * @return a new config populated from system properties and the properties file
      */
     public static ProfilerUiConfig create() {
-        return create(System.getProperties(), loadPropertiesFile(MINIPROFILER_RESOURCE_NAME));
+        return create(new MiniProfilerConfig());
     }
 
-    private static ProfilerUiConfig create(Properties systemProps, Properties propsFileProps) {
-        // system props >> miniprofiler.properties >> defaults
-        List<ConfigHelper.PropertiesWithPrefix> propsList = new ArrayList<ConfigHelper.PropertiesWithPrefix>(2);
-        propsList.add(new ConfigHelper.PropertiesWithPrefix(systemProps, SYSTEM_PROP_PREFIX));
-        if (propsFileProps != null) {
-            propsList.add(new ConfigHelper.PropertiesWithPrefix(propsFileProps, ""));
-        }
+    static ProfilerUiConfig create(Properties systemProps, Properties propsFileProps) {
+        return create(new MiniProfilerConfig(systemProps, propsFileProps));
+    }
+
+    private static ProfilerUiConfig create(MiniProfilerConfig props) {
         ProfilerUiConfig config = defaults();
-        config.setPath(getProperty(propsList, "path", config.path));
-        config.setPosition(getProperty(propsList, "position", Position.class, config.position));
-        config.setColorScheme(getProperty(propsList, "color.scheme", ColorScheme.class, config.colorScheme));
-        config.toggleShortcut = getProperty(propsList, "toggle.shortcut", config.toggleShortcut);
-        config.maxTraces = getProperty(propsList, "max.traces", config.maxTraces);
-        config.trivialMilliseconds = getProperty(propsList, "trivial.milliseconds", config.trivialMilliseconds);
-        config.trivial = getProperty(propsList, "trivial", config.trivial);
-        config.children = getProperty(propsList, "children", config.children);
-        config.controls = getProperty(propsList, "controls", config.controls);
-        config.authorized = getProperty(propsList, "authorized", config.authorized);
-        config.startHidden = getProperty(propsList, "start.hidden", config.startHidden);
-        config.maxUnviewedProfiles = getProperty(propsList, "max.unviewed.profiles", config.maxUnviewedProfiles);
+        config.setPath(props.getProperty("path", config.path));
+        config.setPosition(props.getProperty("position", Position.class, config.position));
+        config.setColorScheme(props.getProperty("color.scheme", ColorScheme.class, config.colorScheme));
+        config.toggleShortcut = props.getProperty("toggle.shortcut", config.toggleShortcut);
+        config.maxTraces = props.getProperty("max.traces", config.maxTraces);
+        config.trivialMilliseconds = props.getProperty("trivial.milliseconds", config.trivialMilliseconds);
+        config.trivial = props.getProperty("trivial", config.trivial);
+        config.children = props.getProperty("children", config.children);
+        config.controls = props.getProperty("controls", config.controls);
+        config.authorized = props.getProperty("authorized", config.authorized);
+        config.startHidden = props.getProperty("start.hidden", config.startHidden);
+        config.maxUnviewedProfiles = props.getProperty("max.unviewed.profiles", config.maxUnviewedProfiles);
         return config;
     }
 

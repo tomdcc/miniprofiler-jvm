@@ -16,31 +16,22 @@
 
 package io.jdev.miniprofiler.storage.objectstorage.gcs;
 
-import io.jdev.miniprofiler.internal.ConfigHelper;
+import io.jdev.miniprofiler.MiniProfilerConfig;
 import io.jdev.miniprofiler.storage.objectstorage.BaseObjectStorageConfig;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
-
-import static io.jdev.miniprofiler.internal.ConfigHelper.getProperty;
-import static io.jdev.miniprofiler.internal.ConfigHelper.loadPropertiesFile;
 
 /**
  * Configuration for the Google Cloud Storage backend.
  *
- * <p>Properties are read from system properties (prefix {@code miniprofiler.storage.gcs.})
- * and from {@code miniprofiler.properties} on the classpath (prefix {@code storage.gcs.}).
- * System properties take precedence.</p>
+ * <p>Properties are read via {@link io.jdev.miniprofiler.MiniProfilerConfig}: system properties
+ * (prefix {@code miniprofiler.}) take precedence over {@code miniprofiler.properties} on the classpath.</p>
  *
- * <p>Supported keys: {@code bucket}, {@code prefix}, {@code endpoint}.
+ * <p>Supported keys: {@code storage.gcs.bucket}, {@code storage.gcs.prefix},
+ * {@code storage.gcs.endpoint}, {@code storage.gcs.expiryHours}.
  * GCS is a global service so no {@code region} property is used.</p>
  */
 public class GcsStorageConfig extends BaseObjectStorageConfig {
-
-    private static final String SYSTEM_PROP_PREFIX = "miniprofiler.storage.gcs.";
-    private static final String FILE_PROP_PREFIX = "storage.gcs.";
-    private static final String MINIPROFILER_RESOURCE_NAME = "/miniprofiler.properties";
 
     /**
      * Creates a new instance with explicit values.
@@ -72,19 +63,18 @@ public class GcsStorageConfig extends BaseObjectStorageConfig {
      * @return a new config populated from the environment
      */
     public static GcsStorageConfig create() {
-        return create(System.getProperties(), loadPropertiesFile(MINIPROFILER_RESOURCE_NAME));
+        return create(new MiniProfilerConfig());
     }
 
     static GcsStorageConfig create(Properties systemProps, Properties fileProps) {
-        List<ConfigHelper.PropertiesWithPrefix> propsList = new ArrayList<>(2);
-        propsList.add(new ConfigHelper.PropertiesWithPrefix(systemProps, SYSTEM_PROP_PREFIX));
-        if (fileProps != null) {
-            propsList.add(new ConfigHelper.PropertiesWithPrefix(fileProps, FILE_PROP_PREFIX));
-        }
-        String bucket    = getProperty(propsList, "bucket",      (String) null);
-        String prefix    = getProperty(propsList, "prefix",      (String) null);
-        String endpoint  = getProperty(propsList, "endpoint",    (String) null);
-        int expiryHours  = getProperty(propsList, "expiryHours", DEFAULT_EXPIRY_HOURS);
+        return create(new MiniProfilerConfig(systemProps, fileProps));
+    }
+
+    static GcsStorageConfig create(MiniProfilerConfig props) {
+        String bucket   = props.getProperty("storage.gcs.bucket",      (String) null);
+        String prefix   = props.getProperty("storage.gcs.prefix",      (String) null);
+        String endpoint = props.getProperty("storage.gcs.endpoint",    (String) null);
+        int expiryHours = props.getProperty("storage.gcs.expiryHours", DEFAULT_EXPIRY_HOURS);
         return new GcsStorageConfig(bucket, prefix, endpoint, expiryHours);
     }
 }
