@@ -27,6 +27,11 @@ buildParameters {
         defaultValue = false
     }
 
+    string("ciBranch") {
+        fromEnvironment()
+        defaultValue = ""
+    }
+
     group("publishing") {
         bool("alwaysSign") {
             defaultValue = false

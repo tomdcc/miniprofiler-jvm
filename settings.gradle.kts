@@ -59,6 +59,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 val buildParameters = the<BuildParametersExtension>()
 buildCache {
     local {
-        isEnabled = !buildParameters.ci
+        isEnabled = true
+        isPush = !buildParameters.ci || buildParameters.ciBranch == "main"
     }
 }
