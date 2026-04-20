@@ -1,0 +1,125 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/gradle/images\\.versions\\.toml$/"],
+      "matchStrings": [
+        "\"(?<depName>[^\"@:]+(?:/[^\"@:]+)*):(?<currentValue>[^\"@]+)@(?<currentDigest>sha256:[a-f0-9]+)\""
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "EclipseLink v2 line",
+      "matchPackageNames": ["org.eclipse.persistence:eclipselink"],
+      "matchCurrentVersion": ">=2 <3",
+      "allowedVersions": ">=2 <3"
+    },
+    {
+      "description": "EclipseLink v3 line",
+      "matchPackageNames": ["org.eclipse.persistence:eclipselink"],
+      "matchCurrentVersion": ">=3 <4",
+      "allowedVersions": ">=3 <4"
+    },
+    {
+      "description": "EclipseLink v4 line",
+      "matchPackageNames": ["org.eclipse.persistence:eclipselink"],
+      "matchCurrentVersion": ">=4 <5",
+      "allowedVersions": ">=4 <5"
+    },
+    {
+      "description": "Hibernate v6 line",
+      "matchPackageNames": ["org.hibernate.orm:hibernate-core"],
+      "matchCurrentVersion": ">=6 <7",
+      "allowedVersions": ">=6 <7"
+    },
+    {
+      "description": "jOOQ v3.0.0 — intentional minimum-version pin, never update",
+      "matchPackageNames": ["org.jooq:jooq"],
+      "matchCurrentVersion": "3.0.0",
+      "enabled": false
+    },
+    {
+      "description": "jOOQ v3.14 line — last Java 8 version",
+      "matchPackageNames": ["org.jooq:jooq"],
+      "matchCurrentVersion": ">=3.14 <3.15",
+      "allowedVersions": ">=3.14 <3.15"
+    },
+    {
+      "description": "jOOQ v3.16 line — last Java 11 version",
+      "matchPackageNames": ["org.jooq:jooq"],
+      "matchCurrentVersion": ">=3.16 <3.17",
+      "allowedVersions": ">=3.16 <3.17"
+    },
+    {
+      "description": "jOOQ v3.19 line — last Java 17 version",
+      "matchPackageNames": ["org.jooq:jooq"],
+      "matchCurrentVersion": ">=3.19 <3.20",
+      "allowedVersions": ">=3.19 <3.20"
+    },
+    {
+      "description": "Spring v5 line",
+      "matchPackageNames": ["org.springframework:*"],
+      "matchCurrentVersion": ">=5 <6",
+      "allowedVersions": ">=5 <6"
+    },
+    {
+      "description": "Weld SE v3 line",
+      "matchPackageNames": ["org.jboss.weld.se:weld-se-core"],
+      "matchCurrentVersion": ">=3 <4",
+      "allowedVersions": ">=3 <4"
+    },
+    {
+      "description": "Jetty 9 line",
+      "matchPackageNames": ["org.eclipse.jetty:*", "org.eclipse.jetty.ee10:*"],
+      "matchCurrentVersion": ">=9 <10",
+      "allowedVersions": ">=9 <10"
+    },
+    {
+      "description": "Selenium groovy3 line — capped for Geb 6 compatibility",
+      "matchPackageNames": ["org.seleniumhq.selenium:*"],
+      "matchCurrentVersion": "<4.35",
+      "allowedVersions": "<4.35"
+    },
+    {
+      "description": "Block major updates for cross-version-tested dependencies",
+      "matchPackageNames": [
+        "com.h2database:*",
+        "com.puppycrawl.tools:checkstyle",
+        "io.ratpack:*",
+        "jakarta.*:*",
+        "javax:javaee-api",
+        "org.apache.groovy:*",
+        "org.codehaus.groovy:*",
+        "org.gebish:*",
+        "org.hibernate:*",
+        "org.junit.jupiter:*",
+        "org.junit.platform:*",
+        "org.seleniumhq.selenium:*",
+        "org.spockframework:*",
+        "org.springframework:*"
+      ],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "description": "jakarta.servlet:jakarta.servlet-api — disabled entirely",
+      "matchPackageNames": ["jakarta.servlet:jakarta.servlet-api"],
+      "enabled": false
+    },
+    {
+      "description": "javax.servlet:servlet-api — pin below 2.4",
+      "matchPackageNames": ["javax.servlet:servlet-api"],
+      "allowedVersions": "<2.4"
+    },
+    {
+      "description": "Logback — pin below 1.4 for slf4j 1.x compatibility",
+      "matchPackageNames": ["ch.qos.logback:*"],
+      "allowedVersions": "<1.4"
+    }
+  ]
+}

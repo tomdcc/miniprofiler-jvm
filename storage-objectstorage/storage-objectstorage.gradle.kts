@@ -49,9 +49,9 @@ dependencies {
 }
 
 tasks.named<Test>("containerTest").configure {
-    systemProperty("dockerImage.s3mock", imageTags.versions.s3mock.get())
-    systemProperty("dockerImage.azurite", imageTags.versions.azurite.get())
-    systemProperty("dockerImage.fake-gcs-server", imageTags.versions.fake.gcs.server.get())
+    systemProperty("dockerImage.s3mock", images.versions.s3mock.get())
+    systemProperty("dockerImage.azurite", images.versions.azurite.get())
+    systemProperty("dockerImage.fake-gcs-server", images.versions.fake.gcs.server.get())
 }
 
 publishing {
