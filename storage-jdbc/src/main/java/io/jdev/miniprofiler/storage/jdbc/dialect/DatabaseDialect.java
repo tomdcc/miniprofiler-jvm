@@ -18,6 +18,7 @@ package io.jdev.miniprofiler.storage.jdbc.dialect;
 
 import io.jdev.miniprofiler.storage.Storage.ListResultsOrder;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,11 +36,34 @@ public interface DatabaseDialect {
 
     /**
      * Returns the CREATE TABLE and CREATE INDEX DDL statements for the given table name.
+     * Statements are separated by semicolons for display and manual execution.
      *
      * @param tableName the table name
-     * @return the DDL string (may contain multiple statements separated by semicolons)
+     * @return the DDL string (multiple statements separated by semicolons)
      */
     String getCreateTableDdl(String tableName);
+
+    /**
+     * Executes the DDL to create the storage table and indexes. The default
+     * implementation splits {@link #getCreateTableDdl} on semicolons and
+     * executes each statement. Dialects that need different execution
+     * (e.g. PL/SQL blocks) should override this method.
+     *
+     * @param conn      the database connection
+     * @param tableName the table name
+     * @throws SQLException if a database access error occurs
+     */
+    default void executeCreateTable(Connection conn, String tableName) throws SQLException {
+        String ddl = getCreateTableDdl(tableName);
+        for (String statement : ddl.split(";")) {
+            String trimmed = statement.trim();
+            if (!trimmed.isEmpty()) {
+                try (PreparedStatement ps = conn.prepareStatement(trimmed)) {
+                    ps.execute();
+                }
+            }
+        }
+    }
 
     /**
      * Returns the INSERT SQL that avoids duplicates on the profiler_id column.
@@ -230,6 +254,9 @@ public interface DatabaseDialect {
         if (lower.contains(":sqlserver:")) {
             return new MssqlDialect();
         }
+        if (lower.contains(":oracle:")) {
+            return new OracleDialect();
+        }
         throw new IllegalArgumentException("Cannot detect database dialect from JDBC URL: " + jdbcUrl);
     }
 
@@ -251,6 +278,8 @@ public interface DatabaseDialect {
                 return new MysqlDialect();
             case "mssql":
                 return new MssqlDialect();
+            case "oracle":
+                return new OracleDialect();
             default:
                 throw new IllegalArgumentException("Unknown dialect: " + name);
         }

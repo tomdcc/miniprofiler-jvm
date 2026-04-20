@@ -253,16 +253,8 @@ public class JdbcStorage extends BaseStorage {
      * multiple times — uses IF NOT EXISTS semantics.
      */
     public void createTable() {
-        String ddl = dialect.getCreateTableDdl(tableName);
         try (Connection conn = dataSource.getConnection()) {
-            for (String statement : ddl.split(";")) {
-                String trimmed = statement.trim();
-                if (!trimmed.isEmpty()) {
-                    try (PreparedStatement ps = conn.prepareStatement(trimmed)) {
-                        ps.execute();
-                    }
-                }
-            }
+            dialect.executeCreateTable(conn, tableName);
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create table " + tableName, e);
         }
