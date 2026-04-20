@@ -52,10 +52,10 @@ dependencies {
 }
 
 tasks.named<Test>("containerTest").configure {
-    systemProperty("dockerImage.postgres", imageTags.versions.postgres.get())
-    systemProperty("dockerImage.mysql", imageTags.versions.mysql.get())
-    systemProperty("dockerImage.mssql-server", imageTags.versions.mssql.server.get())
-    systemProperty("dockerImage.oracle-free", imageTags.versions.oracle.free.get())
+    systemProperty("dockerImage.postgres", images.versions.postgres.get())
+    systemProperty("dockerImage.mysql", images.versions.mysql.get())
+    systemProperty("dockerImage.mssql-server", images.versions.mssql.server.get())
+    systemProperty("dockerImage.oracle-free", images.versions.oracle.free.get())
 }
 
 publishing {

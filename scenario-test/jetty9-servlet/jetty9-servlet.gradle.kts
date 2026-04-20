@@ -35,7 +35,7 @@ dependencies {
 }
 
 tasks.named<Test>("scenarioTest").configure {
-    systemProperty("dockerImage.jetty9", imageTags.versions.jetty9.get())
+    systemProperty("dockerImage.jetty9", images.versions.jetty9.get())
     val warFile = tasks.named<War>("war").flatMap { it.archiveFile }
     doFirst {
         systemProperty("scenarioTest.warPath", warFile.get().asFile.absolutePath)

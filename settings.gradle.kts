@@ -58,8 +58,8 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 dependencyResolutionManagement {
     versionCatalogs {
-        create("imageTags") {
-            from(files("gradle/imageTags.versions.toml"))
+        create("images") {
+            from(files("gradle/images.versions.toml"))
         }
     }
 }

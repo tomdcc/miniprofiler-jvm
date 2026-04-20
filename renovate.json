@@ -4,7 +4,7 @@
   "customManagers": [
     {
       "customType": "regex",
-      "managerFilePatterns": ["/gradle/imageTags\\.versions\\.toml$/"],
+      "managerFilePatterns": ["/gradle/images\\.versions\\.toml$/"],
       "matchStrings": [
         "\"(?<depName>[^\"@:]+(?:/[^\"@:]+)*):(?<currentValue>[^\"@]+)@(?<currentDigest>sha256:[a-f0-9]+)\""
       ],

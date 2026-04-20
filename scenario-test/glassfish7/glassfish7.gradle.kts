@@ -42,7 +42,7 @@ dependencies {
 }
 
 tasks.named<Test>("scenarioTest").configure {
-    systemProperty("dockerImage.glassfish7", imageTags.versions.glassfish7.get())
+    systemProperty("dockerImage.glassfish7", images.versions.glassfish7.get())
     val warFile = tasks.named<War>("war").flatMap { it.archiveFile }
     doFirst {
         systemProperty("scenarioTest.warPath", warFile.get().asFile.absolutePath)
