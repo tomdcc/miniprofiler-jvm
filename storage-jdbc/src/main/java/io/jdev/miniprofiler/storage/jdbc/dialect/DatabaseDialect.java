@@ -189,6 +189,9 @@ public interface DatabaseDialect {
         if (lower.contains(":postgresql:")) {
             return new PostgresDialect();
         }
+        if (lower.contains(":mysql:") || lower.contains(":mariadb:")) {
+            return new MysqlDialect();
+        }
         throw new IllegalArgumentException("Cannot detect database dialect from JDBC URL: " + jdbcUrl);
     }
 
@@ -206,6 +209,8 @@ public interface DatabaseDialect {
                 return new H2Dialect();
             case "postgresql":
                 return new PostgresDialect();
+            case "mysql":
+                return new MysqlDialect();
             default:
                 throw new IllegalArgumentException("Unknown dialect: " + name);
         }

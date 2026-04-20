@@ -135,8 +135,8 @@ public class JdbcStorage extends BaseStorage {
         }
     }
 
-    // 9999-12-31 23:59:59.999 UTC in epoch milliseconds
-    private static final long MAX_TIMESTAMP_MS = 253402300799999L;
+    // 9999-01-01 00:00:00 UTC — safely within DATETIME range in any timezone
+    private static final long MAX_TIMESTAMP_MS = 253370764800000L;
 
     @Override
     public Collection<UUID> list(int maxResults, Date start, Date finish, ListResultsOrder orderBy) {
