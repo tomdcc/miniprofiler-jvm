@@ -251,7 +251,6 @@ abstract class UpdateCopyrightTask : CopyrightTask() {
 }
 
 /** Fails the build if any file's copyright year is behind the last substantive change. */
-@DisableCachingByDefault(because = "Reads git history on every invocation.")
 abstract class VerifyCopyrightTask : CopyrightTask() {
 
     /** The latest git commit ID affecting the scan directory — used as an up-to-date input. */
