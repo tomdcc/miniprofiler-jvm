@@ -19,6 +19,7 @@ package io.jdev.miniprofiler.browsertest
 import geb.spock.GebReportingSpec
 import io.jdev.miniprofiler.ProfileLevel
 import io.jdev.miniprofiler.integtest.InProcessTestedServer
+import io.jdev.miniprofiler.internal.ClientTiming
 import io.jdev.miniprofiler.internal.ProfilerImpl
 import io.jdev.miniprofiler.test.geb.MiniProfilerModule
 import io.jdev.miniprofiler.test.geb.MiniProfilerPopupModule
@@ -73,6 +74,26 @@ abstract class AbstractMiniProfilerHandlerBrowserSpec extends GebReportingSpec {
         child.addCustomTiming('sql', 'reader', 'select * from people', 50L)
         child.stop()
         p.stop(true)
+        server.addProfile(p)
+        return p.id
+    }
+
+    /**
+     * Injects a profile with pre-set client timings directly into storage. This is used by
+     * tests that verify client timings are rendered in the popup, since WebDriver-controlled
+     * Firefox does not provide real window.performance values. The server preserves pre-set
+     * client timings when the browser posts an empty Performance array.
+     */
+    protected UUID injectProfileWithClientTimings(String name = '/test-request') {
+        def p = new ProfilerImpl(name, ProfileLevel.Info, server.profilerProvider)
+        def child = p.step('child step')
+        child.addCustomTiming('sql', 'reader', 'select * from people', 50L)
+        child.stop()
+        p.stop(true)
+        p.setClientTimings([
+            new ClientTiming('requestStart', 50L, 100L),
+            new ClientTiming('responseStart', 150L, 50L),
+        ])
         server.addProfile(p)
         return p.id
     }
@@ -318,6 +339,48 @@ abstract class AbstractMiniProfilerHandlerBrowserSpec extends GebReportingSpec {
         query.type == 'sql - reader'
         query.query ==~ /select\s+\*\s+from\s+people/
         query.duration ==~ /\d+\.\d+ ms \(T\+-?\d+\.\d+ ms\)/
+    }
+
+    void 'results page popup shows client timings sent by browser'() {
+        given:
+        UUID id = injectProfileWithClientTimings()
+
+        when:
+        go "miniprofiler/results?id=${id}"
+
+        then:
+        at MiniProfilerSingleResultPage
+        waitFor { page.items.size() >= 1 }
+        def popup = page.items[0] as MiniProfilerPopupModule
+        waitFor { popup.clientTimings.present }
+        popup.clientTimingRows.size() >= 1
+        popup.clientTimingRows[0].find('.mp-label').text() == 'Request'
+    }
+
+    @Requires({ instance.server.profiledPagePath })
+    void 'widget popup shows client timings sent by browser'() {
+        when:
+        go server.profiledPagePath
+
+        then:
+        waitFor { !module(MiniProfilerModule).results.empty }
+        def result = module(MiniProfilerModule).results[0]
+
+        when:
+        result.button.click()
+
+        then:
+        waitFor { result.popup.displayed }
+        waitFor {
+            result.popup.clientTimings.present
+        }
+        result.popup.clientTimingRows.size() >= 1
+
+        when:
+        result.popup.$('.mp-toggle-trivial').first().click()
+
+        then:
+        waitFor { result.popup.clientTimingRows.any { it.find('.mp-label').text() == 'Fetch' } }
     }
 
     @Requires({ instance.server.ajaxEndpointPath })

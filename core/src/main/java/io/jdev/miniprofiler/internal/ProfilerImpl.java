@@ -17,6 +17,7 @@
 package io.jdev.miniprofiler.internal;
 
 import io.jdev.miniprofiler.*;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
@@ -56,6 +57,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
     private boolean hasQueryTimings;
     private TimingInternal head;
     private boolean stopped;
+    private List<ClientTiming> clientTimings;
     private final ProfilerProvider profilerProvider;
 
     ProfilerProvider getProfilerProvider() {
@@ -173,6 +175,11 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         ProfilerImpl profiler = new ProfilerImpl(id, name, started, machineName, level);
         TimingImpl root = TimingImpl.fromJson(profiler, null, (JSONObject) obj.get("Root"));
         profiler.root = root;
+
+        JSONObject clientTimingsObj = (JSONObject) obj.get("ClientTimings");
+        if (clientTimingsObj != null) {
+            profiler.clientTimings = ClientTiming.listFromJson((JSONArray) clientTimingsObj.get("Timings"));
+        }
 
         return profiler;
     }
@@ -304,8 +311,13 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         map.put("DurationMilliseconds", getDurationMilliseconds());
         map.put("MachineName", machineName);
         map.put("Root", root);
-        // TODO support ClientTimings and CustomLinks
-        map.put("ClientTimings", null);
+        if (clientTimings != null) {
+            Map<String, Object> ct = new LinkedHashMap<>();
+            ct.put("Timings", clientTimings);
+            map.put("ClientTimings", ct);
+        } else {
+            map.put("ClientTimings", null);
+        }
         return map;
     }
 
@@ -323,7 +335,13 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("Id", id.toString());
         map.put("Name", name);
-        map.put("ClientTimings", null);
+        if (clientTimings != null) {
+            Map<String, Object> ct = new LinkedHashMap<>();
+            ct.put("Timings", clientTimings);
+            map.put("ClientTimings", ct);
+        } else {
+            map.put("ClientTimings", null);
+        }
         map.put("Started", Instant.ofEpochMilli(started).atOffset(ZoneOffset.UTC).toString());
         map.put("HasUserViewed", false);
         map.put("MachineName", machineName);
@@ -476,6 +494,15 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
      */
     public void setHasQueryTimings(boolean hasQueryTimings) {
         this.hasQueryTimings = hasQueryTimings;
+    }
+
+    /**
+     * Sets the client-side performance timings for this session.
+     *
+     * @param clientTimings the list of client timings, or null to clear
+     */
+    public void setClientTimings(List<ClientTiming> clientTimings) {
+        this.clientTimings = clientTimings;
     }
 
     @Override

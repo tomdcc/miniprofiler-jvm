@@ -186,6 +186,41 @@ class MiniProfilerServerSpec extends Specification {
         conn.responseCode == 405
     }
 
+    void "POST results with Performance array returns response with ClientTimings"() {
+        given:
+        def body = """{"Id":"${profiler.id}","Performance":[{"Name":"fetchStart","Start":0,"Duration":12},{"Name":"firstPaintTime","Start":380}]}"""
+
+        when:
+        def conn = connect('miniprofiler/results', APPLICATION_JSON, 'POST', body)
+        def json = new JsonSlurper().parse(conn.inputStream)
+
+        then:
+        conn.responseCode == 200
+        json.ClientTimings != null
+        json.ClientTimings.Timings.size() == 2
+        json.ClientTimings.Timings[0].Name == 'fetchStart'
+        json.ClientTimings.Timings[0].Duration == 12
+        json.ClientTimings.Timings[1].Name == 'firstPaintTime'
+        json.ClientTimings.Timings[1].Duration == null
+    }
+
+    void "POST results with Performance array persists ClientTimings on subsequent GET"() {
+        given:
+        def body = """{"Id":"${profiler.id}","Performance":[{"Name":"fetchStart","Start":0,"Duration":12}]}"""
+        def postConn = connect('miniprofiler/results', APPLICATION_JSON, 'POST', body)
+        postConn.responseCode  // consume
+
+        when:
+        def conn = connect("miniprofiler/results?id=${profiler.id}", APPLICATION_JSON)
+        def json = new JsonSlurper().parse(conn.inputStream)
+
+        then:
+        conn.responseCode == 200
+        json.ClientTimings != null
+        json.ClientTimings.Timings.size() == 1
+        json.ClientTimings.Timings[0].Name == 'fetchStart'
+    }
+
     void "handleResults marks profiler as viewed"() {
         given: 'a profiler with a known user, stored and marked unviewed'
         Profiler userProfiler = provider.start('user-request')

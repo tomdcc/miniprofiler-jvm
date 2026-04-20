@@ -27,8 +27,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import io.jdev.miniprofiler.internal.ClientTiming;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -195,14 +198,28 @@ public class MiniProfilerServer implements AutoCloseable {
             return;
         }
 
-        ProfilerImpl profiler = provider.getStorage().load(id);
+        Storage storage = provider.getStorage();
+        ProfilerImpl profiler = storage.load(id);
         if (profiler == null) {
             sendError(exchange, 404);
             return;
         }
+
+        if (body != null && !body.isEmpty()) {
+            try {
+                List<ClientTiming> clientTimings = ResultsRequest.from(body).clientTimings;
+                if (clientTimings != null) {
+                    profiler.setClientTimings(clientTimings);
+                    storage.save(profiler);
+                }
+            } catch (IllegalArgumentException ignored) {
+                // ignore malformed body
+            }
+        }
+
         String user = profiler.getUser();
         if (user != null) {
-            provider.getStorage().setViewed(user, id);
+            storage.setViewed(user, id);
         }
 
         if (jsonRequest) {
