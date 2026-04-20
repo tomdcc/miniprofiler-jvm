@@ -16,6 +16,8 @@
 
 package io.jdev.miniprofiler.test;
 
+import java.util.Map;
+
 /**
  * Describes expected properties of a profiling session for use in test assertions.
  * Instances are built via {@link ProfilerDsl}.
@@ -24,10 +26,12 @@ public final class ExpectedProfiler {
 
     private final String name;
     private final ExpectedTiming root;
+    private final Map<String, String> customLinks;
 
-    ExpectedProfiler(String name, ExpectedTiming root) {
+    ExpectedProfiler(String name, ExpectedTiming root, Map<String, String> customLinks) {
         this.name = name;
         this.root = root;
+        this.customLinks = customLinks;
     }
 
     /**
@@ -46,5 +50,14 @@ public final class ExpectedProfiler {
      */
     public ExpectedTiming getRoot() {
         return root;
+    }
+
+    /**
+     * Returns the expected custom links, or {@code null} if none are expected.
+     *
+     * @return a map of link text to URL, or {@code null}
+     */
+    public Map<String, String> getCustomLinks() {
+        return customLinks;
     }
 }
