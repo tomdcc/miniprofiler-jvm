@@ -38,7 +38,7 @@ class MssqlStorageIntegrationSpec extends BaseJdbcStorageIntegrationSpec {
             .withExposedPorts(PORT)
             .withEnv("ACCEPT_EULA", "Y")
             .withEnv("MSSQL_SA_PASSWORD", "MiniProfiler1!")
-            .waitingFor(Wait.forLogMessage(".*SQL Server is now ready for client connections.*\\n", 1))
+            .waitingFor(Wait.forLogMessage(".*Recovery is complete\\..*\\n", 1))
         container.start()
 
         def config = new HikariConfig()

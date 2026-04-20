@@ -23,6 +23,8 @@ import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import spock.lang.Shared
 
+import java.time.Duration
+
 class OracleStorageIntegrationSpec extends BaseJdbcStorageIntegrationSpec {
 
     static final int PORT = 1521
@@ -37,7 +39,8 @@ class OracleStorageIntegrationSpec extends BaseJdbcStorageIntegrationSpec {
         container = new GenericContainer<>(System.getProperty("dockerImage.oracle-free"))
             .withExposedPorts(PORT)
             .withEnv("ORACLE_PASSWORD", "test")
-            .waitingFor(Wait.forLogMessage(".*DATABASE IS READY TO USE!.*\\n", 1))
+            .waitingFor(Wait.forLogMessage(".*DATABASE IS READY TO USE!.*\\n", 1)
+                .withStartupTimeout(Duration.ofMinutes(5)))
         container.start()
 
         def config = new HikariConfig()
