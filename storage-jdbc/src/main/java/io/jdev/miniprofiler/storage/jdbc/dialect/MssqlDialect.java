@@ -59,26 +59,22 @@ public class MssqlDialect implements DatabaseDialect {
 
     @Override
     public String getSaveSql(String tableName) {
-        return "INSERT INTO [" + tableName + "]"
-            + " ([ProfilerId], [Name], [Started], [DurationMilliseconds], [UserName], [HasUserViewed], [MachineName], [ProfileJson])"
-            + " SELECT ?, ?, ?, ?, ?, ?, ?, ?"
-            + " WHERE NOT EXISTS (SELECT 1 FROM [" + tableName + "] WHERE [ProfilerId] = ?)";
-    }
-
-    @Override
-    public void bindSaveParameters(PreparedStatement ps, UUID profilerId, String name,
-                                   Timestamp started, double durationMilliseconds,
-                                   String userName, boolean hasUserViewed,
-                                   String machineName, String profileJson) throws SQLException {
-        setUuid(ps, 1, profilerId);
-        ps.setString(2, name);
-        ps.setTimestamp(3, started);
-        ps.setDouble(4, durationMilliseconds);
-        ps.setString(5, userName);
-        ps.setBoolean(6, hasUserViewed);
-        ps.setString(7, machineName);
-        ps.setString(8, profileJson);
-        setUuid(ps, 9, profilerId);
+        return "MERGE [" + tableName + "] WITH (HOLDLOCK) AS target"
+            + " USING (SELECT ? AS [ProfilerId], ? AS [Name], ? AS [Started],"
+            + " ? AS [DurationMilliseconds], ? AS [UserName], ? AS [HasUserViewed],"
+            + " ? AS [MachineName], ? AS [ProfileJson]) AS source"
+            + " ON target.[ProfilerId] = source.[ProfilerId]"
+            + " WHEN MATCHED THEN UPDATE SET"
+            + " target.[Name] = source.[Name],"
+            + " target.[DurationMilliseconds] = source.[DurationMilliseconds],"
+            + " target.[MachineName] = source.[MachineName],"
+            + " target.[ProfileJson] = source.[ProfileJson]"
+            + " WHEN NOT MATCHED THEN INSERT"
+            + " ([ProfilerId], [Name], [Started], [DurationMilliseconds],"
+            + " [UserName], [HasUserViewed], [MachineName], [ProfileJson])"
+            + " VALUES (source.[ProfilerId], source.[Name], source.[Started],"
+            + " source.[DurationMilliseconds], source.[UserName], source.[HasUserViewed],"
+            + " source.[MachineName], source.[ProfileJson]);";
     }
 
     @Override

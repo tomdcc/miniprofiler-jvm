@@ -56,7 +56,11 @@ public class PostgresDialect implements DatabaseDialect {
         return "INSERT INTO " + tableName
             + " (profiler_id, name, started, duration_milliseconds, user_name, has_user_viewed, machine_name, profile_json)"
             + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-            + " ON CONFLICT (profiler_id) DO NOTHING";
+            + " ON CONFLICT (profiler_id) DO UPDATE SET"
+            + " name = EXCLUDED.name,"
+            + " duration_milliseconds = EXCLUDED.duration_milliseconds,"
+            + " machine_name = EXCLUDED.machine_name,"
+            + " profile_json = EXCLUDED.profile_json";
     }
 
     @Override

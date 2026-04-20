@@ -170,6 +170,23 @@ class JdbcStorageSpec extends Specification {
         storage.getUnviewedIds(null).isEmpty()
     }
 
+    void "save updates existing profiler on second save"() {
+        given: "a profiler saved without client timings"
+        def profiler = newProfiler("test")
+        storage.save(profiler)
+        def loadedBefore = storage.load(profiler.id)
+        def jsonBefore = loadedBefore.toJSONString()
+
+        when: "the profiler is saved again with modified data"
+        profiler.machineName = "updated-host"
+        storage.save(profiler)
+        def loadedAfter = storage.load(profiler.id)
+
+        then: "the stored JSON reflects the update"
+        loadedAfter.machineName == "updated-host"
+        loadedAfter.toJSONString() != jsonBefore
+    }
+
     void "clear removes all data"() {
         given:
         def p = profilerStartedAt(1000L)

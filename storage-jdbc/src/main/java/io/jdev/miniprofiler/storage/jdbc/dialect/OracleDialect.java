@@ -79,11 +79,19 @@ public class OracleDialect implements DatabaseDialect {
     @Override
     public String getSaveSql(String tableName) {
         return "MERGE INTO " + tableName + " t"
-            + " USING (SELECT ? AS profiler_id FROM DUAL) s"
+            + " USING (SELECT ? AS profiler_id, ? AS name, ? AS started,"
+            + " ? AS duration_milliseconds, ? AS user_name, ? AS has_user_viewed,"
+            + " ? AS machine_name, ? AS profile_json FROM DUAL) s"
             + " ON (t.profiler_id = s.profiler_id)"
+            + " WHEN MATCHED THEN UPDATE SET"
+            + " t.name = s.name,"
+            + " t.duration_milliseconds = s.duration_milliseconds,"
+            + " t.machine_name = s.machine_name,"
+            + " t.profile_json = s.profile_json"
             + " WHEN NOT MATCHED THEN INSERT"
             + " (profiler_id, name, started, duration_milliseconds, user_name, has_user_viewed, machine_name, profile_json)"
-            + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            + " VALUES (s.profiler_id, s.name, s.started, s.duration_milliseconds,"
+            + " s.user_name, s.has_user_viewed, s.machine_name, s.profile_json)";
     }
 
     @Override
@@ -92,14 +100,13 @@ public class OracleDialect implements DatabaseDialect {
                                    String userName, boolean hasUserViewed,
                                    String machineName, String profileJson) throws SQLException {
         setUuid(ps, 1, profilerId);
-        setUuid(ps, 2, profilerId);
-        ps.setString(3, name);
-        ps.setTimestamp(4, started);
-        ps.setDouble(5, durationMilliseconds);
-        ps.setString(6, userName);
-        ps.setInt(7, hasUserViewed ? 1 : 0);
-        ps.setString(8, machineName);
-        ps.setString(9, profileJson);
+        ps.setString(2, name);
+        ps.setTimestamp(3, started);
+        ps.setDouble(4, durationMilliseconds);
+        ps.setString(5, userName);
+        ps.setInt(6, hasUserViewed ? 1 : 0);
+        ps.setString(7, machineName);
+        ps.setString(8, profileJson);
     }
 
     @Override

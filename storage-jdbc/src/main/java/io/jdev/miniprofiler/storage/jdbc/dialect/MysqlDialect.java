@@ -54,9 +54,14 @@ public class MysqlDialect implements DatabaseDialect {
 
     @Override
     public String getSaveSql(String tableName) {
-        return "INSERT IGNORE INTO " + tableName
+        return "INSERT INTO " + tableName
             + " (profiler_id, name, started, duration_milliseconds, user_name, has_user_viewed, machine_name, profile_json)"
-            + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+            + " ON DUPLICATE KEY UPDATE"
+            + " name = VALUES(name),"
+            + " duration_milliseconds = VALUES(duration_milliseconds),"
+            + " machine_name = VALUES(machine_name),"
+            + " profile_json = VALUES(profile_json)";
     }
 
     @Override
