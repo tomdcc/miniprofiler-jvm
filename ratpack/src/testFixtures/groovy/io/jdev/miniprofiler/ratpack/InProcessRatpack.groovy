@@ -47,6 +47,10 @@ class InProcessRatpack implements InProcessTestedServer {
 
     protected Action<? super RatpackServerSpec> configure() {
         { spec ->
+            spec.serverConfig {
+                // pick a random port
+                it.port(0)
+            }
             spec.registry(Guice.registry { bindings ->
                 bindings.module(MiniProfilerModule)
             })
