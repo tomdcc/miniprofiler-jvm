@@ -204,6 +204,44 @@ abstract class AbstractProfilingHandlerIntegrationSpec extends Specification {
             .getUnviewedIds(server.testUser).contains(UUID.fromString(id))
     }
 
+    void 'POST results with Performance array returns ClientTimings in response'() {
+        given:
+        def profiler = server.createProfile('test-request')
+        def id = profiler.id.toString()
+        def performanceJson = '[{"Name":"fetchStart","Start":0,"Duration":12},{"Name":"firstPaintTime","Start":380}]'
+
+        when:
+        def response = client.postResultsJson(id, performanceJson)
+        def body = response.bodyAsJson()
+
+        then:
+        response.statusCode() == 200
+        body.ClientTimings != null
+        body.ClientTimings.Timings.size() == 2
+        body.ClientTimings.Timings[0].Name == 'fetchStart'
+        body.ClientTimings.Timings[0].Duration == 12
+        body.ClientTimings.Timings[1].Name == 'firstPaintTime'
+        body.ClientTimings.Timings[1].Duration == null
+    }
+
+    void 'POST results with Performance array persists ClientTimings on subsequent GET'() {
+        given:
+        def profiler = server.createProfile('test-request')
+        def id = profiler.id.toString()
+        def performanceJson = '[{"Name":"fetchStart","Start":0,"Duration":12}]'
+        client.postResultsJson(id, performanceJson)
+
+        when:
+        def response = client.getResultsJson(id)
+        def body = response.bodyAsJson()
+
+        then:
+        response.statusCode() == 200
+        body.ClientTimings != null
+        body.ClientTimings.Timings.size() == 1
+        body.ClientTimings.Timings[0].Name == 'fetchStart'
+    }
+
     @Requires({ instance.server.ajaxEndpointPath })
     void 'ajax endpoint is profiled with X-MiniProfiler-Ids header'() {
         when:

@@ -20,9 +20,11 @@ import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.StaticProfilerProvider;
+import io.jdev.miniprofiler.internal.ClientTiming;
 import io.jdev.miniprofiler.server.Pages;
 import io.jdev.miniprofiler.internal.ProfilerImpl;
 import io.jdev.miniprofiler.server.Ids;
+import io.jdev.miniprofiler.server.ResultsRequest;
 import io.jdev.miniprofiler.storage.Storage;
 import io.jdev.miniprofiler.server.ResourceHelper;
 
@@ -35,6 +37,7 @@ import java.io.Writer;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -173,20 +176,43 @@ public class ProfilingFilter implements Filter {
         boolean jsonRequest = Optional.ofNullable(request.getHeader(ACCEPT_HEADER))
             .map(header -> header.contains(CONTENT_TYPE_JSON)).orElse(false);
 
-        UUID id = parseId(request, jsonRequest);
+        String body = null;
+        if (jsonRequest) {
+            try {
+                body = getBody(request);
+            } catch (IOException ignored) {
+                // fall through to id param
+            }
+        }
+
+        UUID id = Ids.parseId(request.getHeader(ACCEPT_HEADER), body, request.getParameter(ID_PARAM));
         if (id == null) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        Profiler profiler = profilerProvider.getStorage().load(id);
+        Storage storage = profilerProvider.getStorage();
+        ProfilerImpl profiler = storage.load(id);
         if (profiler == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
+
+        if (body != null && !body.isEmpty()) {
+            try {
+                List<ClientTiming> clientTimings = ResultsRequest.from(body).clientTimings;
+                if (clientTimings != null) {
+                    profiler.setClientTimings(clientTimings);
+                    storage.save(profiler);
+                }
+            } catch (IllegalArgumentException ignored) {
+                // ignore malformed body
+            }
+        }
+
         String user = profiler.getUser();
         if (user != null) {
-            profilerProvider.getStorage().setViewed(user, id);
+            storage.setViewed(user, id);
         }
 
         if (jsonRequest) {
@@ -236,18 +262,6 @@ public class ProfilingFilter implements Filter {
         try (Writer writer = response.getWriter()) {
             writer.write(Pages.renderResultListJson(ids, storage));
         }
-    }
-
-    private static UUID parseId(HttpServletRequest request, boolean jsonRequest) {
-        String body = null;
-        if (jsonRequest) {
-            try {
-                body = getBody(request);
-            } catch (IOException ignored) {
-                // fall through to id param
-            }
-        }
-        return Ids.parseId(request.getHeader(ACCEPT_HEADER), body, request.getParameter(ID_PARAM));
     }
 
     private void renderJson(Profiler profiler, HttpServletResponse response) throws IOException {

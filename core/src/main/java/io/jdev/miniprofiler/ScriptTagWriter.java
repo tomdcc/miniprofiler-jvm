@@ -21,6 +21,7 @@ import io.jdev.miniprofiler.internal.NullProfiler;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Writes out a script tag in the format that the mini profiler front end
@@ -147,7 +148,7 @@ public class ScriptTagWriter {
         appendAttribute(sb, "data-version", version);
 
         appendAttribute(sb, "data-current-id", currentId);
-        appendAttribute(sb, "data-ids", ids.toString());
+        appendAttribute(sb, "data-ids", ids.stream().map(UUID::toString).collect(Collectors.joining(",")));
 
         appendAttribute(sb, "data-position", config.getPosition().name());
         if (config.getToggleShortcut() != null) {

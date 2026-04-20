@@ -18,14 +18,17 @@ package io.jdev.miniprofiler.ratpack;
 
 import com.google.inject.Inject;
 import io.jdev.miniprofiler.ProfilerProvider;
+import io.jdev.miniprofiler.internal.ClientTiming;
 import io.jdev.miniprofiler.internal.ProfilerImpl;
 import io.jdev.miniprofiler.server.Ids;
+import io.jdev.miniprofiler.server.ResultsRequest;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
 import ratpack.http.Response;
 import ratpack.http.Status;
 import ratpack.http.TypedData;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -89,6 +92,17 @@ public class MiniProfilerResultsHandler implements Handler {
                 asyncStorage.loadAsync(requestedId)
                     .then(profiler -> {
                         if (profiler != null) {
+                            if (body != null && !body.isEmpty()) {
+                                try {
+                                    List<ClientTiming> clientTimings = ResultsRequest.from(body).clientTimings;
+                                    if (clientTimings != null) {
+                                        profiler.setClientTimings(clientTimings);
+                                        asyncStorage.saveAsync(profiler);
+                                    }
+                                } catch (IllegalArgumentException ignored) {
+                                    // ignore malformed body
+                                }
+                            }
                             String user = profiler.getUser();
                             Runnable render = () -> {
                                 if (isJsonRequest(ctx)) {

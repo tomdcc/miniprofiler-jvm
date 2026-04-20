@@ -43,7 +43,7 @@ class ScriptTagWriterSpec extends Specification {
 
         and:
         attrs['data-current-id'] == profiler.id.toString()
-        attrs['data-ids'] == "[$profiler.id]"
+        attrs['data-ids'] == profiler.id.toString()
 
         and:
         validateUiAttrs(attrs, config)
@@ -112,7 +112,7 @@ class ScriptTagWriterSpec extends Specification {
         attrs.src == "/foo/includes.js?version=${version}"
         attrs['data-path'] == "/foo/"
         attrs['data-current-id'] == profiler.id.toString()
-        attrs['data-ids'] == "[$profiler.id]"
+        attrs['data-ids'] == profiler.id.toString()
     }
 
     void "printListScriptTag writes correct attributes"() {

@@ -16,10 +16,13 @@
 
 package io.jdev.miniprofiler.server;
 
+import io.jdev.miniprofiler.internal.ClientTiming;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -30,8 +33,12 @@ public final class ResultsRequest {
     /** The unique identifier of the requested profiling session. */
     public final UUID id;
 
-    private ResultsRequest(UUID id) {
+    /** Client-side performance timings, or null if not provided. */
+    public final List<ClientTiming> clientTimings;
+
+    private ResultsRequest(UUID id, List<ClientTiming> clientTimings) {
         this.id = id;
+        this.clientTimings = clientTimings;
     }
 
     /**
@@ -78,10 +85,14 @@ public final class ResultsRequest {
             id = id.substring(1, id.length() - 1);
         }
 
+        UUID uuid;
         try {
-            return new ResultsRequest(UUID.fromString(id));
+            uuid = UUID.fromString(id);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Results request Id property was not a UUID", e);
         }
+
+        List<ClientTiming> clientTimings = ClientTiming.listFromJson((JSONArray) reqJson.get("Performance"));
+        return new ResultsRequest(uuid, clientTimings);
     }
 }

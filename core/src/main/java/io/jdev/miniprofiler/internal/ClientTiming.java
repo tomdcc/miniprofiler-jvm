@@ -33,7 +33,7 @@ public class ClientTiming implements Jsonable {
     private final long start;
     private final Long duration;
 
-    ClientTiming(String name, long start, Long duration) {
+    public ClientTiming(String name, long start, Long duration) {
         this.name = name;
         this.start = start;
         this.duration = duration;

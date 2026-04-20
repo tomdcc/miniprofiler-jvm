@@ -156,6 +156,42 @@ public class TestMiniProfilerHttpClient {
         return get(profilerPath + "/" + name);
     }
 
+    /**
+     * POSTs client-side performance data to {@code <profilerPath>/results} with
+     * {@code Accept: application/json} and {@code Content-Type: application/json}.
+     *
+     * @param id             the profiler result ID
+     * @param performanceJson JSON array string for the {@code Performance} field, or {@code null} to omit it
+     * @return the response
+     * @throws IOException on network error
+     */
+    public TestHttpResponse postResultsJson(String id, String performanceJson) throws IOException {
+        String body = performanceJson != null
+            ? "{\"Id\":\"" + id + "\",\"Performance\":" + performanceJson + "}"
+            : "{\"Id\":\"" + id + "\"}";
+        return post(profilerPath + "/results", body,
+            Collections.singletonMap("Accept", "application/json"));
+    }
+
+    private TestHttpResponse post(String path, String body, Map<String, String> headers) throws IOException {
+        byte[] bodyBytes = body.getBytes(StandardCharsets.UTF_8);
+        HttpURLConnection conn = (HttpURLConnection) new URL(baseUrl + path).openConnection();
+        conn.setConnectTimeout(5_000);
+        conn.setReadTimeout(10_000);
+        conn.setInstanceFollowRedirects(false);
+        conn.setRequestMethod("POST");
+        conn.setDoOutput(true);
+        conn.setRequestProperty("Content-Type", "application/json");
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            conn.setRequestProperty(entry.getKey(), entry.getValue());
+        }
+        conn.getOutputStream().write(bodyBytes);
+        int statusCode = conn.getResponseCode();
+        InputStream stream = statusCode >= 400 ? conn.getErrorStream() : conn.getInputStream();
+        String responseBody = stream == null ? "" : readStream(stream);
+        return new TestHttpResponse(statusCode, responseBody, conn.getHeaderFields());
+    }
+
     private static String readStream(InputStream stream) throws IOException {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         byte[] buffer = new byte[4096];

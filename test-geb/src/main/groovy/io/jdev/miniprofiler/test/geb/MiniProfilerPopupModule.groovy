@@ -24,9 +24,11 @@ class MiniProfilerPopupModule extends Module {
 
     static content = {
         name { $('.mp-name') }
-        timings { $('.mp-output .mp-timings tbody tr').moduleList(MiniProfilerTimingRowModule) }
+        timings { $('.mp-output .mp-timings:not(.mp-client-timings) tbody tr').moduleList(MiniProfilerTimingRowModule) }
         toggleChildTimingLink { $('.mp-toggle-columns').first() }
         shareLink { $('.mp-share-mp-results') }
+        clientTimings(required: false) { $('.mp-output .mp-client-timings') }
+        clientTimingRows { clientTimings.find('tbody tr') }
     }
 
     void close() {
