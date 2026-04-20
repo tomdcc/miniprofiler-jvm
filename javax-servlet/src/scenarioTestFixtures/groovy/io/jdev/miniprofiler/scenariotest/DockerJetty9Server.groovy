@@ -33,7 +33,7 @@ class DockerJetty9Server implements TestedServer {
 
         // Deploy the WAR as javax-servlet.war so it is served at the /javax-servlet/ context root,
         // matching the context path the functional tests expect.
-        container = new GenericContainer<>("jetty:9-jre11")
+        container = new GenericContainer<>(System.getProperty("dockerImage.jetty9"))
             .withExposedPorts(8080)
             .withCopyFileToContainer(
                 MountableFile.forHostPath(war.absolutePath),

@@ -25,6 +25,12 @@ val browserTestSuite = addTestSuite("browserTest", 11) {
     dependencies {
         implementation(project.dependencies.project(":testlib-browser"))
     }
+    targets.configureEach {
+        testTask.configure {
+            // Browser tests share a Geb reports directory and browser session — no parallel forks.
+            maxParallelForks = 1
+        }
+    }
 }
 
 // NOTE: intentionally NOT wired into the check task — run explicitly or via fullCheck

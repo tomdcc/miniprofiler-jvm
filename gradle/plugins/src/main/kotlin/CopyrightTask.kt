@@ -21,7 +21,9 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import org.gradle.work.DisableCachingByDefault
@@ -249,8 +251,15 @@ abstract class UpdateCopyrightTask : CopyrightTask() {
 }
 
 /** Fails the build if any file's copyright year is behind the last substantive change. */
-@DisableCachingByDefault(because = "Reads git history on every invocation.")
 abstract class VerifyCopyrightTask : CopyrightTask() {
+
+    /** The latest git commit ID affecting the scan directory — used as an up-to-date input. */
+    @get:Input
+    abstract val lastCommitId: Property<String>
+
+    /** Marker file written on success so Gradle can skip re-execution when inputs are unchanged. */
+    @get:OutputFile
+    abstract val markerFile: RegularFileProperty
 
     @Option(
         option = "upper-bound-only",
@@ -277,6 +286,10 @@ abstract class VerifyCopyrightTask : CopyrightTask() {
             throw GradleException(
                 "Copyright headers are out of date. Run ':updateCopyright' to fix."
             )
+        }
+        markerFile.get().asFile.apply {
+            parentFile.mkdirs()
+            writeText("OK")
         }
     }
 }

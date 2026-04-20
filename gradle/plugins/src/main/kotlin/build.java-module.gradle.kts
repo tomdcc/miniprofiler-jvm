@@ -54,6 +54,7 @@ dependencies {
 
 project.tasks.withType<Test>().configureEach {
     useJUnitPlatform()
+    maxParallelForks = Runtime.getRuntime().availableProcessors()
 
     testLogging {
         exceptionFormat = TestExceptionFormat.FULL

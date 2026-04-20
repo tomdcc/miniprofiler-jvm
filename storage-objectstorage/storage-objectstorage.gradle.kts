@@ -16,8 +16,9 @@
 
 plugins {
     id("build.java-module")
-    id("build.integration-test")
+    id("build.container-test")
     id("build.publish")
+    `java-test-fixtures`
 }
 
 dependencies {
@@ -31,19 +32,26 @@ dependencies {
     compileOnly(libs.azure.storage.blob)
     compileOnly(libs.azure.identity)
 
-    // compileOnly deps are not inherited by integrationTest suite — re-declare them.
-    integrationTestImplementation(libs.aws.s3)
-    integrationTestImplementation(libs.aws.auth)
-    integrationTestImplementation(libs.google.cloud.storage)
-    integrationTestImplementation(libs.google.auth.oauth2)
-    integrationTestImplementation(libs.azure.storage.blob)
-    integrationTestImplementation(libs.azure.identity)
-    integrationTestImplementation(libs.testcontainers.core)
-    integrationTestImplementation(libs.testcontainers.junit5)
+    // testFixtures holds the base integration spec — it needs Spock/Groovy.
+    testFixturesImplementation(libs.groovy.v4)
+    testFixturesImplementation(libs.spock.groovy4)
 }
 
-tasks.named<Test>("integrationTest") {
-    environment("DOCKER_API_VERSION", "1.45")
+dependencies {
+    // compileOnly deps are not inherited by containerTest suite — re-declare them.
+    containerTestImplementation(testFixtures(project))
+    containerTestImplementation(libs.aws.s3)
+    containerTestImplementation(libs.aws.auth)
+    containerTestImplementation(libs.google.cloud.storage)
+    containerTestImplementation(libs.google.auth.oauth2)
+    containerTestImplementation(libs.azure.storage.blob)
+    containerTestImplementation(libs.azure.identity)
+}
+
+tasks.named<Test>("containerTest").configure {
+    systemProperty("dockerImage.s3mock", imageTags.versions.s3mock.get())
+    systemProperty("dockerImage.azurite", imageTags.versions.azurite.get())
+    systemProperty("dockerImage.fake-gcs-server", imageTags.versions.fake.gcs.server.get())
 }
 
 publishing {

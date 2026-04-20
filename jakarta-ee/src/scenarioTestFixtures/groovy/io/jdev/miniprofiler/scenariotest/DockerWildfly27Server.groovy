@@ -44,7 +44,7 @@ class DockerWildfly27Server implements TestedServer {
         // application-users.properties under Elytron) so the BASIC-auth-protected
         // endpoint is reachable as soon as the WAR deploys.
         String userHash = md5Hex("alice:ApplicationRealm:secret")
-        container = new GenericContainer<>("quay.io/wildfly/wildfly:27.0.1.Final-jdk17")
+        container = new GenericContainer<>(System.getProperty("dockerImage.wildfly27"))
             .withExposedPorts(8080)
             .withCopyToContainer(
                 Transferable.of("alice=" + userHash + "\n"),

@@ -16,8 +16,9 @@
 
 plugins {
     id("build.java-module")
-    id("build.integration-test")
+    id("build.container-test")
     id("build.publish")
+    `java-test-fixtures`
 }
 
 dependencies {
@@ -32,14 +33,29 @@ dependencies {
     compileOnly(libs.mssql.jdbc)
     compileOnly(libs.oracle.jdbc)
 
-    // compileOnly deps are not inherited by integrationTest suite — re-declare them.
-    integrationTestImplementation(libs.h2)
-    integrationTestImplementation(libs.postgresql)
-    integrationTestImplementation(libs.mysql.connector)
-    integrationTestImplementation(libs.mssql.jdbc)
-    integrationTestImplementation(libs.oracle.jdbc)
-    integrationTestImplementation(libs.testcontainers.core)
-    integrationTestImplementation(libs.testcontainers.junit5)
+    // H2 is used in unit tests for the fast check path.
+    testImplementation(libs.h2)
+
+    // testFixtures holds the base integration spec — it needs Spock/Groovy.
+    testFixturesImplementation(libs.h2)
+    testFixturesImplementation(libs.groovy.v4)
+    testFixturesImplementation(libs.spock.groovy4)
+
+
+    // compileOnly deps are not inherited by containerTest suite — re-declare them.
+    containerTestImplementation(testFixtures(project))
+    containerTestImplementation(libs.h2)
+    containerTestImplementation(libs.postgresql)
+    containerTestImplementation(libs.mysql.connector)
+    containerTestImplementation(libs.mssql.jdbc)
+    containerTestImplementation(libs.oracle.jdbc)
+}
+
+tasks.named<Test>("containerTest").configure {
+    systemProperty("dockerImage.postgres", imageTags.versions.postgres.get())
+    systemProperty("dockerImage.mysql", imageTags.versions.mysql.get())
+    systemProperty("dockerImage.mssql-server", imageTags.versions.mssql.server.get())
+    systemProperty("dockerImage.oracle-free", imageTags.versions.oracle.free.get())
 }
 
 publishing {

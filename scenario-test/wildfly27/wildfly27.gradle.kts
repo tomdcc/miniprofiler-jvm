@@ -37,6 +37,7 @@ dependencies {
 }
 
 tasks.named<Test>("scenarioTest").configure {
+    systemProperty("dockerImage.wildfly27", imageTags.versions.wildfly27.get())
     val warFile = tasks.named<War>("war").flatMap { it.archiveFile }
     doFirst {
         systemProperty("scenarioTest.warPath", warFile.get().asFile.absolutePath)

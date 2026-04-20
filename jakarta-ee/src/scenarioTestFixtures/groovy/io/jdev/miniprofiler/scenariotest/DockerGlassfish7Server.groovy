@@ -36,7 +36,7 @@ class DockerGlassfish7Server implements TestedServer {
         // Wait for the GlassFish startup log message — the admin port 4848 redirects
         // to HTTPS in GlassFish 7, so we wait for the server-started log line instead.
         // Image from ghcr.io/eclipse-ee4j/glassfish (official Eclipse GlassFish images).
-        container = new GenericContainer<>("ghcr.io/eclipse-ee4j/glassfish:7.0.25")
+        container = new GenericContainer<>(System.getProperty("dockerImage.glassfish7"))
             .withExposedPorts(8080, 4848)
             // Copy H2 driver into the domain lib so it is on the server classpath
             .withCopyFileToContainer(

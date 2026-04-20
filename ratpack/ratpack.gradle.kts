@@ -53,7 +53,6 @@ dependencies {
     browserTestImplementation(libs.ratpack.core)
     browserTestImplementation(libs.ratpack.guice)
 }
-
 publishing {
     publications.named<MavenPublication>("maven") {
         from(components["java"])

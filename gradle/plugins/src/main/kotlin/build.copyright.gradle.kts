@@ -57,6 +57,27 @@ val verifyCopyright = tasks.register<VerifyCopyrightTask>("verifyCopyright") {
     scanDirectory.set(layout.projectDirectory)
     excludedDirectories.set(descendantProjectDirs)
     notCompatibleWithConfigurationCache("Shells out to git during execution.")
+
+    val repoRoot = rootProject.projectDir
+    val scanDir = layout.projectDirectory.asFile
+    val excluded = descendantProjectDirs
+
+    // Pathspecs that exclude descendant project directories, e.g. ":(exclude)core/".
+    // Used in both git log and git status to mirror the task's own exclusion logic.
+    fun excludePathspecs(): List<String> =
+        excluded.get().map { ":(exclude)${it.path}" }
+
+    lastCommitId.set(provider {
+        CopyrightGit.run(repoRoot,
+            listOf("log", "-1", "--format=%H", "--", scanDir.path) + excludePathspecs()
+        ).trim()
+    })
+    markerFile.set(layout.buildDirectory.file("verifyCopyright/upToDate.marker"))
+    outputs.upToDateWhen {
+        CopyrightGit.run(repoRoot,
+            listOf("status", "--porcelain", "--", scanDir.path) + excludePathspecs()
+        ).isBlank()
+    }
 }
 
 tasks.named("fullCheck") {

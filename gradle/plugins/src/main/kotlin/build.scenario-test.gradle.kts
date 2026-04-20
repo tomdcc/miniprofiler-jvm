@@ -20,7 +20,14 @@ plugins {
 }
 
 val suiteName = "scenarioTest"
-val scenarioTestSuite = addTestSuite(suiteName, 11)
+val scenarioTestSuite = addTestSuite(suiteName, 11) {
+    targets.configureEach {
+        testTask.configure {
+            // Scenario tests share a single container per project — no parallel forks.
+            maxParallelForks = 1
+        }
+    }
+}
 
 configurations {
     extendFromTest(suiteName)
