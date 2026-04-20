@@ -67,6 +67,7 @@ dependencyResolutionManagement {
 val buildParameters = the<BuildParametersExtension>()
 buildCache {
     local {
-        isEnabled = !buildParameters.ci
+        isEnabled = true
+        isPush = !buildParameters.ci || buildParameters.ciBranch == "main"
     }
 }
