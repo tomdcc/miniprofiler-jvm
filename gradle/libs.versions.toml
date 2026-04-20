@@ -57,7 +57,7 @@ jooq-v319 = "3.19.31" # Last Java 17 version (last open-source before Java 21 wa
 jooq-v321 = "3.21.1"  # Latest version (Java 21)
 json-simple = "1.1.1"
 mssql-jdbc = "13.4.0.jre8"
-mysql-connector = "8.4.0"
+mysql-connector = "9.6.0"
 junit = "5.14.3"
 junit-platform = "1.14.3"
 # Ratpack looks for org.slf4j.impl.StaticLoggerBinder which is the old discovery mechanism for slf4j 1.x.
