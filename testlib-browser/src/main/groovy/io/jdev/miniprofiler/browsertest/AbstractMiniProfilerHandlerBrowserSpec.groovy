@@ -98,6 +98,19 @@ abstract class AbstractMiniProfilerHandlerBrowserSpec extends GebReportingSpec {
         return p.id
     }
 
+    /**
+     * Injects a profile with a custom link directly into storage. Returns the saved profile's UUID.
+     */
+    protected UUID injectProfileWithCustomLinks(String name = '/test-request') {
+        def p = new ProfilerImpl(name, ProfileLevel.Info, server.profilerProvider)
+        def child = p.step('child step')
+        child.stop()
+        p.stop(true)
+        p.addCustomLink('AppStats', 'http://example.com/appstats')
+        server.addProfile(p)
+        return p.id
+    }
+
     void 'results page renders an injected profile'() {
         given:
         UUID id = injectProfile()
@@ -240,6 +253,23 @@ abstract class AbstractMiniProfilerHandlerBrowserSpec extends GebReportingSpec {
         def rowTexts = resultRows*.text()
         rowTexts.any { it.contains('/request-alpha') }
         rowTexts.any { it.contains('/request-beta') }
+    }
+
+    void 'results page popup shows custom links'() {
+        given:
+        UUID id = injectProfileWithCustomLinks()
+
+        when:
+        go "miniprofiler/results?id=${id}"
+
+        then:
+        at MiniProfilerSingleResultPage
+        waitFor { page.items.size() >= 1 }
+        def popup = page.items[0] as MiniProfilerPopupModule
+        popup.customLinks.size() == 1
+        popup.customLinks[0].text() == 'AppStats'
+        popup.customLinks[0].@href == 'http://example.com/appstats'
+        popup.customLinks[0].@target == '_blank'
     }
 
     @Requires({ instance.server.profiledPagePath })

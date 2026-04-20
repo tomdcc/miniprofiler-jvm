@@ -17,6 +17,7 @@
 package io.jdev.miniprofiler;
 
 import java.io.Closeable;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
@@ -279,5 +280,28 @@ public interface Profiler extends Closeable {
      */
     default boolean isActive() {
         return true;
+    }
+
+    /**
+     * Adds a named URL link to this profiling session.
+     *
+     * <p>Custom links appear in the profiler popup UI and open in a new tab.
+     * They are useful for linking a profiler result to deeper diagnostics pages
+     * for the same request (e.g. distributed tracing UIs, AppStats).</p>
+     *
+     * @param text the display text for the link
+     * @param url  the URL the link points to
+     */
+    default void addCustomLink(String text, String url) {
+    }
+
+    /**
+     * Returns the custom links attached to this profiling session, or {@code null}
+     * if none have been added.
+     *
+     * @return a map of link text to URL, or {@code null}
+     */
+    default Map<String, String> getCustomLinks() {
+        return null;
     }
 }

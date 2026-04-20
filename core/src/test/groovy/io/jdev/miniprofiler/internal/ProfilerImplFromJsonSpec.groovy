@@ -180,6 +180,37 @@ class ProfilerImplFromJsonSpec extends Specification {
         thrown(IllegalArgumentException)
     }
 
+    void "round-trip profiler with custom links"() {
+        given:
+        def profiler = new ProfilerImpl("test-request", ProfileLevel.Info, provider)
+        profiler.machineName = 'testhost'
+        profiler.addCustomLink('AppStats', 'http://example.com/appstats')
+        profiler.addCustomLink('Tracing', 'http://example.com/tracing')
+        profiler.stop()
+
+        when:
+        def json = profiler.asUiJson()
+        def restored = ProfilerImpl.fromJson(json)
+
+        then:
+        restored.customLinks == [
+            'AppStats': 'http://example.com/appstats',
+            'Tracing': 'http://example.com/tracing'
+        ]
+    }
+
+    void "customLinks is null when no links present in JSON"() {
+        given:
+        def profiler = new ProfilerImpl("test-request", ProfileLevel.Info, provider)
+        profiler.stop()
+
+        when:
+        def restored = ProfilerImpl.fromJson(profiler.asUiJson())
+
+        then:
+        restored.customLinks == null
+    }
+
     void "toJson without client timings has null ClientTimings"() {
         given:
         def profiler = new ProfilerImpl("test-request", ProfileLevel.Info, provider)

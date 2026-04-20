@@ -56,6 +56,22 @@ public final class ProfilerComparator {
     public static void verify(ProfilerImpl actual, ExpectedProfiler expected) {
         assertEqual("profiler name", expected.getName(), actual.getName());
         verifyTiming(actual.getRoot(), expected.getRoot(), "root");
+        verifyCustomLinks(actual.getCustomLinks(), expected.getCustomLinks());
+    }
+
+    private static void verifyCustomLinks(Map<String, String> actual, Map<String, String> expected) {
+        Map<String, String> effectiveExpected = expected != null ? expected : Collections.emptyMap();
+        Map<String, String> effectiveActual = actual != null ? actual : Collections.emptyMap();
+        assertEqual("custom link count", effectiveExpected.size(), effectiveActual.size());
+        for (Map.Entry<String, String> entry : effectiveExpected.entrySet()) {
+            String text = entry.getKey();
+            String expectedUrl = entry.getValue();
+            String actualUrl = effectiveActual.get(text);
+            if (actualUrl == null) {
+                throw new AssertionError("Expected custom link '" + text + "' but none found");
+            }
+            assertEqual("custom link URL for '" + text + "'", expectedUrl, actualUrl);
+        }
     }
 
     private static void verifyTiming(Timing actual, ExpectedTiming expected, String path) {

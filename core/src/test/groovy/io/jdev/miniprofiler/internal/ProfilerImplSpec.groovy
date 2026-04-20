@@ -138,6 +138,32 @@ class ProfilerImplSpec extends Specification {
         result == 'bar'
     }
 
+    void "addCustomLink stores an entry"() {
+        when:
+        profiler.addCustomLink('AppStats', 'http://example.com/appstats')
+
+        then:
+        profiler.customLinks == ['AppStats': 'http://example.com/appstats']
+    }
+
+    void "multiple addCustomLink calls accumulate entries in insertion order"() {
+        when:
+        profiler.addCustomLink('AppStats', 'http://example.com/appstats')
+        profiler.addCustomLink('Tracing', 'http://example.com/tracing')
+
+        then:
+        profiler.customLinks.keySet() as List == ['AppStats', 'Tracing']
+        profiler.customLinks == [
+            'AppStats': 'http://example.com/appstats',
+            'Tracing': 'http://example.com/tracing'
+        ]
+    }
+
+    void "getCustomLinks returns null when no links added"() {
+        expect:
+        profiler.customLinks == null
+    }
+
     void "json is in expected order"() {
         when:
         def parsed = new ObjectMapper().readTree(profiler.asUiJson())
@@ -150,7 +176,8 @@ class ProfilerImplSpec extends Specification {
             'DurationMilliseconds',
             'MachineName',
             'Root',
-            'ClientTimings'
+            'ClientTimings',
+            'CustomLinks'
         ]
     }
 
