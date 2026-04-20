@@ -1,0 +1,20 @@
+[versions]
+
+# JDBC storage container tests
+postgres = "postgres:18@sha256:52e6ffd11fddd081ae63880b635b2a61c14008c17fc98cdc7ce5472265516dd0"
+mysql = "mysql:9.6@sha256:c5df04bee1a42b74a5841c6409e669cf62126cd0416f00c1cea8ab933b9361b9"
+mssql-server = "mcr.microsoft.com/mssql/server:2025-latest@sha256:a93989eebfb50ae37ee0bfecfaf03648421859558eef6cbff9dec0db3976f192"
+oracle-free = "gvenzl/oracle-free:slim-faststart@sha256:c9803db54238b5be268c7f5916e3c5811ef106e58aeb2f1f9b690c135ed50672"
+
+# Object storage container tests
+s3mock = "adobe/s3mock:5.0.0@sha256:c461c8f4234bd63540d2f3a3cabce69d814c78dc890a5af08727525a028e23da"
+azurite = "mcr.microsoft.com/azure-storage/azurite:3.35.0@sha256:647c63a91102a9d8e8000aab803436e1fc85fbb285e7ce830a82ee5d6661cf37"
+fake-gcs-server = "fsouza/fake-gcs-server:1.54.0@sha256:3730da0e31f7e5186a90ec4899dc2c336104e7599df400411392ef17e684c31f"
+
+# Scenario test application servers
+wildfly10 = "jboss/wildfly:10.1.0.Final@sha256:455b5f3b2ec9cd206e879b776fa854e09c1a0f534362de57c858906561c4128d"
+wildfly27 = "quay.io/wildfly/wildfly:27.0.1.Final-jdk17@sha256:8470bc822820e17f7ecb5dc0c02ee9dbe1cdbcc885902253906a682a2d1688de"
+glassfish4 = "glassfish:4.1@sha256:8077dfad6754e844f3fd197832ca62c26700433290e392700e0020226256de41"
+glassfish7 = "ghcr.io/eclipse-ee4j/glassfish:7.0.25@sha256:9061497fa9f69669f90dfcfbc6eb366056cdbb6d4a3e31bf9b11b66f6344b488"
+jetty9 = "jetty:9-jre11@sha256:4ce403cf2e243edf1df193ab7aedaac00d89844e6028791fddd9d438a3928014"
+jetty12 = "jetty:12.0-jre21@sha256:742f8bb20988be9095a80012fdafd8d8a0f62b07ed81ba29d97c75c88799912f"

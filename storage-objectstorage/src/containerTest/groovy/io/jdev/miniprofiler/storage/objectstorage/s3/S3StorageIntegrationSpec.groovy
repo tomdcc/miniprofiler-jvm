@@ -39,7 +39,7 @@ class S3StorageIntegrationSpec extends BaseObjectStorageIntegrationSpec {
     BaseObjectStorage getStorage() { s3Storage }
 
     void setupSpec() {
-        container = new GenericContainer<>("adobe/s3mock:latest")
+        container = new GenericContainer<>(System.getProperty("dockerImage.s3mock"))
             .withExposedPorts(PORT)
             .waitingFor(Wait.forListeningPort())
         container.start()

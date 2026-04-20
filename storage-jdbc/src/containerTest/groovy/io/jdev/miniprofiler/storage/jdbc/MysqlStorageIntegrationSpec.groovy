@@ -34,7 +34,7 @@ class MysqlStorageIntegrationSpec extends BaseJdbcStorageIntegrationSpec {
     JdbcStorage getStorage() { mysqlStorage }
 
     void setupSpec() {
-        container = new GenericContainer<>("mysql:latest")
+        container = new GenericContainer<>(System.getProperty("dockerImage.mysql"))
             .withExposedPorts(PORT)
             .withEnv("MYSQL_ROOT_PASSWORD", "test")
             .withEnv("MYSQL_DATABASE", "miniprofiler")

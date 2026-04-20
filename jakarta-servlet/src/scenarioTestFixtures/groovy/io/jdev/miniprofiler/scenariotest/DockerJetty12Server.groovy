@@ -35,7 +35,7 @@ class DockerJetty12Server implements TestedServer {
         // matching the context path the functional tests expect.
         // Jetty 12 requires ee10-deploy and ee10-jsp modules to be explicitly enabled
         // for Jakarta EE 10 WAR deployment and JSP compilation.
-        container = new GenericContainer<>("jetty:12.0-jre21")
+        container = new GenericContainer<>(System.getProperty("dockerImage.jetty12"))
             .withExposedPorts(8080)
             .withCopyToContainer(
                 Transferable.of("--module=ee10-deploy\n--module=ee10-jsp\n"),

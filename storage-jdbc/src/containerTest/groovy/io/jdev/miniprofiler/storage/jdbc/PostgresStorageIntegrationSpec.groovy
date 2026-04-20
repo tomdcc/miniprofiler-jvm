@@ -34,7 +34,7 @@ class PostgresStorageIntegrationSpec extends BaseJdbcStorageIntegrationSpec {
     JdbcStorage getStorage() { pgStorage }
 
     void setupSpec() {
-        container = new GenericContainer<>("postgres:latest")
+        container = new GenericContainer<>(System.getProperty("dockerImage.postgres"))
             .withExposedPorts(PORT)
             .withEnv("POSTGRES_PASSWORD", "test")
             .withEnv("POSTGRES_DB", "miniprofiler")

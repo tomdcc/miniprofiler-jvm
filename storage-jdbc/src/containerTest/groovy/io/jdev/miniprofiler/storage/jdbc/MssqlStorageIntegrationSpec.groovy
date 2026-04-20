@@ -34,7 +34,7 @@ class MssqlStorageIntegrationSpec extends BaseJdbcStorageIntegrationSpec {
     JdbcStorage getStorage() { mssqlStorage }
 
     void setupSpec() {
-        container = new GenericContainer<>("mcr.microsoft.com/mssql/server:latest")
+        container = new GenericContainer<>(System.getProperty("dockerImage.mssql-server"))
             .withExposedPorts(PORT)
             .withEnv("ACCEPT_EULA", "Y")
             .withEnv("MSSQL_SA_PASSWORD", "MiniProfiler1!")

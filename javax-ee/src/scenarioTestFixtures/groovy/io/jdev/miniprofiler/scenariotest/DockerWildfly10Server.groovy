@@ -44,7 +44,7 @@ class DockerWildfly10Server implements TestedServer {
         // the BASIC-auth-protected endpoint is reachable as soon as the WAR deploys.
         // application-users.properties expects an MD5 hex digest of "user:realm:password".
         String userHash = md5Hex("alice:ApplicationRealm:secret")
-        container = new GenericContainer<>("jboss/wildfly:10.1.0.Final")
+        container = new GenericContainer<>(System.getProperty("dockerImage.wildfly10"))
             .withExposedPorts(8080)
             .withCopyToContainer(
                 Transferable.of("alice=" + userHash + "\n"),

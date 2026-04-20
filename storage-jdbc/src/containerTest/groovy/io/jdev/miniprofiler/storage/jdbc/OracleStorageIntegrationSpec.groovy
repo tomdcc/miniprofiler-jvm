@@ -34,7 +34,7 @@ class OracleStorageIntegrationSpec extends BaseJdbcStorageIntegrationSpec {
     JdbcStorage getStorage() { oracleStorage }
 
     void setupSpec() {
-        container = new GenericContainer<>("gvenzl/oracle-free:slim-faststart")
+        container = new GenericContainer<>(System.getProperty("dockerImage.oracle-free"))
             .withExposedPorts(PORT)
             .withEnv("ORACLE_PASSWORD", "test")
             .waitingFor(Wait.forLogMessage(".*DATABASE IS READY TO USE!.*\\n", 1))

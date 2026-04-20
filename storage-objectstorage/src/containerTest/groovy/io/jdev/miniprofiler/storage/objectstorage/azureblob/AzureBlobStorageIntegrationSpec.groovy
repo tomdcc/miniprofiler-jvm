@@ -38,7 +38,7 @@ class AzureBlobStorageIntegrationSpec extends BaseObjectStorageIntegrationSpec {
     BaseObjectStorage getStorage() { azureStorage }
 
     void setupSpec() {
-        container = new GenericContainer<>("mcr.microsoft.com/azure-storage/azurite:latest")
+        container = new GenericContainer<>(System.getProperty("dockerImage.azurite"))
             .withExposedPorts(PORT)
             .withCommand("azurite-blob", "--blobHost", "0.0.0.0", "--loose", "--skipApiVersionCheck")
             .waitingFor(Wait.forListeningPort())

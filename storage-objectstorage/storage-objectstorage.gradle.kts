@@ -48,6 +48,12 @@ dependencies {
     containerTestImplementation(libs.azure.identity)
 }
 
+tasks.named<Test>("containerTest").configure {
+    systemProperty("dockerImage.s3mock", imageTags.versions.s3mock.get())
+    systemProperty("dockerImage.azurite", imageTags.versions.azurite.get())
+    systemProperty("dockerImage.fake-gcs-server", imageTags.versions.fake.gcs.server.get())
+}
+
 publishing {
     publications.named<MavenPublication>("maven") {
         from(components["java"])

@@ -56,6 +56,14 @@ setBuildFile(rootProject)
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
+dependencyResolutionManagement {
+    versionCatalogs {
+        create("imageTags") {
+            from(files("gradle/imageTags.versions.toml"))
+        }
+    }
+}
+
 val buildParameters = the<BuildParametersExtension>()
 buildCache {
     local {

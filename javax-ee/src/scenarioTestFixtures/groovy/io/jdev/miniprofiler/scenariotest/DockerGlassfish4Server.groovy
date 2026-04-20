@@ -35,7 +35,7 @@ class DockerGlassfish4Server implements TestedServer {
 
         // Wait for the GlassFish admin port to be serving HTTP — this indicates
         // GlassFish has fully started and the asadmin commands can be issued.
-        container = new GenericContainer<>("glassfish:4.1")
+        container = new GenericContainer<>(System.getProperty("dockerImage.glassfish4"))
             .withExposedPorts(8080, 4848)
             // Copy H2 driver into the domain lib so it is on the server classpath
             .withCopyFileToContainer(

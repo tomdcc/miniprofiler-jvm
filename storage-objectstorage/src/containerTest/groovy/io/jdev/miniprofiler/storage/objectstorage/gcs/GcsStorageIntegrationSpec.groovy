@@ -37,7 +37,7 @@ class GcsStorageIntegrationSpec extends BaseObjectStorageIntegrationSpec {
     BaseObjectStorage getStorage() { gcsStorage }
 
     void setupSpec() {
-        container = new GenericContainer<>("fsouza/fake-gcs-server:latest")
+        container = new GenericContainer<>(System.getProperty("dockerImage.fake-gcs-server"))
             .withExposedPorts(PORT)
             .withCommand("-scheme", "http")
             .waitingFor(Wait.forListeningPort())

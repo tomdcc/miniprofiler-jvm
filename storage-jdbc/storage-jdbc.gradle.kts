@@ -51,6 +51,13 @@ dependencies {
     containerTestImplementation(libs.oracle.jdbc)
 }
 
+tasks.named<Test>("containerTest").configure {
+    systemProperty("dockerImage.postgres", imageTags.versions.postgres.get())
+    systemProperty("dockerImage.mysql", imageTags.versions.mysql.get())
+    systemProperty("dockerImage.mssql-server", imageTags.versions.mssql.server.get())
+    systemProperty("dockerImage.oracle-free", imageTags.versions.oracle.free.get())
+}
+
 publishing {
     publications.named<MavenPublication>("maven") {
         from(components["java"])
