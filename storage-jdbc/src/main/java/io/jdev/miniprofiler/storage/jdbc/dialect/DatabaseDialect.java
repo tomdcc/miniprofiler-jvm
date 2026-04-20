@@ -186,6 +186,9 @@ public interface DatabaseDialect {
         if (lower.contains(":h2:")) {
             return new H2Dialect();
         }
+        if (lower.contains(":postgresql:")) {
+            return new PostgresDialect();
+        }
         throw new IllegalArgumentException("Cannot detect database dialect from JDBC URL: " + jdbcUrl);
     }
 
@@ -201,6 +204,8 @@ public interface DatabaseDialect {
         switch (name.toLowerCase()) {
             case "h2":
                 return new H2Dialect();
+            case "postgresql":
+                return new PostgresDialect();
             default:
                 throw new IllegalArgumentException("Unknown dialect: " + name);
         }

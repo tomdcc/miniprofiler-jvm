@@ -25,6 +25,11 @@ class DatabaseDialectSpec extends Specification {
         DatabaseDialect.detect("jdbc:h2:mem:test") instanceof H2Dialect
     }
 
+    def "detect returns PostgresDialect for PostgreSQL URL"() {
+        expect:
+        DatabaseDialect.detect("jdbc:postgresql://localhost/mydb") instanceof PostgresDialect
+    }
+
     def "detect throws for unknown URL"() {
         when:
         DatabaseDialect.detect("jdbc:unknown:foo")
@@ -46,9 +51,15 @@ class DatabaseDialectSpec extends Specification {
         DatabaseDialect.forName("h2") instanceof H2Dialect
     }
 
+    def "forName returns PostgresDialect"() {
+        expect:
+        DatabaseDialect.forName("postgresql") instanceof PostgresDialect
+    }
+
     def "forName is case-insensitive"() {
         expect:
         DatabaseDialect.forName("H2") instanceof H2Dialect
+        DatabaseDialect.forName("POSTGRESQL") instanceof PostgresDialect
     }
 
     def "forName throws for unknown name"() {
