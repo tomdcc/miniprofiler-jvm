@@ -58,6 +58,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
     private TimingInternal head;
     private boolean stopped;
     private List<ClientTiming> clientTimings;
+    private volatile Map<String, String> customLinks;
     private final ProfilerProvider profilerProvider;
 
     ProfilerProvider getProfilerProvider() {
@@ -179,6 +180,15 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         JSONObject clientTimingsObj = (JSONObject) obj.get("ClientTimings");
         if (clientTimingsObj != null) {
             profiler.clientTimings = ClientTiming.listFromJson((JSONArray) clientTimingsObj.get("Timings"));
+        }
+
+        JSONObject customLinksObj = (JSONObject) obj.get("CustomLinks");
+        if (customLinksObj != null) {
+            Map<String, String> links = new LinkedHashMap<>();
+            for (Object key : customLinksObj.keySet()) {
+                links.put((String) key, (String) customLinksObj.get(key));
+            }
+            profiler.customLinks = links;
         }
 
         return profiler;
@@ -318,6 +328,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         } else {
             map.put("ClientTimings", null);
         }
+        map.put("CustomLinks", customLinks);
         return map;
     }
 
@@ -503,6 +514,25 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
      */
     public void setClientTimings(List<ClientTiming> clientTimings) {
         this.clientTimings = clientTimings;
+    }
+
+    @Override
+    public void addCustomLink(String text, String url) {
+        Map<String, String> links = customLinks;
+        if (links == null) {
+            synchronized (this) {
+                links = customLinks;
+                if (links == null) {
+                    customLinks = links = new LinkedHashMap<>();
+                }
+            }
+        }
+        links.put(text, url);
+    }
+
+    @Override
+    public Map<String, String> getCustomLinks() {
+        return customLinks;
     }
 
     @Override
