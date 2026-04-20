@@ -144,6 +144,8 @@ class ProfilerUiComparator {
             throw new AssertionError(
                 "Expected ${nextIndex} timing row(s) in the UI but found ${rows.size()}")
         }
+
+        verifyCustomLinksInPopup(profiler.customLinks, popup)
     }
 
     private static int verifyTimingRowExact(List<MiniProfilerTimingRowModule> rows, int rowIndex,
@@ -217,6 +219,8 @@ class ProfilerUiComparator {
 
         List<MiniProfilerTimingRowModule> rows = popup.timings
         verifyTimingRow(rows, 0, expected.root, result)
+
+        verifyCustomLinksInPopup(expected.customLinks, popup)
     }
 
     /**
@@ -291,6 +295,20 @@ class ProfilerUiComparator {
 
                 queryIndex++
             }
+        }
+    }
+
+    @SuppressWarnings('MethodParameterTypeRequired')
+    private static void verifyCustomLinksInPopup(Map<String, String> expectedLinks, popup) {
+        Map<String, String> effectiveExpected = expectedLinks ?: [:]
+        def linkElements = popup.customLinks
+        int actualCount = linkElements.size()
+        assertEqual("custom link count", effectiveExpected.size(), actualCount)
+        effectiveExpected.eachWithIndex { String text, String url, int i ->
+            String actualText = linkElements[i].text()?.trim()
+            assertEqual("custom link text at index ${i}", text, actualText)
+            String actualHref = linkElements[i].@href
+            assertEqual("custom link URL for '${text}'", url, actualHref)
         }
     }
 

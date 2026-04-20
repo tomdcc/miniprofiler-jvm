@@ -218,6 +218,39 @@ class ProfilerUiComparatorSpec extends GebReportingSpec {
         thrown(AssertionError)
     }
 
+    // ---- Custom links verification -----------------------------------------
+
+    void "comparator passes when custom links match"() {
+        given:
+        ExpectedProfiler expected = ProfilerDsl.profiler('/test-request/', 0) { root ->
+            root.step('child step', 0) { step ->
+                step.customTiming('sql', 'reader', 'select * from people')
+            }
+        }
+
+        when:
+        ProfilerUiComparator.verify(expected, miniProfiler)
+
+        then:
+        noExceptionThrown()
+    }
+
+    void "comparator fails when expected custom link is not in UI"() {
+        given:
+        ExpectedProfiler expected = ProfilerDsl.profiler('/test-request/', 0) { root ->
+            root.customLink('AppStats', 'http://example.com/appstats')
+            root.step('child step', 0) { step ->
+                step.customTiming('sql', 'reader', 'select * from people')
+            }
+        }
+
+        when:
+        ProfilerUiComparator.verify(expected, miniProfiler)
+
+        then:
+        thrown(AssertionError)
+    }
+
     // ---- Profiler-based exact verification --------------------------------
 
     void "exact verify passes for matching profiler"() {

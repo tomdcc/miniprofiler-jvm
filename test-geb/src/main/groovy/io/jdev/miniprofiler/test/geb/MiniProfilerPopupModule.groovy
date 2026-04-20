@@ -29,6 +29,7 @@ class MiniProfilerPopupModule extends Module {
         shareLink { $('.mp-share-mp-results') }
         clientTimings(required: false) { $('.mp-output .mp-client-timings') }
         clientTimingRows { clientTimings.find('tbody tr') }
+        customLinks(required: false) { $('.mp-links .mp-custom-link') }
     }
 
     void close() {
