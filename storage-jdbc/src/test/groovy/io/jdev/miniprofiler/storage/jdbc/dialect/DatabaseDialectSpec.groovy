@@ -40,6 +40,11 @@ class DatabaseDialectSpec extends Specification {
         DatabaseDialect.detect("jdbc:mariadb://localhost/mydb") instanceof MysqlDialect
     }
 
+    def "detect returns MssqlDialect for SQL Server URL"() {
+        expect:
+        DatabaseDialect.detect("jdbc:sqlserver://localhost;databaseName=mydb") instanceof MssqlDialect
+    }
+
     def "detect throws for unknown URL"() {
         when:
         DatabaseDialect.detect("jdbc:unknown:foo")
@@ -71,11 +76,17 @@ class DatabaseDialectSpec extends Specification {
         DatabaseDialect.forName("mysql") instanceof MysqlDialect
     }
 
+    def "forName returns MssqlDialect"() {
+        expect:
+        DatabaseDialect.forName("mssql") instanceof MssqlDialect
+    }
+
     def "forName is case-insensitive"() {
         expect:
         DatabaseDialect.forName("H2") instanceof H2Dialect
         DatabaseDialect.forName("POSTGRESQL") instanceof PostgresDialect
         DatabaseDialect.forName("MYSQL") instanceof MysqlDialect
+        DatabaseDialect.forName("MSSQL") instanceof MssqlDialect
     }
 
     def "forName throws for unknown name"() {

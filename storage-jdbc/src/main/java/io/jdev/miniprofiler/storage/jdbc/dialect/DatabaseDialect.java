@@ -43,22 +43,43 @@ public interface DatabaseDialect {
 
     /**
      * Returns the INSERT SQL that avoids duplicates on the profiler_id column.
-     * The statement expects parameters in this order:
-     * <ol>
-     *   <li>profiler_id (UUID)</li>
-     *   <li>name (String)</li>
-     *   <li>started (Timestamp)</li>
-     *   <li>duration_milliseconds (double)</li>
-     *   <li>user_name (String)</li>
-     *   <li>has_user_viewed (boolean)</li>
-     *   <li>machine_name (String)</li>
-     *   <li>profile_json (String)</li>
-     * </ol>
+     * Parameters are bound by {@link #bindSaveParameters}.
      *
      * @param tableName the table name
      * @return the SQL string
      */
     String getSaveSql(String tableName);
+
+    /**
+     * Binds parameters for the save SQL returned by {@link #getSaveSql}.
+     * The default implementation binds 8 parameters in standard order.
+     * Dialects that need additional parameters (e.g. MSSQL's
+     * {@code WHERE NOT EXISTS} clause) should override this method.
+     *
+     * @param ps                   the prepared statement
+     * @param profilerId           the profiler UUID
+     * @param name                 the session name
+     * @param started              the start timestamp
+     * @param durationMilliseconds the duration
+     * @param userName             the user name
+     * @param hasUserViewed        the viewed flag
+     * @param machineName          the machine name
+     * @param profileJson          the serialised JSON
+     * @throws SQLException if a database access error occurs
+     */
+    default void bindSaveParameters(PreparedStatement ps, UUID profilerId, String name,
+                                    java.sql.Timestamp started, double durationMilliseconds,
+                                    String userName, boolean hasUserViewed,
+                                    String machineName, String profileJson) throws SQLException {
+        setUuid(ps, 1, profilerId);
+        ps.setString(2, name);
+        ps.setTimestamp(3, started);
+        ps.setDouble(4, durationMilliseconds);
+        ps.setString(5, userName);
+        ps.setBoolean(6, hasUserViewed);
+        ps.setString(7, machineName);
+        ps.setString(8, profileJson);
+    }
 
     /**
      * Returns the SELECT SQL to load a single profiler by its UUID.
@@ -72,18 +93,32 @@ public interface DatabaseDialect {
 
     /**
      * Returns the SELECT SQL to list profiler UUIDs within a date range.
-     * The statement expects parameters:
-     * <ol>
-     *   <li>start date (Timestamp)</li>
-     *   <li>finish date (Timestamp)</li>
-     *   <li>maxResults (int)</li>
-     * </ol>
+     * Parameters are bound by {@link #bindListParameters}.
      *
      * @param tableName the table name
      * @param order     the sort order
      * @return the SQL string
      */
     String getListSql(String tableName, ListResultsOrder order);
+
+    /**
+     * Binds parameters for the list SQL returned by {@link #getListSql}.
+     * The default implementation binds: 1=start, 2=finish, 3=maxResults.
+     * Dialects with different parameter order (e.g. MSSQL's {@code TOP})
+     * should override this method.
+     *
+     * @param ps         the prepared statement
+     * @param start      the start timestamp
+     * @param finish     the finish timestamp
+     * @param maxResults the maximum number of results
+     * @throws SQLException if a database access error occurs
+     */
+    default void bindListParameters(PreparedStatement ps, java.sql.Timestamp start,
+                                    java.sql.Timestamp finish, int maxResults) throws SQLException {
+        ps.setTimestamp(1, start);
+        ps.setTimestamp(2, finish);
+        ps.setInt(3, maxResults);
+    }
 
     /**
      * Returns the UPDATE SQL to mark a profiler session as viewed.
@@ -192,6 +227,9 @@ public interface DatabaseDialect {
         if (lower.contains(":mysql:") || lower.contains(":mariadb:")) {
             return new MysqlDialect();
         }
+        if (lower.contains(":sqlserver:")) {
+            return new MssqlDialect();
+        }
         throw new IllegalArgumentException("Cannot detect database dialect from JDBC URL: " + jdbcUrl);
     }
 
@@ -211,6 +249,8 @@ public interface DatabaseDialect {
                 return new PostgresDialect();
             case "mysql":
                 return new MysqlDialect();
+            case "mssql":
+                return new MssqlDialect();
             default:
                 throw new IllegalArgumentException("Unknown dialect: " + name);
         }

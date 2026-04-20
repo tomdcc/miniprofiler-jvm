@@ -104,14 +104,9 @@ public class JdbcStorage extends BaseStorage {
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(dialect.getSaveSql(tableName))) {
-            dialect.setUuid(ps, 1, profiler.getId());
-            ps.setString(2, profiler.getName());
-            ps.setTimestamp(3, new Timestamp(profiler.getStarted()));
-            ps.setDouble(4, duration);
-            ps.setString(5, profiler.getUser());
-            ps.setBoolean(6, false);
-            ps.setString(7, profiler.getMachineName());
-            ps.setString(8, json);
+            dialect.bindSaveParameters(ps, profiler.getId(), profiler.getName(),
+                new Timestamp(profiler.getStarted()), duration,
+                profiler.getUser(), false, profiler.getMachineName(), json);
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to save profiler " + profiler.getId(), e);
@@ -145,9 +140,7 @@ public class JdbcStorage extends BaseStorage {
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(dialect.getListSql(tableName, orderBy))) {
-            ps.setTimestamp(1, startTs);
-            ps.setTimestamp(2, finishTs);
-            ps.setInt(3, maxResults);
+            dialect.bindListParameters(ps, startTs, finishTs, maxResults);
             try (ResultSet rs = ps.executeQuery()) {
                 List<UUID> result = new ArrayList<>();
                 while (rs.next()) {
