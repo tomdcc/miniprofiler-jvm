@@ -43,8 +43,10 @@ import java.util.UUID;
  *   <li><strong>DI/programmatic:</strong> pass a {@link DataSource} (and optionally a
  *       {@link DatabaseDialect} and table name). The storage does <em>not</em> own or
  *       close the data source.</li>
- *   <li><strong>Auto-configured via {@link JdbcStorageLocator}:</strong> a HikariCP pool
- *       is created internally. The storage owns and closes the pool.</li>
+ *   <li><strong>Auto-configured via {@link JdbcStorageLocator}:</strong> a
+ *       {@link DataSource} is created internally (HikariCP when available, otherwise an
+ *       unpooled {@link java.sql.DriverManager}-backed adapter). The storage owns and
+ *       closes it.</li>
  * </ul>
  */
 public class JdbcStorage extends BaseStorage {
@@ -258,6 +260,10 @@ public class JdbcStorage extends BaseStorage {
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create table " + tableName, e);
         }
+    }
+
+    DataSource getDataSource() {
+        return dataSource;
     }
 
     private static DatabaseDialect detectDialect(DataSource dataSource) {

@@ -22,6 +22,7 @@ import io.jdev.miniprofiler.storage.Storage;
 import io.jdev.miniprofiler.storage.StorageLocator;
 import io.jdev.miniprofiler.storage.jdbc.dialect.DatabaseDialect;
 
+import javax.sql.DataSource;
 import java.util.Optional;
 
 /**
@@ -29,8 +30,16 @@ import java.util.Optional;
  * {@code miniprofiler.storage.jdbc.url} property is not set, making auto-discovery
  * safe in environments without JDBC storage configuration.
  *
- * <p>When configured, creates a HikariCP connection pool that is owned by the
- * resulting {@link JdbcStorage} instance and closed when the storage is closed.</p>
+ * <p>When configured, a {@link DataSource} is obtained as follows:</p>
+ * <ol>
+ *   <li>If HikariCP is on the classpath, a {@link HikariDataSource} is created.</li>
+ *   <li>Otherwise, an unpooled {@link DriverManagerDataSource} is created. Users who
+ *       want pooling should either add HikariCP to their classpath or construct
+ *       {@link JdbcStorage} directly with their own {@link DataSource}.</li>
+ * </ol>
+ *
+ * <p>The resulting {@link DataSource} is owned by the {@link JdbcStorage} instance and
+ * closed when the storage is closed.</p>
  */
 public class JdbcStorageLocator implements StorageLocator {
 
@@ -50,7 +59,59 @@ public class JdbcStorageLocator implements StorageLocator {
             if (!config.isConfigured()) {
                 return Optional.empty();
             }
+            DataSourceResult result = createDataSource(config);
+            if (result == null) {
+                return Optional.empty();
+            }
+            DatabaseDialect dialect = resolveDialect(config, result.dataSource);
+            String tableName = config.getTable() != null
+                ? config.getTable()
+                : JdbcStorage.DEFAULT_TABLE_NAME;
+            return Optional.of(new JdbcStorage(result.dataSource, dialect, tableName, result.ownsDataSource));
+        } catch (Exception | NoClassDefFoundError e) {
+            return Optional.empty();
+        }
+    }
 
+    private static final class DataSourceResult {
+        final DataSource dataSource;
+        final boolean ownsDataSource;
+
+        DataSourceResult(DataSource dataSource, boolean ownsDataSource) {
+            this.dataSource = dataSource;
+            this.ownsDataSource = ownsDataSource;
+        }
+    }
+
+    private static DataSourceResult createDataSource(JdbcStorageConfig config) {
+        if (config.getUrl() != null) {
+            DataSource ds = isHikariAvailable()
+                ? HikariFactory.create(config)
+                : new DriverManagerDataSource(config.getUrl(), config.getUsername(), config.getPassword());
+            return new DataSourceResult(ds, true);
+        }
+        return null;
+    }
+
+    private static boolean isHikariAvailable() {
+        try {
+            Class.forName("com.zaxxer.hikari.HikariDataSource", false,
+                JdbcStorageLocator.class.getClassLoader());
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    private static DatabaseDialect resolveDialect(JdbcStorageConfig config, DataSource dataSource) {
+        if (config.getDialect() != null) {
+            return DatabaseDialect.forName(config.getDialect());
+        }
+        return DatabaseDialect.detect(config.getUrl());
+    }
+
+    private static final class HikariFactory {
+        static DataSource create(JdbcStorageConfig config) {
             HikariConfig hikariConfig = new HikariConfig();
             hikariConfig.setJdbcUrl(config.getUrl());
             if (config.getUsername() != null) {
@@ -59,18 +120,7 @@ public class JdbcStorageLocator implements StorageLocator {
             if (config.getPassword() != null) {
                 hikariConfig.setPassword(config.getPassword());
             }
-            HikariDataSource dataSource = new HikariDataSource(hikariConfig);
-
-            DatabaseDialect dialect = config.getDialect() != null
-                ? DatabaseDialect.forName(config.getDialect())
-                : DatabaseDialect.detect(config.getUrl());
-            String tableName = config.getTable() != null
-                ? config.getTable()
-                : JdbcStorage.DEFAULT_TABLE_NAME;
-
-            return Optional.of(new JdbcStorage(dataSource, dialect, tableName, true));
-        } catch (Exception | NoClassDefFoundError e) {
-            return Optional.empty();
+            return new HikariDataSource(hikariConfig);
         }
     }
 }

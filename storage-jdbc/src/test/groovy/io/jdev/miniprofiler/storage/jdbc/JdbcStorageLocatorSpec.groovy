@@ -16,6 +16,7 @@
 
 package io.jdev.miniprofiler.storage.jdbc
 
+import com.zaxxer.hikari.HikariDataSource
 import spock.lang.Specification
 
 class JdbcStorageLocatorSpec extends Specification {
@@ -40,5 +41,22 @@ class JdbcStorageLocatorSpec extends Specification {
         if (saved != null) {
             System.setProperty("miniprofiler.storage.jdbc.url", saved)
         }
+    }
+
+    def "locate returns a Hikari-backed storage when HikariCP is on the classpath"() {
+        given:
+        System.setProperty("miniprofiler.storage.jdbc.url", "jdbc:h2:mem:locator-hikari;DB_CLOSE_DELAY=-1")
+
+        when:
+        def result = new JdbcStorageLocator().locate()
+
+        then:
+        result.present
+        def storage = (JdbcStorage) result.get()
+        storage.dataSource instanceof HikariDataSource
+
+        cleanup:
+        storage?.close()
+        System.clearProperty("miniprofiler.storage.jdbc.url")
     }
 }

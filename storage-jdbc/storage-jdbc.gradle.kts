@@ -24,7 +24,10 @@ plugins {
 dependencies {
     api(projects.core)
 
-    implementation(libs.hikaricp.v4)
+    // HikariCP is optional — users who supply their own DataSource don't need it.
+    // The auto-discovery path in JdbcStorageLocator prefers Hikari when available
+    // and falls back to a DriverManager-backed DataSource when it is not.
+    compileOnly(libs.hikaricp.v4)
 
     // JDBC drivers declared compileOnly — users bring their own versions.
     compileOnly(libs.h2)
@@ -35,6 +38,8 @@ dependencies {
 
     // H2 is used in unit tests for the fast check path.
     testImplementation(libs.h2)
+    // Default test suite exercises the Hikari-preferred happy path.
+    testImplementation(libs.hikaricp.v4)
 
     // testFixtures holds the base integration spec — it needs Spock/Groovy.
     testFixturesImplementation(libs.h2)
@@ -45,6 +50,7 @@ dependencies {
     // compileOnly deps are not inherited by containerTest suite — re-declare them.
     containerTestImplementation(testFixtures(project))
     containerTestImplementation(libs.h2)
+    containerTestImplementation(libs.hikaricp.v4)
     containerTestImplementation(libs.postgresql)
     containerTestImplementation(libs.mysql.connector)
     containerTestImplementation(libs.mssql.jdbc)
