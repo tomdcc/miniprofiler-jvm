@@ -175,10 +175,34 @@ class ProfilerImplSpec extends Specification {
             'Started',
             'DurationMilliseconds',
             'MachineName',
+            'User',
             'Root',
             'ClientTimings',
             'CustomLinks'
         ]
+    }
+
+    void "User round-trips through toJson/fromJson"() {
+        given:
+        profiler.setUser('alice')
+        profiler.stop()
+
+        when:
+        def restored = ProfilerImpl.fromJson(profiler.asUiJson())
+
+        then:
+        restored.user == 'alice'
+    }
+
+    void "User is null on fromJson when absent from JSON"() {
+        given:
+        profiler.stop()
+
+        when:
+        def restored = ProfilerImpl.fromJson(profiler.asUiJson())
+
+        then:
+        restored.user == null
     }
 
     void "list json contains expected fields in order"() {
