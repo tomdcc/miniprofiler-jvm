@@ -104,6 +104,18 @@ public class TestMiniProfilerHttpClient {
     }
 
     /**
+     * Polls the results JSON endpoint until the profiler with the given ID is available.
+     *
+     * @param id the profiler result ID
+     * @return the response with status 200, or the last 404 response if the timeout expires
+     * @throws IOException on network error
+     * @see #awaitInResultsList(String)
+     */
+    public TestHttpResponse awaitResultsJson(String id) throws IOException {
+        return awaitResults(() -> getResultsJson(id));
+    }
+
+    /**
      * Fetches a MiniProfiler result as HTML: {@code GET <profilerPath>/results?id=<id>}.
      *
      * @param id the profiler result ID
@@ -115,6 +127,18 @@ public class TestMiniProfilerHttpClient {
     }
 
     /**
+     * Polls the results HTML endpoint until the profiler with the given ID is available.
+     *
+     * @param id the profiler result ID
+     * @return the response with status 200, or the last 404 response if the timeout expires
+     * @throws IOException on network error
+     * @see #awaitInResultsList(String)
+     */
+    public TestHttpResponse awaitResultsHtml(String id) throws IOException {
+        return awaitResults(() -> getResultsHtml(id));
+    }
+
+    /**
      * Fetches the full results list: {@code GET <profilerPath>/results-list}.
      *
      * @return the response
@@ -122,6 +146,38 @@ public class TestMiniProfilerHttpClient {
      */
     public TestHttpResponse getResultsList() throws IOException {
         return get(profilerPath + "/results-list");
+    }
+
+    /**
+     * Polls the results list until an entry with the given ID appears, or the timeout expires.
+     *
+     * <p>The profiler is saved to storage after the HTTP response is sent, so there is a brief
+     * window where the client has received the profiler ID header but the profile is not yet
+     * in the results list. This method handles that race by polling.</p>
+     *
+     * @param id the profiler ID to wait for
+     * @return the matching entry as a {@code Map}, or {@code null} if not found within the timeout
+     * @throws IOException on network error
+     */
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> awaitInResultsList(String id) throws IOException {
+        long deadline = System.currentTimeMillis() + 5_000;
+        while (System.currentTimeMillis() < deadline) {
+            java.util.List<Map<String, Object>> list =
+                (java.util.List<Map<String, Object>>) getResultsList().bodyAsJson();
+            for (Map<String, Object> entry : list) {
+                if (id.equals(entry.get("Id"))) {
+                    return entry;
+                }
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return null;
+            }
+        }
+        return null;
     }
 
     /**
@@ -200,5 +256,25 @@ public class TestMiniProfilerHttpClient {
             result.write(buffer, 0, length);
         }
         return result.toString(StandardCharsets.UTF_8.name());
+    }
+
+    private TestHttpResponse awaitResults(IOSupplier<TestHttpResponse> fetcher) throws IOException {
+        long deadline = System.currentTimeMillis() + 5_000;
+        TestHttpResponse last = fetcher.get();
+        while (last.statusCode() == 404 && System.currentTimeMillis() < deadline) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return last;
+            }
+            last = fetcher.get();
+        }
+        return last;
+    }
+
+    @FunctionalInterface
+    private interface IOSupplier<T> {
+        T get() throws IOException;
     }
 }

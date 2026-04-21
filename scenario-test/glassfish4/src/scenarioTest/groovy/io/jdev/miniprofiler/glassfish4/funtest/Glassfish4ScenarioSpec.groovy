@@ -37,7 +37,7 @@ class Glassfish4ScenarioSpec extends Specification {
         response.miniProfilerIds().size() == 1
 
         when: 'fetch the profiler result as JSON'
-        def resultResponse = client.getResultsJson(response.miniProfilerId())
+        def resultResponse = client.awaitResultsJson(response.miniProfilerId())
         def profiler = resultResponse.bodyAsJson()
 
         then: 'profiler has expected timing structure'
