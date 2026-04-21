@@ -120,6 +120,44 @@
       "description": "Logback — pin below 1.4 for slf4j 1.x compatibility",
       "matchPackageNames": ["ch.qos.logback:*"],
       "allowedVersions": "<1.4"
+    },
+    {
+      "description": "wildfly10 scenario image — pin to major 10",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["jboss/wildfly"],
+      "allowedVersions": "<11"
+    },
+    {
+      "description": "wildfly27 scenario image — pin to major 27",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["quay.io/wildfly/wildfly"],
+      "allowedVersions": "<28"
+    },
+    {
+      "description": "glassfish4 scenario image — pin to major 4",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["glassfish"],
+      "allowedVersions": "<5"
+    },
+    {
+      "description": "glassfish7 scenario image — pin to 7.0.x; 7.1 raises JDK floor to 17 and we test against JDK 11",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/eclipse-ee4j/glassfish"],
+      "allowedVersions": "<7.1"
+    },
+    {
+      "description": "jetty9 scenario image — pin to major 9",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["jetty"],
+      "matchCurrentValue": "/^9/",
+      "allowedVersions": "<10"
+    },
+    {
+      "description": "jetty12 scenario image — pin to major 12",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["jetty"],
+      "matchCurrentValue": "/^12\\./",
+      "allowedVersions": "<13"
     }
   ]
 }
