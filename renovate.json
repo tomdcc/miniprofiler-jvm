@@ -14,76 +14,76 @@
   ],
   "packageRules": [
     {
-      "description": "EclipseLink v2 line",
+      "description": "EclipseLink v2",
       "matchPackageNames": ["org.eclipse.persistence:eclipselink"],
-      "matchCurrentVersion": ">=2 <3",
-      "allowedVersions": ">=2 <3"
+      "matchCurrentValue": "/^2\\./",
+      "allowedVersions": "<3"
     },
     {
-      "description": "EclipseLink v3 line",
+      "description": "EclipseLink v3",
       "matchPackageNames": ["org.eclipse.persistence:eclipselink"],
-      "matchCurrentVersion": ">=3 <4",
-      "allowedVersions": ">=3 <4"
+      "matchCurrentValue": "/^3\\./",
+      "allowedVersions": "<4"
     },
     {
-      "description": "EclipseLink v4 line",
+      "description": "EclipseLink v4",
       "matchPackageNames": ["org.eclipse.persistence:eclipselink"],
-      "matchCurrentVersion": ">=4 <5",
-      "allowedVersions": ">=4 <5"
+      "matchCurrentValue": "/^4\\./",
+      "allowedVersions": "<5"
     },
     {
-      "description": "Hibernate v6 line",
+      "description": "Hibernate v6",
       "matchPackageNames": ["org.hibernate.orm:hibernate-core"],
-      "matchCurrentVersion": ">=6 <7",
-      "allowedVersions": ">=6 <7"
+      "matchCurrentValue": "/^6\\./",
+      "allowedVersions": "<7"
     },
     {
       "description": "jOOQ v3.0.0 — intentional minimum-version pin, never update",
       "matchPackageNames": ["org.jooq:jooq"],
-      "matchCurrentVersion": "3.0.0",
+      "matchCurrentValue": "3.0.0",
       "enabled": false
     },
     {
-      "description": "jOOQ v3.14 line — last Java 8 version",
+      "description": "jOOQ v3.14 — last Java 8 version",
       "matchPackageNames": ["org.jooq:jooq"],
-      "matchCurrentVersion": ">=3.14 <3.15",
-      "allowedVersions": ">=3.14 <3.15"
+      "matchCurrentValue": "/^3\\.14\\./",
+      "allowedVersions": "<3.15"
     },
     {
-      "description": "jOOQ v3.16 line — last Java 11 version",
+      "description": "jOOQ v3.16 — last Java 11 version",
       "matchPackageNames": ["org.jooq:jooq"],
-      "matchCurrentVersion": ">=3.16 <3.17",
-      "allowedVersions": ">=3.16 <3.17"
+      "matchCurrentValue": "/^3\\.16\\./",
+      "allowedVersions": "<3.17"
     },
     {
-      "description": "jOOQ v3.19 line — last Java 17 version",
+      "description": "jOOQ v3.19 — last Java 17 version",
       "matchPackageNames": ["org.jooq:jooq"],
-      "matchCurrentVersion": ">=3.19 <3.20",
-      "allowedVersions": ">=3.19 <3.20"
+      "matchCurrentValue": "/^3\\.19\\./",
+      "allowedVersions": "<3.20"
     },
     {
-      "description": "Spring v5 line",
+      "description": "Spring v5",
       "matchPackageNames": ["org.springframework:*"],
-      "matchCurrentVersion": ">=5 <6",
-      "allowedVersions": ">=5 <6"
+      "matchCurrentValue": "/^5\\./",
+      "allowedVersions": "<6"
     },
     {
-      "description": "Weld SE v3 line",
+      "description": "Weld SE v3",
       "matchPackageNames": ["org.jboss.weld.se:weld-se-core"],
-      "matchCurrentVersion": ">=3 <4",
-      "allowedVersions": ">=3 <4"
+      "matchCurrentValue": "/^3\\./",
+      "allowedVersions": "<4"
     },
     {
-      "description": "Jetty 9 line",
+      "description": "Jetty 9",
       "matchPackageNames": ["org.eclipse.jetty:*", "org.eclipse.jetty.ee10:*"],
-      "matchCurrentVersion": ">=9 <10",
-      "allowedVersions": ">=9 <10"
+      "matchCurrentValue": "/^9\\./",
+      "allowedVersions": "<10"
     },
     {
-      "description": "Selenium groovy3 line — capped for Geb 6 compatibility",
+      "description": "Selenium groovy3 — capped at 4.34.x for Geb 6 compatibility",
       "matchPackageNames": ["org.seleniumhq.selenium:*"],
-      "matchCurrentVersion": "<4.35",
-      "allowedVersions": "<4.35"
+      "matchCurrentValue": "/^4\\.34\\./",
+      "allowedVersions": "<4.35.0"
     },
     {
       "description": "Block major updates for cross-version-tested dependencies",
