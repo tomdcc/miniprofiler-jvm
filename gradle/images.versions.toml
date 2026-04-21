@@ -15,6 +15,6 @@ fake-gcs-server = "fsouza/fake-gcs-server:1.54.0@sha256:3730da0e31f7e5186a90ec48
 wildfly10 = "jboss/wildfly:10.1.0.Final@sha256:455b5f3b2ec9cd206e879b776fa854e09c1a0f534362de57c858906561c4128d"
 wildfly27 = "quay.io/wildfly/wildfly:27.0.1.Final-jdk17@sha256:8470bc822820e17f7ecb5dc0c02ee9dbe1cdbcc885902253906a682a2d1688de"
 glassfish4 = "glassfish:4.1@sha256:8077dfad6754e844f3fd197832ca62c26700433290e392700e0020226256de41"
-glassfish7 = "ghcr.io/eclipse-ee4j/glassfish:7.0.25@sha256:9061497fa9f69669f90dfcfbc6eb366056cdbb6d4a3e31bf9b11b66f6344b488"
+glassfish7 = "ghcr.io/eclipse-ee4j/glassfish:8.0.0@sha256:e23d54c5bd566a16e4665f3a21ef2ae309a68ad4c6a03244e97db134c89502a0"
 jetty9 = "jetty:9-jre11@sha256:4ce403cf2e243edf1df193ab7aedaac00d89844e6028791fddd9d438a3928014"
 jetty12 = "jetty:12.0-jre21@sha256:742f8bb20988be9095a80012fdafd8d8a0f62b07ed81ba29d97c75c88799912f"
