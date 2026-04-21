@@ -16,6 +16,7 @@
 
 plugins {
     id("build.java-module")
+    id("build.cross-version-test")
     id("build.container-test")
     id("build.publish")
     `java-test-fixtures`
@@ -63,6 +64,38 @@ tasks.named<Test>("containerTest").configure {
     systemProperty("dockerImage.mssql-server", images.versions.mssql.server.get())
     systemProperty("dockerImage.oracle-free", images.versions.oracle.free.get())
 }
+
+crossVersionTests {
+    configureEach {
+        implementation(libs.bundles.testing.groovy4)
+        runtimeOnly(libs.bundles.testing.runtime)
+        implementation(projects.core)
+        implementation(libs.h2)
+    }
+    register("crossVersionTestHikariV4") {
+        // HikariCP 4.0.3: compile target, minimum supported version (Java 8)
+        minJavaVersion = 8
+        implementation(libs.hikaricp.v4)
+    }
+    register("crossVersionTestHikariV5") {
+        // HikariCP 5.x: Java 11
+        minJavaVersion = 11
+        implementation(libs.hikaricp.v5)
+    }
+    register("crossVersionTestHikariV6") {
+        // HikariCP 6.x: Java 11
+        minJavaVersion = 11
+        implementation(libs.hikaricp.v6)
+    }
+    register("crossVersionTestHikariV7") {
+        // HikariCP 7.x: Java 17
+        minJavaVersion = 17
+        implementation(libs.hikaricp.v7)
+    }
+}
+
+// The v4 suite tests the minimum supported version and runs as part of regular check
+tasks.named("check") { dependsOn("crossVersionTestHikariV4") }
 
 publishing {
     publications.named<MavenPublication>("maven") {
