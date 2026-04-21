@@ -24,7 +24,7 @@ plugins {
 dependencies {
     api(projects.core)
 
-    implementation(libs.hikaricp)
+    implementation(libs.hikaricp.v4)
 
     // JDBC drivers declared compileOnly — users bring their own versions.
     compileOnly(libs.h2)

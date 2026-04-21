@@ -80,10 +80,28 @@
       "allowedVersions": "<6"
     },
     {
-      "description": "HikariCP — pin to 4.x; 5.0+ is compiled for Java 11 and we still target Java 8",
+      "description": "HikariCP v4 — compile target; pinned for Java 8 compatibility",
       "matchPackageNames": ["com.zaxxer:HikariCP"],
       "matchCurrentValue": "/^4\\./",
       "allowedVersions": "<5"
+    },
+    {
+      "description": "HikariCP v5",
+      "matchPackageNames": ["com.zaxxer:HikariCP"],
+      "matchCurrentValue": "/^5\\./",
+      "allowedVersions": "<6"
+    },
+    {
+      "description": "HikariCP v6",
+      "matchPackageNames": ["com.zaxxer:HikariCP"],
+      "matchCurrentValue": "/^6\\./",
+      "allowedVersions": "<7"
+    },
+    {
+      "description": "HikariCP v7",
+      "matchPackageNames": ["com.zaxxer:HikariCP"],
+      "matchCurrentValue": "/^7\\./",
+      "allowedVersions": "<8"
     },
     {
       "description": "Jetty 9",
@@ -102,6 +120,7 @@
       "matchPackageNames": [
         "com.h2database:*",
         "com.puppycrawl.tools:checkstyle",
+        "com.zaxxer:HikariCP",
         "io.ratpack:*",
         "jakarta.*:*",
         "javax:javaee-api",
