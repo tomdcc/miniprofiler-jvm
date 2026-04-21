@@ -28,17 +28,23 @@ class JdbcStorageConfigSpec extends Specification {
         sysprops["miniprofiler.storage.jdbc.password"]  = "secret"
         sysprops["miniprofiler.storage.jdbc.table"]     = "my_table"
         sysprops["miniprofiler.storage.jdbc.dialect"]   = "h2"
+        sysprops["miniprofiler.storage.jdbc.jndiName"]  = "java:comp/env/jdbc/profiler"
+        sysprops["miniprofiler.storage.jdbc.table.create"] = "true"
 
         when:
         def config = JdbcStorageConfig.create(sysprops, null)
 
         then:
-        config.url == "jdbc:h2:mem:test"
-        config.username == "sa"
-        config.password == "secret"
-        config.table == "my_table"
-        config.dialect == "h2"
-        config.configured
+        verifyAll(config) {
+            url == "jdbc:h2:mem:test"
+            username == "sa"
+            password == "secret"
+            table == "my_table"
+            dialect == "h2"
+            jndiName == "java:comp/env/jdbc/profiler"
+            tableCreate
+            configured
+        }
     }
 
     def "reads properties from file properties"() {
@@ -70,12 +76,27 @@ class JdbcStorageConfigSpec extends Specification {
         config.url == "jdbc:h2:mem:sys"
     }
 
-    def "returns unconfigured when no url is set"() {
+    def "returns unconfigured when neither url or jndiName is set"() {
         when:
         def config = JdbcStorageConfig.create(new Properties(), null)
 
         then:
         !config.configured
+        config.url == null
+        config.jndiName == null
+    }
+
+    def "is configured when only jndiName is set"() {
+        given:
+        def sysprops = new Properties()
+        sysprops["miniprofiler.storage.jdbc.jndiName"] = "java:comp/env/jdbc/ds"
+
+        when:
+        def config = JdbcStorageConfig.create(sysprops, null)
+
+        then:
+        config.configured
+        config.jndiName == "java:comp/env/jdbc/ds"
         config.url == null
     }
 
@@ -88,10 +109,22 @@ class JdbcStorageConfigSpec extends Specification {
         def config = JdbcStorageConfig.create(sysprops, null)
 
         then:
-        config.url == "jdbc:h2:mem:test"
-        config.username == null
-        config.password == null
-        config.table == null
-        config.dialect == null
+        verifyAll(config) {
+            url == "jdbc:h2:mem:test"
+            username == null
+            password == null
+            table == null
+            dialect == null
+            jndiName == null
+            !tableCreate
+        }
+    }
+
+    def "tableCreate defaults to false"() {
+        when:
+        def config = JdbcStorageConfig.create(new Properties(), null)
+
+        then:
+        !config.tableCreate
     }
 }

@@ -16,6 +16,7 @@
 
 plugins {
     id("build.java-module")
+    id("build.cross-version-test")
     id("build.container-test")
     id("build.publish")
     `java-test-fixtures`
@@ -24,7 +25,10 @@ plugins {
 dependencies {
     api(projects.core)
 
-    implementation(libs.hikaricp)
+    // HikariCP is optional — users who supply their own DataSource don't need it.
+    // The auto-discovery path in JdbcStorageLocator prefers Hikari when available
+    // and falls back to a DriverManager-backed DataSource when it is not.
+    compileOnly(libs.hikaricp.v4)
 
     // JDBC drivers declared compileOnly — users bring their own versions.
     compileOnly(libs.h2)
@@ -35,6 +39,8 @@ dependencies {
 
     // H2 is used in unit tests for the fast check path.
     testImplementation(libs.h2)
+    // Default test suite exercises the Hikari-preferred happy path.
+    testImplementation(libs.hikaricp.v4)
 
     // testFixtures holds the base integration spec — it needs Spock/Groovy.
     testFixturesImplementation(libs.h2)
@@ -45,6 +51,7 @@ dependencies {
     // compileOnly deps are not inherited by containerTest suite — re-declare them.
     containerTestImplementation(testFixtures(project))
     containerTestImplementation(libs.h2)
+    containerTestImplementation(libs.hikaricp.v4)
     containerTestImplementation(libs.postgresql)
     containerTestImplementation(libs.mysql.connector)
     containerTestImplementation(libs.mssql.jdbc)
@@ -57,6 +64,38 @@ tasks.named<Test>("containerTest").configure {
     systemProperty("dockerImage.mssql-server", images.versions.mssql.server.get())
     systemProperty("dockerImage.oracle-free", images.versions.oracle.free.get())
 }
+
+crossVersionTests {
+    configureEach {
+        implementation(libs.bundles.testing.groovy4)
+        runtimeOnly(libs.bundles.testing.runtime)
+        implementation(projects.core)
+        implementation(libs.h2)
+    }
+    register("crossVersionTestHikariV4") {
+        // HikariCP 4.0.3: compile target, minimum supported version (Java 8)
+        minJavaVersion = 8
+        implementation(libs.hikaricp.v4)
+    }
+    register("crossVersionTestHikariV5") {
+        // HikariCP 5.x: Java 11
+        minJavaVersion = 11
+        implementation(libs.hikaricp.v5)
+    }
+    register("crossVersionTestHikariV6") {
+        // HikariCP 6.x: Java 11
+        minJavaVersion = 11
+        implementation(libs.hikaricp.v6)
+    }
+    register("crossVersionTestHikariV7") {
+        // HikariCP 7.x: Java 17
+        minJavaVersion = 17
+        implementation(libs.hikaricp.v7)
+    }
+}
+
+// The v4 suite tests the minimum supported version and runs as part of regular check
+tasks.named("check") { dependsOn("crossVersionTestHikariV4") }
 
 publishing {
     publications.named<MavenPublication>("maven") {

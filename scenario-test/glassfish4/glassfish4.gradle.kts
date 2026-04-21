@@ -27,6 +27,9 @@ dependencies {
     implementation(projects.javaxServlet)
     implementation(projects.eclipselink)
 
+    // Exercise the JDBC storage locator via the container's JNDI DataSource.
+    runtimeOnly(projects.storageJdbc)
+
     scenarioTestImplementation(projects.testlibIntegration)
     scenarioTestRuntimeOnly(scenarioTestFixtures(projects.javaxEe))
 }

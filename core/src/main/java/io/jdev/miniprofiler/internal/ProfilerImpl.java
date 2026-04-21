@@ -174,6 +174,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         ProfileLevel level = ProfileLevel.Verbose;
 
         ProfilerImpl profiler = new ProfilerImpl(id, name, started, machineName, level);
+        profiler.user = (String) obj.get("User");
         TimingImpl root = TimingImpl.fromJson(profiler, null, (JSONObject) obj.get("Root"));
         profiler.root = root;
 
@@ -320,6 +321,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         map.put("Started", Instant.ofEpochMilli(started).atOffset(ZoneOffset.UTC).toString());
         map.put("DurationMilliseconds", getDurationMilliseconds());
         map.put("MachineName", machineName);
+        map.put("User", user);
         map.put("Root", root);
         if (clientTimings != null) {
             Map<String, Object> ct = new LinkedHashMap<>();
