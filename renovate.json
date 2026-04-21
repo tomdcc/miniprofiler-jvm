@@ -38,6 +38,12 @@
       "allowedVersions": "<7"
     },
     {
+      "description": "Hibernate v7.0 — keep on 7.0.x; 7.2+ removes the deprecated DatasourceConnectionProviderImpl shim used by LegacyProfilingDatasourceConnectionProvider",
+      "matchPackageNames": ["org.hibernate.orm:hibernate-core"],
+      "matchCurrentValue": "/^7\\.0\\./",
+      "allowedVersions": "<7.1"
+    },
+    {
       "description": "jOOQ v3.0.0 — intentional minimum-version pin, never update",
       "matchPackageNames": ["org.jooq:jooq"],
       "matchCurrentValue": "3.0.0",
@@ -161,6 +167,12 @@
     {
       "description": "Spock — keep groovy4 entries on the -groovy-4.0 classifier",
       "matchPackageNames": ["org.spockframework:*"],
+      "matchCurrentValue": "/-groovy-4\\.0$/",
+      "allowedVersions": "/-groovy-4\\.0$/"
+    },
+    {
+      "description": "CodeNarc — keep on the -groovy-4.0 classifier",
+      "matchPackageNames": ["org.codenarc:CodeNarc"],
       "matchCurrentValue": "/-groovy-4\\.0$/",
       "allowedVersions": "/-groovy-4\\.0$/"
     },
