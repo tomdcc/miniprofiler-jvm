@@ -36,5 +36,5 @@ val fullCheck = tasks.register("fullCheck") {
 tasks.register("preRelease") {
     group = "verification"
     description = "Lifecycle task: runs all checks required before a release"
-    dependsOn(fullCheck)
+    dependsOn(tasks.named("check"))
 }

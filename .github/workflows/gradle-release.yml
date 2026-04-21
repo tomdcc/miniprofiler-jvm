@@ -19,6 +19,21 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_PAT || secrets.GITHUB_TOKEN }}
 
+      - name: Require passing build on this commit
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          read -r STATUS CONCLUSION <<< "$(gh run list \
+            --workflow=gradle-build-and-publish-snapshot.yml \
+            --commit="$GITHUB_SHA" \
+            --limit=1 \
+            --json status,conclusion \
+            --jq '.[0] | "\(.status) \(.conclusion)"')"
+          if [ "$STATUS/$CONCLUSION" != "completed/success" ]; then
+            echo "Build workflow on $GITHUB_SHA is '$STATUS/$CONCLUSION', refusing to release"
+            exit 1
+          fi
+
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -31,16 +46,6 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
-
-      - name: Setup Firefox
-        uses: browser-actions/setup-firefox@v1.7.1
-        with:
-          firefox-version: 128.10.0esr
-
-      - name: Setup Geckodriver
-        uses: browser-actions/setup-geckodriver@v0.0.0
-        with:
-          geckodriver-version: 0.36.0
 
       - name: Configure git
         run: |
@@ -65,11 +70,9 @@ jobs:
           sed -i "s/    version: .*/    version: ${RELEASE_VERSION}/" README.md
 
       - name: Run checks
-        uses: GabrielBB/xvfb-action@v1.7
         env:
           CI: true
-        with:
-          run: ./gradlew preRelease
+        run: ./gradlew preRelease
 
       - name: Commit release version
         run: |
