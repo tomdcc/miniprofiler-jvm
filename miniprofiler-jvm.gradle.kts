@@ -25,3 +25,20 @@ allprojects {
 
     apply(plugin = "build.copyright")
 }
+
+val checkPublishedModulesMatchWorkflow by tasks.registering(CheckPublishedModulesTask::class) {
+    group = "verification"
+    description = "Verifies published modules and the release artifact validation workflow are in sync"
+    workflowFile = file(".github/workflows/gradle-validate-release-artifacts.yml")
+    publishedArtifactIds = provider {
+        subprojects
+            .filter { it.plugins.hasPlugin("build.publish") }
+            .map { "miniprofiler-${it.name}" }
+            .sorted()
+    }
+    resultFile = layout.buildDirectory.file("${name}/result.txt")
+}
+
+tasks.named("fullCheck") {
+    dependsOn(checkPublishedModulesMatchWorkflow)
+}

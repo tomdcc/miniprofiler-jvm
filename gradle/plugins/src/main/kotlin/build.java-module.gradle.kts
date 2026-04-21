@@ -148,6 +148,3 @@ afterEvaluate {
     }
 }
 
-tasks.named("fullCheck") {
-    dependsOn(tasks.named("check"))
-}

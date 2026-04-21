@@ -37,7 +37,7 @@ jobs:
       - name: Build and run fast tests
         env:
           CI_BRANCH: ${{ github.head_ref || github.ref_name }}
-        run: ./gradlew assemble sanityCheck check --continue
+        run: ./gradlew assemble check --continue
 
       - name: Run slow tests
         uses: GabrielBB/xvfb-action@v1.7

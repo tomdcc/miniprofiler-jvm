@@ -92,6 +92,10 @@ tasks.withType<Jar>().configureEach {
     }
 }
 
+tasks.named("preRelease") {
+    dependsOn(tasks.named("assemble"))
+}
+
 tasks.register("publishSnapshots") {
     if (isSnapshot) {
         dependsOn(tasks.named("publishToSonatype"))

@@ -57,7 +57,7 @@ jobs:
       - name: Run checks
         env:
           CI: true
-        run: ./gradlew sanityCheck check verifyCopyright
+        run: ./gradlew preRelease
 
       - name: Commit release version
         run: |
