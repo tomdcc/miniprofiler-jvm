@@ -25,13 +25,14 @@ import spock.lang.Requires
 import spock.lang.Specification
 
 /**
- * Tests {@link ProfilingDatasourceConnectionProvider} which extends
- * {@code org.hibernate.engine.jdbc.connections.internal.DataSourceConnectionProvider} —
- * introduced in Hibernate 7.2 as the replacement for the now-deprecated
- * {@code DatasourceConnectionProviderImpl}.
+ * Tests {@link LegacyProfilingDatasourceConnectionProvider} which extends
+ * {@code org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl}.
+ * From Hibernate 7.2, that superclass was reduced to a deprecated shim extending
+ * {@code DriverManagerConnectionProvider}, so this spec only runs on versions where the
+ * renamed {@code DataSourceConnectionProvider} class is absent (Hibernate 5, 6, 7.0, 7.1).
  */
-@Requires({ classExists('org.hibernate.engine.jdbc.connections.internal.DataSourceConnectionProvider') })
-class HibernateCrossVersionSpec extends Specification {
+@Requires({ !classExists('org.hibernate.engine.jdbc.connections.internal.DataSourceConnectionProvider') })
+class LegacyHibernateCrossVersionSpec extends Specification {
 
     TestProfilerProvider profilerProvider = new TestProfilerProvider()
 
@@ -42,12 +43,12 @@ class HibernateCrossVersionSpec extends Specification {
 
     void "DI mode: constructor-injected provider captures SQL"() {
         given:
-        def profiler = profilerProvider.start("di-test")
+        def profiler = profilerProvider.start("legacy-di-test")
 
         def ds = new JdbcDataSource()
-        ds.setURL("jdbc:h2:mem:hibernate_di_test;DB_CLOSE_DELAY=-1")
+        ds.setURL("jdbc:h2:mem:hibernate_legacy_di_test;DB_CLOSE_DELAY=-1")
 
-        def connectionProvider = new ProfilingDatasourceConnectionProvider(profilerProvider)
+        def connectionProvider = new LegacyProfilingDatasourceConnectionProvider(profilerProvider)
         connectionProvider.configure(["hibernate.connection.datasource": ds])
 
         when:
@@ -65,15 +66,15 @@ class HibernateCrossVersionSpec extends Specification {
     void "ServiceLoader mode: profiler provider discovered via locator captures SQL"() {
         given:
         TestProfilerProviderLocator.activate(profilerProvider)
-        def profiler = profilerProvider.start("serviceloader-test")
+        def profiler = profilerProvider.start("legacy-serviceloader-test")
 
         def ds = new JdbcDataSource()
-        ds.setURL("jdbc:h2:mem:hibernate_sl_test;DB_CLOSE_DELAY=-1")
+        ds.setURL("jdbc:h2:mem:hibernate_legacy_sl_test;DB_CLOSE_DELAY=-1")
 
         def cfg = new org.hibernate.cfg.Configuration()
         cfg.getProperties().put("hibernate.connection.datasource", ds)
         cfg.setProperty("hibernate.connection.provider_class",
-            "io.jdev.miniprofiler.hibernate.ProfilingDatasourceConnectionProvider")
+            "io.jdev.miniprofiler.hibernate.LegacyProfilingDatasourceConnectionProvider")
 
         when:
         def sf = cfg.buildSessionFactory()
@@ -93,15 +94,15 @@ class HibernateCrossVersionSpec extends Specification {
         given:
         TestProfilerProviderLocator.deactivate()
         MiniProfiler.profilerProvider = profilerProvider
-        def profiler = profilerProvider.start("static-test")
+        def profiler = profilerProvider.start("legacy-static-test")
 
         def ds = new JdbcDataSource()
-        ds.setURL("jdbc:h2:mem:hibernate_static_test;DB_CLOSE_DELAY=-1")
+        ds.setURL("jdbc:h2:mem:hibernate_legacy_static_test;DB_CLOSE_DELAY=-1")
 
         def cfg = new org.hibernate.cfg.Configuration()
         cfg.getProperties().put("hibernate.connection.datasource", ds)
         cfg.setProperty("hibernate.connection.provider_class",
-            "io.jdev.miniprofiler.hibernate.ProfilingDatasourceConnectionProvider")
+            "io.jdev.miniprofiler.hibernate.LegacyProfilingDatasourceConnectionProvider")
 
         when:
         def sf = cfg.buildSessionFactory()

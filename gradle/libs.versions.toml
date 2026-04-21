@@ -41,7 +41,8 @@ hikaricp-v6 = "6.3.3"   # Java 11
 hikaricp-v7 = "7.0.2"   # Java 17
 hibernate-v5 = "5.6.15.Final"
 hibernate-v6 = "6.6.15.Final"
-hibernate-v7 = "7.0.10.Final"
+hibernate-v70 = "7.0.10.Final"
+hibernate-v7 = "7.3.2.Final"
 jackson = "2.21.2"
 jakarta-ee-api = "9.1.0"
 jakarta-jsp-api = "3.1.1"
@@ -113,6 +114,7 @@ hikaricp-v6 = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp-v6" }
 hikaricp-v7 = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp-v7" }
 hibernate-v5 = { module = "org.hibernate:hibernate-core",     version.ref = "hibernate-v5" }
 hibernate-v6 = { module = "org.hibernate.orm:hibernate-core", version.ref = "hibernate-v6" }
+hibernate-v70 = { module = "org.hibernate.orm:hibernate-core", version.ref = "hibernate-v70" }
 hibernate-v7 = { module = "org.hibernate.orm:hibernate-core", version.ref = "hibernate-v7" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jakarta-ee-api = { module = "jakarta.platform:jakarta.jakartaee-api", version.ref = "jakarta-ee-api" }

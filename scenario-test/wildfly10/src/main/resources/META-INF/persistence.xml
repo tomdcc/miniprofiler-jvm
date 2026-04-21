@@ -24,7 +24,7 @@
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>
 			<property name="hibernate.hbm2ddl.auto" value="create-drop"/>
-			<property name="hibernate.connection.provider_class" value="io.jdev.miniprofiler.hibernate.ProfilingDatasourceConnectionProvider"/>
+			<property name="hibernate.connection.provider_class" value="io.jdev.miniprofiler.hibernate.LegacyProfilingDatasourceConnectionProvider"/>
 		</properties>
 	</persistence-unit>
 </persistence>

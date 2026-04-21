@@ -18,26 +18,30 @@ package io.jdev.miniprofiler.hibernate;
 
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.jdbc.ProfilingConnectionWrapper;
-import org.hibernate.engine.jdbc.connections.internal.DataSourceConnectionProvider;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * A Hibernate {@link DataSourceConnectionProvider} that records SQL query timings in MiniProfiler.
+ * A Hibernate {@code DatasourceConnectionProviderImpl} that records SQL query timings in MiniProfiler.
  *
- * <p>Compiled against the Hibernate 7.2+ superclass API. For Hibernate 5, 6, 7.0, and 7.1 use
- * {@link LegacyProfilingDatasourceConnectionProvider} instead.</p>
+ * <p>Compatible at runtime with Hibernate 5, 6, 7.0, and 7.1. From Hibernate 7.2 onwards,
+ * {@code DatasourceConnectionProviderImpl} was reduced to a deprecated shim extending
+ * {@code DriverManagerConnectionProvider}, so this class no longer routes through the configured
+ * DataSource; use {@link ProfilingDatasourceConnectionProvider} which extends the renamed
+ * {@code DataSourceConnectionProvider} instead.</p>
  *
- * @see LegacyProfilingDatasourceConnectionProvider
+ * @see ProfilingDatasourceConnectionProvider
  */
-public class ProfilingDatasourceConnectionProvider extends DataSourceConnectionProvider {
+@SuppressWarnings({"deprecation", "removal"})
+public class LegacyProfilingDatasourceConnectionProvider
+        extends org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl {
 
     /** Wraps connections for profiling. */
     private final ProfilingConnectionWrapper connectionWrapper;
 
     /** Creates a new instance. The profiler provider is resolved via the service locator on first use. */
-    public ProfilingDatasourceConnectionProvider() {
+    public LegacyProfilingDatasourceConnectionProvider() {
         connectionWrapper = new ProfilingConnectionWrapper();
     }
 
@@ -46,7 +50,7 @@ public class ProfilingDatasourceConnectionProvider extends DataSourceConnectionP
      *
      * @param profilerProvider the profiler provider to use
      */
-    public ProfilingDatasourceConnectionProvider(ProfilerProvider profilerProvider) {
+    public LegacyProfilingDatasourceConnectionProvider(ProfilerProvider profilerProvider) {
         connectionWrapper = new ProfilingConnectionWrapper(profilerProvider);
     }
 
