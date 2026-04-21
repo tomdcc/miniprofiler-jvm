@@ -27,7 +27,14 @@ tasks.named("check") {
     dependsOn(sanityCheck)
 }
 
-tasks.register("fullCheck") {
+val fullCheck = tasks.register("fullCheck") {
     group = "verification"
     description = "Lifecycle task: runs check and all additional test suites (e.g. browserTest)"
+    dependsOn(tasks.named("check"))
+}
+
+tasks.register("preRelease") {
+    group = "verification"
+    description = "Lifecycle task: runs all checks required before a release"
+    dependsOn(fullCheck)
 }
