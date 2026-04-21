@@ -6,7 +6,8 @@ Changelog
 - Add Jakarta EE support: new jakarta-ee and jakarta-servlet modules
 - Rename servlet module to javax-servlet and javaee module to javax-ee
 - Split SQL profiling into separate jdbc, hibernate and eclipselink modules,
-  fix compatibility with later Eclipselink versions. 
+  fix compatibility with later Eclipselink and Hibernate versions;
+  introduce legacy spi classes for older versions
 - Replace vendored log4jdbc with datasource-proxy for JDBC profiling
 - Add JDBC storage module with H2, PostgreSQL, MySQL, MSSQL and Oracle dialects
 - Add object storage module with S3, GCS and Azure Blob backends, with automatic expiry
