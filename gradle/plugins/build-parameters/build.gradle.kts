@@ -28,7 +28,7 @@ buildParameters {
     }
 
     string("ciBranch") {
-        fromEnvironment()
+        fromEnvironment("CI_BRANCH")
         defaultValue = ""
     }
 
