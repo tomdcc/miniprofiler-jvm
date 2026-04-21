@@ -35,6 +35,9 @@ import java.util.Properties;
  *   <li>{@code storage.jdbc.username} — database username</li>
  *   <li>{@code storage.jdbc.password} — database password</li>
  *   <li>{@code storage.jdbc.table} — table name override</li>
+ *   <li>{@code storage.jdbc.table.create} — when {@code true}, the locator calls
+ *       {@link JdbcStorage#createTable()} after constructing the storage; defaults to
+ *       {@code false}</li>
  *   <li>{@code storage.jdbc.dialect} — explicit dialect: h2, postgresql, mysql, mssql, oracle</li>
  * </ul>
  *
@@ -49,24 +52,29 @@ public class JdbcStorageConfig {
     private final String table;
     private final String dialect;
     private final String jndiName;
+    private final boolean tableCreate;
 
     /**
      * Creates a new instance with explicit values.
      *
-     * @param url      the JDBC URL; may be {@code null}
-     * @param username the database username; may be {@code null}
-     * @param password the database password; may be {@code null}
-     * @param table    the table name override; may be {@code null}
-     * @param dialect  the dialect name override; may be {@code null}
-     * @param jndiName the JNDI name of a container-managed DataSource; may be {@code null}
+     * @param url         the JDBC URL; may be {@code null}
+     * @param username    the database username; may be {@code null}
+     * @param password    the database password; may be {@code null}
+     * @param table       the table name override; may be {@code null}
+     * @param dialect     the dialect name override; may be {@code null}
+     * @param jndiName    the JNDI name of a container-managed DataSource; may be {@code null}
+     * @param tableCreate whether the locator should call {@link JdbcStorage#createTable()} after
+     *                    constructing the storage
      */
-    public JdbcStorageConfig(String url, String username, String password, String table, String dialect, String jndiName) {
+    public JdbcStorageConfig(String url, String username, String password, String table, String dialect,
+                             String jndiName, boolean tableCreate) {
         this.url = url;
         this.username = username;
         this.password = password;
         this.table = table;
         this.dialect = dialect;
         this.jndiName = jndiName;
+        this.tableCreate = tableCreate;
     }
 
     /**
@@ -84,13 +92,14 @@ public class JdbcStorageConfig {
     }
 
     static JdbcStorageConfig create(MiniProfilerConfig props) {
-        String url      = props.getProperty("storage.jdbc.url",      (String) null);
-        String username = props.getProperty("storage.jdbc.username", (String) null);
-        String password = props.getProperty("storage.jdbc.password", (String) null);
-        String table    = props.getProperty("storage.jdbc.table",    (String) null);
-        String dialect  = props.getProperty("storage.jdbc.dialect",  (String) null);
-        String jndiName = props.getProperty("storage.jdbc.jndiName", (String) null);
-        return new JdbcStorageConfig(url, username, password, table, dialect, jndiName);
+        String url          = props.getProperty("storage.jdbc.url",          (String) null);
+        String username     = props.getProperty("storage.jdbc.username",     (String) null);
+        String password     = props.getProperty("storage.jdbc.password",     (String) null);
+        String table        = props.getProperty("storage.jdbc.table",        (String) null);
+        String dialect      = props.getProperty("storage.jdbc.dialect",      (String) null);
+        String jndiName     = props.getProperty("storage.jdbc.jndiName",     (String) null);
+        boolean tableCreate = props.getProperty("storage.jdbc.table.create", false);
+        return new JdbcStorageConfig(url, username, password, table, dialect, jndiName, tableCreate);
     }
 
     /**
@@ -155,5 +164,15 @@ public class JdbcStorageConfig {
      */
     public String getJndiName() {
         return jndiName;
+    }
+
+    /**
+     * Returns whether the locator should auto-create the storage table after constructing the
+     * storage. Defaults to {@code false}.
+     *
+     * @return {@code true} if {@code storage.jdbc.table.create} is set to {@code true}
+     */
+    public boolean isTableCreate() {
+        return tableCreate;
     }
 }

@@ -29,6 +29,7 @@ class JdbcStorageConfigSpec extends Specification {
         sysprops["miniprofiler.storage.jdbc.table"]     = "my_table"
         sysprops["miniprofiler.storage.jdbc.dialect"]   = "h2"
         sysprops["miniprofiler.storage.jdbc.jndiName"]  = "java:comp/env/jdbc/profiler"
+        sysprops["miniprofiler.storage.jdbc.table.create"] = "true"
 
         when:
         def config = JdbcStorageConfig.create(sysprops, null)
@@ -41,6 +42,7 @@ class JdbcStorageConfigSpec extends Specification {
             table == "my_table"
             dialect == "h2"
             jndiName == "java:comp/env/jdbc/profiler"
+            tableCreate
             configured
         }
     }
@@ -114,6 +116,15 @@ class JdbcStorageConfigSpec extends Specification {
             table == null
             dialect == null
             jndiName == null
+            !tableCreate
         }
+    }
+
+    def "tableCreate defaults to false"() {
+        when:
+        def config = JdbcStorageConfig.create(new Properties(), null)
+
+        then:
+        !config.tableCreate
     }
 }

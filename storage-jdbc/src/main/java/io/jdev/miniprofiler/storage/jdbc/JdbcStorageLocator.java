@@ -47,6 +47,10 @@ import java.util.Optional;
  *       </ul>
  *       These URL-path data sources are owned by the storage and closed when it closes.</li>
  * </ol>
+ *
+ * <p>When {@code miniprofiler.storage.jdbc.table.create} is set to {@code true} the locator
+ * invokes {@link JdbcStorage#createTable()} on the resulting storage, so a fresh database
+ * starts with the {@code mini_profiler_sessions} table ready. The DDL is idempotent.</p>
  */
 public class JdbcStorageLocator implements StorageLocator {
 
@@ -74,7 +78,11 @@ public class JdbcStorageLocator implements StorageLocator {
             String tableName = config.getTable() != null
                 ? config.getTable()
                 : JdbcStorage.DEFAULT_TABLE_NAME;
-            return Optional.of(new JdbcStorage(result.dataSource, dialect, tableName, result.ownsDataSource));
+            JdbcStorage storage = new JdbcStorage(result.dataSource, dialect, tableName, result.ownsDataSource);
+            if (config.isTableCreate()) {
+                storage.createTable();
+            }
+            return Optional.of(storage);
         } catch (Exception | NoClassDefFoundError e) {
             return Optional.empty();
         }

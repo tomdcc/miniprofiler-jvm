@@ -53,6 +53,7 @@ class JdbcStorageLocatorJndiSpec extends Specification {
         System.clearProperty("miniprofiler.storage.jdbc.jndiName")
         System.clearProperty("miniprofiler.storage.jdbc.url")
         System.clearProperty("miniprofiler.storage.jdbc.dialect")
+        System.clearProperty("miniprofiler.storage.jdbc.table.create")
     }
 
     def "locate uses a DataSource bound in JNDI and does not own it"() {
@@ -116,6 +117,57 @@ class JdbcStorageLocatorJndiSpec extends Specification {
 
         expect:
         !new JdbcStorageLocator().locate().present
+    }
+
+    def "locate auto-creates the storage table when table.create is true"() {
+        given:
+        def h2 = new JdbcDataSource()
+        h2.URL = "jdbc:h2:mem:tablecreate-${UUID.randomUUID()};DB_CLOSE_DELAY=-1"
+        BINDINGS["java:comp/env/jdbc/profiler"] = h2
+
+        and:
+        System.setProperty("miniprofiler.storage.jdbc.jndiName", "java:comp/env/jdbc/profiler")
+        System.setProperty("miniprofiler.storage.jdbc.dialect", "h2")
+        System.setProperty("miniprofiler.storage.jdbc.table.create", "true")
+
+        when:
+        def result = new JdbcStorageLocator().locate()
+
+        then:
+        result.present
+        tableExists(h2, JdbcStorage.DEFAULT_TABLE_NAME)
+
+        cleanup:
+        ((JdbcStorage) result?.orElse(null))?.close()
+    }
+
+    def "locate does not create the storage table by default"() {
+        given:
+        def h2 = new JdbcDataSource()
+        h2.URL = "jdbc:h2:mem:notablecreate-${UUID.randomUUID()};DB_CLOSE_DELAY=-1"
+        BINDINGS["java:comp/env/jdbc/profiler"] = h2
+
+        and:
+        System.setProperty("miniprofiler.storage.jdbc.jndiName", "java:comp/env/jdbc/profiler")
+        System.setProperty("miniprofiler.storage.jdbc.dialect", "h2")
+
+        when:
+        def result = new JdbcStorageLocator().locate()
+
+        then:
+        result.present
+        !tableExists(h2, JdbcStorage.DEFAULT_TABLE_NAME)
+
+        cleanup:
+        ((JdbcStorage) result?.orElse(null))?.close()
+    }
+
+    private static boolean tableExists(JdbcDataSource ds, String tableName) {
+        ds.connection.withCloseable { conn ->
+            conn.metaData.getTables(null, null, tableName.toUpperCase(), null).withCloseable { rs ->
+                return rs.next()
+            }
+        }
     }
 
     private static class MapBackedContext implements Context {
