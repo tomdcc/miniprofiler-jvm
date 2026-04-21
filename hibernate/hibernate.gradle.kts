@@ -20,14 +20,30 @@ plugins {
     id("build.publish")
 }
 
+java {
+    // Hibernate 7.x class files require a Java 17 compiler to read
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+// Compiled against Hibernate 7.2+, which still exposes the now-deprecated DatasourceConnectionProviderImpl
+// as a shim alongside the renamed DataSourceConnectionProvider, letting LegacyProfilingDatasourceConnectionProvider
+// and ProfilingDatasourceConnectionProvider coexist in the same compilation unit.
+tasks.withType<JavaCompile>().matching { it.name == "compileJava" }.configureEach {
+    // Output Java 8 bytecode so the module can deploy to Java 8 containers (e.g. WildFly 10).
+    options.release = 8
+}
+
 dependencies {
     api(projects.core)
     api(projects.jdbc)
-    compileOnly(libs.hibernate.v5) {
+    compileOnly(libs.hibernate.v7) {
         isTransitive = false
     }
+
     testImplementation(projects.test)
-    testImplementation(libs.hibernate.v5)
+    testImplementation(libs.hibernate.v7)
 }
 
 crossVersionTests {
@@ -45,6 +61,10 @@ crossVersionTests {
     register("crossVersionTestHibernate6") {
         minJavaVersion = 11
         implementation(libs.hibernate.v6)
+    }
+    register("crossVersionTestHibernate70") {
+        minJavaVersion = 17
+        implementation(libs.hibernate.v70)
     }
     register("crossVersionTestHibernate7") {
         minJavaVersion = 17
