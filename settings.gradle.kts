@@ -54,8 +54,6 @@ fun setBuildFile(project: ProjectDescriptor) {
 
 setBuildFile(rootProject)
 
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-
 dependencyResolutionManagement {
     versionCatalogs {
         create("images") {
