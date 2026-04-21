@@ -74,6 +74,18 @@
       "allowedVersions": "<4"
     },
     {
+      "description": "Weld SE v5",
+      "matchPackageNames": ["org.jboss.weld.se:weld-se-core"],
+      "matchCurrentValue": "/^5\\./",
+      "allowedVersions": "<6"
+    },
+    {
+      "description": "HikariCP — pin to 4.x; 5.0+ is compiled for Java 11 and we still target Java 8",
+      "matchPackageNames": ["com.zaxxer:HikariCP"],
+      "matchCurrentValue": "/^4\\./",
+      "allowedVersions": "<5"
+    },
+    {
       "description": "Jetty 9",
       "matchPackageNames": ["org.eclipse.jetty:*", "org.eclipse.jetty.ee10:*"],
       "matchCurrentValue": "/^9\\./",
@@ -120,6 +132,18 @@
       "description": "Logback — pin below 1.4 for slf4j 1.x compatibility",
       "matchPackageNames": ["ch.qos.logback:*"],
       "allowedVersions": "<1.4"
+    },
+    {
+      "description": "Spock — keep groovy3 entries on the -groovy-3.0 classifier",
+      "matchPackageNames": ["org.spockframework:*"],
+      "matchCurrentValue": "/-groovy-3\\.0$/",
+      "allowedVersions": "/-groovy-3\\.0$/"
+    },
+    {
+      "description": "Spock — keep groovy4 entries on the -groovy-4.0 classifier",
+      "matchPackageNames": ["org.spockframework:*"],
+      "matchCurrentValue": "/-groovy-4\\.0$/",
+      "allowedVersions": "/-groovy-4\\.0$/"
     },
     {
       "description": "wildfly10 scenario image — pin to major 10",
