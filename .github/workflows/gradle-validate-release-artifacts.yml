@@ -30,9 +30,12 @@ jobs:
             miniprofiler-jakarta-servlet
             miniprofiler-javax-ee
             miniprofiler-javax-servlet
+            miniprofiler-jdbc
             miniprofiler-jooq
             miniprofiler-manual
             miniprofiler-ratpack
+            miniprofiler-storage-jdbc
+            miniprofiler-storage-objectstorage
             miniprofiler-test
             miniprofiler-test-geb-groovy3
             miniprofiler-test-geb-groovy4
