@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-tasks.register("sanityCheck") {
+plugins {
+    id("base")
+}
+
+val sanityCheck = tasks.register("sanityCheck") {
     group = "verification"
     description = "Lifecycle task: compiles all code, runs quality checks and generates documentation"
+}
+
+tasks.named("check") {
+    dependsOn(sanityCheck)
 }
 
 tasks.register("fullCheck") {
