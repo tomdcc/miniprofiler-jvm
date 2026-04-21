@@ -22,24 +22,31 @@ import io.jdev.miniprofiler.storage.Storage;
 import io.jdev.miniprofiler.storage.StorageLocator;
 import io.jdev.miniprofiler.storage.jdbc.dialect.DatabaseDialect;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * {@link StorageLocator} for JDBC storage. Returns an empty {@link Optional} when the
- * {@code miniprofiler.storage.jdbc.url} property is not set, making auto-discovery
- * safe in environments without JDBC storage configuration.
+ * {@link StorageLocator} for JDBC storage. Returns an empty {@link Optional} when neither
+ * {@code miniprofiler.storage.jdbc.jndiName} nor {@code miniprofiler.storage.jdbc.url} is
+ * set, making auto-discovery safe in environments without JDBC storage configuration.
  *
- * <p>When configured, a {@link DataSource} is obtained as follows:</p>
+ * <p>When configured, a {@link DataSource} is obtained in this order:</p>
  * <ol>
- *   <li>If HikariCP is on the classpath, a {@link HikariDataSource} is created.</li>
- *   <li>Otherwise, an unpooled {@link DriverManagerDataSource} is created. Users who
- *       want pooling should either add HikariCP to their classpath or construct
- *       {@link JdbcStorage} directly with their own {@link DataSource}.</li>
+ *   <li>If {@code jndiName} is set and resolves to a {@link DataSource} via JNDI, that
+ *       container-managed source is used and is <em>not</em> owned by the storage.</li>
+ *   <li>Otherwise, if {@code url} is set:
+ *       <ul>
+ *         <li>If HikariCP is on the classpath, a {@link HikariDataSource} is created.</li>
+ *         <li>Otherwise, an unpooled {@link DriverManagerDataSource} is created. Users who
+ *             want pooling should either add HikariCP to their classpath or construct
+ *             {@link JdbcStorage} directly with their own {@link DataSource}.</li>
+ *       </ul>
+ *       These URL-path data sources are owned by the storage and closed when it closes.</li>
  * </ol>
- *
- * <p>The resulting {@link DataSource} is owned by the {@link JdbcStorage} instance and
- * closed when the storage is closed.</p>
  */
 public class JdbcStorageLocator implements StorageLocator {
 
@@ -84,6 +91,13 @@ public class JdbcStorageLocator implements StorageLocator {
     }
 
     private static DataSourceResult createDataSource(JdbcStorageConfig config) {
+        if (config.getJndiName() != null) {
+            DataSource ds = lookupJndi(config.getJndiName());
+            if (ds != null) {
+                return new DataSourceResult(ds, false);
+            }
+            // Fall through to URL path if one is configured.
+        }
         if (config.getUrl() != null) {
             DataSource ds = isHikariAvailable()
                 ? HikariFactory.create(config)
@@ -91,6 +105,15 @@ public class JdbcStorageLocator implements StorageLocator {
             return new DataSourceResult(ds, true);
         }
         return null;
+    }
+
+    private static DataSource lookupJndi(String name) {
+        try {
+            Object obj = new InitialContext().lookup(name);
+            return obj instanceof DataSource ? (DataSource) obj : null;
+        } catch (NamingException e) {
+            return null;
+        }
     }
 
     private static boolean isHikariAvailable() {
@@ -107,7 +130,15 @@ public class JdbcStorageLocator implements StorageLocator {
         if (config.getDialect() != null) {
             return DatabaseDialect.forName(config.getDialect());
         }
-        return DatabaseDialect.detect(config.getUrl());
+        if (config.getUrl() != null) {
+            return DatabaseDialect.detect(config.getUrl());
+        }
+        // JNDI path with no explicit dialect — detect from a live connection.
+        try (Connection c = dataSource.getConnection()) {
+            return DatabaseDialect.detect(c.getMetaData().getURL());
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to detect dialect from JNDI DataSource", e);
+        }
     }
 
     private static final class HikariFactory {

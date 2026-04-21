@@ -29,12 +29,17 @@ import java.util.Properties;
  *
  * <p>Supported keys:</p>
  * <ul>
+ *   <li>{@code storage.jdbc.jndiName} — JNDI name of a container-managed {@code DataSource};
+ *       takes precedence over the URL path when set</li>
  *   <li>{@code storage.jdbc.url} — JDBC URL; presence triggers auto-configuration</li>
  *   <li>{@code storage.jdbc.username} — database username</li>
  *   <li>{@code storage.jdbc.password} — database password</li>
  *   <li>{@code storage.jdbc.table} — table name override</li>
  *   <li>{@code storage.jdbc.dialect} — explicit dialect: h2, postgresql, mysql, mssql, oracle</li>
  * </ul>
+ *
+ * <p>Either {@code jndiName} or {@code url} must be set for {@link #isConfigured()} to return
+ * {@code true}.</p>
  */
 public class JdbcStorageConfig {
 
@@ -43,6 +48,7 @@ public class JdbcStorageConfig {
     private final String password;
     private final String table;
     private final String dialect;
+    private final String jndiName;
 
     /**
      * Creates a new instance with explicit values.
@@ -52,13 +58,15 @@ public class JdbcStorageConfig {
      * @param password the database password; may be {@code null}
      * @param table    the table name override; may be {@code null}
      * @param dialect  the dialect name override; may be {@code null}
+     * @param jndiName the JNDI name of a container-managed DataSource; may be {@code null}
      */
-    public JdbcStorageConfig(String url, String username, String password, String table, String dialect) {
+    public JdbcStorageConfig(String url, String username, String password, String table, String dialect, String jndiName) {
         this.url = url;
         this.username = username;
         this.password = password;
         this.table = table;
         this.dialect = dialect;
+        this.jndiName = jndiName;
     }
 
     /**
@@ -81,16 +89,18 @@ public class JdbcStorageConfig {
         String password = props.getProperty("storage.jdbc.password", (String) null);
         String table    = props.getProperty("storage.jdbc.table",    (String) null);
         String dialect  = props.getProperty("storage.jdbc.dialect",  (String) null);
-        return new JdbcStorageConfig(url, username, password, table, dialect);
+        String jndiName = props.getProperty("storage.jdbc.jndiName", (String) null);
+        return new JdbcStorageConfig(url, username, password, table, dialect, jndiName);
     }
 
     /**
-     * Returns whether the JDBC URL is set, indicating auto-configuration should proceed.
+     * Returns whether either a JNDI name or JDBC URL is set, indicating auto-configuration
+     * should proceed.
      *
-     * @return {@code true} if the JDBC URL is non-null
+     * @return {@code true} if either {@code jndiName} or {@code url} is non-null
      */
     public boolean isConfigured() {
-        return url != null;
+        return jndiName != null || url != null;
     }
 
     /**
@@ -136,5 +146,14 @@ public class JdbcStorageConfig {
      */
     public String getDialect() {
         return dialect;
+    }
+
+    /**
+     * Returns the JNDI name of the {@code DataSource} to look up, or {@code null} if not set.
+     *
+     * @return the JNDI name
+     */
+    public String getJndiName() {
+        return jndiName;
     }
 }
