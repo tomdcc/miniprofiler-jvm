@@ -1,6 +1,31 @@
 Changelog
 =========
 
+0.12.0
+---
+- Add Jakarta EE support: new jakarta-ee and jakarta-servlet modules
+- Rename servlet module to javax-servlet and javaee module to javax-ee
+- Split SQL profiling into separate jdbc, hibernate and eclipselink modules,
+  fix compatibility with later Eclipselink versions. 
+- Replace vendored log4jdbc with datasource-proxy for JDBC profiling
+- Add JDBC storage module with H2, PostgreSQL, MySQL, MSSQL and Oracle dialects
+- Add object storage module with S3, GCS and Azure Blob backends, with automatic expiry
+- Add ServiceLoader-based SPIs for Storage, ProfilerProvider, CommandFormatter and UserProvider
+- Add built-in UserProviders for CDI principal and servlet user
+- Capture client timings from UI javascript
+- Add custom links API, display in UI
+- Add unviewed-profile tracking
+- Add Profiler.isActive, Storage.clear and Storage.expireOlderThan
+- Add storage expiry service
+- Make Storage and ProfilerProvider AutoCloseable; wire shutdown into servlet filter destroy,
+  CDI PreDestroy and Ratpack service
+- Make SQL formatter configurable; bundle vertical-blank sql-formatter as default
+- Fix blocking storage call in Ratpack AJAX header handler
+- Move TestProfilerProvider to new test module, retire old test-support module 
+- Move Geb pages to test-geb, publish separate Groovy 3 and Groovy 4 variants
+- Remove ancient Grails 2.x support
+- Remove EhcacheStorage which was really just there for Grails
+
 0.11.1
 ---
 - Publish viewer fat jar to Maven Central
