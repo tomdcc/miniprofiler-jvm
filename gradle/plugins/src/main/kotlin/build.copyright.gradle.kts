@@ -80,6 +80,12 @@ val verifyCopyright = tasks.register<VerifyCopyrightTask>("verifyCopyright") {
     }
 }
 
+tasks.register<Delete>("cleanVerifyCopyright") {
+    group = "verification"
+    description = "Removes the verifyCopyright up-to-date marker file."
+    delete(verifyCopyright.flatMap { it.markerFile })
+}
+
 tasks.named("fullCheck") {
     dependsOn(verifyCopyright)
 }

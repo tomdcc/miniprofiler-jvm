@@ -67,6 +67,24 @@ project.tasks.withType<Test>().configureEach {
     }
 }
 
+// Groovy's Java9 plugin reflectively accesses java.lang.AssertionError, triggering
+// illegal-access warnings on Java 11. Open the package to suppress them. This only
+// applies to Java 11 — Java 8 has no module system, and Java 17+ denies access
+// outright (Groovy handles it differently there). If the project no longer uses a
+// Java 11 toolchain, this block can be removed.
+afterEvaluate {
+    tasks.withType<Test>().configureEach {
+        val launcher = javaLauncher
+        jvmArgumentProviders.add(CommandLineArgumentProvider {
+            if (launcher.get().metadata.languageVersion.asInt() == 11) {
+                listOf("--add-opens", "java.base/java.lang=ALL-UNNAMED")
+            } else {
+                emptyList()
+            }
+        })
+    }
+}
+
 // When both org.codehaus.groovy and org.apache.groovy are on the classpath (e.g. via ratpack-groovy
 // which uses Groovy 2.5), Groovy 4 declares capability equivalence and causes a conflict.
 // Resolve by selecting the highest version (Groovy 4) as the winner.
@@ -99,6 +117,10 @@ tasks.withType<JavaCompile>().configureEach {
 
 tasks.withType<GroovyCompile>().configureEach {
     options.compilerArgs.add("-Werror")
+}
+
+tasks.register("compileAllGroovy") {
+    dependsOn(tasks.withType<GroovyCompile>())
 }
 
 plugins.withId("build.publish") {

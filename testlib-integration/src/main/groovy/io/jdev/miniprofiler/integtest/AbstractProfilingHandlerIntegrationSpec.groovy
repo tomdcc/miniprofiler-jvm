@@ -66,7 +66,7 @@ abstract class AbstractProfilingHandlerIntegrationSpec extends Specification {
     void 'profiled request JSON results contain correct timing structure'() {
         when:
         def pageResponse = client.get(server.profiledPagePath)
-        def resultResponse = client.getResultsJson(pageResponse.miniProfilerId())
+        def resultResponse = client.awaitResultsJson(pageResponse.miniProfilerId())
         def profiler = resultResponse.bodyAsJson()
 
         then:
@@ -252,7 +252,7 @@ abstract class AbstractProfilingHandlerIntegrationSpec extends Specification {
         response.miniProfilerIds().size() == 1
 
         when:
-        def resultResponse = client.getResultsJson(response.miniProfilerId())
+        def resultResponse = client.awaitResultsJson(response.miniProfilerId())
         def profiler = resultResponse.bodyAsJson()
 
         then:

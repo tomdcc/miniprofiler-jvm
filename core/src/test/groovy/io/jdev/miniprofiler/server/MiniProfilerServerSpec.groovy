@@ -23,7 +23,10 @@ import io.jdev.miniprofiler.test.TestProfilerProvider
 import spock.lang.AutoCleanup
 import spock.lang.Specification
 
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
+
+import static org.awaitility.Awaitility.await
 
 class MiniProfilerServerSpec extends Specification {
 
@@ -37,6 +40,16 @@ class MiniProfilerServerSpec extends Specification {
     MiniProfilerServer server = new MiniProfilerServer(provider)
 
     void setup() {
+        await().atMost(5, TimeUnit.SECONDS).until {
+            try {
+                def conn = new URL("http://127.0.0.1:${server.port}/miniprofiler/includes.min.js").openConnection() as HttpURLConnection
+                conn.connectTimeout = 1000
+                conn.readTimeout = 1000
+                conn.responseCode > 0
+            } catch (IOException ignored) {
+                false
+            }
+        }
         profiler = provider.start('test').tap {
             stop()
         }

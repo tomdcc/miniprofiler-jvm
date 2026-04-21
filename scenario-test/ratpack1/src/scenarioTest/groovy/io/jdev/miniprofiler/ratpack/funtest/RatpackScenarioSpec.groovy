@@ -46,7 +46,7 @@ class RatpackScenarioSpec extends Specification {
         response.miniProfilerIds().size() == 1
 
         when: 'fetch the profiler result as JSON'
-        def resultResponse = client.getResultsJson(response.miniProfilerId())
+        def resultResponse = client.awaitResultsJson(response.miniProfilerId())
         def profiler = resultResponse.bodyAsJson()
 
         then: 'profiler has expected timing structure'
@@ -105,7 +105,7 @@ class RatpackScenarioSpec extends Specification {
         def pageResponse = client.get('page')
 
         when: 'fetch the single result page as HTML'
-        def response = client.getResultsHtml(pageResponse.miniProfilerId())
+        def response = client.awaitResultsHtml(pageResponse.miniProfilerId())
 
         then:
         response.statusCode() == 200

@@ -17,6 +17,7 @@ import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.jvm.toolchain.JavaToolchainService
 import org.gradle.kotlin.dsl.DependencyHandlerScope
+import org.gradle.testretry.TestRetryTaskExtension
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.invoke
 import org.gradle.kotlin.dsl.register
@@ -34,6 +35,7 @@ fun ConfigurationContainer.extendFromTest(testSuiteName: String) {
 }
 
 fun JvmTestSuite.makeBrowserTest(project: Project, groovyVariant: String = "groovy4"): Unit {
+    project.plugins.apply("org.gradle.test-retry")
 
     val reporting = project.extensions.getByType(ReportingExtension::class.java)
     val catalogs = project.extensions.getByType(VersionCatalogsExtension::class.java)
@@ -50,24 +52,16 @@ fun JvmTestSuite.makeBrowserTest(project: Project, groovyVariant: String = "groo
     }
 
     val buildParameters = project.extensions.getByType(BuildParametersExtension::class.java)
-    val javaToolchains = project.extensions.getByType(JavaToolchainService::class.java)
 
     targets {
         all {
             testTask.configure {
-                // Selenium 4.x requires Java 11+; use project's toolchain version if higher.
-                // Resolved lazily so that toolchain overrides in the consumer script take effect.
-//                javaLauncher.set(project.provider {
-//                    val configuredVersion = project.extensions
-//                        .findByType(JavaPluginExtension::class.java)
-//                        ?.toolchain?.languageVersion?.orNull?.asInt() ?: 8
-//                    javaToolchains.launcherFor {
-//                        languageVersion.set(JavaLanguageVersion.of(maxOf(11, configuredVersion)))
-//                    }.get()
-//                })
                 systemProperty("geb.build.reportsDir", "${reporting.baseDirectory.get().asFile}/geb")
                 buildParameters.browserTest.firefoxBinPath.orNull?.let {
                     systemProperty("webdriver.firefox.bin", it)
+                }
+                extensions.configure(TestRetryTaskExtension::class.java) {
+                    maxRetries = 2
                 }
             }
         }

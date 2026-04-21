@@ -32,11 +32,6 @@ class AuthenticatedGlassfish7ScenarioSpec extends Specification {
         ['Authorization': 'Basic ' + Base64.encoder.encodeToString("${user}:${password}".bytes)]
     }
 
-    Map findInResultsList(String id) {
-        def list = client.getResultsList().bodyAsJson() as List<Map>
-        list.find { it.Id == id }
-    }
-
     void "anonymous request to public page records no user on the profile"() {
         when:
         def response = client.get('')
@@ -45,7 +40,7 @@ class AuthenticatedGlassfish7ScenarioSpec extends Specification {
         response.statusCode() == 200
 
         when:
-        def entry = findInResultsList(response.miniProfilerId())
+        def entry = client.awaitInResultsList(response.miniProfilerId())
 
         then:
         entry != null
@@ -61,7 +56,7 @@ class AuthenticatedGlassfish7ScenarioSpec extends Specification {
         response.body() == 'hello alice'
 
         when:
-        def entry = findInResultsList(response.miniProfilerId())
+        def entry = client.awaitInResultsList(response.miniProfilerId())
 
         then:
         entry != null

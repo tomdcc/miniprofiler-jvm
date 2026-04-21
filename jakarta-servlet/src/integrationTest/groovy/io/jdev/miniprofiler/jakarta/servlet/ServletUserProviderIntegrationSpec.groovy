@@ -34,11 +34,6 @@ class ServletUserProviderIntegrationSpec extends Specification {
         ['Authorization': 'Basic ' + Base64.encoder.encodeToString("${user}:${password}".bytes)]
     }
 
-    Map findInResultsList(String id) {
-        def list = client.getResultsList().bodyAsJson() as List<Map>
-        list.find { it.Id == id }
-    }
-
     void "anonymous request to public page records no user"() {
         when:
         def response = client.get('test-page')
@@ -47,7 +42,7 @@ class ServletUserProviderIntegrationSpec extends Specification {
         response.statusCode() == 200
 
         when:
-        def entry = findInResultsList(response.miniProfilerId())
+        def entry = client.awaitInResultsList(response.miniProfilerId())
 
         then:
         entry != null
@@ -63,7 +58,7 @@ class ServletUserProviderIntegrationSpec extends Specification {
         response.body() == 'hello alice'
 
         when:
-        def entry = findInResultsList(response.miniProfilerId())
+        def entry = client.awaitInResultsList(response.miniProfilerId())
 
         then:
         entry != null

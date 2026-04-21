@@ -275,10 +275,10 @@ abstract class VerifyCopyrightTask : CopyrightTask() {
     }
 
     override fun onFinish(outOfDate: List<String>, upToDate: List<String>, skipped: List<String>) {
-        logger.lifecycle("Checked ${upToDate.size + outOfDate.size} file(s) for copyright year drift.")
+        logger.info("Checked ${upToDate.size + outOfDate.size} file(s) for copyright year drift.")
         if (skipped.isNotEmpty()) {
-            logger.lifecycle("Skipped: ${skipped.size}")
-            skipped.forEach { logger.lifecycle("  $it") }
+            logger.info("Skipped: ${skipped.size}")
+            skipped.forEach { logger.info("  $it") }
         }
         if (outOfDate.isNotEmpty()) {
             logger.error("${outOfDate.size} file(s) have out-of-date copyright years:")

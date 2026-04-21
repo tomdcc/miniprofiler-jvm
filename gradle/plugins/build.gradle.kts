@@ -32,4 +32,5 @@ dependencies {
     // another workaround for https://github.com/gradle/gradle/issues/15383
     implementation(libs.develocity.plugin)
     implementation(libs.nexus.publish.plugin)
+    implementation(libs.test.retry.plugin)
 }
