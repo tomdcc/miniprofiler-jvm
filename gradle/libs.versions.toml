@@ -62,8 +62,8 @@ jooq-v321 = "3.21.2"  # Latest version (Java 21)
 json-simple = "1.1.1"
 mssql-jdbc = "13.4.0.jre11"
 mysql-connector = "9.6.0"
-junit = "5.14.3"
-junit-platform = "1.14.3"
+junit = "5.14.4"
+junit-platform = "1.14.4"
 # Ratpack looks for org.slf4j.impl.StaticLoggerBinder which is the old discovery mechanism for slf4j 1.x.
 # Logback 1.4+ uses slf4j 2.x, so we stay on 1.3.x which retains slf4j 1.x compatibility.
 logback = "1.3.16"
