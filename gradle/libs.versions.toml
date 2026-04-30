@@ -16,7 +16,7 @@
 asciidoctor = "4.0.5"
 awaitility = "4.3.0"
 aws-sdk-v2 = "2.42.37"
-azure-identity = "1.18.2"
+azure-identity = "1.18.3"
 azure-storage-blob = "12.33.3"
 build-parameters-plugin = "1.4.5"
 byte-buddy = "1.18.8"
