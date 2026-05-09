@@ -149,8 +149,8 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
     /**
      * Used to add a child profiler.
      */
-    ProfilerImpl(String rootName, ProfileLevel level, long started) {
-        this(null, rootName, started, null, level, null, null, false, null);
+    ProfilerImpl(String rootName, ProfileLevel level, long started, ProfilerProvider profilerProvider) {
+        this(null, rootName, started, null, level, null, null, false, profilerProvider);
         root = new TimingImpl(this, null, rootName);
         head = root;
     }
