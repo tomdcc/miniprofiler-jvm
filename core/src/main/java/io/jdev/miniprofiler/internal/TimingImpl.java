@@ -262,7 +262,7 @@ public class TimingImpl implements TimingInternal, Serializable, Jsonable {
         if (childProfilers == null) {
             childProfilers = new ArrayList<Profiler>();
         }
-        ProfilerImpl child = new ProfilerImpl("\u2443 " + name, profiler.getLevel(), profiler.getStarted());
+        ProfilerImpl child = new ProfilerImpl("\u2443 " + name, profiler.getLevel(), profiler.getStarted(), profiler.getProfilerProvider());
         childProfilers.add(child);
         return child;
     }

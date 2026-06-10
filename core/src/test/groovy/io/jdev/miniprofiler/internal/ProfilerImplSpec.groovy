@@ -230,4 +230,34 @@ class ProfilerImplSpec extends Specification {
         !parsed.has('Root')
     }
 
+    void "child profiler inherits parent's profiler provider"() {
+        when:
+        def child = profiler.addChild('child') as ProfilerImpl
+
+        then:
+        child.profilerProvider == profiler.profilerProvider
+    }
+
+    void "asUiJson on parent succeeds when child profiler has custom timings"() {
+        given:
+        def childProfiler = profiler.addChild('child')
+        def childTiming = childProfiler.step('child step')
+        childTiming.addCustomTiming('sql', 'query', 'select * from foo', 5)
+        childTiming.stop()
+        childProfiler.stop()
+
+        when:
+        def parsed = new ObjectMapper().readTree(profiler.asUiJson())
+
+        then: 'child profiler is rendered as a child of the root timing'
+        def childJson = parsed.path('Root').path('Children').get(0)
+        childJson.path('Name').asText() == '⑃ child'
+
+        and: 'custom timing on the child step is rendered'
+        def childCustom = childJson.path('Children').get(0).path('CustomTimings').path('sql').get(0)
+        childCustom.path('CommandString').asText().contains('select')
+        childCustom.path('CommandString').asText().contains('foo')
+        childCustom.path('ExecuteType').asText() == 'query'
+    }
+
 }
