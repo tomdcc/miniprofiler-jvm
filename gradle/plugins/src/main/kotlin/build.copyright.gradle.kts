@@ -41,12 +41,18 @@ val descendantProjectDirs = provider {
         .toList()
 }
 
+// Upstream-owned files that must stay byte-for-byte identical to what Gradle ships. They happen to
+// carry the "the original author or authors" header the scanner keys on, but their years belong to
+// Gradle, not this project, so they must never be rewritten or flagged.
+val upstreamWrapperPaths = listOf("gradlew", "gradlew.bat", "gradle/wrapper")
+
 tasks.register<UpdateCopyrightTask>("updateCopyright") {
     group = "documentation"
     description = "Updates file-header copyright years from git history for this project's directory."
     repositoryRoot.set(rootProject.layout.projectDirectory)
     scanDirectory.set(layout.projectDirectory)
     excludedDirectories.set(descendantProjectDirs)
+    excludedPaths.set(upstreamWrapperPaths)
     notCompatibleWithConfigurationCache("Shells out to git during execution.")
 }
 
@@ -56,6 +62,7 @@ val verifyCopyright = tasks.register<VerifyCopyrightTask>("verifyCopyright") {
     repositoryRoot.set(rootProject.layout.projectDirectory)
     scanDirectory.set(layout.projectDirectory)
     excludedDirectories.set(descendantProjectDirs)
+    excludedPaths.set(upstreamWrapperPaths)
     notCompatibleWithConfigurationCache("Shells out to git during execution.")
 
     val repoRoot = rootProject.projectDir

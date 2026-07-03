@@ -60,6 +60,13 @@ abstract class CopyrightTask : DefaultTask() {
     @get:Internal
     abstract val excludedDirectories: ListProperty<File>
 
+    /** Repo-relative (forward-slash) paths to leave untouched even when they carry a matching
+     *  header. An entry matches a file that equals it or lies under it, so both individual files
+     *  (`gradlew.bat`) and whole directories (`gradle/wrapper`) work. Used to keep upstream-owned
+     *  files such as the Gradle wrapper scripts pristine. */
+    @get:Internal
+    abstract val excludedPaths: ListProperty<String>
+
     /** When true, only the end (last) year is checked: a file is treated as out of date solely
      *  when its declared end year is behind the latest substantive commit. The start year is
      *  preserved as written. Intended for shallow CI clones where the file's true first commit
@@ -82,7 +89,8 @@ abstract class CopyrightTask : DefaultTask() {
     fun run() {
         val repoRoot = repositoryRoot.get().asFile
         val scanPrefix = repoRoot.relativeRepoPath(scanDirectory.get().asFile)
-        val excludedPrefixes = excludedDirectories.get().map { repoRoot.relativeRepoPath(it) }
+        val excludedPrefixes = excludedDirectories.get().map { repoRoot.relativeRepoPath(it) } +
+            excludedPaths.get()
 
         val tracked = CopyrightGit.run(repoRoot, listOf("ls-files"))
             .lineSequence()
