@@ -29,7 +29,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
 
       - name: Setup Firefox
-        uses: browser-actions/setup-firefox@v1.7.1
+        uses: browser-actions/setup-firefox@v1.7.2
         with:
           firefox-version: 128.10.0esr
 
