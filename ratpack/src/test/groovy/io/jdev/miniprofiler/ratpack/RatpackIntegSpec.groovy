@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 the original author or authors.
+ * Copyright 2015-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,17 +21,22 @@ import io.jdev.miniprofiler.Profiler
 import io.jdev.miniprofiler.ProfilerProvider
 import io.jdev.miniprofiler.internal.ProfilerImpl
 import ratpack.exec.Blocking
+import ratpack.exec.ExecController
 import ratpack.func.Action
 import ratpack.handling.Chain
 import ratpack.handling.Context
 import ratpack.handling.Handler
 import ratpack.handling.RequestId
+import spock.lang.AutoCleanup
 import spock.lang.Ignore
 import spock.lang.Specification
 
 import static ratpack.groovy.test.handling.GroovyRequestFixture.handle
 
 class RatpackIntegSpec extends Specification {
+
+    @AutoCleanup
+    ExecController execController = ExecController.builder().build()
 
     void cleanup() {
         MiniProfiler.setProfilerProvider(null)
@@ -40,7 +45,7 @@ class RatpackIntegSpec extends Specification {
     @Ignore("See https://github.com/ratpack/ratpack/issues/1110 - relying on integ-test/ratpack in the meantime")
     void "profiler is bound to current execution context and is available statically"() {
         given: 'provider and interceptor'
-        RatpackContextProfilerProvider provider = new RatpackContextProfilerProvider()
+        RatpackContextProfilerProvider provider = new RatpackContextProfilerProvider(execController)
         MiniProfilerExecInitializer interceptor = new MiniProfilerExecInitializer(provider)
         MiniProfiler.setProfilerProvider(provider)
 
@@ -76,7 +81,7 @@ class RatpackIntegSpec extends Specification {
 
     void "profiler id can be a uuid-formatted request id"() {
         given: 'provider and interceptor'
-        RatpackContextProfilerProvider provider = new RatpackContextProfilerProvider()
+        RatpackContextProfilerProvider provider = new RatpackContextProfilerProvider(execController)
         MiniProfiler.setProfilerProvider(provider)
         def id = UUID.randomUUID()
 
