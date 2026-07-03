@@ -7,7 +7,7 @@ mssql-server = "mcr.microsoft.com/mssql/server:2025-latest@sha256:2cd0aec4a3bfc3
 oracle-free = "gvenzl/oracle-free:slim-faststart@sha256:d8913e4e4769b6e60197949bef30a4391713afe662b4b4e71a2665c881bdac8b"
 
 # Object storage container tests
-s3mock = "adobe/s3mock:5.0.0@sha256:c461c8f4234bd63540d2f3a3cabce69d814c78dc890a5af08727525a028e23da"
+s3mock = "adobe/s3mock:5.1.0@sha256:65cf60155a2e235fe7d5bf6c633747d6fc7ed93f9f5a6727d86470026b83c2a2"
 azurite = "mcr.microsoft.com/azure-storage/azurite:3.35.0@sha256:647c63a91102a9d8e8000aab803436e1fc85fbb285e7ce830a82ee5d6661cf37"
 fake-gcs-server = "fsouza/fake-gcs-server:1.54.0@sha256:3730da0e31f7e5186a90ec4899dc2c336104e7599df400411392ef17e684c31f"
 
