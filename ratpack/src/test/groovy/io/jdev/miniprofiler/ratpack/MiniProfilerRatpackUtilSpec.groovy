@@ -23,6 +23,7 @@ import io.jdev.miniprofiler.internal.NullProfiler
 import io.jdev.miniprofiler.internal.ProfilerImpl
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import ratpack.exec.Blocking
+import ratpack.exec.ExecController
 import ratpack.exec.ExecInitializer
 import ratpack.exec.Execution
 import ratpack.exec.Promise
@@ -41,6 +42,9 @@ class MiniProfilerRatpackUtilSpec extends Specification {
     def polling = new PollingConditions()
 
     def provider = new TestProfilerProvider()
+
+    @AutoCleanup
+    ExecController execController = ExecController.builder().build()
 
     @AutoCleanup
     ApplicationUnderTest app
@@ -106,7 +110,7 @@ class MiniProfilerRatpackUtilSpec extends Specification {
 
     void "can attach child profilers on fork"() {
         given:
-        def provider = new RatpackContextProfilerProvider()
+        def provider = new RatpackContextProfilerProvider(execController)
 
         and: "handler with initializer on handler which forks execution"
         def profiler
@@ -157,7 +161,7 @@ class MiniProfilerRatpackUtilSpec extends Specification {
 
     void "can attach child profilers on fork with composed exec starter"() {
         given:
-        def provider = new RatpackContextProfilerProvider()
+        def provider = new RatpackContextProfilerProvider(execController)
 
         and: "handler with initializer on handler which forks execution"
         def profiler
@@ -214,7 +218,7 @@ class MiniProfilerRatpackUtilSpec extends Specification {
     void "forked child profilers are not saved to the provider on completion"() {
         given: 'a provider that records which profilers it is asked to save'
         def savedNames = new CopyOnWriteArrayList<String>()
-        def provider = new RatpackContextProfilerProvider() {
+        def provider = new RatpackContextProfilerProvider(execController) {
             @Override
             protected void saveProfiler(ProfilerImpl currentProfiler) {
                 savedNames << currentProfiler.name

@@ -25,6 +25,7 @@ import com.google.inject.multibindings.ProvidesIntoSet;
 import io.jdev.miniprofiler.MiniProfiler;
 import io.jdev.miniprofiler.ProfilerProvider;
 import io.jdev.miniprofiler.ProfilerUiConfig;
+import ratpack.exec.ExecController;
 import ratpack.exec.ExecInitializer;
 import ratpack.guice.ConfigurableModule;
 
@@ -152,15 +153,17 @@ public class MiniProfilerModule extends ConfigurableModule<MiniProfilerModule.Co
 
     private static class ProviderProvider implements Provider<RatpackContextProfilerProvider> {
         private final Config config;
+        private final ExecController execController;
 
         @Inject
-        private ProviderProvider(Config config) {
+        private ProviderProvider(Config config, ExecController execController) {
             this.config = config;
+            this.execController = execController;
         }
 
         @Override
         public RatpackContextProfilerProvider get() {
-            RatpackContextProfilerProvider provider = new RatpackContextProfilerProvider();
+            RatpackContextProfilerProvider provider = new RatpackContextProfilerProvider(execController);
             provider.setUiConfig(config.uiConfig);
             return provider;
         }

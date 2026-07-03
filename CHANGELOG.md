@@ -6,6 +6,10 @@ Changelog
 - Fix child profilers being saved as independent sessions when stopped (regression from 0.12.1),
   which caused "this execution has completed" errors in Ratpack forked executions. Child profilers
   now resolve their command formatter via the parent profiler rather than owning a provider.
+- Ratpack: persist profiles reliably when a profiler is stopped without a usable execution &mdash; on a
+  plain (non-Ratpack) thread, or from an execution's completion handler after it has finished.
+  `RatpackContextProfilerProvider` now forks a fresh execution to run the save in those cases; it takes
+  an `ExecController` (injected by `MiniProfilerModule`).
 
 0.12.0
 ---

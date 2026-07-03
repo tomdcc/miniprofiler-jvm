@@ -19,9 +19,12 @@ package io.jdev.miniprofiler.ratpack;
 import io.jdev.miniprofiler.BaseProfilerProvider;
 import io.jdev.miniprofiler.Profiler;
 import io.jdev.miniprofiler.internal.ProfilerImpl;
+import ratpack.exec.ExecController;
 import ratpack.exec.Execution;
+import ratpack.exec.ExecutionException;
 import ratpack.exec.Operation;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -31,8 +34,21 @@ import java.util.Optional;
  */
 public class RatpackContextProfilerProvider extends BaseProfilerProvider {
 
-    /** Default constructor. */
-    public RatpackContextProfilerProvider() {}
+    private final ExecController execController;
+
+    /**
+     * Constructs the provider with the {@link ExecController} used to persist profiles.
+     *
+     * <p>The controller is used to fork a fresh {@link Execution} for the (asynchronous) save when a profiler
+     * is stopped outside of a managed Ratpack execution &mdash; for example on a plain thread-pool thread or in
+     * an execution's completion handler. A Ratpack application always has an {@code ExecController} available;
+     * inject it (e.g. via Guice) and pass it here.</p>
+     *
+     * @param execController the exec controller to fork a save execution from when needed; must not be null
+     */
+    public RatpackContextProfilerProvider(ExecController execController) {
+        this.execController = Objects.requireNonNull(execController, "execController");
+    }
 
     /**
      * Adds the given rofiler to the current {@link Execution}.
@@ -58,15 +74,31 @@ public class RatpackContextProfilerProvider extends BaseProfilerProvider {
 
     @Override
     protected void saveProfiler(ProfilerImpl currentProfiler) {
+        if (Execution.isManagedThread()) {
+            try {
+                // On a live execution: bind the save to it, so it is persisted in order with the rest of
+                // the execution (e.g. before the request finishes and the UI fetches the result).
+                saveOperation(currentProfiler).then();
+                return;
+            } catch (ExecutionException e) {
+                // Managed thread, but the current execution has already completed (e.g. we are being
+                // called from its completion handler) and can no longer accept a promise. Fall through
+                // to fork a fresh execution below.
+            }
+        }
+        // Either not on a managed thread at all, or the current execution has completed. Fork a fresh
+        // execution to run the save, otherwise it would be silently lost.
+        execController.fork().start(execution -> saveOperation(currentProfiler).then());
+    }
+
+    private Operation saveOperation(ProfilerImpl currentProfiler) {
         String user = currentProfiler.getUser();
         AsyncStorage asyncStorage = AsyncStorage.adapt(getStorage());
         if (user != null) {
-            asyncStorage.saveAsync(currentProfiler)
-                .next(asyncStorage.setUnviewedAsync(user, currentProfiler.getId()))
-                .then();
-        } else {
-            asyncStorage.saveAsync(currentProfiler).then();
+            return asyncStorage.saveAsync(currentProfiler)
+                .next(asyncStorage.setUnviewedAsync(user, currentProfiler.getId()));
         }
+        return asyncStorage.saveAsync(currentProfiler);
     }
 
     /**

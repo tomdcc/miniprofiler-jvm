@@ -20,6 +20,7 @@ import com.google.inject.Provides
 import com.google.inject.Singleton
 import io.jdev.miniprofiler.ProfilerProvider
 import io.jdev.miniprofiler.storage.MapStorage
+import ratpack.exec.ExecController
 import ratpack.groovy.test.embed.GroovyEmbeddedApp
 import ratpack.guice.Guice
 import spock.lang.Specification
@@ -68,8 +69,8 @@ class MiniProfilerModuleShutdownSpec extends Specification {
 
         @Provides
         @Singleton
-        RatpackContextProfilerProvider ratpackProvider() {
-            def provider = new RatpackContextProfilerProvider()
+        RatpackContextProfilerProvider ratpackProvider(ExecController execController) {
+            def provider = new RatpackContextProfilerProvider(execController)
             provider.storage = trackingStorage
             return provider
         }
