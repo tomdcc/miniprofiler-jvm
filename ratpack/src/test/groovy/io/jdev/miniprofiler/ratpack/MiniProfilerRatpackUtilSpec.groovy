@@ -34,6 +34,8 @@ import spock.lang.AutoCleanup
 import spock.lang.Specification
 import spock.util.concurrent.PollingConditions
 
+import java.util.concurrent.CopyOnWriteArrayList
+
 class MiniProfilerRatpackUtilSpec extends Specification {
 
     def polling = new PollingConditions()
@@ -207,5 +209,59 @@ class MiniProfilerRatpackUtilSpec extends Specification {
 
         and: 'composed onStart called'
         composedOnStartCalled
+    }
+
+    void "forked child profilers are not saved to the provider on completion"() {
+        given: 'a provider that records which profilers it is asked to save'
+        def savedNames = new CopyOnWriteArrayList<String>()
+        def provider = new RatpackContextProfilerProvider() {
+            @Override
+            protected void saveProfiler(ProfilerImpl currentProfiler) {
+                savedNames << currentProfiler.name
+                super.saveProfiler(currentProfiler)
+            }
+        }
+
+        and: "a handler which forks an execution with a child profiler"
+        def profiler
+        app = GroovyEmbeddedApp.of {
+            registryOf {
+                add(ProfilerProvider, provider)
+                add(ExecInitializer, new MiniProfilerExecInitializer(provider))
+            }
+            handlers {
+                all(new MiniProfilerStartProfilingHandler(provider))
+                get { ctx ->
+                    profiler = provider.current
+                    provider.current.step('handler') {
+                        MiniProfilerRatpackUtil.forkChildProfiler(Execution.fork(), "forked execution").start { execution ->
+                            provider.current.step('forked') {
+                            }
+                        }
+                    }
+                    Blocking.op {
+                        // give some time for the forked exec to finish (and, pre-fix, to try to save its child)
+                        Thread.sleep(100)
+                    }.then {
+                        ctx.render("ok")
+                    }
+                }
+            }
+        }
+
+        when:
+        def response = app.httpClient.get()
+
+        then:
+        response.status.'2xx'
+        polling.eventually {
+            profiler.stopped
+        }
+
+        and: 'the request root profiler is saved, but the forked (context-less) child profiler never is'
+        polling.eventually {
+            !savedNames.isEmpty()
+        }
+        savedNames.every { !it.startsWith('⑃') }
     }
 }

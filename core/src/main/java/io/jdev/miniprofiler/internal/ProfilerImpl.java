@@ -60,9 +60,15 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
     private List<ClientTiming> clientTimings;
     private volatile Map<String, String> customLinks;
     private final ProfilerProvider profilerProvider;
+    // Set for child profilers (created via TimingImpl.addChildProfiler) so that command formatting
+    // can resolve the provider without the child owning a lifecycle provider of its own. Null for roots.
+    private final ProfilerImpl parentProfiler;
 
     ProfilerProvider getProfilerProvider() {
-        return profilerProvider;
+        if (profilerProvider != null) {
+            return profilerProvider;
+        }
+        return parentProfiler != null ? parentProfiler.getProfilerProvider() : null;
     }
 
     /**
@@ -109,7 +115,8 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
     }
 
     private ProfilerImpl(UUID id, String name, long started, String machineName, ProfileLevel level,
-                         TimingImpl root, TimingInternal head, boolean stopped, ProfilerProvider profilerProvider) {
+                         TimingImpl root, TimingInternal head, boolean stopped, ProfilerProvider profilerProvider,
+                         ProfilerImpl parentProfiler) {
         this.id = id;
         this.name = name;
         this.started = started;
@@ -119,6 +126,7 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
         this.head = head;
         this.stopped = stopped;
         this.profilerProvider = profilerProvider;
+        this.parentProfiler = parentProfiler;
     }
 
     /**
@@ -141,23 +149,25 @@ public class ProfilerImpl implements Profiler, Serializable, Jsonable {
      * @param profilerProvider the profiler provider constructing the
      */
     public ProfilerImpl(UUID id, String name, String rootName, ProfileLevel level, ProfilerProvider profilerProvider) {
-        this(id != null ? id : UUID.randomUUID(), name, System.currentTimeMillis(), null, level, null, null, false, profilerProvider);
+        this(id != null ? id : UUID.randomUUID(), name, System.currentTimeMillis(), null, level, null, null, false, profilerProvider, null);
         root = new TimingImpl(this, null, rootName);
         head = root;
     }
 
     /**
-     * Used to add a child profiler.
+     * Used to add a child profiler. The child does not own a lifecycle provider (so stopping it does not
+     * notify or save to any provider); it keeps a reference to the parent profiler purely so that command
+     * formatting can resolve a {@link io.jdev.miniprofiler.format.CommandFormatter} via {@link #getProfilerProvider()}.
      */
-    ProfilerImpl(String rootName, ProfileLevel level, long started, ProfilerProvider profilerProvider) {
-        this(null, rootName, started, null, level, null, null, false, profilerProvider);
+    ProfilerImpl(String rootName, ProfileLevel level, long started, ProfilerImpl parentProfiler) {
+        this(null, rootName, started, null, level, null, null, false, null, parentProfiler);
         root = new TimingImpl(this, null, rootName);
         head = root;
     }
 
     // Deserialization constructor — does not create a root timing or set head
     ProfilerImpl(UUID id, String name, long started, String machineName, ProfileLevel level) {
-        this(id, name, started, machineName, level, null, null, true, null);
+        this(id, name, started, machineName, level, null, null, true, null, null);
     }
 
     /**

@@ -18,6 +18,7 @@ package io.jdev.miniprofiler.internal
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jdev.miniprofiler.ProfileLevel
+import io.jdev.miniprofiler.ProfilerProvider
 import io.jdev.miniprofiler.test.TestProfilerProvider
 import spock.lang.Specification
 
@@ -230,12 +231,37 @@ class ProfilerImplSpec extends Specification {
         !parsed.has('Root')
     }
 
-    void "child profiler inherits parent's profiler provider"() {
+    void "child profiler resolves the parent's provider for command formatting"() {
         when:
         def child = profiler.addChild('child') as ProfilerImpl
 
+        then: 'the child can reach a provider (so custom-timing formatting does not NPE)'
+        child.getProfilerProvider() == profiler.getProfilerProvider()
+    }
+
+    void "stopping a child profiler does not notify or save to the provider"() {
+        given:
+        def provider = Mock(ProfilerProvider)
+        def root = new ProfilerImpl('root', ProfileLevel.Info, provider)
+        def child = root.addChild('child')
+
+        when:
+        child.stop()
+
+        then: 'child profilers are part of their parent and must never trigger a session save'
+        0 * provider.stopSession(_, _)
+    }
+
+    void "stopping the root profiler notifies the provider"() {
+        given:
+        def provider = Mock(ProfilerProvider)
+        def root = new ProfilerImpl('root', ProfileLevel.Info, provider)
+
+        when:
+        root.stop()
+
         then:
-        child.profilerProvider == profiler.profilerProvider
+        1 * provider.stopSession(root, false)
     }
 
     void "asUiJson on parent succeeds when child profiler has custom timings"() {
