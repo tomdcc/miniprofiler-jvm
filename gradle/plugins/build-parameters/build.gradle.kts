@@ -42,9 +42,6 @@ buildParameters {
         bool("alwaysPublish") {
             defaultValue = false
         }
-        bool("scansGradleComTermsAgree") {
-            defaultValue = false
-        }
     }
 
     group("browserTest") {

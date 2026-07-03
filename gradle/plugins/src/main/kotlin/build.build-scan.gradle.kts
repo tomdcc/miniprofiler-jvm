@@ -24,13 +24,13 @@ plugins {
 project.afterEvaluate {
     project.the<DevelocityConfiguration>().run {
         buildScan {
-            if (buildParameters.ci || buildParameters.buildScans.scansGradleComTermsAgree) {
-                termsOfUseUrl = "https://gradle.com/help/legal-terms-of-use"
-                termsOfUseAgree = "yes"
-            }
-
+            // Build Scans are published to community.develocity.cloud (server configured in
+            // settings.gradle.kts), which requires an authenticated connection. Publish on CI
+            // or when locally opted in via buildScans.alwaysPublish, but only when an access
+            // key is present, so unauthenticated builds (e.g. fork PRs) skip publishing
+            // cleanly rather than failing.
             publishing {
-                onlyIf { buildParameters.ci || buildParameters.buildScans.alwaysPublish }
+                onlyIf { it.isAuthenticated && (buildParameters.ci || buildParameters.buildScans.alwaysPublish) }
             }
             uploadInBackground = !buildParameters.ci
         }

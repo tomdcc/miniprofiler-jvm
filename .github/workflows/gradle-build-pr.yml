@@ -3,3 +3,4 @@ on: [ pull_request ]
 jobs:
   call-gradle-build:
     uses: tomdcc/miniprofiler-jvm/.github/workflows/gradle-build.yml@main
+    secrets: inherit
