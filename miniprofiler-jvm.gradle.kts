@@ -21,7 +21,7 @@ plugins {
 
 allprojects {
     group = "io.jdev.miniprofiler"
-    version = "0.12.2-SNAPSHOT"
+    version = "0.12.2"
 
     apply(plugin = "build.copyright")
 }
