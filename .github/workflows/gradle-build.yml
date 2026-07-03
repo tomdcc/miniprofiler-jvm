@@ -3,6 +3,10 @@ on: [ workflow_call ]
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # Authenticates Build Scan publishing to community.develocity.cloud.
+      # Absent on fork PRs, where publishing is skipped rather than failing.
+      DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
     steps:
       - uses: actions/checkout@v6
         with:

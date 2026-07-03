@@ -11,6 +11,11 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
+develocity {
+    server = "https://community.develocity.cloud"
+    projectId = "tomdcc"
+}
+
 includeBuild("gradle/plugins")
 
 include("core")
