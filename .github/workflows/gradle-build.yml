@@ -8,7 +8,7 @@ jobs:
       # Absent on fork PRs, where publishing is skipped rather than failing.
       DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           # Full history so per-file `git log` (used by verifyCopyright) can reach
           # each file's most recent substantive commit on PR and push builds alike.
