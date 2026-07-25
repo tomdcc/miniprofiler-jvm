@@ -9,7 +9,7 @@ oracle-free = "gvenzl/oracle-free:slim-faststart@sha256:d8913e4e4769b6e60197949b
 # Object storage container tests
 s3mock = "adobe/s3mock:5.1.0@sha256:65cf60155a2e235fe7d5bf6c633747d6fc7ed93f9f5a6727d86470026b83c2a2"
 azurite = "mcr.microsoft.com/azure-storage/azurite:3.35.0@sha256:647c63a91102a9d8e8000aab803436e1fc85fbb285e7ce830a82ee5d6661cf37"
-fake-gcs-server = "fsouza/fake-gcs-server:1.54.0@sha256:3730da0e31f7e5186a90ec4899dc2c336104e7599df400411392ef17e684c31f"
+fake-gcs-server = "fsouza/fake-gcs-server:1.55.1@sha256:91afded49de804aa61b5f3eb6c7cd65205acf9e5c5e047cf0ba7d9507af806c8"
 
 # Scenario test application servers
 wildfly10 = "jboss/wildfly:10.1.0.Final@sha256:455b5f3b2ec9cd206e879b776fa854e09c1a0f534362de57c858906561c4128d"
