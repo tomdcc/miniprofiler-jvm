@@ -2,7 +2,7 @@
 
 # JDBC storage container tests
 postgres = "postgres:18@sha256:3a82e1f56c8f0f5616a11103ac3d47e632c3938698946a7ad26da0df1334744a"
-mysql = "mysql:9.7@sha256:ad88e1c86cbf12ef52d0a0360cd4b774d22956c5ee9c565645fb019d7aacb6c3"
+mysql = "mysql:9.7@sha256:cbade841779f1661300e705721f9d2ff159865cc7a8a291affbff43ac6ec7f1d"
 mssql-server = "mcr.microsoft.com/mssql/server:2025-latest@sha256:86cc6144ef39bb0fbed2329e1ad79b13ee82e7b2e4739213a0db0800e668a74a"
 oracle-free = "gvenzl/oracle-free:slim-faststart@sha256:d8913e4e4769b6e60197949bef30a4391713afe662b4b4e71a2665c881bdac8b"
 
