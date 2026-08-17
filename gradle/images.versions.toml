@@ -3,7 +3,7 @@
 # JDBC storage container tests
 postgres = "postgres:18@sha256:06cad38a5d9f5d24b4d83d86def30795d5e4b757fedbf5281172b576dedcd941"
 mysql = "mysql:26.7@sha256:66aec17cd21a956029b83f083b813073859e8355dc1a00e55df6ba02f0e32345"
-mssql-server = "mcr.microsoft.com/mssql/server:2025-latest@sha256:86cc6144ef39bb0fbed2329e1ad79b13ee82e7b2e4739213a0db0800e668a74a"
+mssql-server = "mcr.microsoft.com/mssql/server:2025-latest@sha256:4bab24f36c1ecd48e85f7d37df26e6bf301641d84c3fe652f9a0dcc947d512e1"
 oracle-free = "gvenzl/oracle-free:slim-faststart@sha256:d8913e4e4769b6e60197949bef30a4391713afe662b4b4e71a2665c881bdac8b"
 
 # Object storage container tests
