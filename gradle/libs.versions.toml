@@ -15,7 +15,7 @@
 [versions]
 asciidoctor = "4.0.5"
 awaitility = "4.3.0"
-aws-sdk-v2 = "2.57.3"
+aws-sdk-v2 = "2.57.4"
 azure-identity = "1.18.7"
 azure-storage-blob = "12.36.0"
 build-parameters-plugin = "1.4.5"
