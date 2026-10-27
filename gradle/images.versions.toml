@@ -17,4 +17,4 @@ wildfly27 = "quay.io/wildfly/wildfly:27.0.1.Final-jdk17@sha256:8470bc822820e17f7
 glassfish4 = "glassfish:4.1@sha256:8077dfad6754e844f3fd197832ca62c26700433290e392700e0020226256de41"
 glassfish7 = "ghcr.io/eclipse-ee4j/glassfish:7.0.25@sha256:9061497fa9f69669f90dfcfbc6eb366056cdbb6d4a3e31bf9b11b66f6344b488"
 jetty9 = "jetty:9-jre11@sha256:4ce403cf2e243edf1df193ab7aedaac00d89844e6028791fddd9d438a3928014"
-jetty12 = "jetty:12.0-jre21@sha256:100d100a7abfa8032913a0c5b5f57bddbccfa217b499bcdf17e875d75ab76651"
+jetty12 = "jetty:12.0-jre21@sha256:a5de0a59dcdcf5faa69e8f4e21791b7064b9e0f67bca81ea88f1546aeb4762f5"
